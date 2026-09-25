@@ -3,6 +3,11 @@
         "date": "2026-09-25",
         "description": [
             {
+                "en": "Accounts nobody has used for three years are now anonymized, after an email inviting their owner to log in to keep them: your site no longer keeps personal data without a limit.",
+                "fr": "Les comptes que personne n'utilise depuis trois ans sont désormais anonymisés, après un e-mail invitant leur titulaire à se connecter pour les garder : votre site ne conserve plus de données personnelles sans limite.",
+                "es": "Las cuentas que nadie utiliza desde hace tres años se anonimizan ahora, tras un correo que invita a su titular a conectarse para conservarlas: su sitio ya no guarda datos personales sin límite."
+            },
+            {
                 "en": "Each guided project now links to its film, in the dashboard list and in the assistant's answers: watch how it is done, then do it yourself.",
                 "fr": "Chaque projet guidé renvoie désormais vers son film, dans la liste du tableau de bord comme dans les réponses de l'assistant : regardez comment faire, puis faites-le vous-même.",
                 "es": "Cada proyecto guiado enlaza ahora con su vídeo, en la lista del panel y en las respuestas del asistente: vea cómo se hace y luego hágalo usted mismo."

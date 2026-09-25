@@ -26,6 +26,8 @@ class ConfigMaintenanceTaskProvider implements MaintenanceTaskProviderInterface
             new MaintenanceTask('# #(2-4) * * *', 'c975l:config:messenger-cleanup'),
             // Recorded 404s nothing follows any more, weekly: the rows accumulate at the pace links break, which is slow enough that a nightly pass would only ever delete nothing
             new MaintenanceTask('# #(2-5) * * 2', 'c975l:config:not-found-cleanup'),
+            // Inactive accounts, weekly: the limit is counted in years and the notice in weeks, a day's precision changes nothing
+            new MaintenanceTask('# #(3-6) * * 3', 'c975l:config:users-cleanup'),
             // Backup: every 6 hours (DB dumped table by table, plus the files declared in "archive" mode), the archives being sent offsite in the same run
             new MaintenanceTask('# */6 * * *', 'c975l:config:backup'),
             // The mirrored folders, nightly and on their own: uploads are written once and weigh far more than everything else here, so they don't belong on the 6-hourly cadence. Seed the first run by hand - it transfers the whole lot, and the scheduler has a single worker to block

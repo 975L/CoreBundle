@@ -3,6 +3,11 @@
         "date": "2026-09-25",
         "description": [
             {
+                "en": "In a FAQ, opening a question now folds the one already open, so the page stays short.",
+                "fr": "Dans une FAQ, ouvrir une question referme désormais celle déjà ouverte, pour garder la page courte.",
+                "es": "En unas preguntas frecuentes, abrir una pregunta cierra ahora la que ya estaba abierta, para que la página siga siendo corta."
+            },
+            {
                 "en": "An image can now show a picture of its own in each language: on the Translate screen, upload the English screenshot or banner, and the English page shows it.",
                 "fr": "Une image peut désormais montrer un fichier propre à chaque langue : depuis l'écran Traduire, déposez la capture ou la bannière en anglais, et la page anglaise l'affiche.",
                 "es": "Una imagen puede mostrar ahora un archivo propio en cada idioma: desde la pantalla Traducir, suba la captura o el banner en inglés, y la página en inglés lo muestra."

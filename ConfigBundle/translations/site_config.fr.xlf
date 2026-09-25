@@ -266,6 +266,14 @@
                 <source>description.user_creation_notification</source>
                 <target>Envoyer un email au site (adresse « Email destinataire ») à chaque création de compte utilisateur</target>
             </trans-unit>
+            <trans-unit id="qUH2vtE">
+                <source>description.user_inactivity_days</source>
+                <target>Un compte sans aucune connexion depuis ce nombre de jours est anonymisé, le RGPD demandant de ne pas conserver de données personnelles sans limite. La CNIL recommande environ 3 ans (1095). 0 conserve tous les comptes</target>
+            </trans-unit>
+            <trans-unit id="M4az4qw">
+                <source>description.user_inactivity_notice_days</source>
+                <target>Combien de jours avant l'anonymisation le titulaire reçoit un email l'invitant à se connecter, ce qui suffit à conserver son compte</target>
+            </trans-unit>
             <trans-unit id="hDOR3CX">
                 <source>description.user_roles_available</source>
                 <target>Rôles supplémentaires sélectionnables (en plus de ROLE_USER), tableau JSON, ex. ["ROLE_ADMIN","ROLE_EDITOR"]</target>
@@ -533,6 +541,14 @@
             <trans-unit id="zbfbI32">
                 <source>label.user_creation_notification</source>
                 <target>Notification de création de compte</target>
+            </trans-unit>
+            <trans-unit id="6Aofriz">
+                <source>label.user_inactivity_days</source>
+                <target>Jours d'inactivité avant anonymisation</target>
+            </trans-unit>
+            <trans-unit id="Xk9c4BJ">
+                <source>label.user_inactivity_notice_days</source>
+                <target>Préavis avant anonymisation (jours)</target>
             </trans-unit>
             <trans-unit id="CPUCRXd">
                 <source>label.user_roles_available</source>

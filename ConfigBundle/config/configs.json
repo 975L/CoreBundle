@@ -44,6 +44,28 @@
         "description": "description.user_roles_available"
     },
     {
+        "label": "label.user_inactivity_days",
+        "slug": "user-inactivity-days",
+        "sensitive": false,
+        "restricted": true,
+        "value": "1095",
+        "kind": "int",
+        "group": "security",
+        "severity": null,
+        "description": "description.user_inactivity_days"
+    },
+    {
+        "label": "label.user_inactivity_notice_days",
+        "slug": "user-inactivity-notice-days",
+        "sensitive": false,
+        "restricted": true,
+        "value": "30",
+        "kind": "int",
+        "group": "security",
+        "severity": null,
+        "description": "description.user_inactivity_notice_days"
+    },
+    {
         "label": "label.site_maintenance",
         "slug": "site-maintenance",
         "sensitive": false,

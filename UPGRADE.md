@@ -1,5 +1,16 @@
 # UPGRADE
 
+## v1.39.0
+
+**A migration is needed**, for the `last_login` and `inactivity_notice_sent_at` columns (datetime, nullable) the scaffolded `User` gains, once your `App\Entity\User` implements `c975L\ConfigBundle\Contract\InactivityAwareInterface` in place of `UserInterface` - copy the two properties, their accessors, the constructor and `anonymize()` from the bundle's `scaffold/src/Entity/User.php`:
+
+```bash
+php bin/console make:migration
+php bin/console doctrine:migrations:migrate
+```
+
+`anonymize()` blanks the scaffold's own personal fields: **add every personal field your `User` adds** (name, phone...). Until the `User` implements the interface, `c975l:config:users-cleanup` does nothing. The accounts already there get their clock started at its first run, so none is warned before `user-inactivity-days` (three years by default) have passed.
+
 ## v1.37.0
 
 **Two config entries are gone**, `site-tutorials-url` and `ui-block-showcase-url`: the films and the block showcase are the c975L ecosystem's, the same for every site, and now live as constants in `c975L\ConfigBundle\Management\EcosystemUrls`. A value a site had stored is read by nothing anymore - remove it from the "Obsolete configs" screen. Nothing can hide the links now short of overriding `@c975LConfig/management/index.html.twig`.

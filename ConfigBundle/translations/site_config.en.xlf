@@ -266,6 +266,14 @@
                 <source>description.user_creation_notification</source>
                 <target>Send an email to the site ("Email to" address) whenever a user account is created</target>
             </trans-unit>
+            <trans-unit id="qUH2vtE">
+                <source>description.user_inactivity_days</source>
+                <target>An account nobody logged in to for this many days is anonymized, as the GDPR asks not to keep personal data without a limit. The CNIL recommends about 3 years (1095). 0 keeps every account</target>
+            </trans-unit>
+            <trans-unit id="M4az4qw">
+                <source>description.user_inactivity_notice_days</source>
+                <target>How many days before the anonymization the owner is emailed an invitation to log in, which is enough to keep the account</target>
+            </trans-unit>
             <trans-unit id="hDOR3CX">
                 <source>description.user_roles_available</source>
                 <target>Extra selectable roles (besides ROLE_USER), JSON array, e.g. ["ROLE_ADMIN","ROLE_EDITOR"]</target>
@@ -533,6 +541,14 @@
             <trans-unit id="zbfbI32">
                 <source>label.user_creation_notification</source>
                 <target>Account creation notification</target>
+            </trans-unit>
+            <trans-unit id="6Aofriz">
+                <source>label.user_inactivity_days</source>
+                <target>Days of inactivity before anonymization</target>
+            </trans-unit>
+            <trans-unit id="Xk9c4BJ">
+                <source>label.user_inactivity_notice_days</source>
+                <target>Notice before anonymization (days)</target>
             </trans-unit>
             <trans-unit id="CPUCRXd">
                 <source>label.user_roles_available</source>

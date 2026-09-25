@@ -1,5 +1,25 @@
 # ChangeLog
 
+## v1.39.0
+
+Inactive accounts are warned then anonymized
+
+### ConfigBundle
+
+- **New `c975l:config:users-cleanup`, warning then anonymizing the accounts left unused**, weekly (25/09/2026) **See [UPGRADE.md](UPGRADE.md)** [Needs db update]
+- New `InactivityAwareInterface`, implemented by the scaffolded `User` with `lastLogin` and `inactivityNoticeSentAt` (25/09/2026)
+- New `user-inactivity-days` and `user-inactivity-notice-days` configs, 1095 and 30 by default (25/09/2026)
+- New `LastLoginSubscriber`, recording every login and withdrawing a pending notice (25/09/2026)
+- New `UserAnonymizedEvent`, dispatched for each anonymized account (25/09/2026)
+- New `account_inactivity_notice` email template (25/09/2026)
+- The User screen shows `lastLogin` and `inactivityNoticeSentAt` read-only (25/09/2026)
+- The README and the `c975l-users` skill document the inactive accounts (25/09/2026)
+
+### UiBundle
+
+- Opening a FAQ question folds the one already open in the same block (25/09/2026)
+- The README and the `c975l-blocks` skill document it (25/09/2026)
+
 ## v1.38.1
 
 A form sets its own submit button wording

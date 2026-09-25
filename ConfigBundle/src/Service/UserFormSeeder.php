@@ -10,6 +10,7 @@
 
 namespace c975L\ConfigBundle\Service;
 
+use c975L\ConfigBundle\Command\UsersCleanupCommand;
 use c975L\UiBundle\Contract\EmailTemplateProviderInterface;
 use c975L\UiBundle\Entity\EmailBlock;
 use c975L\UiBundle\Entity\FormField;
@@ -117,6 +118,12 @@ class UserFormSeeder implements EmailTemplateProviderInterface
                 [EmailBlock::TYPE_BUTTON, null, null, null, $this->trans('label.password_reset_button', $locale), '{{ reset_url }}'],
                 [EmailBlock::TYPE_TEXT, null, null, '{{ expires_at }}', null, null],
             ];
+            $blocks[UsersCleanupCommand::EMAIL_TEMPLATE][$locale] = [
+                [EmailBlock::TYPE_HEADING, $this->trans('label.account_inactivity_heading', $locale), EmailBlock::LEVEL_H1, null, null, null],
+                [EmailBlock::TYPE_TEXT, null, null, $this->trans('label.account_inactivity_text', $locale), null, null],
+                [EmailBlock::TYPE_BUTTON, null, null, null, $this->trans('label.account_inactivity_button', $locale), '{{ login_url }}'],
+                [EmailBlock::TYPE_TEXT, null, null, '{{ deadline }}', null, null],
+            ];
         }
 
         return $blocks;
@@ -137,7 +144,7 @@ class UserFormSeeder implements EmailTemplateProviderInterface
     ) {
     }
 
-    // Declared as well as seeded: the same two definitions are what c975l:ui:email-templates:ensure brings to a site built before they existed, and what the health check reports missing
+    // Declared as well as seeded (the inactivity notice only declared, the command rendering it straight from here): these definitions are what c975l:ui:email-templates:ensure brings to a site built before they existed, and what the health check reports missing
     public function getEmailTemplates(): array
     {
         return $this->accountEmailBlocks();

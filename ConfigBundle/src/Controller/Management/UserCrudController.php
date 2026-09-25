@@ -50,7 +50,7 @@ class UserCrudController extends AbstractCrudController
         return User::class;
     }
 
-    // Relies on EasyAdmin's auto-discovery of App\Entity\User's own fields (which vary per app), except for: the hashed password (excluded so it's never displayed or overwritten from the backoffice), creation/modification (made readonly since they're set automatically), isVerified (made readonly since it must only be set by EmailVerifier upon email confirmation), isEnabled on an account nobody confirmed yet (see editsAnUnverifiedAccount()); "roles" is excluded by EasyAdmin's own auto-discovery (JSON columns are never auto-discovered), so it's added explicitly as a proper multiple-choice field
+    // Relies on EasyAdmin's auto-discovery of App\Entity\User's own fields (which vary per app), except for: the hashed password (excluded so it's never displayed or overwritten from the backoffice), creation/modification/lastLogin/inactivityNoticeSentAt (made readonly since they're set automatically), isVerified (made readonly since it must only be set by EmailVerifier upon email confirmation), isEnabled on an account nobody confirmed yet (see editsAnUnverifiedAccount()); "roles" is excluded by EasyAdmin's own auto-discovery (JSON columns are never auto-discovered), so it's added explicitly as a proper multiple-choice field
     #[\Override]
     public function configureFields(string $pageName): iterable
     {
@@ -68,7 +68,7 @@ class UserCrudController extends AbstractCrudController
                 continue;
             }
 
-            if (in_array($property, ['creation', 'modification', 'isVerified'], true)) {
+            if (in_array($property, ['creation', 'modification', 'isVerified', 'lastLogin', 'inactivityNoticeSentAt'], true)) {
                 yield $field->setFormTypeOption('disabled', 'disabled');
 
                 continue;

@@ -2509,7 +2509,8 @@ play button, so accepting third-party cookies can't be mistaken for pressing pla
 An optional title over a list of questions, each unfolding under its own summary. It is built on
 `<details>`/`<summary>` rather than on a script: the accordion works before any JavaScript loads, a
 printed page shows every answer, and the browser's own "find in page" opens the section holding the
-match. **Open first** unfolds the first answer for the question everybody asks; **Columns** lays the
+match. Opening a question folds the one already open, the questions of a block sharing one `name`
+scoped by its anchor, so two FAQ blocks of a page leave each other alone. **Open first** unfolds the first answer for the question everybody asks; **Columns** lays the
 list over two from 1024px up.
 
 Laid in **one** column, the block also publishes a `FAQPage` JSON-LD payload built from the very

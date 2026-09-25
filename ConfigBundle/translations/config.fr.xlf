@@ -506,6 +506,22 @@
                 <source>help.value_translation</source>
                 <target>La valeur dans cette langue seulement — celle qui a été saisie reste intacte.</target>
             </trans-unit>
+            <trans-unit id="9TP0HP4">
+                <source>label.account_inactivity_button</source>
+                <target>Me connecter</target>
+            </trans-unit>
+            <trans-unit id="a34wyD.">
+                <source>label.account_inactivity_heading</source>
+                <target>Votre compte n'a pas été utilisé depuis longtemps</target>
+            </trans-unit>
+            <trans-unit id="qLRNBiM">
+                <source>label.account_inactivity_subject</source>
+                <target>Votre compte va bientôt être anonymisé</target>
+            </trans-unit>
+            <trans-unit id="Rstu.Mi">
+                <source>label.account_inactivity_text</source>
+                <target>Pour protéger vos données personnelles, nous ne conservons pas les comptes inutilisés. Connectez-vous pour garder le vôtre, rien de plus.</target>
+            </trans-unit>
             <trans-unit id="s0jNbR8">
                 <source>label.account_validation_button</source>
                 <target>Confirmer mon email</target>
@@ -2305,6 +2321,10 @@
             <trans-unit id="bjdEET4">
                 <source>label.whatsnew_see_all</source>
                 <target>Voir toutes les notes de version</target>
+            </trans-unit>
+            <trans-unit id="_FiPpZh">
+                <source>text.account_inactivity_deadline</source>
+                <target>Sans connexion de votre part avant le %date%, votre compte sera anonymisé.</target>
             </trans-unit>
             <trans-unit id="m3ORa7e">
                 <source>text.link_expires_in</source>

@@ -33,6 +33,13 @@ class FaqMarkupTest extends TestCase
         $this->assertStringContainsString('<em>Oui</em>', $html);
     }
 
+    // One name for the whole block, so unfolding a question folds the other one, and the anchor keeps two blocks of a page apart
+    public function testTheQuestionsOfABlockShareOneNameScopedByItsAnchor(): void
+    {
+        $this->assertSame(2, substr_count($this->render(['items' => self::ITEMS]), 'name="faq-items"'));
+        $this->assertSame(2, substr_count($this->render(['items' => self::ITEMS, 'anchor_id' => 'livraison']), 'name="faq-livraison"'));
+    }
+
     // The first answer already unfolded, for a page whose first question is the one everybody asks - and it alone
     public function testOnlyTheFirstAnswerIsUnfoldedAndOnlyWhenAskedFor(): void
     {

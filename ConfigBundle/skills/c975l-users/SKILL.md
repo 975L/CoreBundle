@@ -1,6 +1,6 @@
 ---
 name: c975l-users
-description: "Use this skill when working on accounts, roles or access control in a Symfony application built on the c975L ecosystem — the User contract, the site-role-* settings, ROLE_SUPER_ADMIN and restricted configs, previewing a lower role, registration and its anti-spam layers, password reset, login throttling and back-office access. Triggers on: UserInterface contract, UserCrudController, site-role-admin, site-role-editor, site-role-contributor, ROLE_CONTRIBUTOR, ROLE_SUPER_ADMIN, RolePreview, role preview, View as, RolePreviewRoleVoter, RolePreviewRoleVoterPass, RolePreviewBanner, user-roles-available, UserManagementVoter, BackOfficeAccessVoter, C975L_ACCESS_BACK_OFFICE, EmailVerifier, UserRegistrar, PasswordResetter, isEnabled, isVerified, UserChecker, sendEmailConfirmation, resend confirmation, confirmation cooldown, EmailVerifier::COOLDOWN, delete a user, unverified account, ON DELETE SET NULL, login_throttling, access_control, register form, reset_password_request, honeypot, DnsEmail, user-creation-notification."
+description: "Use this skill when working on accounts, roles or access control in a Symfony application built on the c975L ecosystem — the User contract, the site-role-* settings, ROLE_SUPER_ADMIN and restricted configs, previewing a lower role, registration and its anti-spam layers, password reset, login throttling and back-office access. Triggers on: UserInterface contract, UserCrudController, site-role-admin, site-role-editor, site-role-contributor, ROLE_CONTRIBUTOR, ROLE_SUPER_ADMIN, RolePreview, role preview, View as, RolePreviewRoleVoter, RolePreviewRoleVoterPass, RolePreviewBanner, user-roles-available, UserManagementVoter, BackOfficeAccessVoter, C975L_ACCESS_BACK_OFFICE, EmailVerifier, UserRegistrar, PasswordResetter, isEnabled, isVerified, UserChecker, sendEmailConfirmation, resend confirmation, confirmation cooldown, EmailVerifier::COOLDOWN, delete a user, unverified account, ON DELETE SET NULL, login_throttling, access_control, register form, reset_password_request, honeypot, DnsEmail, user-creation-notification, InactivityAwareInterface, users-cleanup, c975l:config:users-cleanup, UsersCleanupCommand, InactiveUserFinder, UserAnonymizedEvent, LastLoginSubscriber, lastLogin, user-inactivity-days, user-inactivity-notice-days, anonymize, inactive accounts."
 ---
 
 # c975L ConfigBundle — users, roles and access
@@ -10,7 +10,7 @@ description: "Use this skill when working on accounts, roles or access control i
 **Package:** `c975l/core-bundle` · **Bundle:** `c975L\ConfigBundle\`
 
 **Key source paths** (relative to this bundle's directory inside the package):
-`src/Contract/UserInterface.php`, `src/Controller/Management/UserCrudController.php`, `src/Controller/RolePreviewController.php`, `src/Security/`, `src/Service/UserRegistrar.php`, `src/Service/EmailVerifier.php`, `src/Service/PasswordResetter.php`, `src/Service/UserFormSeeder.php`, `src/EventSubscriber/LoginRequestSubscriber.php`, `src/Command/UserCreateCommand.php`, `scaffold/src/`
+`src/Contract/UserInterface.php`, `src/Controller/Management/UserCrudController.php`, `src/Controller/RolePreviewController.php`, `src/Security/`, `src/Service/UserRegistrar.php`, `src/Service/EmailVerifier.php`, `src/Service/PasswordResetter.php`, `src/Service/UserFormSeeder.php`, `src/EventSubscriber/LoginRequestSubscriber.php`, `src/Command/UserCreateCommand.php`, `src/Command/UsersCleanupCommand.php`, `src/Contract/InactivityAwareInterface.php`, `src/Service/InactiveUserFinder.php`, `src/EventSubscriber/LastLoginSubscriber.php`, `src/Event/UserAnonymizedEvent.php`, `scaffold/src/`
 
 **Related skills:** `c975l-config`, `c975l-management` in this same bundle, and `c975l-forms-emails` in UiBundle beside it.
 
@@ -165,6 +165,16 @@ Every account created through `UserRegistrar` also notifies the site's own `emai
 `kernel.default_locale`. Uncheck `user-creation-notification` to stop it. It never gets in the way of
 the registration itself.
 
+## Inactive accounts
+
+`c975l:config:users-cleanup`, scheduled weekly by `ConfigMaintenanceTaskProvider`, acts only on a
+User implementing **`InactivityAwareInterface`** (the scaffolded one does). An account unused for
+`user-inactivity-days` minus `user-inactivity-notice-days` is emailed the `account_inactivity_notice`
+template; still unused at the end of the notice, it is **anonymized, never deleted**, so what refers to
+it stays for the accounting retention. A disabled account is anonymized without a notice. The app's
+`anonymize()` blanks its own personal fields, and an app unlinking what a user owns listens to
+`UserAnonymizedEvent`. `LastLoginSubscriber` restarts the clock on every login.
+
 ## Do not
 
 - **Do not type a property against `App\Entity\User`** from a bundle. Use the contract.
@@ -186,3 +196,5 @@ the registration itself.
   re-enabling it.
 - **Do not cap the confirmation email on the caller alone** — a rate limiter keyed on an IP leaves a
   stranger's mailbox open to whoever holds a block of addresses.
+- **Do not delete an inactive account** — anonymize it: its payments and invoices must outlive it.
+- **Do not leave a personal field of the app's User out of `anonymize()`** — the command only knows the contract.

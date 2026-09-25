@@ -506,6 +506,22 @@
                 <source>help.value_translation</source>
                 <target>The value in this language alone — the one that was typed stays untouched.</target>
             </trans-unit>
+            <trans-unit id="9TP0HP4">
+                <source>label.account_inactivity_button</source>
+                <target>Log in</target>
+            </trans-unit>
+            <trans-unit id="a34wyD.">
+                <source>label.account_inactivity_heading</source>
+                <target>Your account has not been used for a long time</target>
+            </trans-unit>
+            <trans-unit id="qLRNBiM">
+                <source>label.account_inactivity_subject</source>
+                <target>Your account will soon be anonymized</target>
+            </trans-unit>
+            <trans-unit id="Rstu.Mi">
+                <source>label.account_inactivity_text</source>
+                <target>To protect your personal data, we do not keep unused accounts. Log in to keep yours, nothing else is needed.</target>
+            </trans-unit>
             <trans-unit id="s0jNbR8">
                 <source>label.account_validation_button</source>
                 <target>Confirm my email</target>
@@ -2305,6 +2321,10 @@
             <trans-unit id="bjdEET4">
                 <source>label.whatsnew_see_all</source>
                 <target>See all release notes</target>
+            </trans-unit>
+            <trans-unit id="_FiPpZh">
+                <source>text.account_inactivity_deadline</source>
+                <target>Without a login by %date%, your account will be anonymized.</target>
             </trans-unit>
             <trans-unit id="m3ORa7e">
                 <source>text.link_expires_in</source>
