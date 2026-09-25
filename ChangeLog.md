@@ -1,5 +1,13 @@
 # ChangeLog
 
+## v1.37.1
+
+The scaffold's tour test finds a highlighted step by its selector
+
+### ConfigBundle
+
+- The scaffold's `ManagementSmokeTest` checks a tour step's `highlight` selector instead of its url (25/09/2026)
+
 ## v1.37.0
 
 The dashboard lists the features the site doesn't use yet

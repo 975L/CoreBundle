@@ -88,6 +88,14 @@ class ManagementSmokeTest extends FunctionalTestCase
         $rendered = $crawler->filter('a[href]')->each(static fn ($node) => $node->attr('href'));
         foreach ($steps as $step) {
             $this->assertNotSame('', $step['label'], 'A tour step carries no label, so it would show up blank');
+
+            // A step pointed at by its own selector (the unused features panel) is found by it rather than by a url
+            if (isset($step['highlight'])) {
+                $this->assertGreaterThan(0, $crawler->filter($step['highlight'])->count(), sprintf('The tour highlights "%s", which the dashboard does not render', $step['highlight']));
+
+                continue;
+            }
+
             $this->assertContains($step['url'], $rendered, sprintf('The tour walks to "%s", a link the dashboard does not render', $step['url']));
         }
     }
