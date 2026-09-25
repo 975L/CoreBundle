@@ -79,6 +79,8 @@ class ThemeVariablesCssListener implements CacheWarmerInterface
         private readonly StylesheetCacheWarmer $stylesheetCacheWarmer,
         #[Autowire(param: 'kernel.project_dir')]
         private readonly string $projectDir,
+        #[Autowire(param: 'c975l_ui.build_dir')]
+        private readonly string $buildDir,
         private readonly CacheInterface $cache,
     ) {
     }
@@ -151,7 +153,7 @@ class ThemeVariablesCssListener implements CacheWarmerInterface
         // Appended after the loop, and not in variableLine(): that mapping is mechanical on purpose, and a colour read to write two other properties is exactly the lookup table it exists not to have
         $lines = [...$lines, ...$this->derivedInkLines($values)];
 
-        BuildFileWriter::write($this->projectDir, 'site-theme.css', [] === $lines ? '' : ":root {\n" . implode("\n", $lines) . "\n}\n");
+        BuildFileWriter::write($this->projectDir, $this->buildDir, 'site-theme.css', [] === $lines ? '' : ":root {\n" . implode("\n", $lines) . "\n}\n");
 
         // In prod, the real site never reads this file directly - it links UiBundle's concatenated bundles/build/site.css instead (see StylesheetExtension), which is otherwise only rebuilt on cache:warmup. Without this, an admin editing a "theme" config would regenerate site-theme.css but still see the previous theme until the next deploy/warmup
         $this->stylesheetCacheWarmer->compileAll();

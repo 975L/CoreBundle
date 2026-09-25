@@ -91,7 +91,8 @@ class AiAssistantClient implements AiAssistantClientInterface
 
             $project = $this->guidedProjectBuilder->getProject($slug);
             if (null !== $project) {
-                $resolved[] = ['label' => $project['label'], 'url' => '', 'project' => $slug];
+                // The film beside the button, when the site links its parcours to one (see GuidedProjectBuilder's "site-tutorials-url")
+                $resolved[] = ['label' => $project['label'], 'url' => '', 'project' => $slug, 'film' => $project['film'] ?? null];
             }
         }
 

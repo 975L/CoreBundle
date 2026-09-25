@@ -250,6 +250,10 @@
                 <source>description.site_timezone</source>
                 <target>Zona horaria en la que se muestran las fechas, tanto en el sitio como en el back-office. Las fechas se siguen guardando en la hora del servidor</target>
             </trans-unit>
+            <trans-unit id="yvVs49D">
+                <source>description.site_tutorials_url</source>
+                <target>Dirección a la que se añade el slug de un recorrido guiado para mostrar su vídeo, p. ej. https://bundles.975l.com/tutoriels/film. Vacía, ningún enlace «Ver el vídeo»</target>
+            </trans-unit>
             <trans-unit id="nInyIwr">
                 <source>description.site_url</source>
                 <target>URL del sitio web, ej. https://example.com</target>
@@ -517,6 +521,10 @@
             <trans-unit id="kQSmmhp">
                 <source>label.site_timezone</source>
                 <target>Zona horaria</target>
+            </trans-unit>
+            <trans-unit id="Z0hM0ti">
+                <source>label.site_tutorials_url</source>
+                <target>URL de los vídeos de los recorridos guiados</target>
             </trans-unit>
             <trans-unit id="rDTDQ70">
                 <source>label.site_url</source>

@@ -51,7 +51,7 @@ class ThemeVariablesExtensionTest extends TestCase
     {
         file_put_contents($this->projectDir . '/public/bundles/build/site-theme.css', ':root { --c975l-color-primary: #ff0000; }');
 
-        $extension = new ThemeVariablesExtension($this->projectDir);
+        $extension = new ThemeVariablesExtension($this->projectDir, 'bundles/build');
 
         $this->assertSame(':root { --c975l-color-primary: #ff0000; }', $extension->getThemeVariablesCss());
     }
@@ -59,7 +59,7 @@ class ThemeVariablesExtensionTest extends TestCase
     // On a fresh install, the listener may not have generated the file yet
     public function testGetThemeVariablesCssReturnsEmptyStringWhenFileIsMissing(): void
     {
-        $extension = new ThemeVariablesExtension($this->projectDir);
+        $extension = new ThemeVariablesExtension($this->projectDir, 'bundles/build');
 
         $this->assertSame('', $extension->getThemeVariablesCss());
     }

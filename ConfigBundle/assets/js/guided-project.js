@@ -23,6 +23,18 @@ export default class extends Controller {
         this.panel = null;
         this.highlighted = null;
         this.wireList();
+
+        // A link from outside the back office starts a parcours by its slug ("try it" beside a film, see the site showing them), the parameter dropped once read so a reload does not start it over
+        const url = new URL(window.location.href);
+        const slug = url.searchParams.get('guided-project');
+        if (slug) {
+            url.searchParams.delete('guided-project');
+            history.replaceState(history.state, '', url.href);
+            this.start(slug);
+
+            return;
+        }
+
         this.resume();
     }
 

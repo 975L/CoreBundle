@@ -12,6 +12,7 @@ namespace c975L\ConfigBundle\Tests\Management;
 
 use c975L\ConfigBundle\Management\GuidedProjectBuilder;
 use c975L\ConfigBundle\Management\GuidedProjectProviderInterface;
+use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use PHPUnit\Framework\TestCase;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -42,9 +43,17 @@ class GuidedProjectBuilderTest extends TestCase
         return $security;
     }
 
-    private function createBuilder(array $providers, bool $isGranted = true): GuidedProjectBuilder
+    private function createConfigService(?string $tutorialsUrl = null): ConfigServiceInterface
     {
-        return new GuidedProjectBuilder($providers, $this->createSecurity($isGranted), $this->createTranslator());
+        $configService = $this->createStub(ConfigServiceInterface::class);
+        $configService->method('get')->willReturn($tutorialsUrl);
+
+        return $configService;
+    }
+
+    private function createBuilder(array $providers, bool $isGranted = true, ?string $tutorialsUrl = null): GuidedProjectBuilder
+    {
+        return new GuidedProjectBuilder($providers, $this->createSecurity($isGranted), $this->createTranslator(), $this->createConfigService($tutorialsUrl));
     }
 
     private function project(string $slug, int $order, array $extra = []): array
@@ -74,6 +83,7 @@ class GuidedProjectBuilderTest extends TestCase
                     'url' => null,
                     'highlight' => null,
                 ]],
+                'film' => null,
             ]],
             $builder->getProjects(),
         );
@@ -111,7 +121,7 @@ class GuidedProjectBuilderTest extends TestCase
             $this->project('creer-page', 10, [
                 'steps' => [['label' => 'label.step_one', 'narration' => 'narration.step_one']],
             ]),
-        ])], $this->createSecurity(), $translator);
+        ])], $this->createSecurity(), $translator, $this->createConfigService());
 
         $this->assertSame('site_narration:narration.step_one', $builder->getProjects()[0]['steps'][0]['narration']);
     }
@@ -205,5 +215,21 @@ class GuidedProjectBuilderTest extends TestCase
     public function testGetProjectsReturnsNothingWithoutAnyProvider(): void
     {
         $this->assertSame([], $this->createBuilder([])->getProjects());
+    }
+
+    // The film is the tutorials address and the slug, whether or not it was shot: the site showing the films sends a slug it has none for on to its index
+    public function testAProjectLinksItsFilmUnderTheTutorialsUrl(): void
+    {
+        $builder = $this->createBuilder([$this->createProvider([$this->project('creer-page', 10)])], true, 'https://bundles.975l.com/tutoriels/film/');
+
+        $this->assertSame('https://bundles.975l.com/tutoriels/film/creer-page', $builder->getProjects()[0]['film']);
+    }
+
+    // An emptied entry takes every "Watch the film" link away
+    public function testAProjectHasNoFilmWhenTheTutorialsUrlIsEmpty(): void
+    {
+        $builder = $this->createBuilder([$this->createProvider([$this->project('creer-page', 10)])], true, '');
+
+        $this->assertNull($builder->getProjects()[0]['film']);
     }
 }

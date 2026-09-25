@@ -23,6 +23,8 @@ class StylesheetCacheWarmer implements CacheWarmerInterface
         private readonly StylesheetManagementRegistry $stylesheetManagementRegistry,
         #[Autowire(param: 'kernel.project_dir')]
         private readonly string $projectDir,
+        #[Autowire(param: 'c975l_ui.build_dir')]
+        private readonly string $buildDir,
         // Optional so an app running without AssetMapper still gets a compiled sheet: only the url() of its own assets/ files then stay as written (see resolveAssetPath)
         private readonly ?AssetMapperInterface $assetMapper = null,
     ) {
@@ -43,7 +45,7 @@ class StylesheetCacheWarmer implements CacheWarmerInterface
     // Rebuilds site.css/admin.css from every currently registered stylesheet - public so it can also be called at runtime (see ThemeVariablesCssListener) when a contributed stylesheet's content changes (e.g. a theme config update), instead of waiting for the next cache:warmup
     public function compileAll(): void
     {
-        $buildPath = $this->projectDir . '/public/bundles/build';
+        $buildPath = $this->projectDir . '/public/' . $this->buildDir;
         if (!is_dir($buildPath) && !@mkdir($buildPath, 0775, true) && !is_dir($buildPath)) {
             throw new \RuntimeException(sprintf('Unable to create the "%s" directory.', $buildPath));
         }
@@ -105,7 +107,7 @@ class StylesheetCacheWarmer implements CacheWarmerInterface
         ) ?? $css;
     }
 
-    // Rewrites the relative url() of a sheet against the compiled file's own location: served from bundles/build/, the "../fonts/Cabin.ttf" of a site's @font-face - correct while that sheet had its own <link> - points at a file that is not there
+    // Rewrites the relative url() of a sheet against the compiled file's own location: served from the build directory, the "../fonts/Cabin.ttf" of a site's @font-face - correct while that sheet had its own <link> - points at a file that is not there
     private function rewriteUrls(string $css, string $stylesheet): string
     {
         return preg_replace_callback(

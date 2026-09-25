@@ -75,7 +75,7 @@ class StylesheetExtensionTest extends TestCase
 
         $request = Request::create('https://example.com/page');
 
-        $extension = new StylesheetExtension($registry, $packages, $this->createRequestStack($request), true, $this->projectDir);
+        $extension = new StylesheetExtension($registry, $packages, $this->createRequestStack($request), true, $this->projectDir, 'bundles/build');
 
         $this->assertSame(
             ['https://example.com/build/css/styles-abc123.min.css'],
@@ -97,7 +97,8 @@ class StylesheetExtensionTest extends TestCase
             $packages,
             $this->createRequestStack(Request::create('https://example.com/')),
             true,
-            $this->projectDir
+            $this->projectDir,
+            'bundles/build'
         );
 
         $this->assertSame(['https://example.com/assets/styles/themes/ui-abc123.css'], $extension->getBundleStylesheets());
@@ -121,7 +122,8 @@ class StylesheetExtensionTest extends TestCase
             $packages,
             $this->createRequestStack(Request::create('https://example.com/')),
             true,
-            $this->projectDir
+            $this->projectDir,
+            'bundles/build'
         );
 
         $this->assertSame(["https://example.com/bundles/build/site-theme.css?v={$mtime}"], $extension->getBundleStylesheets());
@@ -141,7 +143,8 @@ class StylesheetExtensionTest extends TestCase
             $packages,
             $this->createRequestStack(Request::create('https://example.com/')),
             true,
-            $this->projectDir
+            $this->projectDir,
+            'bundles/build'
         );
 
         $this->assertSame(['https://example.com/assets/bundles/c975lui/css/styles.min-abc123.css'], $extension->getBundleStylesheets());
@@ -161,7 +164,8 @@ class StylesheetExtensionTest extends TestCase
             $packages,
             $this->createRequestStack(Request::create('https://example.com/')),
             true,
-            $this->projectDir
+            $this->projectDir,
+            'bundles/build'
         );
 
         $this->assertSame(['https://example.com/bundles/build/site-theme.css'], $extension->getBundleStylesheets());
@@ -181,7 +185,8 @@ class StylesheetExtensionTest extends TestCase
             $packages,
             $this->createRequestStack(Request::create('https://example.com/')),
             true,
-            $this->projectDir
+            $this->projectDir,
+            'bundles/build'
         );
 
         $this->assertSame(['https://cdn.example.com/lib.css'], $extension->getBundleStylesheets());
@@ -196,9 +201,28 @@ class StylesheetExtensionTest extends TestCase
         $packages = $this->createStub(Packages::class);
         $packages->method('getUrl')->willReturn('/css/styles.min.css');
 
-        $extension = new StylesheetExtension($registry, $packages, $this->createRequestStack(null), true, $this->projectDir);
+        $extension = new StylesheetExtension($registry, $packages, $this->createRequestStack(null), true, $this->projectDir, 'bundles/build');
 
         $this->assertSame(['/css/styles.min.css'], $extension->getBundleStylesheets());
+    }
+
+    // A second context (a demo) compiles into a directory of its own, and links that one rather than the site's
+    public function testGetBundleStylesheetsLinksTheCompiledFileOfItsOwnBuildDirectory(): void
+    {
+        $this->createCompiledSiteCss();
+        mkdir($this->projectDir . '/public/bundles/build-demo', 0777, true);
+        file_put_contents($this->projectDir . '/public/bundles/build-demo/site.css', '');
+        $mtime = filemtime($this->projectDir . '/public/bundles/build-demo/site.css');
+
+        $registry = $this->createStub(StylesheetRegistry::class);
+        $registry->method('all')->willReturn(['bundles/c975lui/css/styles.min.css']);
+
+        $packages = $this->createMock(Packages::class);
+        $packages->expects($this->once())->method('getUrl')->with('bundles/build-demo/site.css')->willReturn('/bundles/build-demo/site.css');
+
+        $extension = new StylesheetExtension($registry, $packages, $this->createRequestStack(null), false, $this->projectDir, 'bundles/build-demo');
+
+        $this->assertSame(["/bundles/build-demo/site.css?v={$mtime}"], $extension->getBundleStylesheets());
     }
 
     // Outside debug, links to the single file compiled on disk by StylesheetCacheWarmer instead of the per-bundle list, so only one local <link> request is made
@@ -218,7 +242,8 @@ class StylesheetExtensionTest extends TestCase
             $packages,
             $this->createRequestStack(Request::create('https://example.com/')),
             false,
-            $this->projectDir
+            $this->projectDir,
+            'bundles/build'
         );
 
         $this->assertSame(
@@ -247,7 +272,8 @@ class StylesheetExtensionTest extends TestCase
             $packages,
             $this->createRequestStack(Request::create('https://example.com/')),
             false,
-            $this->projectDir
+            $this->projectDir,
+            'bundles/build'
         );
 
         $this->assertSame(
@@ -272,7 +298,8 @@ class StylesheetExtensionTest extends TestCase
             $packages,
             $this->createRequestStack(Request::create('https://example.com/')),
             false,
-            $this->projectDir
+            $this->projectDir,
+            'bundles/build'
         );
 
         $first = $extension->getBundleStylesheets()[0];
@@ -300,7 +327,8 @@ class StylesheetExtensionTest extends TestCase
             $packages,
             $this->createRequestStack(Request::create('https://example.com/')),
             false,
-            $this->projectDir
+            $this->projectDir,
+            'bundles/build'
         );
 
         $this->assertSame(
@@ -323,7 +351,8 @@ class StylesheetExtensionTest extends TestCase
             $packages,
             $this->createRequestStack(Request::create('https://example.com/')),
             false,
-            $this->projectDir
+            $this->projectDir,
+            'bundles/build'
         );
 
         $this->assertSame(

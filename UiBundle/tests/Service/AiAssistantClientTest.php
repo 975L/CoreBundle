@@ -145,12 +145,12 @@ class AiAssistantClientTest extends TestCase
                 'ui-ai-assistant-dashboard-endpoint' => 'https://example.test/ai-assistant',
                 'ui-ai-assistant-dashboard-token' => 'some-token',
             ]),
-            $this->createGuidedProjectBuilder(['ui-media' => ['slug' => 'ui-media', 'label' => 'Bibliothèque de médias', 'description' => '', 'steps' => []]]),
+            $this->createGuidedProjectBuilder(['ui-media' => ['slug' => 'ui-media', 'label' => 'Bibliothèque de médias', 'description' => '', 'steps' => [], 'film' => 'https://bundles.975l.com/tutoriels/film/ui-media']]),
             $this->createStub(LoggerInterface::class),
         );
 
         $this->assertSame(
-            [['label' => 'Bibliothèque de médias', 'url' => '', 'project' => 'ui-media']],
+            [['label' => 'Bibliothèque de médias', 'url' => '', 'project' => 'ui-media', 'film' => 'https://bundles.975l.com/tutoriels/film/ui-media']],
             $client->ask('How do I add an image?')['sources'],
         );
     }

@@ -1,5 +1,23 @@
 # ChangeLog
 
+## v1.36.1
+
+A guided project links its film, and a demo builds its own stylesheets
+
+### UiBundle
+
+- The generated stylesheets go under the `c975l_ui.build_dir` parameter, `bundles/build` by default (25/09/2026)
+- `BuildFileWriter::write()` and `StylesheetRegistry::isGenerated()` take that directory (25/09/2026)
+- `BuildDirPass` trims the directory's edge slashes and rejects an empty one (25/09/2026)
+- Donovan links a cited guided project's film beside its button (25/09/2026)
+
+### ConfigBundle
+
+- `DashboardController` links the `admin.css` of that directory (25/09/2026)
+- `site-tutorials-url` config entry, the address of the guided projects' films (25/09/2026)
+- Each guided project links its film in the dashboard list (25/09/2026)
+- `/management?guided-project=<slug>` starts that guided project (25/09/2026)
+
 ## v1.36.0
 
 A Sync archive carries the blocks' translations

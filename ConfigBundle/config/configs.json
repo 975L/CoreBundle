@@ -363,6 +363,17 @@
         "description": "description.site_made_by_logo"
     },
     {
+        "label": "label.site_tutorials_url",
+        "slug": "site-tutorials-url",
+        "sensitive": false,
+        "restricted": true,
+        "value": "https://bundles.975l.com/tutoriels/film",
+        "kind": "text",
+        "group": "general",
+        "severity": "info",
+        "description": "description.site_tutorials_url"
+    },
+    {
         "label": "label.site_made_by_url",
         "slug": "site-made-by-url",
         "sensitive": false,

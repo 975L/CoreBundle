@@ -26,6 +26,8 @@ class StylesheetExtension
         private readonly bool $debug,
         #[Autowire(param: 'kernel.project_dir')]
         private readonly string $projectDir,
+        #[Autowire(param: 'c975l_ui.build_dir')]
+        private readonly string $buildDir,
     ) {
     }
 
@@ -37,13 +39,13 @@ class StylesheetExtension
         $baseUrl = $request ? $request->getSchemeAndHttpHost() : '';
 
         // In dev, keeps each bundle's stylesheet separate for instant reload on every CSS edit; in prod, links to the single file compiled by StylesheetCacheWarmer instead, plus any absolute URL (CDN resources like cookieconsent.min.css) which stays served on its own. Falls back to the per-bundle list below when that compiled file doesn't exist yet (e.g. the first request right after a deploy, before cache:warmup has run) instead of linking a 404 and losing every local stylesheet at once. A single filemtime() call doubles as both the existence check and the cache-busting value below, instead of two separate stat()s.
-        $compiledPath = $this->projectDir . '/public/bundles/build/site.css';
-        $compiledMtime = $this->debug ? false : @filemtime($compiledPath);
+        $compiledPath = $this->buildDir . '/site.css';
+        $compiledMtime = $this->debug ? false : @filemtime($this->projectDir . '/public/' . $compiledPath);
         if (false !== $compiledMtime) {
             $externals = array_filter($this->registry->all(), StylesheetRegistry::isExternal(...));
 
             return [
-                $this->addCacheBustingParam($baseUrl . $this->packages->getUrl('bundles/build/site.css'), $compiledMtime),
+                $this->addCacheBustingParam($baseUrl . $this->packages->getUrl($compiledPath), $compiledMtime),
                 ...array_values($externals),
             ];
         }
@@ -62,12 +64,12 @@ class StylesheetExtension
         $url = $baseUrl . $this->packages->getUrl(StylesheetRegistry::logicalPath($path));
 
         // A generated sheet carries no AssetMapper hash, so its own mtime is the only thing that can bust the browser's copy - without it, a theme color or font changed in the back-office keeps showing the previous value until a hard reload, the stale file leaving --c975l-color-primary/--c975l-font-family-title undefined and every rule falling back to the shipped default
-        $mtime = StylesheetRegistry::isGenerated($path) ? @filemtime($this->projectDir . '/public/' . $path) : false;
+        $mtime = StylesheetRegistry::isGenerated($path, $this->buildDir) ? @filemtime($this->projectDir . '/public/' . $path) : false;
 
         return false !== $mtime ? $this->addCacheBustingParam($url, $mtime) : $url;
     }
 
-    // A stylesheet under bundles/build/ is generated outside any asset-manifest build step (see StylesheetCacheWarmer and ThemeVariablesCssListener) - Packages::getUrl() has no way to know its content changed on a later warmup, deploy or back-office edit, so its own versioning can't be relied on for those paths. Appending the file's own mtime as a query param busts caches independently of that.
+    // A stylesheet under the build directory is generated outside any asset-manifest build step (see StylesheetCacheWarmer and ThemeVariablesCssListener) - Packages::getUrl() has no way to know its content changed on a later warmup, deploy or back-office edit, so its own versioning can't be relied on for those paths. Appending the file's own mtime as a query param busts caches independently of that.
     private function addCacheBustingParam(string $url, int $mtime): string
     {
         $separator = str_contains($url, '?') ? '&' : '?';

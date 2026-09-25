@@ -48,7 +48,7 @@ class BuildFileWriterTest extends TestCase
 
     public function testWriteCreatesTheBuildDirectoryAndTheFile(): void
     {
-        BuildFileWriter::write($this->projectDir, 'theme.css', ':root { --x: 1px; }');
+        BuildFileWriter::write($this->projectDir, 'bundles/build', 'theme.css', ':root { --x: 1px; }');
 
         $this->assertSame(
             ':root { --x: 1px; }',
@@ -59,8 +59,8 @@ class BuildFileWriterTest extends TestCase
     // Every caller rewrites its whole file on each save, so a second write replaces the first rather than appending
     public function testWriteReplacesThePreviousContents(): void
     {
-        BuildFileWriter::write($this->projectDir, 'theme.css', 'first');
-        BuildFileWriter::write($this->projectDir, 'theme.css', 'second');
+        BuildFileWriter::write($this->projectDir, 'bundles/build', 'theme.css', 'first');
+        BuildFileWriter::write($this->projectDir, 'bundles/build', 'theme.css', 'second');
 
         $this->assertSame('second', file_get_contents($this->projectDir . '/public/bundles/build/theme.css'));
     }
@@ -68,7 +68,7 @@ class BuildFileWriterTest extends TestCase
     // Written to a temporary file then renamed - none of those may survive the write
     public function testWriteLeavesNoTemporaryFileBehind(): void
     {
-        BuildFileWriter::write($this->projectDir, 'theme.css', 'contents');
+        BuildFileWriter::write($this->projectDir, 'bundles/build', 'theme.css', 'contents');
 
         $left = glob($this->projectDir . '/public/bundles/build/*.tmp');
 
@@ -82,6 +82,6 @@ class BuildFileWriterTest extends TestCase
 
         $this->expectException(\RuntimeException::class);
 
-        BuildFileWriter::write($this->projectDir, 'theme.css', 'contents');
+        BuildFileWriter::write($this->projectDir, 'bundles/build', 'theme.css', 'contents');
     }
 }

@@ -69,7 +69,7 @@ class StylesheetCacheWarmerTest extends TestCase
             static fn (string $logicalPath): ?string => $publicPaths[$logicalPath] ?? null
         );
 
-        return new StylesheetCacheWarmer($registry, $managementRegistry, $this->projectDir, $assetMapper);
+        return new StylesheetCacheWarmer($registry, $managementRegistry, $this->projectDir, 'bundles/build', $assetMapper);
     }
 
     // Recursively deletes the sandbox directory tree created for a test

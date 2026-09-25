@@ -79,6 +79,8 @@ class DashboardController extends AbstractDashboardController
         private readonly bool $debug,
         #[Autowire(param: 'kernel.project_dir')]
         private readonly string $projectDir,
+        #[Autowire(param: 'c975l_ui.build_dir')]
+        private readonly string $buildDir,
         private readonly SiteLocales $siteLocales,
         private readonly RolePreview $rolePreview,
         private readonly CsrfTokenManagerInterface $csrfTokenManager,
@@ -188,13 +190,14 @@ class DashboardController extends AbstractDashboardController
         return $assets;
     }
 
-    // In dev, keeps each bundle's stylesheet separate for instant reload on every CSS edit; in prod, links to the single file compiled by StylesheetCacheWarmer (c975L/UiBundle) instead. That file is written outside any asset-manifest build step, so asset() has no way to know a later warmup changed it - and it sits under /bundles/build/, which the sites' .htaccess serves "immutable" for a year, so an admin's browser would otherwise keep the stylesheet it first loaded whatever ships afterwards. Its own mtime is appended as a cache-busting query param instead, exactly as UiBundle's StylesheetExtension does for the front-office site.css. Falls back to the per-bundle list when that compiled file doesn't exist yet (the first request after a deploy, before cache:warmup has run) rather than linking a 404 and losing every back-office style at once
+    // In dev, keeps each bundle's stylesheet separate for instant reload on every CSS edit; in prod, links to the single file compiled by StylesheetCacheWarmer (c975L/UiBundle) instead. That file is written outside any asset-manifest build step, so asset() has no way to know a later warmup changed it - and it sits under the build directory (/bundles/build/ by default), which the sites' .htaccess serves "immutable" for a year, so an admin's browser would otherwise keep the stylesheet it first loaded whatever ships afterwards. Its own mtime is appended as a cache-busting query param instead, exactly as UiBundle's StylesheetExtension does for the front-office site.css. Falls back to the per-bundle list when that compiled file doesn't exist yet (the first request after a deploy, before cache:warmup has run) rather than linking a 404 and losing every back-office style at once
     // @return string[]
     private function managementStylesheets(): array
     {
-        $compiledMtime = $this->debug ? false : @filemtime($this->projectDir . '/public/bundles/build/admin.css');
+        $compiledPath = $this->buildDir . '/admin.css';
+        $compiledMtime = $this->debug ? false : @filemtime($this->projectDir . '/public/' . $compiledPath);
         if (false !== $compiledMtime) {
-            return ['bundles/build/admin.css?v=' . $compiledMtime];
+            return [$compiledPath . '?v=' . $compiledMtime];
         }
 
         return array_map($this->addCacheBustingParam(...), $this->stylesheetManagementRegistry->all());

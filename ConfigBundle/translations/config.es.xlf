@@ -878,6 +878,10 @@
                 <source>label.guided_project_done</source>
                 <target>Ya seguido</target>
             </trans-unit>
+            <trans-unit id="7I5LXHn">
+                <source>label.guided_project_film</source>
+                <target>Ver el vídeo</target>
+            </trans-unit>
             <trans-unit id="3j1dPiE">
                 <source>label.guided_project_goto</source>
                 <target>Ir a esta pantalla</target>

@@ -83,6 +83,7 @@ class FontCssListenerTest extends TestCase
             $repository,
             $this->createStub(StylesheetCacheWarmer::class),
             $this->projectDir,
+            'bundles/build',
             new ArrayAdapter(),
         );
     }
@@ -95,7 +96,7 @@ class FontCssListenerTest extends TestCase
 
         $repository = $this->createStub(FontRepository::class);
         $repository->method('findAllOrdered')->willReturn([]);
-        $listener = new FontCssListener($repository, $this->createStub(StylesheetCacheWarmer::class), $this->projectDir, $cache);
+        $listener = new FontCssListener($repository, $this->createStub(StylesheetCacheWarmer::class), $this->projectDir, 'bundles/build', $cache);
 
         $listener->postUpdate(new PostUpdateEventArgs(
             $this->font('Roboto', 400, 'normal', 'medias/fonts/font-1.woff2'),
@@ -225,7 +226,7 @@ class FontCssListenerTest extends TestCase
         $stylesheetCacheWarmer = $this->createMock(StylesheetCacheWarmer::class);
         $stylesheetCacheWarmer->expects($this->once())->method('compileAll');
 
-        $listener = new FontCssListener($repository, $stylesheetCacheWarmer, $this->projectDir, new ArrayAdapter());
+        $listener = new FontCssListener($repository, $stylesheetCacheWarmer, $this->projectDir, 'bundles/build', new ArrayAdapter());
         $listener->postUpdate(new PostUpdateEventArgs(
             $this->font('Roboto', 400, 'normal', 'medias/fonts/font-1.woff2'),
             $this->createStub(EntityManagerInterface::class),
@@ -242,7 +243,7 @@ class FontCssListenerTest extends TestCase
         $stylesheetCacheWarmer = $this->createMock(StylesheetCacheWarmer::class);
         $stylesheetCacheWarmer->expects($this->once())->method('compileAll');
 
-        $listener = new FontCssListener($repository, $stylesheetCacheWarmer, $this->projectDir, new ArrayAdapter());
+        $listener = new FontCssListener($repository, $stylesheetCacheWarmer, $this->projectDir, 'bundles/build', new ArrayAdapter());
         foreach (range(1, 20) as $i) {
             $listener->postPersist(new PostPersistEventArgs(
                 $this->font('Font ' . $i, 400, 'normal', 'medias/fonts/font-' . $i . '.woff2'),
@@ -261,7 +262,7 @@ class FontCssListenerTest extends TestCase
         $stylesheetCacheWarmer = $this->createMock(StylesheetCacheWarmer::class);
         $stylesheetCacheWarmer->expects($this->never())->method('compileAll');
 
-        $listener = new FontCssListener($repository, $stylesheetCacheWarmer, $this->projectDir, new ArrayAdapter());
+        $listener = new FontCssListener($repository, $stylesheetCacheWarmer, $this->projectDir, 'bundles/build', new ArrayAdapter());
         $listener->postPersist(new PostPersistEventArgs(new \stdClass(), $this->createStub(EntityManagerInterface::class)));
         $listener->postFlush(new PostFlushEventArgs($this->createStub(EntityManagerInterface::class)));
 
@@ -277,7 +278,7 @@ class FontCssListenerTest extends TestCase
         $stylesheetCacheWarmer = $this->createMock(StylesheetCacheWarmer::class);
         $stylesheetCacheWarmer->expects($this->once())->method('compileAll');
 
-        $listener = new FontCssListener($repository, $stylesheetCacheWarmer, $this->projectDir, new ArrayAdapter());
+        $listener = new FontCssListener($repository, $stylesheetCacheWarmer, $this->projectDir, 'bundles/build', new ArrayAdapter());
         $listener->postPersist(new PostPersistEventArgs(
             $this->font('Roboto', 400, 'normal', 'medias/fonts/font-1.woff2'),
             $this->createStub(EntityManagerInterface::class),
@@ -315,6 +316,7 @@ class FontCssListenerTest extends TestCase
             $repository,
             $this->createStub(StylesheetCacheWarmer::class),
             $this->projectDir,
+            'bundles/build',
             new ArrayAdapter(),
         );
 
@@ -330,6 +332,7 @@ class FontCssListenerTest extends TestCase
             $repository,
             $this->createStub(StylesheetCacheWarmer::class),
             $this->projectDir,
+            'bundles/build',
             new ArrayAdapter(),
         );
 

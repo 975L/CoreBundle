@@ -17,6 +17,7 @@ use c975L\UiBundle\DependencyInjection\Compiler\BlockFixtureProviderPass;
 use c975L\UiBundle\DependencyInjection\Compiler\BlockLocationProviderPass;
 use c975L\UiBundle\DependencyInjection\Compiler\BlockOwnerResolverPass;
 use c975L\UiBundle\DependencyInjection\Compiler\BlockRegistryPass;
+use c975L\UiBundle\DependencyInjection\Compiler\BuildDirPass;
 use c975L\UiBundle\DependencyInjection\Compiler\CacheInvalidatorPass;
 use c975L\UiBundle\DependencyInjection\Compiler\CollectionSourceProviderPass;
 use c975L\UiBundle\DependencyInjection\Compiler\DemoFixtureLinkerPass;
@@ -92,6 +93,7 @@ class c975LUiBundle extends AbstractBundle
         $container->addCompilerPass(new FormActionProviderPass());
         $container->addCompilerPass(new FormPageUrlProviderPass());
         $container->addCompilerPass(new FormBlockDependencyProviderPass());
+        $container->addCompilerPass(new BuildDirPass());
     }
 
     public function prependExtension(ContainerConfigurator $configurator, ContainerBuilder $container): void
@@ -197,6 +199,9 @@ class c975LUiBundle extends AbstractBundle
         $containerBuilder->setParameter('c975l_ui.map.img_origins', implode(' ', MapProvider::allImgOrigins()));
         $containerBuilder->setParameter('c975l_ui.map.script_origins', implode(' ', MapProvider::allScriptOrigins()));
         $containerBuilder->setParameter('c975l_ui.map.connect_origins', implode(' ', MapProvider::allConnectOrigins()));
+
+        // Where the generated stylesheets go, relative to public/ - an app running a second context against its own database (a demo) sets its own, or each context's flush overwrites the other's theme and fonts. An app parameter wins over this one
+        $containerBuilder->setParameter('c975l_ui.build_dir', 'bundles/build');
 
         // symfony/maker-bundle is dev-only in a consuming app - only wire MakeBlockCommand as a service when it's actually installed, instead of requiring it unconditionally
         if (class_exists(\Symfony\Bundle\MakerBundle\Maker\AbstractMaker::class)) {

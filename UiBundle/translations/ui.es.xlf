@@ -586,6 +586,10 @@
                 <source>label.ai_assistant_error_open_page</source>
                 <target>Ver la configuración de %name%</target>
             </trans-unit>
+            <trans-unit id="J1u1I1C">
+                <source>label.ai_assistant_film</source>
+                <target>Ver el vídeo</target>
+            </trans-unit>
             <trans-unit id="yJ_8hXS">
                 <source>label.ai_assistant_menu_suffix</source>
                 <target>Agente IA</target>

@@ -78,6 +78,27 @@ class GuidedProjectBehaviourTest extends JsCase
         $this->assertSame(['pages:true', 'menu:false'], $read['badges'], 'The done badge is shown beside the wrong project.');
     }
 
+    // A film's "try it" link opens the back office on the parcours it names, and a reload must not start it over. The address is the shared page's own, so it is given back before the probe returns
+    public function testALinkNamingAProjectStartsItAndDropsTheParameter(): void
+    {
+        $linked = $this->project(
+            'await tick();
+             const seen = { progress: panel()?.querySelector(".guided-project-progress").textContent ?? null, active: stored().active, search: window.location.search };
+             history.replaceState(history.state, "", window.__href);
+
+             return seen;',
+            'window.__href = window.location.href;
+             const linked = new URL(window.location.href);
+             linked.searchParams.set("guided-project", "pages");
+             linked.searchParams.set("kept", "1");
+             history.replaceState(history.state, "", linked.href);'
+        );
+
+        $this->assertSame('Les pages — 1 / 3', $linked['progress'], 'A link naming a parcours opened the back office without starting it.');
+        $this->assertSame(['slug' => 'pages', 'step' => 0], $linked['active'], 'The parcours started from a link was not stored, so the next page loses it.');
+        $this->assertSame('?kept=1', $linked['search'], 'The parameter stayed in the address, so a reload starts the parcours over, or the rest of the query went with it.');
+    }
+
     // The flag is the whole difference between the panel coming back on every page and coming back when asked for
     public function testAPausedProjectStaysClosedUntilItsButtonIsClicked(): void
     {

@@ -17,6 +17,10 @@ export default class extends Controller {
         return this.element.dataset.aiAssistantCsrfTokenValue || '';
     }
 
+    get filmLabel() {
+        return this.element.dataset.aiAssistantFilmLabelValue || '';
+    }
+
     get logEl() {
         return this.element.querySelector('[data-ai-assistant-target="log"]');
     }
@@ -95,6 +99,11 @@ export default class extends Controller {
             sources.forEach((source, index) => {
                 if (index > 0) list.appendChild(document.createTextNode(' · '));
                 list.appendChild(source.project ? this.buildTourButton(source) : this.buildLink(source));
+                // A parcours is shown as well as walked through: its film opens beside the button
+                if (source.project && source.film) {
+                    list.appendChild(document.createTextNode(' '));
+                    list.appendChild(this.buildLink({ url: source.film, label: `(${this.filmLabel})` }));
+                }
             });
             log.appendChild(list);
         }

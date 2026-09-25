@@ -19,13 +19,15 @@ class ThemeVariablesExtension
     public function __construct(
         #[Autowire(param: 'kernel.project_dir')]
         private readonly string $projectDir,
+        #[Autowire(param: 'c975l_ui.build_dir')]
+        private readonly string $buildDir,
     ) {
     }
 
     #[AsTwigFunction('theme_variables_css', isSafe: ['html'])]
     public function getThemeVariablesCss(): string
     {
-        $path = $this->projectDir . '/public/bundles/build/site-theme.css';
+        $path = $this->projectDir . '/public/' . $this->buildDir . '/site-theme.css';
 
         return is_file($path) ? (file_get_contents($path) ?: '') : '';
     }

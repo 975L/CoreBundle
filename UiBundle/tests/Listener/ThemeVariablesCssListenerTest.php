@@ -75,6 +75,7 @@ class ThemeVariablesCssListenerTest extends TestCase
             $repository,
             $this->createStub(StylesheetCacheWarmer::class),
             $this->projectDir,
+            'bundles/build',
             new ArrayAdapter(),
         );
     }
@@ -437,6 +438,7 @@ class ThemeVariablesCssListenerTest extends TestCase
             $repository,
             $this->createStub(StylesheetCacheWarmer::class),
             $this->projectDir,
+            'bundles/build',
             new ArrayAdapter(),
         );
 
@@ -452,7 +454,7 @@ class ThemeVariablesCssListenerTest extends TestCase
         $stylesheetCacheWarmer = $this->createMock(StylesheetCacheWarmer::class);
         $stylesheetCacheWarmer->expects($this->once())->method('compileAll');
 
-        $listener = new ThemeVariablesCssListener($repository, $stylesheetCacheWarmer, $this->projectDir, new ArrayAdapter());
+        $listener = new ThemeVariablesCssListener($repository, $stylesheetCacheWarmer, $this->projectDir, 'bundles/build', new ArrayAdapter());
         $listener->postUpdate(new PostUpdateEventArgs(
             $this->config('theme-color-primary', '#ff0000'),
             $this->createStub(EntityManagerInterface::class),
@@ -469,7 +471,7 @@ class ThemeVariablesCssListenerTest extends TestCase
         $stylesheetCacheWarmer = $this->createMock(StylesheetCacheWarmer::class);
         $stylesheetCacheWarmer->expects($this->once())->method('compileAll');
 
-        $listener = new ThemeVariablesCssListener($repository, $stylesheetCacheWarmer, $this->projectDir, new ArrayAdapter());
+        $listener = new ThemeVariablesCssListener($repository, $stylesheetCacheWarmer, $this->projectDir, 'bundles/build', new ArrayAdapter());
         foreach (['theme-color-primary', 'theme-color-secondary', 'theme-font-family-title'] as $slug) {
             $listener->postUpdate(new PostUpdateEventArgs(
                 $this->config($slug, '#ff0000'),
@@ -488,7 +490,7 @@ class ThemeVariablesCssListenerTest extends TestCase
         $stylesheetCacheWarmer = $this->createMock(StylesheetCacheWarmer::class);
         $stylesheetCacheWarmer->expects($this->once())->method('compileAll');
 
-        $listener = new ThemeVariablesCssListener($repository, $stylesheetCacheWarmer, $this->projectDir, new ArrayAdapter());
+        $listener = new ThemeVariablesCssListener($repository, $stylesheetCacheWarmer, $this->projectDir, 'bundles/build', new ArrayAdapter());
         $listener->postUpdate(new PostUpdateEventArgs(
             $this->config('theme-color-primary', '#ff0000'),
             $this->createStub(EntityManagerInterface::class),

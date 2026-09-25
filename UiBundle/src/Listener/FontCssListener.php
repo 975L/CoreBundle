@@ -41,6 +41,8 @@ class FontCssListener implements CacheWarmerInterface
         private readonly StylesheetCacheWarmer $stylesheetCacheWarmer,
         #[Autowire(param: 'kernel.project_dir')]
         private readonly string $projectDir,
+        #[Autowire(param: 'c975l_ui.build_dir')]
+        private readonly string $buildDir,
         private readonly CacheInterface $cache,
     ) {
     }
@@ -108,7 +110,7 @@ class FontCssListener implements CacheWarmerInterface
             }
         }
 
-        BuildFileWriter::write($this->projectDir, 'site-fonts-uploaded.css', implode("\n", $blocks));
+        BuildFileWriter::write($this->projectDir, $this->buildDir, 'site-fonts-uploaded.css', implode("\n", $blocks));
 
         // In prod, the real site never reads this file directly - it links UiBundle's concatenated bundles/build/site.css instead (see StylesheetExtension), which is otherwise only rebuilt on cache:warmup. Without this, uploading a font would regenerate site-fonts-uploaded.css but the live site would keep serving the previous version until the next deploy/warmup
         $this->stylesheetCacheWarmer->compileAll();

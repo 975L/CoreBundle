@@ -79,17 +79,17 @@ class StylesheetRegistryTest extends TestCase
     // A generated sheet goes through no asset manifest, so it is the one kind the Twig extension has to version by mtime rather than by hash
     public function testIsGeneratedIsTrueForAPathUnderBundlesBuild(): void
     {
-        $this->assertTrue(StylesheetRegistry::isGenerated('bundles/build/site-theme.css'));
+        $this->assertTrue(StylesheetRegistry::isGenerated('bundles/build/site-theme.css', 'bundles/build'));
     }
 
     public function testIsGeneratedIsFalseForABundlesShippedStylesheet(): void
     {
-        $this->assertFalse(StylesheetRegistry::isGenerated('bundles/c975lui/css/styles.min.css'));
+        $this->assertFalse(StylesheetRegistry::isGenerated('bundles/c975lui/css/styles.min.css', 'bundles/build'));
     }
 
     public function testIsGeneratedIsFalseForAnAppAsset(): void
     {
-        $this->assertFalse(StylesheetRegistry::isGenerated('assets/styles/themes/ui.css'));
+        $this->assertFalse(StylesheetRegistry::isGenerated('assets/styles/themes/ui.css', 'bundles/build'));
     }
 
     // AssetMapper's root being the assets/ directory itself, the prefix is not part of the logical path

@@ -101,6 +101,7 @@ class DashboardControllerTest extends TestCase
             $packages,
             $debug,
             $this->projectDir ?? sys_get_temp_dir(),
+            'bundles/build',
             new SiteLocales($enabledLocales, $enabledLocales[0] ?? 'fr'),
             // No session on the request: no preview is ever on, as for most requests
             new RolePreview($configService, new RequestStack()),
