@@ -1,5 +1,14 @@
 # ChangeLog
 
+## v1.36.2
+
+Donovan links a film for a guided project its reader cannot start
+
+### UiBundle
+
+- A cited guided project the reader cannot start comes back as a link to its film (25/09/2026)
+- `ai_search/_search.html.twig` takes an optional `url` to ask another route (25/09/2026)
+
 ## v1.36.1
 
 A guided project links its film, and a demo builds its own stylesheets

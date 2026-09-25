@@ -573,7 +573,8 @@ search"). What matters when touching it:
   and resets the manager, as `AiUsageTracker` does on the month's row. A flush that failed closes the
   entity manager, so a catch without `resetManager()` still ends in a 500.
 - **The layout already places it** (`AiSearch:Dialog`, opened by `AiSearch:Trigger` or Ctrl/Cmd+K): don't add
-  the block to a page just to offer the search. Search markup lives once, in `ai_search/_search.html.twig`.
+  the block to a page just to offer the search. Search markup lives once, in `ai_search/_search.html.twig`; its optional `url` points it at
+  another route answering the same `{answer, sources, found, cards}` shape, `ui_ai_search_ask` by default.
 - **The badge carries the name the site gave its assistant**: `ai_search_label()` reads
   `ui-ai-assistant-site-label`, and the template writes the translated `label.ai_search_badge`
   (`Donovan (AI)`, 975L's own) when it is empty.

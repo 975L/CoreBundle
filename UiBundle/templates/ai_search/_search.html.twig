@@ -1,8 +1,8 @@
-{# The site search itself, shared by the "ai_search" block and the dialog the layout opens from the navbar's magnifier (see components/AiSearch/Dialog.html.twig). Takes fieldId, and optionally title, placeholder, suggestions and anchor_id #}
+{# The site search itself, shared by the "ai_search" block and the dialog the layout opens from the navbar's magnifier (see components/AiSearch/Dialog.html.twig). Takes fieldId, and optionally title, placeholder, suggestions, anchor_id and url - another route answering in the same shape, {answer, sources: [{url, title}], found, cards}, a page asking someone else than the site's own pages #}
 {% set suggestionList = (suggestions|default(''))|split("\n")|map(line => line|trim)|filter(line => line is not empty)|slice(0, 4) %}
 <section class="ai-search"{% if anchor_id|default(null) %} id="{{ anchor_id }}"{% endif %}
          data-controller="ui-ai-search"
-         data-ui-ai-search-url-value="{{ path('ui_ai_search_ask') }}"
+         data-ui-ai-search-url-value="{{ url|default(null) ?: path('ui_ai_search_ask') }}"
          data-ui-ai-search-locale-value="{{ app.request.locale }}"
          data-ui-ai-search-not-found-label-value="{{ 'label.ai_search_not_found'|trans({}, 'ui') }}"
          data-ui-ai-search-error-label-value="{{ 'label.ai_search_error'|trans({}, 'ui') }}"

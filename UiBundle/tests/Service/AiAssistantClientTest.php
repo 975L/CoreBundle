@@ -30,10 +30,12 @@ class AiAssistantClientTest extends TestCase
         return $configService;
     }
 
-    private function createGuidedProjectBuilder(array $projectsBySlug): GuidedProjectBuilder
+    // $projectsBySlug are the ones the reader may start, $otherProjects the ones the site declares for another role
+    private function createGuidedProjectBuilder(array $projectsBySlug, array $otherProjects = []): GuidedProjectBuilder
     {
         $guidedProjectBuilder = $this->createStub(GuidedProjectBuilder::class);
         $guidedProjectBuilder->method('getProject')->willReturnCallback(fn (string $slug) => $projectsBySlug[$slug] ?? null);
+        $guidedProjectBuilder->method('getAllProjects')->willReturn([...array_values($projectsBySlug), ...$otherProjects]);
 
         return $guidedProjectBuilder;
     }
@@ -151,6 +153,34 @@ class AiAssistantClientTest extends TestCase
 
         $this->assertSame(
             [['label' => 'Bibliothèque de médias', 'url' => '', 'project' => 'ui-media', 'film' => 'https://bundles.975l.com/tutoriels/film/ui-media']],
+            $client->ask('How do I add an image?')['sources'],
+        );
+    }
+
+    // A visitor on a public page holds no role: the parcours cited comes back as its film, and one no bundle declares is still dropped
+    public function testAGuidedProjectTheReaderCannotStartBecomesItsFilm(): void
+    {
+        $httpClient = new MockHttpClient(new MockResponse(json_encode([
+            'answer' => 'Follow the media library tour.',
+            'sources' => [
+                ['label' => 'Media library', 'url' => '', 'project' => 'ui-media'],
+                ['label' => 'Gone with its bundle', 'url' => '', 'project' => 'shop-product'],
+            ],
+        ]), ['http_code' => 200]));
+
+        $client = new AiAssistantClient(
+            $httpClient,
+            $this->createConfigService([
+                'ui-ai-assistant-dashboard-enabled' => true,
+                'ui-ai-assistant-dashboard-endpoint' => 'https://example.test/ai-assistant',
+                'ui-ai-assistant-dashboard-token' => 'some-token',
+            ]),
+            $this->createGuidedProjectBuilder([], [['slug' => 'ui-media', 'label' => 'Bibliothèque de médias', 'description' => '', 'steps' => [], 'film' => 'https://bundles.975l.com/tutoriels/film/ui-media']]),
+            $this->createStub(LoggerInterface::class),
+        );
+
+        $this->assertSame(
+            [['label' => 'Bibliothèque de médias', 'url' => 'https://bundles.975l.com/tutoriels/film/ui-media']],
             $client->ask('How do I add an image?')['sources'],
         );
     }

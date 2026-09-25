@@ -73,7 +73,7 @@ class AiAssistantClient implements AiAssistantClientInterface
         }
     }
 
-    // A source citing a guided project is resolved against this very site rather than trusted as sent: the backend answers every site it serves at once, so the parcours it names may belong to a bundle this one doesn't install, or to a role this user doesn't hold - GuidedProjectBuilder::getProject() answers null in both cases and the source is simply dropped. Its label comes back from here too, translated in the reader's own locale rather than the backend's
+    // A source citing a guided project is resolved against this very site rather than trusted as sent (a film link standing in for a parcours its reader cannot start, see filmSource()): the backend answers every site it serves at once, so the parcours it names may belong to a bundle this one doesn't install, or to a role this user doesn't hold - GuidedProjectBuilder::getProject() answers null in both cases and the source is simply dropped. Its label comes back from here too, translated in the reader's own locale rather than the backend's
     private function resolveSources(array $sources): array
     {
         $resolved = [];
@@ -93,9 +93,28 @@ class AiAssistantClient implements AiAssistantClientInterface
             if (null !== $project) {
                 // The film beside the button, when the site links its parcours to one (see GuidedProjectBuilder's "site-tutorials-url")
                 $resolved[] = ['label' => $project['label'], 'url' => '', 'project' => $slug, 'film' => $project['film'] ?? null];
+
+                continue;
+            }
+
+            $film = $this->filmSource($slug);
+            if (null !== $film) {
+                $resolved[] = $film;
             }
         }
 
         return $resolved;
+    }
+
+    // A parcours its reader cannot start - a visitor holding no role, asking from a public page, or a user lacking this one - is still worth showing: as a plain link to its film, when the site links its parcours to one. One no bundle of this site declares stays dropped
+    private function filmSource(string $slug): ?array
+    {
+        foreach ($this->guidedProjectBuilder->getAllProjects() as $project) {
+            if ($slug === $project['slug'] && null !== ($project['film'] ?? null)) {
+                return ['label' => $project['label'], 'url' => $project['film']];
+            }
+        }
+
+        return null;
     }
 }
