@@ -1,5 +1,29 @@
 # ChangeLog
 
+## v1.37.0
+
+The dashboard lists the features the site doesn't use yet
+
+### ConfigBundle
+
+- Dashboard "Not used on this site yet" panel, the empty CRUDs and the empty feature entries (25/09/2026)
+- `'creatable' => false` keeps a menu entry's CRUD out of that panel (25/09/2026)
+- `"feature": true` in `configs.json` lists an empty entry in that panel (25/09/2026)
+- The guided tour ends on that panel when it lists anything (25/09/2026)
+- A guided tour step may name a `highlight` selector instead of its url (25/09/2026)
+- The dashboard header links to the tutorials and the block showcase, the tour walking both (25/09/2026)
+- `EcosystemUrls` holds the films' and the block showcase's addresses (25/09/2026)
+- `site-tutorials-url` config entry removed, replaced by `EcosystemUrls::TUTORIAL_FILM` (25/09/2026) [BC-Break]
+- `MenuEntryResolver` and `ConfigEntryLink` share the url and role resolution of menus and config entries (25/09/2026)
+- `OnboardingStepBuilder`, `GuidedProjectBuilder` and `ConfigAlertProvider` take new constructor arguments (25/09/2026) [BC-Break]
+- The essential actions list only the ones left to do and go away once all are done (25/09/2026)
+
+### UiBundle
+
+- The block showcase leaves the sidebar for the dashboard header (25/09/2026)
+- `ui-block-showcase-url` config entry removed (25/09/2026) [BC-Break]
+- The reviews, AI answers and site graphics screens set `'creatable' => false` (25/09/2026)
+
 ## v1.36.2
 
 Donovan links a film for a guided project its reader cannot start

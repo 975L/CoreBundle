@@ -95,6 +95,18 @@ class ConfigDeclarationLocatorTest extends TestCase
         $this->assertSame(['app-own-setting', 'shop-name', 'site-name', 'site-url'], $slugs);
     }
 
+    // Only the entries flagged as switching a feature on, the app's own file included
+    public function testFindFeatureSlugsKeepsTheFlaggedEntriesOnly(): void
+    {
+        $this->dumpBundleFile('ui-bundle', [['slug' => 'ui-map-google-api-key', 'feature' => true], ['slug' => 'ui-pdf-weasyprint-path']]);
+        $this->dumpAppFile([['slug' => 'app-feature-key', 'feature' => true], ['slug' => 'app-other', 'feature' => false]]);
+
+        $slugs = $this->createLocator()->findFeatureSlugs();
+
+        sort($slugs);
+        $this->assertSame(['app-feature-key', 'ui-map-google-api-key'], $slugs);
+    }
+
     // A half-written or invalid file must not silently empty the declared list, which would turn every entry into an orphan
     public function testFindDeclaredSlugsIgnoresMalformedFile(): void
     {

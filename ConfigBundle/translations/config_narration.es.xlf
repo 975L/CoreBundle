@@ -2,6 +2,10 @@
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
     <file source-language="en" target-language="es" datatype="plaintext" original="config_narration.es.xlf">
         <body>
+            <trans-unit id="5ATKQD9">
+                <source>narration.block_showcase</source>
+                <target>Justo al lado, «Vitrina de bloques» muestra todos los tipos de bloques disponibles, cada uno con una vista previa en directo: lo justo para elegir cuál colocar en una página.</target>
+            </trans-unit>
             <trans-unit id="R7d7CYz">
                 <source>narration.config</source>
                 <target>«Configuración» abre todos los ajustes del sitio, agrupados por tema. Cada uno se modifica desde su propia página; los valores sensibles permanecen cifrados en la base de datos, incluso cuando la pantalla se los muestra en claro.</target>
@@ -236,7 +240,15 @@
             </trans-unit>
             <trans-unit id="7UEVTAj">
                 <source>narration.site_link</source>
-                <target>El último enlace abre el sitio mismo en una nueva pestaña, tal como lo ven sus visitantes.</target>
+                <target>El último enlace de la columna izquierda abre el sitio mismo en una nueva pestaña, tal como lo ven sus visitantes.</target>
+            </trans-unit>
+            <trans-unit id="SIhdRhg">
+                <source>narration.tutorials</source>
+                <target>En la parte superior del panel, «Tutoriales» abre los vídeos del ecosistema, uno por pantalla del back-office: para volver a ver cómo se hace, a su ritmo.</target>
+            </trans-unit>
+            <trans-unit id="S1kRumm">
+                <source>narration.unused_features</source>
+                <target>Más abajo en el panel, «Aún sin usar en este sitio» propone cada día algunas funcionalidades instaladas que el sitio todavía no aprovecha, cada una con un enlace a la pantalla que la pone en marcha.</target>
             </trans-unit>
             <trans-unit id="lRnR3Ht">
                 <source>narration.url_metadata</source>

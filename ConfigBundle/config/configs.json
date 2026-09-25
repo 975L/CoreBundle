@@ -145,6 +145,7 @@
     {
         "label": "label.site_backup_offsite_target",
         "slug": "site-backup-offsite-target",
+        "feature": true,
         "sensitive": false,
         "restricted": true,
         "value": "",
@@ -361,17 +362,6 @@
         "group": "credits",
         "severity": "info",
         "description": "description.site_made_by_logo"
-    },
-    {
-        "label": "label.site_tutorials_url",
-        "slug": "site-tutorials-url",
-        "sensitive": false,
-        "restricted": true,
-        "value": "https://bundles.975l.com/tutoriels/film",
-        "kind": "text",
-        "group": "general",
-        "severity": "info",
-        "description": "description.site_tutorials_url"
     },
     {
         "label": "label.site_made_by_url",
@@ -792,6 +782,7 @@
     {
         "label": "label.login_google_oauth_client_id",
         "slug": "login-google-oauth-client-id",
+        "feature": true,
         "sensitive": false,
         "restricted": true,
         "value": null,

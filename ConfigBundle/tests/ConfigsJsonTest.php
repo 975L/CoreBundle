@@ -69,6 +69,19 @@ class ConfigsJsonTest extends TestCase
         }
     }
 
+    // A feature entry is a key to fill in: a bool turned off is a choice, and an entry with a severity is already listed among the alerts (see UnusedConfigFeatureReader)
+    public function testFeatureEntriesAreKeysWithoutASeverity(): void
+    {
+        foreach ($this->loadConfigs() as $config) {
+            if (true !== ($config['feature'] ?? false)) {
+                continue;
+            }
+
+            $this->assertNotSame(Config::TYPE_BOOL, $config['kind'], sprintf('Config "%s" is a bool flagged as a feature', $config['slug']));
+            $this->assertNull($config['severity'], sprintf('Config "%s" is flagged as a feature but already alerts', $config['slug']));
+        }
+    }
+
     // A "choice" entry is only worth its kind if it says what it accepts, and if its own default is part of it - the select is built from that list alone (see ConfigCrudController::buildChoiceField)
     public function testChoiceEntriesDeclareTheValuesTheyAccept(): void
     {

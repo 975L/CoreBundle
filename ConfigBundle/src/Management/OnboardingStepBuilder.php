@@ -10,23 +10,15 @@
 
 namespace c975L\ConfigBundle\Management;
 
-use c975L\ConfigBundle\Service\ConfigServiceInterface;
-use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
-use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
-use Symfony\Bundle\SecurityBundle\Security;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-// Builds the guided-tour steps from MenuBuilder's already-aggregated menus/links, covering every entry so the tour reflects the whole sidebar - a menu or a link needing a role the current user lacks (see MenuProviderInterface) is skipped though, since its sidebar target isn't even rendered for them. 'description' (see MenuProviderInterface) stays optional - a step for an item without one just shows its label, no explanatory text. Each step carries the item's own resolved URL rather than an invented id/slug: assets/js/onboarding-tour.js matches it against the sidebar's own `a[href]` (no EasyAdmin template override needed, see Sidebar/Item.html.twig), the same deterministic url-generation approach already used by ConfigEditUrlResolver
+// Builds the guided-tour steps from MenuBuilder's already-aggregated menus/links, covering every entry so the tour reflects the whole sidebar, then the dashboard header's ecosystem links (see getHeaderSteps()) - a menu or a link needing a role the current user lacks (see MenuProviderInterface) is skipped though, since its sidebar target isn't even rendered for them. 'description' (see MenuProviderInterface) stays optional - a step for an item without one just shows its label, no explanatory text. Each step carries the item's own resolved URL rather than an invented id/slug: assets/js/onboarding-tour.js matches it against the sidebar's own `a[href]` (no EasyAdmin template override needed, see Sidebar/Item.html.twig)
 class OnboardingStepBuilder
 {
     public function __construct(
         private readonly MenuBuilder $menuBuilder,
-        private readonly AdminUrlGeneratorInterface $adminUrlGenerator,
-        private readonly UrlGeneratorInterface $urlGenerator,
+        private readonly MenuEntryResolver $menuEntryResolver,
         private readonly TranslatorInterface $translator,
-        private readonly Security $security,
-        private readonly ConfigServiceInterface $configService,
     ) {
     }
 
@@ -36,50 +28,46 @@ class OnboardingStepBuilder
         $steps = [];
 
         foreach ($this->menuBuilder->getOrderedMenus() as $entry) {
-            if (!$this->isGranted($entry)) {
+            if (!$this->menuEntryResolver->isGranted($entry)) {
                 continue;
             }
 
-            // Same split as MenuBuilder::getMenuItems() makes on the very same entries (an internal link carries a route, not a controller), and for the same reason: a step is highlighted by matching its url against the sidebar's own href, so both kinds have to be spelled the way the sidebar spells them
-            $url = isset($entry['controller'])
-                ? $this->adminUrlGenerator->unsetAll()
-                    ->setController($entry['controller'])
-                    // Same action resolution as MenuBuilder::getMenuItems(): an item naming its action has to be read the same way here
-                    ->setAction($entry['action'] ?? Action::INDEX)
-                    ->generateUrl()
-                : $this->linkUrl($entry);
-
-            $steps[] = $this->buildStep($url, $entry);
+            // A step is highlighted by matching its url against the sidebar's own href, so both kinds are spelled the way the sidebar spells them
+            $steps[] = $this->buildStep($this->menuEntryResolver->url($entry), $entry);
         }
 
         // What is left is every link leaving the admin, the ones getOrderedMenus() skips because the sidebar gathers them in its own section, below every menu
         foreach ($this->menuBuilder->getLinks() as $link) {
-            if (!MenuBuilder::leavesTheAdmin($link) || !$this->isGranted($link)) {
+            if (!MenuBuilder::leavesTheAdmin($link) || !$this->menuEntryResolver->isGranted($link)) {
                 continue;
             }
 
-            $steps[] = $this->buildStep($this->linkUrl($link), $link);
+            $steps[] = $this->buildStep($this->menuEntryResolver->url($link), $link);
         }
 
         return $steps;
     }
 
-    // Same defaults as MenuBuilder gives the sidebar item - a menu falls back on the admin role, a link is gated only when it names one (see buildMenuItem()/buildLinkItem()) - and read here for the same reason it is read there: the tour is highlighted by matching an href, so an entry the sidebar doesn't draw has nothing to point at
-    private function isGranted(array $entry): bool
+    // [{url, label, description, narration}], one per link of the dashboard's header leaving for the ecosystem - the tour highlights any a[href] of the page, not only the sidebar's, so they are walked the same way (see management/index.html.twig)
+    public function getHeaderSteps(): array
     {
-        if (isset($entry['controller'])) {
-            return $this->security->isGranted($entry['role'] ?? $this->configService->get('site-role-admin'));
-        }
-
-        return !isset($entry['role']) || $this->security->isGranted($entry['role']);
+        return [
+            $this->buildStep(EcosystemUrls::TUTORIALS, ['label' => 'label.tutorials', 'description' => 'label.tutorials_help', 'narration' => 'narration.tutorials', 'translation_domain' => 'config']),
+            $this->buildStep(EcosystemUrls::BLOCK_SHOWCASE, ['label' => 'label.block_showcase', 'description' => 'label.block_showcase_help', 'narration' => 'narration.block_showcase', 'translation_domain' => 'config']),
+        ];
     }
 
-    // Same url resolution as MenuBuilder::linkUrl(): a literal url wins over a route, resolved absolute only for a link leaving the admin
-    private function linkUrl(array $link): string
+    // [{url, label, description, narration, highlight}], the dashboard's unused features panel when it shows anything - pointed at by its own selector, its links being the sidebar's own hrefs a url match would find there first (see _unused_features.html.twig)
+    public function getUnusedFeaturesSteps(array $features): array
     {
-        $referenceType = isset($link['target']) ? UrlGeneratorInterface::ABSOLUTE_URL : UrlGeneratorInterface::ABSOLUTE_PATH;
+        if ([] === $features) {
+            return [];
+        }
 
-        return $link['url'] ?? $this->urlGenerator->generate($link['name'], [], $referenceType);
+        return [[
+            ...$this->buildStep('', ['label' => 'label.unused_features', 'description' => 'label.unused_features_intro', 'narration' => 'narration.unused_features', 'translation_domain' => 'config']),
+            'highlight' => '[data-unused-features]',
+        ]];
     }
 
     // Same label/description resolution as MenuBuilder::getMenuItems() for a link (see its 'label_parameters' handling) - kept in sync by hand since both operate on the same MenuProviderInterface item shape

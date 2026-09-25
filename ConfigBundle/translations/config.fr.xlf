@@ -602,6 +602,14 @@
                 <source>label.band_technical</source>
                 <target>Technique</target>
             </trans-unit>
+            <trans-unit id="CaDaMse">
+                <source>label.block_showcase</source>
+                <target>Vitrine des blocks</target>
+            </trans-unit>
+            <trans-unit id="8e_hG_b">
+                <source>label.block_showcase_help</source>
+                <target>Une galerie de tous les types de blocks disponibles, avec un aperçu en direct de chacun - utile pour choisir lequel ajouter à une page</target>
+            </trans-unit>
             <trans-unit id="13FkC7i">
                 <source>label.boolean</source>
                 <target>Booléen (Vrai/Faux)</target>
@@ -2209,6 +2217,22 @@
             <trans-unit id="sS6ch7.">
                 <source>label.true</source>
                 <target>Vrai</target>
+            </trans-unit>
+            <trans-unit id="9d1GBUd">
+                <source>label.tutorials</source>
+                <target>Tutoriels</target>
+            </trans-unit>
+            <trans-unit id="U3OFxbN">
+                <source>label.tutorials_help</source>
+                <target>Les films de chaque bundle, écran par écran, sur le site de l'écosystème c975L</target>
+            </trans-unit>
+            <trans-unit id="xAsPa0K">
+                <source>label.unused_features</source>
+                <target>Pas encore utilisé sur ce site</target>
+            </trans-unit>
+            <trans-unit id="oA3G7y0">
+                <source>label.unused_features_intro</source>
+                <target>Ce que les bundles installés proposent et que le site n'utilise pas : quelques-uns chaque jour, chacun ouvre l'écran où tout commence.</target>
             </trans-unit>
             <trans-unit id="mcQ1Bzu">
                 <source>label.url</source>

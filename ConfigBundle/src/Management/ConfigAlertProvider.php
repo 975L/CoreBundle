@@ -10,12 +10,9 @@
 
 namespace c975L\ConfigBundle\Management;
 
-use c975L\ConfigBundle\Controller\Management\ConfigCrudController;
 use c975L\ConfigBundle\Entity\Config;
 use c975L\ConfigBundle\Repository\ConfigRepository;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
-use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
-use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 // Alerts for configs still missing a value despite being flagged with a severity, plus the sensitive ones filled but unreadable
@@ -23,7 +20,7 @@ class ConfigAlertProvider implements AlertProviderInterface
 {
     public function __construct(
         private readonly ConfigRepository $configRepository,
-        private readonly AdminUrlGeneratorInterface $adminUrlGenerator,
+        private readonly ConfigEntryLink $configEntryLink,
         private readonly ConfigLabelResolver $configLabelResolver,
         private readonly ConfigServiceInterface $configService,
         private readonly TranslatorInterface $translator,
@@ -40,8 +37,8 @@ class ConfigAlertProvider implements AlertProviderInterface
                 'label' => $this->configLabelResolver->resolve($config),
                 'description' => $config->getDescription(),
                 'severity' => $config->getSeverity(),
-                'role' => $this->role($config),
-                'url' => $this->editUrl($config),
+                'role' => $this->configEntryLink->role($config),
+                'url' => $this->configEntryLink->editUrl($config),
             ];
         }
 
@@ -55,29 +52,11 @@ class ConfigAlertProvider implements AlertProviderInterface
                 'label' => $this->configLabelResolver->resolve($config),
                 'description' => $this->translator->trans('description.config_unreadable', [], 'config'),
                 'severity' => Config::SEVERITY_DANGER,
-                'role' => $this->role($config),
-                'url' => $this->editUrl($config),
+                'role' => $this->configEntryLink->role($config),
+                'url' => $this->configEntryLink->editUrl($config),
             ];
         }
 
         return $alerts;
-    }
-
-    // Who the alert is addressed to: the admin whose screen this is, and the super-admin for a restricted entry, which stays out of the list below that role and whose link would otherwise answer 403
-    private function role(Config $config): string
-    {
-        return true === $config->getIsRestricted()
-            ? 'ROLE_SUPER_ADMIN'
-            : (string) $this->configService->get('site-role-admin');
-    }
-
-    private function editUrl(Config $config): string
-    {
-        return $this->adminUrlGenerator
-            ->unsetAll()
-            ->setController(ConfigCrudController::class)
-            ->setAction(Action::EDIT)
-            ->setEntityId($config->getId())
-            ->generateUrl();
     }
 }

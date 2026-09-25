@@ -54,12 +54,19 @@ class ConfigDeclarationLocator
         return array_values(array_diff($this->slugsIn($files), $this->findDeclaredSlugs()));
     }
 
+    // Returns the slugs of the entries switching a feature on ("feature": true in configs.json) - left empty, the dashboard lists them among what the site doesn't use yet (see UnusedFeatureBuilder)
+    public function findFeatureSlugs(): array
+    {
+        return $this->slugsIn($this->findFiles(), static fn (array $config): bool => true === ($config['feature'] ?? false));
+    }
+
     /**
-     * @param list<string> $files
+     * @param list<string>                 $files
+     * @param (callable(array): bool)|null $filter
      *
      * @return list<string>
      */
-    private function slugsIn(array $files): array
+    private function slugsIn(array $files, ?callable $filter = null): array
     {
         $slugs = [];
 
@@ -71,7 +78,7 @@ class ConfigDeclarationLocator
             }
 
             foreach ($configs as $config) {
-                if (isset($config['slug'])) {
+                if (isset($config['slug']) && (null === $filter || $filter($config))) {
                     $slugs[] = $config['slug'];
                 }
             }

@@ -6,6 +6,21 @@
                 "en": "Each guided project now links to its film, in the dashboard list and in the assistant's answers: watch how it is done, then do it yourself.",
                 "fr": "Chaque projet guidé renvoie désormais vers son film, dans la liste du tableau de bord comme dans les réponses de l'assistant : regardez comment faire, puis faites-le vous-même.",
                 "es": "Cada proyecto guiado enlaza ahora con su vídeo, en la lista del panel y en las respuestas del asistente: vea cómo se hace y luego hágalo usted mismo."
+            },
+            {
+                "en": "The dashboard now suggests, a few each day, the features your site doesn't use yet, each one a link to the screen that starts it.",
+                "fr": "Le tableau de bord suggère désormais, quelques-unes chaque jour, les fonctionnalités que votre site n'utilise pas encore, chacune avec un lien vers l'écran qui la met en route.",
+                "es": "El panel sugiere ahora, algunas cada día, las funcionalidades que su sitio aún no utiliza, cada una con un enlace a la pantalla que la pone en marcha."
+            },
+            {
+                "en": "Two new buttons at the top of the dashboard open the tutorial films and the block showcase, and the guided tour now shows them too.",
+                "fr": "Deux nouveaux boutons en haut du tableau de bord ouvrent les films tutoriels et la vitrine des blocks, et la visite guidée les présente aussi.",
+                "es": "Dos nuevos botones en la parte superior del panel abren los vídeos tutoriales y el escaparate de bloques, y la visita guiada también los presenta."
+            },
+            {
+                "en": "The essential actions now only list what is left to do, and disappear once your site is set up.",
+                "fr": "Les actions essentielles ne listent plus que ce qui reste à faire, et disparaissent une fois votre site configuré.",
+                "es": "Las acciones esenciales solo muestran ya lo que queda por hacer, y desaparecen una vez configurado su sitio."
             }
         ]
     },

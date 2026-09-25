@@ -10,10 +10,6 @@
                 <source>narration.ai_search_answers</source>
                 <target>« Recherche IA » liste les questions que les visiteurs ont posées au site. Celles marquées non trouvées montrent ce qu'il reste à écrire.</target>
             </trans-unit>
-            <trans-unit id="5ATKQD9">
-                <source>narration.block_showcase</source>
-                <target>« Vitrine des blocks » montre tous les types de blocks disponibles, chacun avec un aperçu en direct : de quoi choisir lequel poser sur une page.</target>
-            </trans-unit>
             <trans-unit id="1PeeT85">
                 <source>narration.email_templates</source>
                 <target>« Modèles d'email » porte les e-mails que le site envoie. Ils sont composés de blocks, exactement comme une page.</target>

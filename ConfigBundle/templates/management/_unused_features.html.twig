@@ -1,0 +1,17 @@
+{# Renders the features the site doesn't use yet, each one a link to the screen that starts it #}
+{% if features|length > 0 %}
+    <section data-unused-features>
+        <h2>{{ 'label.unused_features'|trans({}, 'config') }}</h2>
+        <p class="text-muted small">{{ 'label.unused_features_intro'|trans({}, 'config') }}</p>
+
+        <ul class="list-unstyled">
+            {% for feature in features %}
+                <li>
+                    <i class="fa fa-lightbulb"></i>
+                    <a href="{{ feature.url }}">{{ feature.label }}</a>
+                    {%- if feature.description %} — <span class="text-muted small">{{ feature.description }}</span>{% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    </section>
+{% endif %}

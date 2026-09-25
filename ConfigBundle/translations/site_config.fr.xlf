@@ -250,10 +250,6 @@
                 <source>description.site_timezone</source>
                 <target>Fuseau dans lequel les dates sont affichées, sur le site comme dans le back-office. Les dates restent enregistrées à l'heure du serveur</target>
             </trans-unit>
-            <trans-unit id="yvVs49D">
-                <source>description.site_tutorials_url</source>
-                <target>Adresse à laquelle le slug d'un parcours guidé est ajouté pour montrer son film, ex. https://bundles.975l.com/tutoriels/film. Vide, aucun lien « Voir le film »</target>
-            </trans-unit>
             <trans-unit id="nInyIwr">
                 <source>description.site_url</source>
                 <target>URL du site web, ex. https://example.com</target>
@@ -521,10 +517,6 @@
             <trans-unit id="kQSmmhp">
                 <source>label.site_timezone</source>
                 <target>Fuseau horaire</target>
-            </trans-unit>
-            <trans-unit id="Z0hM0ti">
-                <source>label.site_tutorials_url</source>
-                <target>URL des films des parcours guidés</target>
             </trans-unit>
             <trans-unit id="rDTDQ70">
                 <source>label.site_url</source>

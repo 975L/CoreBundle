@@ -250,10 +250,6 @@
                 <source>description.site_timezone</source>
                 <target>The timezone dates are displayed in, on the site as well as in the back-office. Dates are still stored in the server's own time</target>
             </trans-unit>
-            <trans-unit id="yvVs49D">
-                <source>description.site_tutorials_url</source>
-                <target>Address a guided project's slug is appended to in order to show its film, e.g. https://bundles.975l.com/tutoriels/film. Empty, no "Watch the film" link</target>
-            </trans-unit>
             <trans-unit id="nInyIwr">
                 <source>description.site_url</source>
                 <target>URL of the website i.e. https://example.com</target>
@@ -521,10 +517,6 @@
             <trans-unit id="kQSmmhp">
                 <source>label.site_timezone</source>
                 <target>Timezone</target>
-            </trans-unit>
-            <trans-unit id="Z0hM0ti">
-                <source>label.site_tutorials_url</source>
-                <target>Guided projects films URL</target>
             </trans-unit>
             <trans-unit id="rDTDQ70">
                 <source>label.site_url</source>

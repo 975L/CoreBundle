@@ -10,10 +10,6 @@
                 <source>narration.ai_search_answers</source>
                 <target>"AI search" lists the questions visitors asked the site. Those marked not found show what is left to write.</target>
             </trans-unit>
-            <trans-unit id="5ATKQD9">
-                <source>narration.block_showcase</source>
-                <target>"Block showcase" shows every available block kind, each with a live preview: enough to choose which one to put on a page.</target>
-            </trans-unit>
             <trans-unit id="1PeeT85">
                 <source>narration.email_templates</source>
                 <target>"E-mail templates" carries the e-mails the site sends. They are made of blocks, exactly like a page.</target>

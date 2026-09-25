@@ -41,13 +41,12 @@ class MenuProviderTest extends TestCase
         return $client;
     }
 
-    private function createConfigService(?string $showcaseUrl = null): ConfigServiceInterface
+    private function createConfigService(): ConfigServiceInterface
     {
         $configService = $this->createStub(ConfigServiceInterface::class);
         $configService->method('get')->willReturnMap([
             ['site-role-admin', 'ROLE_ADMIN'],
             ['site-role-editor', 'ROLE_EDITOR'],
-            ['ui-block-showcase-url', $showcaseUrl],
         ]);
 
         return $configService;
@@ -120,6 +119,15 @@ class MenuProviderTest extends TestCase
         }
     }
 
+    // The site graphics filter the media library down to its roles and already raise an alert when one is missing, so the unused features panel leaves them out
+    public function testTheSiteGraphicsAreNoUnusedFeature(): void
+    {
+        $menus = new MenuProvider($this->createConfigService(), $this->createTranslator(), $this->createReviewService(), $this->createSiteSearchClient())->getMenus();
+
+        $this->assertFalse($menus['site_graphic']['creatable']);
+        $this->assertArrayNotHasKey('creatable', $menus['media']);
+    }
+
     // Every entry's 'description' reuses the exact same key as its own screen's explanatory text - one text, not a separate onboarding-only string
     public function testGetMenusDescriptionReusesEachScreensOwnExplanatoryText(): void
     {
@@ -130,21 +138,6 @@ class MenuProviderTest extends TestCase
         $this->assertSame('label.info_email_template', $menus['email_template']['description']);
         $this->assertSame('label.info_font', $menus['font']['description']);
         $this->assertSame('label.info_site_graphic', $menus['site_graphic']['description']);
-    }
-
-    // An external url, not a route name, the showcase living on its own site
-    public function testGetLinksReturnsTheBlockShowcaseLinkFromTheConfig(): void
-    {
-        $provider = new MenuProvider($this->createConfigService('https://example.org/pages/blocks'), $this->createTranslator(), $this->createReviewService(), $this->createSiteSearchClient());
-
-        $links = $provider->getLinks();
-
-        $this->assertCount(3, $links);
-        $this->assertSame('label.block_showcase', $links['block_showcase']['label']);
-        $this->assertSame('ui', $links['block_showcase']['translation_domain']);
-        $this->assertSame('https://example.org/pages/blocks', $links['block_showcase']['url']);
-        $this->assertSame('_blank', $links['block_showcase']['target']);
-        $this->assertSame('label.block_showcase_help', $links['block_showcase']['description']);
     }
 
     // The one non-CRUD screen of this bundle: customizing a legal model is not an entity CRUD, it edits one block's delta against templates the bundle ships (see LegalModelController)
@@ -160,23 +153,13 @@ class MenuProviderTest extends TestCase
         $this->assertSame('advanced', $links['legal_models']['tier']);
     }
 
-    // No address in the entry, no menu item: nothing here invents one, and an empty href would open a tab on this very back office
-    public function testGetLinksDropsTheShowcaseWhenItsEntryIsEmpty(): void
+    // The showcase left the sidebar for the dashboard's header, where every site gets the same address
+    public function testGetLinksNoLongerCarriesTheBlockShowcase(): void
     {
-        $provider = new MenuProvider($this->createConfigService(), $this->createTranslator(), $this->createReviewService(), $this->createSiteSearchClient());
+        $links = new MenuProvider($this->createConfigService(), $this->createTranslator(), $this->createReviewService(), $this->createSiteSearchClient())->getLinks();
 
-        $this->assertArrayNotHasKey('block_showcase', $provider->getLinks());
-    }
-
-    // The address the link needs lives in the entry and nowhere else, so the entry has to ship with one
-    public function testTheShowcaseEntryShipsWithItsAddress(): void
-    {
-        $configs = json_decode(file_get_contents(__DIR__ . '/../../config/configs.json'), true, 512, \JSON_THROW_ON_ERROR);
-
-        $entry = array_values(array_filter($configs, static fn (array $config): bool => 'ui-block-showcase-url' === $config['slug']));
-
-        $this->assertCount(1, $entry, 'No "ui-block-showcase-url" entry in configs.json.');
-        $this->assertSame('https://bundles.975l.com/pages/blocks', $entry[0]['value']);
+        $this->assertArrayNotHasKey('block_showcase', $links);
+        $this->assertCount(2, $links);
     }
 
     // 'role' matches the page's own minimum bar, a plain editor being unable to act on either section

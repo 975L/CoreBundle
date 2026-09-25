@@ -59,6 +59,8 @@ class MenuProvider implements MenuProviderInterface
             // Sits next to the redirects and one tier down for the same reason: what the screen lists is the paths a redirect is missing on (see NotFoundCrudController), which is the same job seen from the other end
             'not_found' => [
                 'controller' => NotFoundCrudController::class,
+                // Lists what happened rather than what an admin makes: empty, it is no feature left unused (see UnusedFeatureBuilder)
+                'creatable' => false,
                 'label' => 'label.not_founds',
                 'narration' => 'narration.not_founds',
                 'translation_domain' => 'config',
@@ -129,7 +131,7 @@ class MenuProvider implements MenuProviderInterface
                 'icon' => 'fa fa-globe',
                 'target' => '_blank',
                 'pinned' => true,
-                // No local page to reuse text from (leaves the admin entirely) - its own dedicated key, same as UiBundle's "block_showcase" link
+                // No local page to reuse text from (leaves the admin entirely) - its own dedicated key
                 'description' => 'description.site_link',
             ];
         }

@@ -4,8 +4,7 @@
     <section class="text-center">
         <h1>{{ ('label.management'|trans({}, 'config')) }}</h1>
         <p>{{ ('label.management_interface'|trans({}, 'config')) }}</p>
-        <p>{{ app.user.roles|join(', ') }}</p>
-        {# Guided tour and guided projects side by side: the first shows what the back-office holds, the second walks through a real task to carry out. The list itself sits below, hidden until this button opens it - toggled by assets/js/guided-project.js rather than a Bootstrap collapse, that controller being mounted on the page anyway #}
+        {# Guided tour and guided projects side by side: the first shows what the back-office holds, the second walks through a real task to carry out. The list itself sits below, hidden until this button opens it - toggled by assets/js/guided-project.js rather than a Bootstrap collapse, that controller being mounted on the page anyway. Then the ecosystem's films and block showcase, the same for every site (see EcosystemUrls) #}
         <div class="d-flex justify-content-center gap-2">
             {{ include('@c975LConfig/management/_onboarding_tour.html.twig', { steps: onboardingSteps }) }}
             {% if guidedProjects|length > 0 %}
@@ -13,6 +12,12 @@
                     <i class="fa fa-list-check"></i> {{ 'label.guided_projects'|trans({}, 'config') }}
                 </button>
             {% endif %}
+            <a href="{{ constant('c975L\\ConfigBundle\\Management\\EcosystemUrls::TUTORIALS') }}" target="_blank" rel="noopener" class="btn btn-secondary mb-3" title="{{ 'label.tutorials_help'|trans({}, 'config') }}">
+                <i class="fa fa-film"></i> {{ 'label.tutorials'|trans({}, 'config') }}
+            </a>
+            <a href="{{ constant('c975L\\ConfigBundle\\Management\\EcosystemUrls::BLOCK_SHOWCASE') }}" target="_blank" rel="noopener" class="btn btn-secondary mb-3" title="{{ 'label.block_showcase_help'|trans({}, 'config') }}">
+                <i class="fa fa-shapes"></i> {{ 'label.block_showcase'|trans({}, 'config') }}
+            </a>
         </div>
     </section>
 
@@ -27,10 +32,14 @@
     {# Shortcuts merged across every bundle's ShortcutProvider, one titled row per category - the partial draws its own heading, the roles deciding what is left to show being read there #}
     {{ include('@c975LConfig/management/_shortcuts.html.twig', { categories: shortcutCategories }) }}
 
-    {# Essential-actions entry point, merged across every bundle's EssentialActionProvider - always visible to an admin, functional (every action stays a link, even once done). Not built at all for an editor (see DashboardController::index()), whose empty progress would leave the heading standing above nothing #}
-    {% if essentialActions|length > 0 %}
-        {{ include('@c975LConfig/management/_essential_actions.html.twig', { actions: essentialActions, progress: essentialActionsProgress }) }}
+    {# Essential actions merged across every bundle's EssentialActionProvider - only the ones left to do, the section going away once the site is set up. Not built at all for an editor (see DashboardController::index()) #}
+    {% set pendingActions = essentialActions|filter(action => not action.isDone) %}
+    {% if pendingActions|length > 0 %}
+        {{ include('@c975LConfig/management/_essential_actions.html.twig', { actions: pendingActions, progress: essentialActionsProgress }) }}
     {% endif %}
+
+    {# What the installed bundles offer and the site doesn't use yet, a few a day (see UnusedFeatureBuilder) #}
+    {{ include('@c975LConfig/management/_unused_features.html.twig', { features: unusedFeatures }) }}
 
     {# Alerts merged across every bundle's AlertProvider - generic title since it mixes several kinds of items #}
     {{ include('@c975LConfig/management/_alerts.html.twig', {

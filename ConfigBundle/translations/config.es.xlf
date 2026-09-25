@@ -602,6 +602,14 @@
                 <source>label.band_technical</source>
                 <target>Técnico</target>
             </trans-unit>
+            <trans-unit id="CaDaMse">
+                <source>label.block_showcase</source>
+                <target>Vitrina de bloques</target>
+            </trans-unit>
+            <trans-unit id="8e_hG_b">
+                <source>label.block_showcase_help</source>
+                <target>Una galería de todos los tipos de bloques disponibles, con una vista previa en vivo de cada uno - útil para elegir cuál añadir a una página</target>
+            </trans-unit>
             <trans-unit id="13FkC7i">
                 <source>label.boolean</source>
                 <target>Booleano (Verdadero/Falso)</target>
@@ -2209,6 +2217,22 @@
             <trans-unit id="sS6ch7.">
                 <source>label.true</source>
                 <target>Verdadero</target>
+            </trans-unit>
+            <trans-unit id="9d1GBUd">
+                <source>label.tutorials</source>
+                <target>Tutoriales</target>
+            </trans-unit>
+            <trans-unit id="U3OFxbN">
+                <source>label.tutorials_help</source>
+                <target>Los vídeos de cada bundle, pantalla por pantalla, en el sitio del ecosistema c975L</target>
+            </trans-unit>
+            <trans-unit id="xAsPa0K">
+                <source>label.unused_features</source>
+                <target>Aún sin usar en este sitio</target>
+            </trans-unit>
+            <trans-unit id="oA3G7y0">
+                <source>label.unused_features_intro</source>
+                <target>Lo que ofrecen los bundles instalados y que el sitio no usa: algunos cada día, cada uno abre la pantalla donde todo empieza.</target>
             </trans-unit>
             <trans-unit id="mcQ1Bzu">
                 <source>label.url</source>

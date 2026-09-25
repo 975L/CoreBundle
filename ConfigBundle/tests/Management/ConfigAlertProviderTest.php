@@ -13,6 +13,7 @@ namespace c975L\ConfigBundle\Tests\Management;
 use c975L\ConfigBundle\Controller\Management\ConfigCrudController;
 use c975L\ConfigBundle\Entity\Config;
 use c975L\ConfigBundle\Management\ConfigAlertProvider;
+use c975L\ConfigBundle\Management\ConfigEntryLink;
 use c975L\ConfigBundle\Management\ConfigLabelResolver;
 use c975L\ConfigBundle\Repository\ConfigRepository;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
@@ -66,7 +67,7 @@ class ConfigAlertProviderTest extends TestCase
         $adminUrlGenerator->method('generateUrl')->willReturn('/management/config/42/edit');
 
         $resolver = $this->createResolver(['label.site_maintenance_hash' => 'Hash de maintenance']);
-        $provider = new ConfigAlertProvider($repository, $adminUrlGenerator, $resolver, $this->createConfigService([]), $this->createTranslator());
+        $provider = new ConfigAlertProvider($repository, new ConfigEntryLink($adminUrlGenerator, $this->createConfigService([])), $resolver, $this->createConfigService([]), $this->createTranslator());
 
         $alerts = $provider->getAlerts();
 
@@ -93,7 +94,7 @@ class ConfigAlertProviderTest extends TestCase
         $adminUrlGenerator->method('setEntityId')->willReturnSelf();
         $adminUrlGenerator->method('generateUrl')->willReturn('/management/config/7/edit');
 
-        $provider = new ConfigAlertProvider($repository, $adminUrlGenerator, $this->createResolver(), $this->createConfigService([]), $this->createTranslator());
+        $provider = new ConfigAlertProvider($repository, new ConfigEntryLink($adminUrlGenerator, $this->createConfigService([])), $this->createResolver(), $this->createConfigService([]), $this->createTranslator());
 
         $alerts = $provider->getAlerts();
 
@@ -119,7 +120,7 @@ class ConfigAlertProviderTest extends TestCase
 
         $provider = new ConfigAlertProvider(
             $repository,
-            $adminUrlGenerator,
+            new ConfigEntryLink($adminUrlGenerator, $this->createConfigService(['stripe-secret-test' => 'sk_test_1'])),
             $this->createResolver(),
             $this->createConfigService(['stripe-secret-test' => 'sk_test_1']),
             $this->createTranslator(),
@@ -149,7 +150,7 @@ class ConfigAlertProviderTest extends TestCase
 
         $provider = new ConfigAlertProvider(
             $repository,
-            $adminUrlGenerator,
+            new ConfigEntryLink($adminUrlGenerator, $this->createConfigService(['site-role-admin' => 'ROLE_ADMIN'])),
             $this->createResolver(),
             $this->createConfigService(['site-role-admin' => 'ROLE_ADMIN']),
             $this->createTranslator(),
@@ -183,7 +184,7 @@ class ConfigAlertProviderTest extends TestCase
 
         $provider = new ConfigAlertProvider(
             $repository,
-            $adminUrlGenerator,
+            new ConfigEntryLink($adminUrlGenerator, $this->createConfigService(['site-role-admin' => 'ROLE_ADMIN'])),
             $this->createResolver(),
             $this->createConfigService(['site-role-admin' => 'ROLE_ADMIN']),
             $this->createTranslator(),
@@ -218,7 +219,7 @@ class ConfigAlertProviderTest extends TestCase
         $repository = $this->createStub(ConfigRepository::class);
         $repository->method('findRequiringAttention')->willReturn([]);
 
-        $provider = new ConfigAlertProvider($repository, $this->createStub(AdminUrlGeneratorInterface::class), $this->createResolver(), $this->createConfigService([]), $this->createTranslator());
+        $provider = new ConfigAlertProvider($repository, new ConfigEntryLink($this->createStub(AdminUrlGeneratorInterface::class), $this->createConfigService([])), $this->createResolver(), $this->createConfigService([]), $this->createTranslator());
 
         $this->assertSame([], $provider->getAlerts());
     }

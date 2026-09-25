@@ -1254,14 +1254,6 @@
                 <source>label.block_section_features_description</source>
                 <target>Título de sección seguido de una cuadrícula de características (icono, título, texto)</target>
             </trans-unit>
-            <trans-unit id="CaDaMse">
-                <source>label.block_showcase</source>
-                <target>Vitrina de bloques</target>
-            </trans-unit>
-            <trans-unit id="8e_hG_b">
-                <source>label.block_showcase_help</source>
-                <target>Una galería de todos los tipos de bloques disponibles, con una vista previa en vivo de cada uno - útil para elegir cuál añadir a una página</target>
-            </trans-unit>
             <trans-unit id="qY3htPq">
                 <source>label.block_slider</source>
                 <target>Carrusel de imágenes/vídeos</target>

@@ -10,7 +10,9 @@
 
 namespace c975L\ConfigBundle\Tests\Management;
 
+use c975L\ConfigBundle\Management\EcosystemUrls;
 use c975L\ConfigBundle\Management\MenuBuilder;
+use c975L\ConfigBundle\Management\MenuEntryResolver;
 use c975L\ConfigBundle\Management\OnboardingStepBuilder;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
@@ -76,11 +78,8 @@ class OnboardingStepBuilderTest extends TestCase
 
         $builder = new OnboardingStepBuilder(
             $menuBuilder,
-            $this->createAdminUrlGenerator(),
-            $this->createStub(UrlGeneratorInterface::class),
+            new MenuEntryResolver($this->createAdminUrlGenerator(), $this->createStub(UrlGeneratorInterface::class), $this->createSecurity(), $this->createConfigService()),
             $this->createTranslator(),
-            $this->createSecurity(),
-            $this->createConfigService(),
         );
 
         $this->assertSame(
@@ -111,11 +110,8 @@ class OnboardingStepBuilderTest extends TestCase
 
         $builder = new OnboardingStepBuilder(
             $menuBuilder,
-            $adminUrlGenerator,
-            $this->createStub(UrlGeneratorInterface::class),
+            new MenuEntryResolver($adminUrlGenerator, $this->createStub(UrlGeneratorInterface::class), $this->createSecurity(), $this->createConfigService()),
             $this->createTranslator(),
-            $this->createSecurity(),
-            $this->createConfigService(),
         );
 
         $this->assertSame(
@@ -145,11 +141,8 @@ class OnboardingStepBuilderTest extends TestCase
 
         $builder = new OnboardingStepBuilder(
             $menuBuilder,
-            $adminUrlGenerator,
-            $this->createStub(UrlGeneratorInterface::class),
+            new MenuEntryResolver($adminUrlGenerator, $this->createStub(UrlGeneratorInterface::class), $this->createSecurity(), $this->createConfigService()),
             $this->createTranslator(),
-            $this->createSecurity(),
-            $this->createConfigService(),
         );
 
         $this->assertSame(
@@ -170,11 +163,8 @@ class OnboardingStepBuilderTest extends TestCase
 
         $builder = new OnboardingStepBuilder(
             $menuBuilder,
-            $this->createAdminUrlGenerator(),
-            $urlGenerator,
+            new MenuEntryResolver($this->createAdminUrlGenerator(), $urlGenerator, $this->createSecurity(), $this->createConfigService()),
             $this->createTranslator(),
-            $this->createSecurity(),
-            $this->createConfigService(),
         );
 
         $this->assertSame(
@@ -201,11 +191,8 @@ class OnboardingStepBuilderTest extends TestCase
 
         $builder = new OnboardingStepBuilder(
             $menuBuilder,
-            $this->createAdminUrlGenerator(),
-            $urlGenerator,
+            new MenuEntryResolver($this->createAdminUrlGenerator(), $urlGenerator, $this->createSecurity(), $this->createConfigService()),
             $this->createTranslator(),
-            $this->createSecurity(),
-            $this->createConfigService(),
         );
 
         $this->assertSame(
@@ -232,11 +219,8 @@ class OnboardingStepBuilderTest extends TestCase
 
         $builder = new OnboardingStepBuilder(
             $menuBuilder,
-            $this->createAdminUrlGenerator(),
-            $urlGenerator,
+            new MenuEntryResolver($this->createAdminUrlGenerator(), $urlGenerator, $this->createSecurity(), $this->createConfigService()),
             $this->createTranslator(),
-            $this->createSecurity(),
-            $this->createConfigService(),
         );
 
         $this->assertSame(
@@ -261,11 +245,8 @@ class OnboardingStepBuilderTest extends TestCase
 
         $builder = new OnboardingStepBuilder(
             $menuBuilder,
-            $this->createAdminUrlGenerator(),
-            $this->createStub(UrlGeneratorInterface::class),
+            new MenuEntryResolver($this->createAdminUrlGenerator(), $this->createStub(UrlGeneratorInterface::class), $this->createSecurity(false), $this->createConfigService()),
             $this->createTranslator(),
-            $this->createSecurity(false),
-            $this->createConfigService(),
         );
 
         $this->assertSame([], $builder->getSteps());
@@ -284,11 +265,8 @@ class OnboardingStepBuilderTest extends TestCase
 
         $builder = new OnboardingStepBuilder(
             $menuBuilder,
-            $this->createAdminUrlGenerator(),
-            $this->createStub(UrlGeneratorInterface::class),
+            new MenuEntryResolver($this->createAdminUrlGenerator(), $this->createStub(UrlGeneratorInterface::class), $this->createSecurity(false), $configService),
             $this->createTranslator(),
-            $this->createSecurity(false),
-            $configService,
         );
 
         $this->assertSame([], $builder->getSteps());
@@ -310,11 +288,8 @@ class OnboardingStepBuilderTest extends TestCase
 
         $builder = new OnboardingStepBuilder(
             $menuBuilder,
-            $this->createAdminUrlGenerator(),
-            $this->createStub(UrlGeneratorInterface::class),
+            new MenuEntryResolver($this->createAdminUrlGenerator(), $this->createStub(UrlGeneratorInterface::class), $this->createSecurity(false), $this->createConfigService()),
             $this->createTranslator(),
-            $this->createSecurity(false),
-            $this->createConfigService(),
         );
 
         $this->assertSame([], $builder->getSteps());
@@ -342,11 +317,8 @@ class OnboardingStepBuilderTest extends TestCase
 
         $builder = new OnboardingStepBuilder(
             $menuBuilder,
-            $this->createAdminUrlGenerator(),
-            $this->createStub(UrlGeneratorInterface::class),
+            new MenuEntryResolver($this->createAdminUrlGenerator(), $this->createStub(UrlGeneratorInterface::class), $this->createSecurity(), $this->createConfigService()),
             $translator,
-            $this->createSecurity(),
-            $this->createConfigService(),
         );
 
         $this->assertSame('label.site_link {"%name%":"My site"}', $builder->getSteps()[0]['label']);
@@ -372,16 +344,48 @@ class OnboardingStepBuilderTest extends TestCase
 
         $builder = new OnboardingStepBuilder(
             $menuBuilder,
-            $this->createAdminUrlGenerator(),
-            $urlGenerator,
+            new MenuEntryResolver($this->createAdminUrlGenerator(), $urlGenerator, $this->createSecurity(), $this->createConfigService()),
             $this->createTranslator(),
-            $this->createSecurity(),
-            $this->createConfigService(),
         );
 
         $this->assertSame(
             ['label.zebra', 'label.whatsnew', 'label.apple', 'label.site_link'],
             array_column($builder->getSteps(), 'label'),
         );
+    }
+
+    // The header's links out to the ecosystem, walked after the sidebar: the tour highlights them by the very url the dashboard's buttons carry
+    public function testGetHeaderStepsPointsAtTheTutorialsAndTheBlockShowcase(): void
+    {
+        $builder = new OnboardingStepBuilder(
+            $this->createMenuBuilder([], []),
+            new MenuEntryResolver($this->createAdminUrlGenerator(), $this->createStub(UrlGeneratorInterface::class), $this->createSecurity(), $this->createConfigService()),
+            $this->createTranslator(),
+        );
+
+        $steps = $builder->getHeaderSteps();
+
+        $this->assertSame([EcosystemUrls::TUTORIALS, EcosystemUrls::BLOCK_SHOWCASE], array_column($steps, 'url'));
+        $this->assertSame(['label.tutorials', 'label.block_showcase'], array_column($steps, 'label'));
+        $this->assertSame(['narration.tutorials', 'narration.block_showcase'], array_column($steps, 'narration'));
+    }
+
+    // The unused features panel gets a step only when it shows anything, pointed at by its own selector since its links repeat the sidebar's hrefs
+    public function testGetUnusedFeaturesStepsPointsAtThePanelOnlyWhenItShowsAnything(): void
+    {
+        $builder = new OnboardingStepBuilder(
+            $this->createMenuBuilder([], []),
+            new MenuEntryResolver($this->createAdminUrlGenerator(), $this->createStub(UrlGeneratorInterface::class), $this->createSecurity(), $this->createConfigService()),
+            $this->createTranslator(),
+        );
+
+        $this->assertSame([], $builder->getUnusedFeaturesSteps([]));
+
+        $steps = $builder->getUnusedFeaturesSteps([['label' => 'Pages', 'description' => '', 'url' => '/management/page']]);
+
+        $this->assertCount(1, $steps);
+        $this->assertSame('[data-unused-features]', $steps[0]['highlight']);
+        $this->assertSame('label.unused_features', $steps[0]['label']);
+        $this->assertSame('narration.unused_features', $steps[0]['narration']);
     }
 }

@@ -11,9 +11,7 @@
                     <strong>{{ project.label }}</strong>
                     <span class="badge text-bg-success" data-guided-project-badge="{{ project.slug }}" hidden>{{ 'label.guided_project_done'|trans({}, 'config') }}</span>
                     {%- if project.description %} — <span class="text-muted small">{{ project.description }}</span>{% endif %}
-                    {% if project.film %}
-                        <a href="{{ project.film }}" target="_blank" rel="noopener" class="small ms-1">{{ 'label.guided_project_film'|trans({}, 'config') }}</a>
-                    {% endif %}
+                    <a href="{{ project.film }}" target="_blank" rel="noopener" class="small ms-1">{{ 'label.guided_project_film'|trans({}, 'config') }}</a>
                 </li>
             {% endfor %}
         </ul>

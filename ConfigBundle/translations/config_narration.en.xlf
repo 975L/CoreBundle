@@ -2,6 +2,10 @@
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
     <file source-language="en" target-language="en" datatype="plaintext" original="config_narration.en.xlf">
         <body>
+            <trans-unit id="5ATKQD9">
+                <source>narration.block_showcase</source>
+                <target>Right beside it, "Block showcase" shows every available block kind, each with a live preview: enough to choose which one to put on a page.</target>
+            </trans-unit>
             <trans-unit id="R7d7CYz">
                 <source>narration.config</source>
                 <target>"Configuration" opens every setting of the site, grouped by subject. Each is edited from its own page; sensitive values stay encrypted in the database, even when the screen shows them to you in clear.</target>
@@ -236,7 +240,15 @@
             </trans-unit>
             <trans-unit id="7UEVTAj">
                 <source>narration.site_link</source>
-                <target>The last link opens the site itself in a new tab, as your visitors see it.</target>
+                <target>The last link of the left-hand column opens the site itself in a new tab, as your visitors see it.</target>
+            </trans-unit>
+            <trans-unit id="SIhdRhg">
+                <source>narration.tutorials</source>
+                <target>At the top of the dashboard, "Tutorials" opens the ecosystem's films, one per back-office screen: a way to see again how it is done, at your own pace.</target>
+            </trans-unit>
+            <trans-unit id="S1kRumm">
+                <source>narration.unused_features</source>
+                <target>Further down the dashboard, "Not used on this site yet" suggests, day after day, a few installed features the site doesn't use yet, each one a link to the screen that starts it.</target>
             </trans-unit>
             <trans-unit id="lRnR3Ht">
                 <source>narration.url_metadata</source>

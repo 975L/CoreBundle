@@ -1,4 +1,4 @@
-{# Guided tour trigger + chrome (see assets/js/onboarding-tour.js) - only rendered once the sidebar has at least one menu/link to walk through (see OnboardingStepBuilder). Styling lives in sass/management.scss (compiled to public/css/management.css/.min.css) rather than an inline <style> here - a strict style-src CSP with a nonce present makes 'unsafe-inline' a no-op, and a nonce doesn't cover inline <style>/style="" the way it covers <script> #}
+{# Guided tour trigger + chrome (see assets/js/onboarding-tour.js) - always rendered, the header's links out to the ecosystem being steps of their own (see OnboardingStepBuilder::getHeaderSteps()). Styling lives in sass/management.scss (compiled to public/css/management.css/.min.css) rather than an inline <style> here - a strict style-src CSP with a nonce present makes 'unsafe-inline' a no-op, and a nonce doesn't cover inline <style>/style="" the way it covers <script> #}
 {% if steps|length > 0 %}
     <div data-controller="onboarding-tour"
         data-onboarding-tour-steps-value="{{ steps|json_encode }}"

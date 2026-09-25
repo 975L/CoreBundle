@@ -19,6 +19,7 @@ use c975L\ConfigBundle\Management\GuidedProjectMountBuilder;
 use c975L\ConfigBundle\Management\MenuBuilder;
 use c975L\ConfigBundle\Management\OnboardingStepBuilder;
 use c975L\ConfigBundle\Management\ShortcutBuilder;
+use c975L\ConfigBundle\Management\UnusedFeatureBuilder;
 use c975L\ConfigBundle\Management\WhatsNewBuilder;
 use c975L\ConfigBundle\Security\RolePreview;
 use c975L\ConfigBundle\Security\Voter\BackOfficeAccessVoter;
@@ -56,7 +57,7 @@ class DashboardController extends AbstractDashboardController
         return self::ROUTE_PATH === $path || str_starts_with($path, self::ROUTE_PATH . '/');
     }
 
-    // 22 services injected, well past what a constructor should ask for: owed a grouping of its own, not silenced for good
+    // 23 services injected, well past what a constructor should ask for: owed a grouping of its own, not silenced for good
     public function __construct(
         private readonly MenuBuilder $menuBuilder,
         private readonly WhatsNewBuilder $whatsNewBuilder,
@@ -67,6 +68,7 @@ class DashboardController extends AbstractDashboardController
         private readonly OnboardingStepBuilder $onboardingStepBuilder,
         private readonly GuidedProjectBuilder $guidedProjectBuilder,
         private readonly GuidedProjectMountBuilder $guidedProjectMountBuilder,
+        private readonly UnusedFeatureBuilder $unusedFeatureBuilder,
         private readonly ConfigServiceInterface $configService,
         private readonly CreditsExtension $creditsExtension,
         private readonly ScriptAdminRegistry $scriptAdminRegistry,
@@ -95,6 +97,9 @@ class DashboardController extends AbstractDashboardController
 
         $isAdmin = $this->isGranted($this->configService->get('site-role-admin'));
 
+        // Built once, the tour pointing at the panel only when it shows anything
+        $unusedFeatures = $this->unusedFeatureBuilder->getFeatures();
+
         return $this->render(
             '@c975LConfig/management/index.html.twig',
             [
@@ -107,8 +112,10 @@ class DashboardController extends AbstractDashboardController
                 'essentialActions' => $isAdmin ? $this->essentialActionBuilder->getActions() : [],
                 'essentialActionsProgress' => $isAdmin ? $this->essentialActionBuilder->getProgress() : [],
                 'widgets' => $this->dashboardWidgetBuilder->getWidgets(),
-                'onboardingSteps' => $this->onboardingStepBuilder->getSteps(),
+                // The sidebar first, then the header's links out to the ecosystem, then the unused features panel, the last thing the tour points at
+                'onboardingSteps' => [...$this->onboardingStepBuilder->getSteps(), ...$this->onboardingStepBuilder->getHeaderSteps(), ...$this->onboardingStepBuilder->getUnusedFeaturesSteps($unusedFeatures)],
                 'guidedProjects' => $this->guidedProjectBuilder->getProjects(),
+                'unusedFeatures' => $unusedFeatures,
             ]
         );
     }

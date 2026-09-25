@@ -28,7 +28,7 @@ class EssentialActionBuilder
         return $actions;
     }
 
-    // {done: int, total: int} - drives the dashboard panel's collapsed/expanded state, it's never hidden entirely (see management/_essential_actions.html.twig)
+    // {done: int, total: int} - the count shown beside the actions left to do, the panel going away once none is (see management/index.html.twig)
     public function getProgress(): array
     {
         $actions = $this->getActions();

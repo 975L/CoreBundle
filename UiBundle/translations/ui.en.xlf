@@ -1254,14 +1254,6 @@
                 <source>label.block_section_features_description</source>
                 <target>Section title followed by a grid of features (icon, title, text)</target>
             </trans-unit>
-            <trans-unit id="CaDaMse">
-                <source>label.block_showcase</source>
-                <target>Block showcase</target>
-            </trans-unit>
-            <trans-unit id="8e_hG_b">
-                <source>label.block_showcase_help</source>
-                <target>A gallery of every block type available, with a live preview of each - useful when picking which one to add to a page</target>
-            </trans-unit>
             <trans-unit id="qY3htPq">
                 <source>label.block_slider</source>
                 <target>Image/video slider</target>

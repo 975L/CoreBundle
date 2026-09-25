@@ -70,10 +70,6 @@
                 <source>description.ai_site_search_failure_alert</source>
                 <target>The last call to the provider failed (revoked key, credit exhausted, outage): visitors see "search unavailable"</target>
             </trans-unit>
-            <trans-unit id="sQ9y3iP">
-                <source>description.block_showcase_url</source>
-                <target>Url of the block showcase the sidebar link opens - leave it empty and the link drops out of the menu</target>
-            </trans-unit>
             <trans-unit id="o3sVBy1">
                 <source>description.email_debug</source>
                 <target>When enabled, a ROLE_SUPER_ADMIN sees a preview instead of a real send</target>
@@ -341,10 +337,6 @@
             <trans-unit id="esZzarD">
                 <source>label.ui_ai_assistant_site_retention_days</source>
                 <target>Donovan (Assistant) - Question retention (days)</target>
-            </trans-unit>
-            <trans-unit id="Je6f2_l">
-                <source>label.ui_block_showcase_url</source>
-                <target>Block showcase - Url</target>
             </trans-unit>
             <trans-unit id="xJvR5pw">
                 <source>label.ui_enable_reviews</source>

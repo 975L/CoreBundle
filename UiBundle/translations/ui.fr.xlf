@@ -1254,14 +1254,6 @@
                 <source>label.block_section_features_description</source>
                 <target>Titre de section suivi d'une grille d'atouts (icône, titre, texte)</target>
             </trans-unit>
-            <trans-unit id="CaDaMse">
-                <source>label.block_showcase</source>
-                <target>Vitrine des blocks</target>
-            </trans-unit>
-            <trans-unit id="8e_hG_b">
-                <source>label.block_showcase_help</source>
-                <target>Une galerie de tous les types de blocks disponibles, avec un aperçu en direct de chacun - utile pour choisir lequel ajouter à une page</target>
-            </trans-unit>
             <trans-unit id="qY3htPq">
                 <source>label.block_slider</source>
                 <target>Slider d'images/vidéos</target>

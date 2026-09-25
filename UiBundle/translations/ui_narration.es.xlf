@@ -10,10 +10,6 @@
                 <source>narration.ai_search_answers</source>
                 <target>«Búsqueda IA» enumera las preguntas que los visitantes hicieron al sitio. Las marcadas como no encontradas muestran lo que queda por escribir.</target>
             </trans-unit>
-            <trans-unit id="5ATKQD9">
-                <source>narration.block_showcase</source>
-                <target>«Vitrina de bloques» muestra todos los tipos de bloques disponibles, cada uno con una vista previa en directo: lo justo para elegir cuál colocar en una página.</target>
-            </trans-unit>
             <trans-unit id="1PeeT85">
                 <source>narration.email_templates</source>
                 <target>«Plantillas de email» lleva los correos que el sitio envía. Están compuestos de bloques, exactamente como una página.</target>

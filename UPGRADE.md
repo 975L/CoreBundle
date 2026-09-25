@@ -1,5 +1,13 @@
 # UPGRADE
 
+## v1.37.0
+
+**Two config entries are gone**, `site-tutorials-url` and `ui-block-showcase-url`: the films and the block showcase are the c975L ecosystem's, the same for every site, and now live as constants in `c975L\ConfigBundle\Management\EcosystemUrls`. A value a site had stored is read by nothing anymore - remove it from the "Obsolete configs" screen. Nothing can hide the links now short of overriding `@c975LConfig/management/index.html.twig`.
+
+The block showcase leaves the sidebar for the dashboard's header, beside a new "Tutorials" button, and the guided tour ends on both. `GuidedProjectBuilder` no longer takes a `ConfigServiceInterface`, `OnboardingStepBuilder` takes a `MenuEntryResolver` in place of its URL generators, `Security` and `ConfigServiceInterface`, and `ConfigAlertProvider` a `ConfigEntryLink` in place of its `AdminUrlGeneratorInterface`: a class extending one of them or building it by hand follows.
+
+The dashboard lists the sidebar's CRUDs still empty, as features the site doesn't use yet. A bundle's CRUD listing what happened rather than what an admin makes (payments, 404s, imported reviews) adds `'creatable' => false` to its menu entry, or an empty one shows up there. A `configs.json` entry switching a feature on takes `"feature": true`, a key never a bool nor an entry with a `severity`, and is listed there while empty.
+
 ## v1.35.0
 
 **A migration is needed**, for the `price` column `site_form_field` gains (float, nullable) and the `hidden_when_zero` column `site_form_output` gains (boolean, default `false`):

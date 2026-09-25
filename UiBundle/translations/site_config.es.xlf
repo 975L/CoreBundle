@@ -70,10 +70,6 @@
                 <source>description.ai_site_search_failure_alert</source>
                 <target>La última llamada al proveedor ha fallado (clave revocada, crédito agotado, avería): los visitantes ven «búsqueda no disponible»</target>
             </trans-unit>
-            <trans-unit id="sQ9y3iP">
-                <source>description.block_showcase_url</source>
-                <target>URL de la vitrina de bloques que abre el enlace de la barra lateral - vacío, el enlace desaparece del menú</target>
-            </trans-unit>
             <trans-unit id="o3sVBy1">
                 <source>description.email_debug</source>
                 <target>Si activado, ROLE_SUPER_ADMIN ve una vista previa en vez de un envío real</target>
@@ -341,10 +337,6 @@
             <trans-unit id="esZzarD">
                 <source>label.ui_ai_assistant_site_retention_days</source>
                 <target>Donovan (Asistente) - Conservación de las preguntas (días)</target>
-            </trans-unit>
-            <trans-unit id="Je6f2_l">
-                <source>label.ui_block_showcase_url</source>
-                <target>Vitrina de bloques - URL</target>
             </trans-unit>
             <trans-unit id="xJvR5pw">
                 <source>label.ui_enable_reviews</source>

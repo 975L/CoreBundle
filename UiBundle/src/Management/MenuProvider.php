@@ -91,6 +91,8 @@ class MenuProvider implements MenuProviderInterface
             ],
             'site_graphic' => [
                 'controller' => SiteGraphicCrudController::class,
+                // Its missing graphics are already an alert (see SiteGraphicAlertProvider): the unused features panel would say it twice
+                'creatable' => false,
                 'label' => 'label.site_graphics',
                 'narration' => 'narration.site_graphics',
                 'translation_domain' => 'ui',
@@ -106,6 +108,8 @@ class MenuProvider implements MenuProviderInterface
         if ($this->reviewService->isEnabled()) {
             $menus['review'] = [
                 'controller' => ReviewCrudController::class,
+                // Lists what happened rather than what an admin makes: empty, it is no feature left unused (see UnusedFeatureBuilder)
+                'creatable' => false,
                 'label' => 'label.reviews',
                 'narration' => 'narration.reviews',
                 'translation_domain' => 'ui',
@@ -120,6 +124,8 @@ class MenuProvider implements MenuProviderInterface
         if ($this->aiSiteSearchClient->isEnabled()) {
             $menus['ai_search_answer'] = [
                 'controller' => AiSearchAnswerCrudController::class,
+                // Lists what happened rather than what an admin makes: empty, it is no feature left unused (see UnusedFeatureBuilder)
+                'creatable' => false,
                 'label' => 'label.ai_search_answers',
                 'narration' => 'narration.ai_search_answers',
                 'translation_domain' => 'ui',
@@ -134,20 +140,10 @@ class MenuProvider implements MenuProviderInterface
         return $menus;
     }
 
-    // An external url (not a route name), the showcase living on its own site - so an app points at its own by filling the entry, and an empty entry drops the link rather than opening a tab on nothing
+    // The bundle's screens that are no entity CRUD, the ecosystem's block showcase now sitting in the dashboard's header (see ConfigBundle's EcosystemUrls)
     public function getLinks(): array
     {
-        $links = [
-            'block_showcase' => [
-                'label' => 'label.block_showcase',
-                'narration' => 'narration.block_showcase',
-                'translation_domain' => 'ui',
-                'icon' => 'fas fa-shapes',
-                'url' => (string) $this->configService->get('ui-block-showcase-url'),
-                'target' => '_blank',
-                // No local page to reuse text from (external showcase site) - unlike every other description, this one has no crud/index override backing it, so it's its own dedicated key
-                'description' => 'label.block_showcase_help',
-            ],
+        return [
             'legal_models' => [
                 'name' => LegalModelController::INDEX_ROUTE,
                 'label' => 'label.legal_models',
@@ -176,11 +172,5 @@ class MenuProvider implements MenuProviderInterface
                 'description' => 'label.ai_assistant_subtitle',
             ],
         ];
-
-        if ('' === $links['block_showcase']['url']) {
-            unset($links['block_showcase']);
-        }
-
-        return $links;
     }
 }

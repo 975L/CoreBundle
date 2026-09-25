@@ -8,8 +8,7 @@
 import { Controller } from "@hotwired/stimulus";
 import { buildButton, buildElement, clearHighlight, highlight } from "./guided-ui.js";
 
-// Walks the dashboard's onboardingSteps, matching them against the sidebar's rendered a[href]
-// The panel is wired by hand, being appended to <body> outside this controller's element
+// Walks the dashboard's onboardingSteps, matching them against the page's rendered a[href] - the sidebar's, then the header's links out to the ecosystem - or a panel by the selector a step names instead. The panel is wired by hand, being appended to <body> outside this controller's element
 export default class extends Controller {
     static values = {
         steps: Array,
@@ -70,7 +69,7 @@ export default class extends Controller {
         clearHighlight(this.highlighted);
 
         const step = this.stepsValue[this.index];
-        this.highlighted = highlight(`a[href="${CSS.escape(step.url)}"]`);
+        this.highlighted = highlight(step.highlight || `a[href="${CSS.escape(step.url)}"]`);
 
         const total = this.stepsValue.length;
         const labels = this.labelsValue;

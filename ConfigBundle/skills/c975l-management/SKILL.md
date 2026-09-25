@@ -1,6 +1,6 @@
 ---
 name: c975l-management
-description: "Use this skill when a bundle or an application has to add anything to the /management dashboard of a c975L site — a menu entry, an alert, a shortcut, a widget, a guided project, a what's new note, an importmap entry, an admin procedure, an export or an import, a linkable route. Lists every contribution interface, the one wiring rule that makes them work, and the test that proves their targets still exist. Triggers on: MenuProviderInterface, getMenuSection, section icon, internal link, leavesTheAdmin, AlertProviderInterface, ShortcutProviderInterface, DashboardWidgetProviderInterface, GuidedProjectProviderInterface, WhatsNewProviderInterface, ImportmapProviderInterface, ProcedureProviderInterface, ExportProviderInterface, ImportProviderInterface, LinkableRouteProviderInterface, LinkableRouteCacheTagsInterface, getLinkableRouteCacheTags, LinkableRouteRegistry, cacheTags, EssentialActionProviderInterface, narration, highlight selector, guided-project parameter, site-tutorials-url, guided project film, BackOfficeAccessVoter, TaggedInterfacePass, TableExporter, ManagementTargetsTestCase, EasyAdmin dashboard, AbstractDashboardController, configureMenuItems, DashboardController, whatsnew.json."
+description: "Use this skill when a bundle or an application has to add anything to the /management dashboard of a c975L site — a menu entry, an alert, a shortcut, a widget, a guided project, a what's new note, an importmap entry, an admin procedure, an export or an import, a linkable route. Lists every contribution interface, the one wiring rule that makes them work, and the test that proves their targets still exist. Triggers on: MenuProviderInterface, getMenuSection, section icon, internal link, leavesTheAdmin, AlertProviderInterface, ShortcutProviderInterface, DashboardWidgetProviderInterface, GuidedProjectProviderInterface, WhatsNewProviderInterface, ImportmapProviderInterface, ProcedureProviderInterface, ExportProviderInterface, ImportProviderInterface, LinkableRouteProviderInterface, LinkableRouteCacheTagsInterface, getLinkableRouteCacheTags, LinkableRouteRegistry, cacheTags, EssentialActionProviderInterface, narration, highlight selector, creatable, UnusedFeatureBuilder, guided-project parameter, EcosystemUrls, guided project film, BackOfficeAccessVoter, TaggedInterfacePass, TableExporter, ManagementTargetsTestCase, EasyAdmin dashboard, AbstractDashboardController, configureMenuItems, DashboardController, whatsnew.json."
 ---
 
 # c975L ConfigBundle — contributing to /management
@@ -94,14 +94,18 @@ Two nuances that get lost:
   answered, too low and it leads to a 403 the guided tour walks the user to. The dashboard itself
   opens on `BackOfficeAccessVoter::ACCESS`, not on a role, so an editor stands in it and every block
   filters itself (see `c975l-users`).
+- The dashboard's "Not used on this site yet" panel lists every sidebar CRUD still empty, read off the
+  menus with nothing to declare (see `UnusedFeatureBuilder`). A CRUD listing what happened rather than
+  what an admin makes (payments, 404s, imported reviews), or one filtering its entity down to a subset
+  an alert already covers, sets `'creatable' => false` on its menu entry to stay out of it.
 - A guided project starts from any `[data-guided-project-slug]` button on the page, wherever it sits:
   `guided-project.js` delegates the click on the document, so a button appended after the page loaded
   works too (UiBundle's Donovan renders one when an answer cites a parcours). Only the buttons inside
   the dashboard list are relabelled "Start"/"Resume"/"Replay". From outside the back office,
   `/management?guided-project=<slug>` starts it once the page has loaded.
-- Each guided project carries a `film` url, the `site-tutorials-url` entry followed by its slug,
-  linked as "Watch the film" in the dashboard list and beside Donovan's citation. Emptying the entry
-  removes every link; nothing checks that a film exists for the slug.
+- Each guided project carries a `film` url, `EcosystemUrls::TUTORIAL_FILM` followed by its slug,
+  linked as "Watch the film" in the dashboard list and beside Donovan's citation; nothing checks
+  that a film exists for the slug.
 - A guided project step's `highlight` is a raw CSS selector run through one `document.querySelector`,
   and nothing checks it against the template: prefer a `data-*` marker put on the element for that
   purpose over a structural selector (`table tbody tr:first-child a` stops matching the day a `tbody`

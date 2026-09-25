@@ -19,6 +19,7 @@ use c975L\ConfigBundle\Management\GuidedProjectMountBuilder;
 use c975L\ConfigBundle\Management\MenuBuilder;
 use c975L\ConfigBundle\Management\OnboardingStepBuilder;
 use c975L\ConfigBundle\Management\ShortcutBuilder;
+use c975L\ConfigBundle\Management\UnusedFeatureBuilder;
 use c975L\ConfigBundle\Management\WhatsNewBuilder;
 use c975L\ConfigBundle\Security\RolePreview;
 use c975L\ConfigBundle\Security\Voter\BackOfficeAccessVoter;
@@ -91,6 +92,7 @@ class DashboardControllerTest extends TestCase
             $this->createStub(OnboardingStepBuilder::class),
             $this->createStub(GuidedProjectBuilder::class),
             $guidedProjectMountBuilder,
+            $this->createStub(UnusedFeatureBuilder::class),
             $configService,
             new CreditsExtension($configService),
             $this->createStub(ScriptAdminRegistry::class),

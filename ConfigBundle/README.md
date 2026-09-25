@@ -45,7 +45,8 @@ See it in action at [bundles.975l.com/pages/config-bundle](https://bundles.975l.
 - A `site-timezone` entry setting the hour every template shows, on requests and on the console alike, PHP going on writing in its own
 - "What's new" dashboard section aggregating release notes declared by every c975L bundle
 - Dashboard alerts (danger/warning/info) aggregating what needs attention, declared by every c975L bundle
-- Dashboard "Essential actions" checklist, a permanent quick-access entry point to the handful of settings every site needs
+- Dashboard "Essential actions" checklist, the handful of settings every site needs, each one leaving it once done
+- Dashboard "Not used on this site yet" list: every sidebar CRUD still empty, three a day, read off the menus with nothing to declare - a CRUD listing what happened rather than what an admin makes (payments, 404s) sets `'creatable' => false` on its menu entry to stay out of it (see `UnusedFeatureBuilder`), then every config entry flagged `"feature": true` in a `configs.json` and still empty - the key switching a feature on (an API key, an OAuth client id), never a bool turned off on purpose nor an entry with a `severity`, already among the alerts
 - Dashboard widgets contributed by other bundles (e.g. UiBundle's Donovan card)
 - Dashboard "Guided tour" walking through every sidebar item that declares a `description`
 - Front rate limiting answering 429 past 60 requests per 10 seconds from one caller, the back office and this bundle's own health-check probes never counted
@@ -969,7 +970,7 @@ Only a link leaving the back office (one naming a `target`, see below) goes to t
 
 A few more optional keys: `role` (e.g. `'ROLE_EDITOR'`) hides the link from users lacking it — omit it for links with no access restriction of their own; `target` (e.g. `'_blank'`) is for a link leaving the admin entirely — it gets an external-link glyph automatically, and (for a `name`-based link) resolves to a full absolute URL instead of a relative path; `pinned` (bool) sorts the link after every non-pinned one regardless of its label — ConfigBundle's own "Visit the site" link (using the `site-url`/`site-name` configs) uses it to always stay at the very bottom of the links section; `label_parameters` (array) is passed through to the translator alongside `label`, for a translated label embedding a runtime value (e.g. `['%name%' => $siteName]`) — omit it for a plain translation key with no placeholder, the usual case; `tier` (`'essential'`/`'advanced'`, default `'essential'`) moves the link into the same collapsed "Advanced" submenu as the advanced menu items above, instead of the section it would have been drawn in — the "Links" section is not rendered at all if every link opted into it. A link never inherits its section's own `tier`, which applies to `getMenus()` alone: two links contributed without a tier of their own are grouped the same way, wherever the sidebar draws them.
 
-**Guided tour:** any entry in `getMenus()`/`getLinks()` can add an optional `'description'` key — a one-line "what is this for" sentence, same `translation_domain` — to feed the `/management` dashboard's "Guided tour" button. It highlights every described item in turn with a short explanation, matched against the sidebar's own rendered link (see `OnboardingStepBuilder`), so there's nothing else to wire up. It's entirely optional and can be filled in bundle by bundle: an entry without a `description` is simply skipped, it never breaks anything.
+**Guided tour:** any entry in `getMenus()`/`getLinks()` can add an optional `'description'` key — a one-line "what is this for" sentence, same `translation_domain` — to feed the `/management` dashboard's "Guided tour" button. It highlights every described item in turn with a short explanation, matched against the sidebar's own rendered link (see `OnboardingStepBuilder`), so there's nothing else to wire up. The tour then walks the dashboard header's links to the ecosystem's tutorials and block showcase (see `OnboardingStepBuilder::getHeaderSteps()`), and ends on the "Not used on this site yet" panel when it lists anything. It's entirely optional and can be filled in bundle by bundle: an entry without a `description` is simply skipped, it never breaks anything.
 
 ## Contributing linkable routes for SiteBundle menus
 
@@ -1407,7 +1408,7 @@ Make sure your bundle's `services.yaml` includes the `Management/` folder in its
 
 ## Contributing essential actions from other bundles
 
-The `/management` dashboard shows an "Essential actions" checklist — not a one-time onboarding wizard, but a permanent quick-access entry point to the handful of settings every site needs, always linking straight to the relevant Config screen so a value can be reviewed or redone at any time.
+The `/management` dashboard shows an "Essential actions" checklist — the handful of settings every site needs, each linking straight to the relevant Config screen. Only the actions left to do are listed, beside a done/total count, and the section goes away once the site is set up.
 
 Satellite bundles contribute their own actions by implementing `EssentialActionProviderInterface` — no manual service tagging needed, `TaggedInterfacePass` auto-detects any class implementing it, same mechanism as `MenuProviderInterface` above:
 
@@ -1489,7 +1490,7 @@ Make sure your bundle's `services.yaml` includes the `Management/` folder in its
 
 **Starting a parcours from a link:** `/management?guided-project=<slug>` starts the parcours it names as soon as the page has loaded, the parameter being dropped from the address once read so a reload doesn't start it over. That is what lets a page outside the back office — a film of the parcours, a documentation page — offer "try it": a visitor not signed in goes through the login first, the firewall bringing them back to this address.
 
-**Films:** each project carries a `film` url, the `site-tutorials-url` entry (`https://bundles.975l.com/tutoriels/film` by default) followed by its slug, shown as "Watch the film" beside it in the dashboard list and beside Donovan's citation of it. The address answers every slug, one never filmed landing on the films' index, so the link is written without knowing which films exist. Empty the entry to remove every link.
+**Films:** each project carries a `film` url, `EcosystemUrls::TUTORIAL_FILM` (`https://bundles.975l.com/tutoriels/film`) followed by its slug, shown as "Watch the film" beside it in the dashboard list and beside Donovan's citation of it. The address answers every slug, one never filmed landing on the films' index, so the link is written without knowing which films exist. The dashboard's header links to the films' index, `EcosystemUrls::TUTORIALS`, beside the block showcase.
 
 **Progress is stored in the browser**, in `localStorage`, never in the database — a replayable exercise isn't a record worth a table. It is scoped per user (see `GuidedProjectKeyGenerator`) so two admins sharing one browser profile don't share one parcours, through an HMAC of the user identifier rather than the identifier itself: a `localStorage` key outlives the session, and that identifier is usually an email. The dashboard says as much to the user — progress won't follow them to another computer.
 
