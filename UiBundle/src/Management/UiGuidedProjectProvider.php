@@ -31,7 +31,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-// This bundle's guided projects, running the 3000 block GuidedProjectProviderInterface reserves them - the same docblock stating every other bundle's, so a range is read there rather than recopied here. They open on the media library first, the one screen of this bundle the sidebar keeps essential, then the three a site puts in place as it opens (its graphics, its legal documents, the key its rephrasing runs on), the five occasional ones last. Each carries the role its own screen is gated by, so a parcours is never offered to someone its very first step turns away. Only the opening step of each carries an url: from there the parcours walks the screen the user has been sent to, highlighting the button or the field they are meant to use next - one they click themselves, which brings the panel back on that very step (see ConfigBundle's assets/js/guided-project.js)
+// This bundle's guided projects, running the 3000 block GuidedProjectProviderInterface reserves them - the same docblock stating every other bundle's, so a range is read there rather than recopied here. They open on the media library first, the one screen of this bundle the sidebar keeps essential, then the three a site puts in place as it opens (its graphics, its legal documents, the key its rephrasing runs on) and the site search set beside it, the occasional ones after. Each carries the role its own screen is gated by, so a parcours is never offered to someone its very first step turns away. Only the opening step of each carries an url: from there the parcours walks the screen the user has been sent to, highlighting the button or the field they are meant to use next - one they click themselves, which brings the panel back on that very step (see ConfigBundle's assets/js/guided-project.js)
 // No parcours teaches a block kind, however much one asks for beforehand (the "map" one wants its provider picked in Configuration first): a block is composed inside a page, and a page belongs to SiteBundle, which is where that parcours goes. What is walked here is this bundle's own screens.
 class UiGuidedProjectProvider implements GuidedProjectProviderInterface
 {
@@ -54,6 +54,7 @@ class UiGuidedProjectProvider implements GuidedProjectProviderInterface
             $this->siteGraphicProject(),
             $this->legalModelProject(),
             $this->aiAssistantProject(),
+            $this->aiSearchSetupProject(),
             $this->formProject(),
             $this->calculatorProject(),
             $this->formFieldTemplateProject(),
@@ -67,7 +68,6 @@ class UiGuidedProjectProvider implements GuidedProjectProviderInterface
         }
 
         $projects[] = $this->mediaAddProject();
-        $projects[] = $this->aiSearchSetupProject();
 
         // Same gate as the screen it walks to (see MenuProvider): no question is recorded before the search is configured
         if ($this->aiSiteSearchClient->isEnabled()) {
@@ -85,7 +85,8 @@ class UiGuidedProjectProvider implements GuidedProjectProviderInterface
             'label' => 'label.guided_project_ui_ai_search_setup',
             'description' => 'description.guided_project_ui_ai_search_setup',
             'translation_domain' => 'ui',
-            'order' => 3120,
+            // Right after the rephrasing's key: both are set once, as the site opens
+            'order' => 3045,
             // The bar ConfigCrudController sets on its own index and edit
             'role' => $this->configService->get('site-role-admin'),
             'steps' => [
@@ -558,6 +559,13 @@ class UiGuidedProjectProvider implements GuidedProjectProviderInterface
                 'highlight' => '[data-form-field-template-catalog-url]',
             ],
             [
+                'label' => 'label.guided_step_ui_form_links',
+                'description' => 'description.guided_step_ui_form_links',
+                'narration' => 'narration.guided_step_ui_form_links',
+                // EasyAdmin puts no id on a collection's row, hence the attribute FormCrudController sets on it
+                'highlight' => '[data-form-links-collection]',
+            ],
+            [
                 'label' => 'label.guided_step_ui_form_save',
                 'narration' => 'narration.guided_step_ui_form_save',
                 'highlight' => '.action-saveAndReturn',
@@ -789,6 +797,13 @@ class UiGuidedProjectProvider implements GuidedProjectProviderInterface
                     'label' => 'label.guided_step_ui_email_template_save',
                     'narration' => 'narration.guided_step_ui_email_template_save',
                     'highlight' => '.action-saveAndReturn',
+                ],
+                [
+                    // Back on the index, the action each row carries once its template holds a block
+                    'label' => 'label.guided_step_ui_email_template_preview',
+                    'description' => 'description.guided_step_ui_email_template_preview',
+                    'narration' => 'narration.guided_step_ui_email_template_preview',
+                    'highlight' => '.action-preview',
                 ],
                 [
                     'label' => 'label.guided_step_ui_email_template_check',

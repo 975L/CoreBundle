@@ -149,11 +149,20 @@ class c975LUiBundle extends AbstractBundle
 
         // The admin form themes are NOT registered here: EasyAdmin renders every CRUD form with "... only", which ignores this config entirely (see FormThemeProviderInterface) - they are instead contributed to FormThemeRegistry via UiFormThemeProvider and picked up by ConfigBundle's DashboardController::configureCrud(). CaptchaType only ever appears in public forms, which are rendered by plain Twig, so the app-wide config is the right place for it (and what karser/karser-recaptcha3-bundle did for the widget this one replaces)
         if ($container->hasExtension('twig')) {
+            // The error pages every site shares, as TwigBundle's own "@Twig/Exception" templates. A configured path is searched before a site's templates/bundles/TwigBundle, so that folder is named first, when the site has one, to keep it overriding these
+            $errorPaths = [];
+            $siteErrorPath = $container->hasParameter('kernel.project_dir') ? $container->getParameter('kernel.project_dir') . '/templates/bundles/TwigBundle' : '';
+            if ('' !== $siteErrorPath && is_dir($siteErrorPath)) {
+                $errorPaths[$siteErrorPath] = 'Twig';
+            }
+            $errorPaths[__DIR__ . '/../templates/bundles/TwigBundle'] = 'Twig';
+
             $container->prependExtensionConfig('twig', [
                 'form_themes' => ['@c975LUi/form/captcha_theme.html.twig'],
                 // Registers public/css as a Twig namespace so a compiled stylesheet can be embedded raw via source(). An email carries no <link>, its CSS having to travel inside the message itself: this is how a bundle's own email layout pulls emails.min.css in before inlining it
                 'paths' => [
                     __DIR__ . '/../public/css' => 'c975LUiCss',
+                    ...$errorPaths,
                 ],
             ]);
         }

@@ -314,6 +314,8 @@ class FormCrudController extends AbstractCrudController
                 ->allowDelete()
                 ->setFormTypeOption('by_reference', false)
                 ->setHelp(t('label.form_links_help', [], 'ui'))
+                // What the "ui-form" guided project highlights, EasyAdmin putting no id on a collection's row
+                ->setFormTypeOption('row_attr', ['data-form-links-collection' => 'true'])
                 ->hideOnIndex(),
         ];
     }

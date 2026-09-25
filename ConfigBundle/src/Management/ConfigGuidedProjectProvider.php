@@ -11,6 +11,8 @@
 namespace c975L\ConfigBundle\Management;
 
 use c975L\ConfigBundle\Controller\Management\ConfigCrudController;
+use c975L\ConfigBundle\Controller\Management\ConfigPruneController;
+use c975L\ConfigBundle\Controller\Management\ContentImportController;
 use c975L\ConfigBundle\Controller\Management\MessengerFailedController;
 use c975L\ConfigBundle\Controller\Management\NotFoundCrudController;
 use c975L\ConfigBundle\Controller\Management\RedirectCrudController;
@@ -22,7 +24,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-// This bundle's own guided projects, running the 1000 block GuidedProjectProviderInterface reserves them - the same docblock stating every other bundle's, so a range is read there rather than recopied here. Each carries the role its own screen is gated by, so a parcours is never offered to someone its very first step turns away - the dashboard the list is started from opens to a contributor (see BackOfficeAccessVoter), and four of these nine walk a screen only an admin may read, and one a screen whose buttons only a super admin is shown. Only the opening step of each carries an url: from there the parcours walks the screen the user has been sent to, highlighting the button or the field they are meant to use next - one they click themselves, which brings the panel back on that very step (see assets/js/guided-project.js resume())
+// This bundle's own guided projects, running the 1000 block GuidedProjectProviderInterface reserves them - the same docblock stating every other bundle's, so a range is read there rather than recopied here. Each carries the role its own screen is gated by, so a parcours is never offered to someone its very first step turns away - the dashboard the list is started from opens to a contributor (see BackOfficeAccessVoter), and four of these eleven walk a screen only an admin may read, one a screen whose buttons only a super admin is shown, and two a screen a super admin alone opens. Only the opening step of each carries an url: from there the parcours walks the screen the user has been sent to, highlighting the button or the field they are meant to use next - one they click themselves, which brings the panel back on that very step (see assets/js/guided-project.js resume())
 class ConfigGuidedProjectProvider implements GuidedProjectProviderInterface
 {
     public function __construct(
@@ -45,6 +47,8 @@ class ConfigGuidedProjectProvider implements GuidedProjectProviderInterface
             $this->userRoleProject(),
             $this->rolePreviewProject(),
             $this->messengerFailedProject(),
+            $this->contentImportProject(),
+            $this->pruneProject(),
         ];
     }
 
@@ -234,6 +238,13 @@ class ConfigGuidedProjectProvider implements GuidedProjectProviderInterface
                     'highlight' => '#Redirect_permanent',
                 ],
                 [
+                    // A row ticked "gone" answers 410 and needs no destination (see RedirectSubscriber)
+                    'label' => 'label.guided_step_config_redirect_gone',
+                    'description' => 'description.guided_step_config_redirect_gone',
+                    'narration' => 'narration.guided_step_config_redirect_gone',
+                    'highlight' => '#Redirect_gone',
+                ],
+                [
                     'label' => 'label.guided_step_config_redirect_save',
                     'narration' => 'narration.guided_step_config_redirect_save',
                     'highlight' => '.action-saveAndReturn',
@@ -319,7 +330,7 @@ class ConfigGuidedProjectProvider implements GuidedProjectProviderInterface
             ],
         ];
 
-        // The language tabs are drawn on a site declaring several languages alone (see ConfigCrudController::addContentLocaleParameters), so anywhere else the two steps walking them would speak of nothing on the screen
+        // The language tabs are drawn on a site declaring several languages alone, so anywhere else the two steps walking them would speak of nothing on the screen - and on an entry ConfigTranslator::TRANSLATABLE names alone (see ConfigCrudController::addContentLocaleParameters), which the step's description points to
         if ($this->siteLocales->isMultilingual()) {
             $steps[] = [
                 // A tab is a plain link reloading the screen, and nothing warns of what is left unsaved: the value just typed survives only if saved first, on the button keeping the form open
@@ -399,6 +410,8 @@ class ConfigGuidedProjectProvider implements GuidedProjectProviderInterface
                     'label' => 'label.guided_step_config_health_check_fix',
                     'description' => 'description.guided_step_config_health_check_fix',
                     'narration' => 'narration.guided_step_config_health_check_fix',
+                    // Drawn on a warning or an error row alone, the ones there is something to declare dealt with
+                    'highlight' => '[data-health-check-acknowledge]',
                 ],
                 [
                     'label' => 'label.guided_step_config_health_check_again',
@@ -505,6 +518,80 @@ class ConfigGuidedProjectProvider implements GuidedProjectProviderInterface
                     'label' => 'label.guided_step_config_url_metadata_done',
                     'description' => 'description.guided_step_config_url_metadata_done',
                     'narration' => 'narration.guided_step_config_url_metadata_done',
+                ],
+            ],
+        ];
+    }
+
+    // The other end of a list's "export selection" action, written straight into this environment's database, production included
+    private function contentImportProject(): array
+    {
+        return [
+            'slug' => 'config-content-import',
+            'label' => 'label.guided_project_config_content_import',
+            'description' => 'description.guided_project_config_content_import',
+            'translation_domain' => 'config',
+            'order' => 1090,
+            // The screen and its menu link open to a super admin alone (see ContentImportController)
+            'role' => 'ROLE_SUPER_ADMIN',
+            'steps' => [
+                [
+                    'label' => 'label.guided_step_config_content_import_open',
+                    'description' => 'description.guided_step_config_content_import_open',
+                    'narration' => 'narration.guided_step_config_content_import_open',
+                    'url' => $this->urlGenerator->generate(ContentImportController::IMPORT_ROUTE),
+                ],
+                [
+                    'label' => 'label.guided_step_config_content_import_file',
+                    'description' => 'description.guided_step_config_content_import_file',
+                    'narration' => 'narration.guided_step_config_content_import_file',
+                    'highlight' => '[data-content-import-file]',
+                ],
+                [
+                    'label' => 'label.guided_step_config_content_import_submit',
+                    'description' => 'description.guided_step_config_content_import_submit',
+                    'narration' => 'narration.guided_step_config_content_import_submit',
+                    'highlight' => '[data-content-import-submit]',
+                ],
+                [
+                    'label' => 'label.guided_step_config_content_import_check',
+                    'description' => 'description.guided_step_config_content_import_check',
+                    'narration' => 'narration.guided_step_config_content_import_check',
+                ],
+            ],
+        ];
+    }
+
+    // The entries no configs*.json declares anymore, listed before anything is deleted - the dashboard counterpart of c975l:config:prune
+    private function pruneProject(): array
+    {
+        return [
+            'slug' => 'config-prune',
+            'label' => 'label.guided_project_config_prune',
+            'description' => 'description.guided_project_config_prune',
+            'translation_domain' => 'config',
+            'order' => 1100,
+            // The dashboard tile and the screen open to a super admin alone (see ConfigPruneController)
+            'role' => 'ROLE_SUPER_ADMIN',
+            'steps' => [
+                [
+                    'label' => 'label.guided_step_config_prune_open',
+                    'description' => 'description.guided_step_config_prune_open',
+                    'narration' => 'narration.guided_step_config_prune_open',
+                    'url' => $this->urlGenerator->generate(ConfigPruneController::INDEX_ROUTE),
+                ],
+                [
+                    // Drawn only when there is something obsolete, every row already ticked
+                    'label' => 'label.guided_step_config_prune_review',
+                    'description' => 'description.guided_step_config_prune_review',
+                    'narration' => 'narration.guided_step_config_prune_review',
+                    'highlight' => '[data-config-prune-table]',
+                ],
+                [
+                    'label' => 'label.guided_step_config_prune_delete',
+                    'description' => 'description.guided_step_config_prune_delete',
+                    'narration' => 'narration.guided_step_config_prune_delete',
+                    'highlight' => '[data-config-prune-delete]',
                 ],
             ],
         ];

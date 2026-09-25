@@ -15,6 +15,7 @@ use c975L\ConfigBundle\Service\SiteLocales;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\Routing\Exception\InvalidParameterException;
 use Symfony\Component\Routing\Exception\RouteNotFoundException;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
@@ -84,11 +85,34 @@ class LocalizedUrlGeneratorTest extends TestCase
         $this->assertSame([], $this->generator(null, 'shop_index', [], ['fr'])->screenLanguages());
     }
 
+    // A route with no twin whose own path says its language is offered in each language it accepts, the one its requirement refuses being left out
+    public function testARouteSayingItsOwnLanguageIsOfferedInEachOneItAccepts(): void
+    {
+        $this->assertSame(
+            ['fr' => '/fr/preview/abc', 'en' => '/en/preview/abc'],
+            $this->generator('fr', 'preview', ['_locale' => 'fr', 'short' => 'abc'], ['fr', 'en', 'de'])->screenLanguages(),
+        );
+    }
+
+    // A route Symfony declares per language is offered through its canonical name, each language at its own path
+    public function testARouteDeclaredPerLanguageIsOfferedAtEachOfItsPaths(): void
+    {
+        $generator = $this->generator('fr', 'legal.fr', ['_locale' => 'fr', '_canonical_route' => 'legal'], canonicalRoute: 'legal');
+
+        $this->assertSame(['fr' => '/mentions-legales', 'en' => '/legal-notice'], $generator->screenLanguages());
+    }
+
+    // A "_locale" the route only has as a default is not a language its path says: offering it would send the visitor round in circles
+    public function testARouteOnlyDefaultingItsLanguageOffersNone(): void
+    {
+        $this->assertSame([], $this->generator('fr', 'about', ['_locale' => 'fr'])->screenLanguages());
+    }
+
     /**
      * @param array<string, mixed> $routeParams
      * @param list<string>         $enabledLocales
      */
-    private function generator(?string $readingLocale, ?string $route = null, array $routeParams = [], array $enabledLocales = ['fr', 'en']): LocalizedUrlGenerator
+    private function generator(?string $readingLocale, ?string $route = null, array $routeParams = [], array $enabledLocales = ['fr', 'en'], ?string $canonicalRoute = null): LocalizedUrlGenerator
     {
         $request = Request::create('/');
         if (null !== $readingLocale) {
@@ -98,9 +122,10 @@ class LocalizedUrlGeneratorTest extends TestCase
         if (null !== $route) {
             $request->attributes->set('_route', $route);
             $request->attributes->set('_route_params', $routeParams);
+            $request->attributes->set('_canonical_route', $canonicalRoute);
         }
 
-        // Only "shop_index" and "product_display" are declared twice; "basket_display" is the route a bundle answers once
+        // Only "shop_index" and "product_display" are declared twice; "basket_display" is the route a bundle answers once, "preview" says its language in its own path, accepting "fr" and "en" only, "legal" is declared per language by Symfony, and "about" only has "fr" as a default
         $router = $this->createStub(UrlGeneratorInterface::class);
         $router->method('generate')->willReturnCallback(
             static function (string $route, array $parameters = []): string {
@@ -110,10 +135,13 @@ class LocalizedUrlGeneratorTest extends TestCase
                     'product_display' => '/shop/products/' . $parameters['slug'],
                     'product_display_localized' => '/' . $parameters['_locale'] . '/shop/products/' . $parameters['slug'],
                     'basket_display' => '/shop/basket/display',
+                    'legal' => ['fr' => '/mentions-legales', 'en' => '/legal-notice'][$parameters['_locale']],
+                    'about' => '/about' . ('fr' === $parameters['_locale'] ? '' : '?_locale=' . $parameters['_locale']),
+                    'preview' => \in_array($parameters['_locale'], ['fr', 'en'], true) ? '/' . $parameters['_locale'] . '/preview/' . $parameters['short'] : throw new InvalidParameterException('_locale'),
                     default => throw new RouteNotFoundException($route),
                 };
 
-                unset($parameters['_locale'], $parameters['slug']);
+                unset($parameters['_locale'], $parameters['slug'], $parameters['short']);
 
                 return $path . ([] === $parameters ? '' : '?' . http_build_query($parameters));
             }

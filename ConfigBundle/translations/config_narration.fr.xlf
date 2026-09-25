@@ -14,6 +14,22 @@
                 <source>narration.content_import</source>
                 <target>« Importer du contenu » reprend une archive exportée depuis un autre site, par exemple des pages emportées avec leurs blocks et leurs images.</target>
             </trans-unit>
+            <trans-unit id="1qn8pWP">
+                <source>narration.guided_step_config_content_import_check</source>
+                <target>Le message en haut de l'écran dit combien d'éléments ont été créés et mis à jour. Ouvrez-en un pour vérifier qu'il est arrivé tel que vous l'attendiez.</target>
+            </trans-unit>
+            <trans-unit id="dhO3Q2F">
+                <source>narration.guided_step_config_content_import_file</source>
+                <target>Choisissez le fichier zip tel que l'export l'a produit, sans le décompresser ni le modifier.</target>
+            </trans-unit>
+            <trans-unit id="up5SbZU">
+                <source>narration.guided_step_config_content_import_open</source>
+                <target>Le panneau vous emmène sur l'import de contenu : le zip qu'une liste produit avec « Exporter la sélection », sur un autre environnement, s'importe ici.</target>
+            </trans-unit>
+            <trans-unit id="JVoaMTg">
+                <source>narration.guided_step_config_content_import_submit</source>
+                <target>Cliquez sur Importer. Ce qui existe déjà est mis à jour, le reste est créé, directement dans la base de cet environnement, production comprise.</target>
+            </trans-unit>
             <trans-unit id="wxnPT.p">
                 <source>narration.guided_step_config_health_check_again</source>
                 <target>Une fois vos corrections faites, relancez le bilan : la courbe de tendance, en haut de la page, montre si le site s'améliore.</target>
@@ -98,6 +114,18 @@
                 <source>narration.guided_step_config_not_found_to</source>
                 <target>Dans le champ suivant, dites où ce chemin doit mener désormais. C'est la seule décision qui vous reste.</target>
             </trans-unit>
+            <trans-unit id="egNDPA1">
+                <source>narration.guided_step_config_prune_delete</source>
+                <target>Cliquez sur le bouton de suppression. C'est irréversible, et seules les lignes cochées partent, avec leur valeur.</target>
+            </trans-unit>
+            <trans-unit id="3jzsoQc">
+                <source>narration.guided_step_config_prune_open</source>
+                <target>Le panneau vous emmène sur les configs obsolètes : les réglages qu'aucun bundle ne déclare plus y sont listés, sans que rien ne soit supprimé.</target>
+            </trans-unit>
+            <trans-unit id="dTqeouu">
+                <source>narration.guided_step_config_prune_review</source>
+                <target>Relisez la liste. Chaque ligne est cochée d'office : décochez celles dont la valeur vous servira encore.</target>
+            </trans-unit>
             <trans-unit id="doJKRHJ">
                 <source>narration.guided_step_config_redirect_done</source>
                 <target>L'ancienne adresse répond de nouveau. Une adresse exacte l'emporte toujours sur un dossier, et parmi les dossiers le plus précis l'emporte.</target>
@@ -105,6 +133,10 @@
             <trans-unit id="LuYhYI2">
                 <source>narration.guided_step_config_redirect_from</source>
                 <target>Dans le premier champ, tapez l'ancienne adresse avec sa barre oblique initiale. Terminée par une étoile, elle couvre tout le dossier qui est dessous.</target>
+            </trans-unit>
+            <trans-unit id="OoIvOnh">
+                <source>narration.guided_step_config_redirect_gone</source>
+                <target>Si l'ancienne page n'existe plus et que rien ne la remplace, cochez plutôt cette case : l'adresse répond « supprimée », et les moteurs de recherche l'oublient plus vite.</target>
             </trans-unit>
             <trans-unit id="NN2JyrW">
                 <source>narration.guided_step_config_redirect_new</source>

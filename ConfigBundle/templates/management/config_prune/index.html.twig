@@ -36,7 +36,7 @@
         <form method="post" action="{{ path('management_config_prune_delete') }}">
             <input type="hidden" name="_token" value="{{ csrf_token('management_config_prune_delete') }}">
 
-            <table class="table datagrid">
+            <table class="table datagrid" data-config-prune-table>
                 <thead>
                     <tr>
                         <th></th>
@@ -63,7 +63,7 @@
                 </tbody>
             </table>
 
-            <button type="submit" class="btn btn-danger">{{ 'action.config_prune_delete'|trans({}, 'config') }}</button>
+            <button type="submit" class="btn btn-danger" data-config-prune-delete>{{ 'action.config_prune_delete'|trans({}, 'config') }}</button>
         </form>
     {% endif %}
 {% endblock main %}

@@ -16,6 +16,16 @@
                 "en": "A form can now lead to a thank-you page of your choice once it is sent, and the form guided project shows where to set it.",
                 "fr": "Un formulaire peut désormais mener vers la page de remerciement de votre choix une fois envoyé, et le projet guidé des formulaires montre où la régler.",
                 "es": "Un formulario puede llevar ahora a la página de agradecimiento que elija una vez enviado, y el proyecto guiado de formularios muestra dónde ajustarla."
+            },
+            {
+                "en": "Error pages now show a message suited to the error and one of your site's error images, or a default illustration while you have none.",
+                "fr": "Les pages d'erreur affichent désormais un message adapté à l'erreur et l'une des images d'erreur de votre site, ou une illustration par défaut tant que vous n'en avez pas.",
+                "es": "Las páginas de error muestran ahora un mensaje adaptado al error y una de las imágenes de error de su sitio, o una ilustración por defecto mientras no tenga ninguna."
+            },
+            {
+                "en": "The form guided project now shows the links under the submit button and every action setting, and the e-mail templates one how to preview an e-mail without sending it.",
+                "fr": "Le projet guidé des formulaires montre désormais les liens sous le bouton et tous les réglages de l'action, et celui des modèles d'e-mail comment prévisualiser un e-mail sans l'envoyer.",
+                "es": "El proyecto guiado de los formularios muestra ahora los enlaces bajo el botón y todos los ajustes de la acción, y el de las plantillas de correo cómo previsualizar un correo sin enviarlo."
             }
         ]
     },

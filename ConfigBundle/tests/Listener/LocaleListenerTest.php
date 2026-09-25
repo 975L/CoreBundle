@@ -11,13 +11,18 @@
 namespace c975L\ConfigBundle\Tests\Listener;
 
 use c975L\ConfigBundle\Listener\LocaleListener;
+use c975L\ConfigBundle\Service\LocalizedUrlGenerator;
 use c975L\ConfigBundle\Service\SiteLocales;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
+use Symfony\Component\Routing\Exception\InvalidParameterException;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class LocaleListenerTest extends TestCase
 {
@@ -65,7 +70,7 @@ class LocaleListenerTest extends TestCase
     {
         $event = $this->createEvent(['accept-language' => 'fr'], 'en', path: '/management/collection');
 
-        new LocaleListener($this->siteLocales(['fr', 'en']))($event);
+        new LocaleListener($this->siteLocales(['fr', 'en']), $this->urls())($event);
 
         $this->assertSame('fr', $event->getRequest()->getLocale());
     }
@@ -75,7 +80,7 @@ class LocaleListenerTest extends TestCase
     {
         $event = $this->createEvent(['accept-language' => 'fr'], 'en', path: '/management/collection', sessionKey: LocaleListener::SESSION_KEY_MANAGEMENT);
 
-        new LocaleListener($this->siteLocales(['fr', 'en']))($event);
+        new LocaleListener($this->siteLocales(['fr', 'en']), $this->urls())($event);
 
         $this->assertSame('en', $event->getRequest()->getLocale());
     }
@@ -85,7 +90,7 @@ class LocaleListenerTest extends TestCase
     {
         $event = $this->createEvent(['accept-language' => 'fr'], 'en', path: '/management-de-projet');
 
-        new LocaleListener($this->siteLocales(['fr', 'en']))($event);
+        new LocaleListener($this->siteLocales(['fr', 'en']), $this->urls())($event);
 
         $this->assertSame('en', $event->getRequest()->getLocale());
     }
@@ -95,7 +100,7 @@ class LocaleListenerTest extends TestCase
     {
         $event = $this->createEvent(asked: 'en', chosen: 'fr', path: '/management/collection');
 
-        new LocaleListener($this->siteLocales(['fr', 'en']))($event);
+        new LocaleListener($this->siteLocales(['fr', 'en']), $this->urls())($event);
 
         $session = $event->getRequest()->getSession();
         $this->assertSame('en', $session->get(LocaleListener::SESSION_KEY_MANAGEMENT));
@@ -108,7 +113,7 @@ class LocaleListenerTest extends TestCase
         $event = $this->createEvent(['accept-language' => 'en-GB,en;q=0.9']);
         $before = $event->getRequest()->getLocale();
 
-        new LocaleListener($this->siteLocales(['fr']))($event);
+        new LocaleListener($this->siteLocales(['fr']), $this->urls())($event);
 
         $this->assertSame($before, $event->getRequest()->getLocale());
     }
@@ -118,7 +123,7 @@ class LocaleListenerTest extends TestCase
         $event = $this->createEvent(['accept-language' => 'en-GB,en;q=0.9']);
         $before = $event->getRequest()->getLocale();
 
-        new LocaleListener($this->siteLocales([]))($event);
+        new LocaleListener($this->siteLocales([]), $this->urls())($event);
 
         $this->assertSame($before, $event->getRequest()->getLocale());
     }
@@ -128,7 +133,7 @@ class LocaleListenerTest extends TestCase
     {
         $event = $this->createEvent(['accept-language' => 'en-GB,en;q=0.9']);
 
-        new LocaleListener($this->siteLocales(['fr', 'en']))($event);
+        new LocaleListener($this->siteLocales(['fr', 'en']), $this->urls())($event);
 
         $this->assertSame('en', $event->getRequest()->getLocale());
     }
@@ -138,7 +143,7 @@ class LocaleListenerTest extends TestCase
     {
         $event = $this->createEvent(['accept-language' => 'de-DE,de;q=0.9']);
 
-        new LocaleListener($this->siteLocales(['fr', 'en']))($event);
+        new LocaleListener($this->siteLocales(['fr', 'en']), $this->urls())($event);
 
         $this->assertSame('fr', $event->getRequest()->getLocale());
     }
@@ -148,7 +153,7 @@ class LocaleListenerTest extends TestCase
     {
         $event = $this->createEvent(['accept-language' => 'en-GB,en;q=0.9'], 'fr');
 
-        new LocaleListener($this->siteLocales(['fr', 'en']))($event);
+        new LocaleListener($this->siteLocales(['fr', 'en']), $this->urls())($event);
 
         $this->assertSame('fr', $event->getRequest()->getLocale());
     }
@@ -158,7 +163,7 @@ class LocaleListenerTest extends TestCase
     {
         $event = $this->createEvent(['accept-language' => 'en-GB,en;q=0.9'], 'de');
 
-        new LocaleListener($this->siteLocales(['fr', 'en']))($event);
+        new LocaleListener($this->siteLocales(['fr', 'en']), $this->urls())($event);
 
         $this->assertSame('en', $event->getRequest()->getLocale());
     }
@@ -169,7 +174,7 @@ class LocaleListenerTest extends TestCase
         $event = $this->createEvent(['accept-language' => 'en-GB,en;q=0.9'], 'en', 'fr');
         $event->getRequest()->setLocale('fr');
 
-        new LocaleListener($this->siteLocales(['fr', 'en']))($event);
+        new LocaleListener($this->siteLocales(['fr', 'en']), $this->urls())($event);
 
         $this->assertSame('fr', $event->getRequest()->getLocale());
     }
@@ -179,7 +184,7 @@ class LocaleListenerTest extends TestCase
     {
         $event = $this->createEvent(['accept-language' => 'en-GB,en;q=0.9'], asked: 'fr');
 
-        new LocaleListener($this->siteLocales(['fr', 'en']))($event);
+        new LocaleListener($this->siteLocales(['fr', 'en']), $this->urls())($event);
 
         $this->assertSame('fr', $event->getRequest()->getLocale());
     }
@@ -189,7 +194,7 @@ class LocaleListenerTest extends TestCase
     {
         $event = $this->createEvent(['accept-language' => 'en-GB,en;q=0.9'], 'en', asked: 'fr');
 
-        new LocaleListener($this->siteLocales(['fr', 'en']))($event);
+        new LocaleListener($this->siteLocales(['fr', 'en']), $this->urls())($event);
 
         $this->assertSame('fr', $event->getRequest()->getSession()->get(LocaleListener::SESSION_KEY));
     }
@@ -199,7 +204,7 @@ class LocaleListenerTest extends TestCase
     {
         $event = $this->createEvent(['accept-language' => 'en-GB,en;q=0.9'], asked: 'de');
 
-        new LocaleListener($this->siteLocales(['fr', 'en']))($event);
+        new LocaleListener($this->siteLocales(['fr', 'en']), $this->urls())($event);
 
         $this->assertSame('en', $event->getRequest()->getLocale());
     }
@@ -209,8 +214,106 @@ class LocaleListenerTest extends TestCase
     {
         $event = $this->createEvent(['accept-language' => 'en-GB,en;q=0.9']);
 
-        new LocaleListener($this->siteLocales(['fr', 'en']))($event);
+        new LocaleListener($this->siteLocales(['fr', 'en']), $this->urls())($event);
 
         $this->assertFalse($event->getRequest()->hasSession());
+    }
+
+    // A route whose own path says its language moves a visitor who picked another one from the menu to that same route in it, the other query parameters along
+    public function testALanguagePickedOnARouteSayingItsOwnMovesToThatRouteInIt(): void
+    {
+        $event = $this->routeEvent('preview', 'fr', 'en', ['page' => '2']);
+
+        new LocaleListener($this->siteLocales(['fr', 'en']), $this->urls())($event);
+
+        $response = $event->getResponse();
+        $this->assertInstanceOf(RedirectResponse::class, $response);
+        $this->assertSame('/en/preview/abc?page=2', $response->getTargetUrl());
+        $this->assertSame('en', $event->getRequest()->getSession()->get(LocaleListener::SESSION_KEY));
+    }
+
+    // The menu's form is sent to the url of its first language: picking that one is kept too, and moves to the url without the query rather than looping on it
+    public function testTheLanguageAlreadyReadIsKeptAndDropsTheQuery(): void
+    {
+        $event = $this->routeEvent('preview', 'fr', 'fr');
+        $event->getRequest()->getSession()->set(LocaleListener::SESSION_KEY, 'en');
+
+        new LocaleListener($this->siteLocales(['fr', 'en']), $this->urls())($event);
+
+        $response = $event->getResponse();
+        $this->assertInstanceOf(RedirectResponse::class, $response);
+        $this->assertSame('/fr/preview/abc', $response->getTargetUrl());
+        $this->assertSame('fr', $event->getRequest()->getSession()->get(LocaleListener::SESSION_KEY));
+    }
+
+    // A route Symfony declares per language is moved to its path in the language asked, through its canonical name
+    public function testARouteDeclaredPerLanguageMovesToItsPathInTheLanguageAsked(): void
+    {
+        $event = $this->routeEvent('legal.fr', 'fr', 'en');
+        $event->getRequest()->attributes->set('_canonical_route', 'legal');
+
+        new LocaleListener($this->siteLocales(['fr', 'en']), $this->urls())($event);
+
+        $response = $event->getResponse();
+        $this->assertInstanceOf(RedirectResponse::class, $response);
+        $this->assertSame('/legal-notice', $response->getTargetUrl());
+    }
+
+    // A "_locale" the route only has as a default cannot be said by its path: following it would redirect to the same page again and again
+    public function testALocaleOnlyDefaultedIsNotMoved(): void
+    {
+        $event = $this->routeEvent('about', 'fr', 'en');
+
+        new LocaleListener($this->siteLocales(['fr', 'en']), $this->urls())($event);
+
+        $this->assertNull($event->getResponse());
+    }
+
+    // A localised twin is left to LocalizedRouteNegotiator, its menu linking to the bare url, and a language the route refuses leaves the visitor where they are
+    public function testATwinOrARefusedLanguageIsNotMoved(): void
+    {
+        foreach ([['shop_index_localized', 'en'], ['preview', 'de']] as [$route, $asked]) {
+            $event = $this->routeEvent($route, 'fr', $asked);
+
+            new LocaleListener($this->siteLocales(['fr', 'en', 'de']), $this->urls())($event);
+
+            $this->assertNull($event->getResponse(), $route . ' ' . $asked);
+        }
+    }
+
+    /** @param array<string, string> $query */
+    private function routeEvent(string $route, string $routeLocale, string $asked, array $query = []): RequestEvent
+    {
+        $event = $this->createEvent(routeLocale: $routeLocale, asked: $asked);
+        $request = $event->getRequest();
+        $request->attributes->set('_route', $route);
+        $request->attributes->set('_route_params', ['_locale' => $routeLocale, 'short' => 'abc']);
+        foreach ($query as $name => $value) {
+            $request->query->set($name, $value);
+        }
+        $request->setSession(new Session(new MockArraySessionStorage()));
+
+        return $event;
+    }
+
+    // "preview" says its language in its own path and accepts "fr" and "en" only, "legal" is declared per language by Symfony, and "about" only has "fr" as a default
+    private function urls(): LocalizedUrlGenerator
+    {
+        $router = $this->createStub(UrlGeneratorInterface::class);
+        $router->method('generate')->willReturnCallback(
+            static function (string $route, array $parameters = []): string {
+                $locale = $parameters['_locale'] ?? null;
+                $path = match ($route) {
+                    'legal' => ['fr' => '/mentions-legales', 'en' => '/legal-notice'][$locale] ?? throw new InvalidParameterException('_locale'),
+                    'about' => '/about' . ('fr' === $locale ? '' : '?_locale=' . $locale),
+                    default => \in_array($locale, ['fr', 'en'], true) ? '/' . $locale . '/preview/' . $parameters['short'] : throw new InvalidParameterException('_locale'),
+                };
+                unset($parameters['_locale'], $parameters['short']);
+
+                return $path . ([] === $parameters ? '' : '?' . http_build_query($parameters));
+            }
+        );
+
+        return new LocalizedUrlGenerator($router, $this->siteLocales(['fr', 'en']), new RequestStack());
     }
 }

@@ -1,6 +1,6 @@
 ---
 name: c975l-config
-description: "Use this skill for any configuration question in a Symfony application built on the c975L ecosystem — where a setting belongs, how to declare one, how to read it, and why .env and container parameters are the wrong answer here. Covers config/configs.json, ConfigServiceInterface, how a group drawer is named and labelled, sensitive and restricted values, severities, the vault key, the loading and pruning commands, and maintenance mode. Triggers on: configs.json, ConfigServiceInterface, ConfigService, config(), configParam(), c975l:config:load-all, c975l:config:set, c975l:config:get, c975l:config:prune, c975l:config:encrypt-sensitive, C975L_VAULT_KEY, sensitive, restricted, severity, feature, UnusedConfigFeatureReader, ConfigAlertProvider, findSensitiveWithValue, site-maintenance, ConfigTranslator, ConfigTranslator::TRANSLATABLE, site_config owner, translate a setting, .env, parameters.yaml, TreeBuilder, ConfigGroupLabelResolver, label.group_, SiteLocales, enabled_locales, LocaleListener, default_locale, translation.yaml, multilingual, isMultilingual, setLocales, language selector, locales_pattern, LocalizedRouteNegotiator, isTranslated, redirectToAskedLanguage, vary, LocalizedUrlGenerator, localized_path, screen_languages, ContentLocaleScreen, contenu, _content_locale_tabs, InternalLinkLocalizerInterface, SESSION_KEY_MANAGEMENT, isManagementPath, ROUTE_PATH, back office language, site-rate-limit."
+description: "Use this skill for any configuration question in a Symfony application built on the c975L ecosystem — where a setting belongs, how to declare one, how to read it, and why .env and container parameters are the wrong answer here. Covers config/configs.json, ConfigServiceInterface, how a group drawer is named and labelled, sensitive and restricted values, severities, the vault key, the loading and pruning commands, and maintenance mode. Triggers on: configs.json, ConfigServiceInterface, ConfigService, config(), configParam(), c975l:config:load-all, c975l:config:set, c975l:config:get, c975l:config:prune, c975l:config:encrypt-sensitive, C975L_VAULT_KEY, sensitive, restricted, severity, feature, UnusedConfigFeatureReader, ConfigAlertProvider, findSensitiveWithValue, site-maintenance, ConfigTranslator, ConfigTranslator::TRANSLATABLE, site_config owner, translate a setting, .env, parameters.yaml, TreeBuilder, ConfigGroupLabelResolver, label.group_, SiteLocales, enabled_locales, LocaleListener, default_locale, translation.yaml, multilingual, isMultilingual, setLocales, language selector, locales_pattern, LocalizedRouteNegotiator, isTranslated, redirectToAskedLanguage, vary, LocalizedUrlGenerator, sameRouteIn, _canonical_route, localized_path, screen_languages, ContentLocaleScreen, contenu, _content_locale_tabs, InternalLinkLocalizerInterface, SESSION_KEY_MANAGEMENT, isManagementPath, ROUTE_PATH, back office language, site-rate-limit."
 ---
 
 # c975L ConfigBundle — configuration
@@ -161,7 +161,9 @@ would otherwise take down every back-office page through EasyAdmin's `Locale::ne
 
 `Listener\LocaleListener` (priority 20) sets the language of a request from the `_locale` query
 parameter, then the session, then what the browser asks for — a route carrying its own `_locale`
-attribute wins over all three. The back-office selector is EasyAdmin's own
+attribute wins over all three, except that a `?_locale=xx` sent to it moves the visitor to that same
+route in the language asked (`/fr/preview/abc` → `/en/preview/abc`, a route Symfony declares per
+language included) and keeps the choice in session. The back-office selector is EasyAdmin's own
 (`Dashboard::setLocales()`), which only appends `?_locale=xx` and reads it back nowhere, so this
 listener is what keeps the choice — for the front office too.
 
@@ -209,7 +211,9 @@ a product is something else again:
 than sending the visitor back into the writing language at the first click: `path()` takes the
 localised twin where the target answers in that language, and `screenLanguages()` (the
 `screen_languages()` Twig function) offers the screen being read in each language, as bare urls
-carrying `?_locale=xx`. A stored link is
+carrying `?_locale=xx`. A route with no twin whose own path holds `{_locale}` is offered in each
+language it accepts, through `sameRouteIn()` — never a route whose `_locale` is only a default, which
+would answer the same page again. A stored link is
 `c975L\UiBundle\Contract\InternalLinkLocalizerInterface`, and a menu item says its own languages through the
 `locales` key of a linkable route.
 

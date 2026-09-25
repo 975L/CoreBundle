@@ -154,7 +154,7 @@ class UiGuidedProjectProviderTest extends TestCase
         $this->assertSame('[data-content-locales]', $steps['label.guided_step_ui_form_translate']['highlight']);
         $this->assertSame(
             ['label.guided_step_ui_form_save', 'label.guided_step_ui_form_reopen', 'label.guided_step_ui_form_translate'],
-            \array_slice(array_keys($steps), 6, 3),
+            \array_slice(array_keys($steps), 7, 3),
         );
     }
 
@@ -184,13 +184,13 @@ class UiGuidedProjectProviderTest extends TestCase
         self::fail('The "ui-form" guided project was not found.');
     }
 
-    // The 3000 block GuidedProjectProviderInterface reserves this bundle, at the step of 10 it states
+    // The 3000 block GuidedProjectProviderInterface reserves this bundle, at the step of 10 it states, the site search slipped in beside the rephrasing's key it is set with
     public function testGetGuidedProjectsContinuesTheOrderSequence(): void
     {
         $projects = $this->createProvider()->getGuidedProjects();
 
-        $this->assertSame(['ui-media', 'ui-site-graphic', 'ui-legal-model', 'ui-ai-assistant', 'ui-form', 'ui-calculator', 'ui-form-field-template', 'ui-email-template', 'ui-font', 'ui-review', 'ui-media-add', 'ui-ai-search-setup', 'ui-ai-search-answers'], array_column($projects, 'slug'));
-        $this->assertSame([3010, 3020, 3030, 3040, 3050, 3060, 3070, 3080, 3090, 3100, 3110, 3120, 3130], array_column($projects, 'order'));
+        $this->assertSame(['ui-media', 'ui-site-graphic', 'ui-legal-model', 'ui-ai-assistant', 'ui-ai-search-setup', 'ui-form', 'ui-calculator', 'ui-form-field-template', 'ui-email-template', 'ui-font', 'ui-review', 'ui-media-add', 'ui-ai-search-answers'], array_column($projects, 'slug'));
+        $this->assertSame([3010, 3020, 3030, 3040, 3045, 3050, 3060, 3070, 3080, 3090, 3100, 3110, 3130], array_column($projects, 'order'));
     }
 
     // Orders are merged across every bundle contributing projects, and two equal ones leave their sequence to the order the providers happen to be registered in - this bundle's own block is the 3000 GuidedProjectProviderInterface reserves it
@@ -277,7 +277,7 @@ class UiGuidedProjectProviderTest extends TestCase
         $this->createProvider($controllers)->getGuidedProjects();
 
         $this->assertSame(
-            ['MediaCrudController', 'SiteGraphicCrudController', 'FormCrudController', 'FormCrudController', 'FormFieldTemplateCrudController', 'EmailTemplateCrudController', 'FontCrudController', 'ReviewCrudController', 'MediaCrudController', 'ConfigCrudController', 'AiSearchAnswerCrudController'],
+            ['MediaCrudController', 'SiteGraphicCrudController', 'ConfigCrudController', 'FormCrudController', 'FormCrudController', 'FormFieldTemplateCrudController', 'EmailTemplateCrudController', 'FontCrudController', 'ReviewCrudController', 'MediaCrudController', 'AiSearchAnswerCrudController'],
             array_map(static fn (string $fqcn): string => basename(str_replace('\\', '/', $fqcn)), $controllers)
         );
     }

@@ -162,6 +162,10 @@
                 <source>narration.guided_step_ui_email_template_open</source>
                 <target>The panel takes you to the e-mail templates. The e-mails the site sends are made of blocks, exactly like a page.</target>
             </trans-unit>
+            <trans-unit id="HCKLR97">
+                <source>narration.guided_step_ui_email_template_preview</source>
+                <target>Before sending anything, click the envelope at the end of its row: the e-mail opens in a new tab, as it will be sent. It only shows once the template holds at least one block.</target>
+            </trans-unit>
             <trans-unit id="yq3XDDm">
                 <source>narration.guided_step_ui_email_template_save</source>
                 <target>Save with the button at the bottom of the form.</target>
@@ -196,7 +200,7 @@
             </trans-unit>
             <trans-unit id="Zej_em.">
                 <source>narration.guided_step_ui_form_action_config</source>
-                <target>Then tune the action if need be. It is optional: its settings are written here, and successUrl leads to a thank-you page once the form is sent.</target>
+                <target>Then tune the action if need be. It is optional: its settings are written here, successUrl leads to a thank-you page once the form is sent, submitLabel words the button and minDelay sets the anti-bot delay.</target>
             </trans-unit>
             <trans-unit id="MeB2xYx">
                 <source>narration.guided_step_ui_form_field_template_done</source>
@@ -233,6 +237,10 @@
             <trans-unit id="P7.Gast">
                 <source>narration.guided_step_ui_form_fields</source>
                 <target>Add the fields, one per piece of information asked for and no more: every extra field costs you answers.</target>
+            </trans-unit>
+            <trans-unit id="mDfAE4p">
+                <source>narration.guided_step_ui_form_links</source>
+                <target>Add links under the button if need be. They are optional, and shown just under the submit button, such as a link to the login page under a sign-up form.</target>
             </trans-unit>
             <trans-unit id="ffqKDfR">
                 <source>narration.guided_step_ui_form_name</source>

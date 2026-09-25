@@ -1,5 +1,29 @@
 # ChangeLog
 
+## v1.39.1
+
+The language menu moves a /{_locale}/ route to the language picked
+
+### ConfigBundle
+
+- A `?_locale=xx` on a route whose path holds `{_locale}` redirects to that route in the language asked, and keeps it in session (25/09/2026)
+- The language menu offers such a route in each language it accepts, Symfony's per-language routes included (25/09/2026)
+- New `LocalizedUrlGenerator::sameRouteIn()`, never following a `_locale` that is only a default (25/09/2026)
+- New `config-content-import` and `config-prune` guided projects (25/09/2026)
+- The `config-redirect` guided project walks the `gone` box (25/09/2026)
+- The `config-health-check` guided project highlights the acknowledge button (25/09/2026)
+- The `config-settings` translate step names the setting to open (25/09/2026)
+- The README and the `c975l-config` skill document the language redirect (25/09/2026)
+
+### UiBundle
+
+- A shared error page, registered as TwigBundle's own, drawing from the `error-image` pool or six shipped images (25/09/2026)
+- `QrCodeGenerator::generate()` takes `cached: false`, drawing a code without keeping it (25/09/2026)
+- The `ui-form` guided project walks the `links` collection and every action setting (25/09/2026)
+- The `ui-email-template` guided project walks the preview action (25/09/2026)
+- The `ui-ai-search-setup` guided project moves to 3045, beside the rephrasing's key (25/09/2026)
+- The README and the `c975l-media` skill document the error page and `cached: false` (25/09/2026)
+
 ## v1.39.0
 
 Inactive accounts are warned then anonymized

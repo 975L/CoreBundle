@@ -10,6 +10,7 @@
 
 namespace c975L\ConfigBundle\Service;
 
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Exception\ExceptionInterface as RoutingExceptionInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -74,7 +75,7 @@ class LocalizedUrlGenerator
             $this->urlGenerator->generate($bare . self::LOCALIZED_SUFFIX, $parameters + ['_locale' => $spoken[0]]);
             $path = $this->urlGenerator->generate($bare, $parameters);
         } catch (RoutingExceptionInterface) {
-            return [];
+            return $this->selfLocalizedLanguages($request);
         }
 
         $languages = [];
@@ -83,6 +84,44 @@ class LocalizedUrlGenerator
         }
 
         return $languages;
+    }
+
+    // The route being read in another language, when its path says that language - "/{_locale}/preview/{short}", or one of the paths of a route Symfony declares per language, generated from its canonical name. Null when the route cannot say it: a "_locale" left in the query is only a default, and following it would answer the same page in the same language again
+    /** @param array<string, mixed> $query */
+    public function sameRouteIn(Request $request, string $locale, array $query = []): ?string
+    {
+        $route = $request->attributes->get('_canonical_route') ?? $request->attributes->get('_route');
+        $parameters = $request->attributes->get('_route_params');
+        if (!\is_string($route) || !\is_array($parameters) || !isset($parameters['_locale'])) {
+            return null;
+        }
+
+        unset($parameters['_canonical_route']);
+
+        try {
+            $url = $this->urlGenerator->generate($route, ['_locale' => $locale] + $parameters + $query);
+        } catch (RoutingExceptionInterface) {
+            return null;
+        }
+
+        parse_str((string) parse_url($url, \PHP_URL_QUERY), $leftOver);
+
+        return isset($leftOver['_locale']) ? null : $url;
+    }
+
+    // A route with no twin whose own path says its language, offered in each language it accepts, a language its requirement refuses being left out rather than failing the whole menu - and nothing at all when every language gives the same url. The menu's form sends "?_locale=xx" to the first of them, which LocaleListener moves on to the language asked
+    /** @return array<string, string> locale => url */
+    private function selfLocalizedLanguages(Request $request): array
+    {
+        $languages = [];
+        foreach ($this->siteLocales->all() as $locale) {
+            $url = $this->sameRouteIn($request, $locale);
+            if (null !== $url) {
+                $languages[$locale] = $url;
+            }
+        }
+
+        return \count(array_unique($languages)) > 1 ? $languages : [];
     }
 
     // The language being read, when it is one the site declares besides the one it was written in. The route attribute rather than getLocale(), which a controller switches back for the duration of the render

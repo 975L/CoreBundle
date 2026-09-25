@@ -14,6 +14,22 @@
                 <source>narration.content_import</source>
                 <target>"Import content" takes in an archive exported from another site, for instance pages carried out with their blocks and their pictures.</target>
             </trans-unit>
+            <trans-unit id="1qn8pWP">
+                <source>narration.guided_step_config_content_import_check</source>
+                <target>The message at the top of the screen says how many items were created and updated. Open one to check it arrived as you expected.</target>
+            </trans-unit>
+            <trans-unit id="dhO3Q2F">
+                <source>narration.guided_step_config_content_import_file</source>
+                <target>Pick the zip file as the export produced it, neither unzipped nor edited.</target>
+            </trans-unit>
+            <trans-unit id="up5SbZU">
+                <source>narration.guided_step_config_content_import_open</source>
+                <target>The panel takes you to the content import: the zip a list produces with "Export selection", on another environment, is imported here.</target>
+            </trans-unit>
+            <trans-unit id="JVoaMTg">
+                <source>narration.guided_step_config_content_import_submit</source>
+                <target>Click Import. What already exists is updated and the rest is created, straight into this environment's database, production included.</target>
+            </trans-unit>
             <trans-unit id="wxnPT.p">
                 <source>narration.guided_step_config_health_check_again</source>
                 <target>Once your corrections are made, run the check again: the trend chart at the top of the page shows whether the site is improving.</target>
@@ -98,6 +114,18 @@
                 <source>narration.guided_step_config_not_found_to</source>
                 <target>In the next field, say where that path should lead from now on. This is the only decision left to you.</target>
             </trans-unit>
+            <trans-unit id="egNDPA1">
+                <source>narration.guided_step_config_prune_delete</source>
+                <target>Click the delete button. It cannot be undone, and only the ticked rows go, with their value.</target>
+            </trans-unit>
+            <trans-unit id="3jzsoQc">
+                <source>narration.guided_step_config_prune_open</source>
+                <target>The panel takes you to the obsolete configs: the settings no bundle declares anymore are listed there, with nothing deleted.</target>
+            </trans-unit>
+            <trans-unit id="dTqeouu">
+                <source>narration.guided_step_config_prune_review</source>
+                <target>Read the list through. Every row comes ticked: untick the ones whose value you will still need.</target>
+            </trans-unit>
             <trans-unit id="doJKRHJ">
                 <source>narration.guided_step_config_redirect_done</source>
                 <target>The old address answers again. An exact address always wins over a folder, and among folders the most precise one wins.</target>
@@ -105,6 +133,10 @@
             <trans-unit id="LuYhYI2">
                 <source>narration.guided_step_config_redirect_from</source>
                 <target>In the first field, type the old address with its leading slash. Ending on a star, it covers the whole folder below it.</target>
+            </trans-unit>
+            <trans-unit id="OoIvOnh">
+                <source>narration.guided_step_config_redirect_gone</source>
+                <target>If the old page no longer exists and nothing replaces it, tick this box instead: the address answers "gone", and search engines forget it sooner.</target>
             </trans-unit>
             <trans-unit id="NN2JyrW">
                 <source>narration.guided_step_config_redirect_new</source>

@@ -162,6 +162,10 @@
                 <source>narration.guided_step_ui_email_template_open</source>
                 <target>El panel le lleva a las plantillas de email. Los correos que el sitio envía están compuestos de bloques, exactamente como una página.</target>
             </trans-unit>
+            <trans-unit id="HCKLR97">
+                <source>narration.guided_step_ui_email_template_preview</source>
+                <target>Antes de enviar nada, haga clic en el sobre al final de su fila: el correo se abre en una nueva pestaña, tal como se enviará. Solo aparece cuando la plantilla tiene al menos un bloque.</target>
+            </trans-unit>
             <trans-unit id="yq3XDDm">
                 <source>narration.guided_step_ui_email_template_save</source>
                 <target>Guarde con el botón situado en la parte inferior del formulario.</target>
@@ -196,7 +200,7 @@
             </trans-unit>
             <trans-unit id="Zej_em.">
                 <source>narration.guided_step_ui_form_action_config</source>
-                <target>Ajuste después la acción si hace falta. Es opcional: sus ajustes se escriben aquí, y successUrl lleva a una página de agradecimiento tras el envío.</target>
+                <target>Ajuste después la acción si hace falta. Es opcional: sus ajustes se escriben aquí, successUrl lleva a una página de agradecimiento tras el envío, submitLabel fija el texto del botón y minDelay el retraso antirrobots.</target>
             </trans-unit>
             <trans-unit id="MeB2xYx">
                 <source>narration.guided_step_ui_form_field_template_done</source>
@@ -233,6 +237,10 @@
             <trans-unit id="P7.Gast">
                 <source>narration.guided_step_ui_form_fields</source>
                 <target>Añada los campos, uno por dato solicitado y nada más: cada campo de más le cuesta respuestas.</target>
+            </trans-unit>
+            <trans-unit id="mDfAE4p">
+                <source>narration.guided_step_ui_form_links</source>
+                <target>Añada enlaces bajo el botón si hace falta. Es opcional: se muestran justo debajo del botón de envío, como un enlace a la página de inicio de sesión bajo un formulario de registro.</target>
             </trans-unit>
             <trans-unit id="ffqKDfR">
                 <source>narration.guided_step_ui_form_name</source>

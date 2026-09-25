@@ -45,8 +45,29 @@ class c975LUiBundleTest extends TestCase
 
         $paths = $container->getExtensionConfig('twig')[0]['paths'];
 
-        $this->assertSame(['c975LUiCss'], array_values($paths));
+        $this->assertSame(['c975LUiCss', 'Twig'], array_values($paths));
         $this->assertFileExists(array_key_first($paths) . '/emails.min.css', 'The namespace points at a directory holding no compiled emails.min.css.');
+    }
+
+    // The error pages are TwigBundle's own templates, the site's templates/bundles/TwigBundle coming first so it keeps overriding them
+    public function testPrependExtensionRegistersTheErrorPagesAfterTheSiteOnes(): void
+    {
+        $projectDir = sys_get_temp_dir() . '/c975l-ui-' . uniqid();
+        mkdir($projectDir . '/templates/bundles/TwigBundle', 0o777, true);
+        $container = new ContainerBuilder();
+        $container->setParameter('kernel.project_dir', $projectDir);
+        $container->registerExtension($this->extension('twig'));
+
+        new c975LUiBundle()->prependExtension($this->createStub(ContainerConfigurator::class), $container);
+
+        $twigPaths = array_keys(array_filter($container->getExtensionConfig('twig')[0]['paths'], static fn (string $namespace): bool => 'Twig' === $namespace));
+        $this->assertSame($projectDir . '/templates/bundles/TwigBundle', $twigPaths[0]);
+        $this->assertFileExists($twigPaths[1] . '/Exception/error.html.twig');
+
+        rmdir($projectDir . '/templates/bundles/TwigBundle');
+        rmdir($projectDir . '/templates/bundles');
+        rmdir($projectDir . '/templates');
+        rmdir($projectDir);
     }
 
     // An app without TwigBundle (an API-only one, say) must still boot: prepending config for an unregistered extension throws

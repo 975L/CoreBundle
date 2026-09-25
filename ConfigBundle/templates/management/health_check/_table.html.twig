@@ -107,6 +107,7 @@
                         {% if result.id and (result.acknowledged or result.status in ['warning', 'error']) %}
                             <button type="button" class="btn btn-sm btn-link health-check-acknowledge"
                                 data-action="health-check-table#acknowledge"
+                                data-health-check-acknowledge
                                 data-health-check-table-url-param="{{ path('management_health_check_acknowledge', {id: result.id}) }}"
                                 title="{{ (result.acknowledged ? 'label.health_check_acknowledge_undo' : 'label.health_check_acknowledge')|trans({}, 'config') }}">
                                 <i class="fa {{ result.acknowledged ? 'fa-rotate-left' : 'fa-check' }}"></i>

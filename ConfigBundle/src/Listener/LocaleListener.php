@@ -11,8 +11,10 @@
 namespace c975L\ConfigBundle\Listener;
 
 use c975L\ConfigBundle\Controller\Management\DashboardController;
+use c975L\ConfigBundle\Service\LocalizedUrlGenerator;
 use c975L\ConfigBundle\Service\SiteLocales;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 
@@ -29,6 +31,7 @@ class LocaleListener
 
     public function __construct(
         private readonly SiteLocales $siteLocales,
+        private readonly LocalizedUrlGenerator $localizedUrlGenerator,
     ) {
     }
 
@@ -42,8 +45,13 @@ class LocaleListener
         $locales = $this->siteLocales->all();
         $sessionKey = $this->sessionKey($request);
 
-        // A route carrying its own "_locale" has already said which language it serves, and that beats both the session and the browser
+        // A route carrying its own "_locale" has already said which language it serves, and that beats both the session and the browser - unless another one was just picked from the menu, which moves the visitor to that same route in the language asked
         if (null !== $request->attributes->get('_locale')) {
+            $redirect = $this->redirectToAskedLanguage($request, $locales, $sessionKey);
+            if (null !== $redirect) {
+                $event->setResponse($redirect);
+            }
+
             return;
         }
 
@@ -66,6 +74,35 @@ class LocaleListener
         $request->setLocale(\is_string($chosen) && \in_array($chosen, $locales, true)
             ? $chosen
             : $request->getPreferredLanguage($locales));
+    }
+
+    // The same route in the language picked from the menu ("?_locale=xx"), for a route whose own path says its language - "/fr/preview/abc" - which the menu's single form cannot link to one by one. The language already read moves too, to the url without the query, so the choice is kept whichever entry the form was sent to. A localised twin is left out, its menu linking to the bare url that LocalizedRouteNegotiator moves on, and a language the route does not accept leaves the visitor where they are
+    /** @param list<string> $locales */
+    private function redirectToAskedLanguage(Request $request, array $locales, string $sessionKey): ?RedirectResponse
+    {
+        $asked = $request->query->get('_locale');
+        $route = $request->attributes->get('_route');
+        if (
+            !$request->isMethodSafe()
+            || !\is_string($asked) || !\in_array($asked, $locales, true)
+            || !\is_string($route) || str_ends_with($route, LocalizedUrlGenerator::LOCALIZED_SUFFIX)
+        ) {
+            return null;
+        }
+
+        $query = $request->query->all();
+        unset($query['_locale']);
+
+        $url = $this->localizedUrlGenerator->sameRouteIn($request, $asked, $query);
+        if (null === $url) {
+            return null;
+        }
+
+        if ($request->hasSession()) {
+            $request->getSession()->set($sessionKey, $asked);
+        }
+
+        return new RedirectResponse($url);
     }
 
     // Which of the two choices this request is answered from: the back office reads its own, and never the front's

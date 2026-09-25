@@ -38,10 +38,14 @@ class QrCodeGenerator
     {
     }
 
-    // The code of the given data, drawn on the first call only
+    // The code of the given data, drawn on the first call only - or every time when not cached, for options a visitor picks freely, each of which would otherwise leave an entry behind
     /** @param string[] $tags the owner's own tags, to drop this code with what it points at */
-    public function generate(string $data, QrCodeOptions $options = new QrCodeOptions(), array $tags = []): QrCodeImage
+    public function generate(string $data, QrCodeOptions $options = new QrCodeOptions(), array $tags = [], bool $cached = true): QrCodeImage
     {
+        if (!$cached) {
+            return $this->draw($data, $options);
+        }
+
         $key = 'ui_qrcode_' . hash('xxh128', serialize([$data, $options]));
 
         return $this->cache->get($key, function (ItemInterface $item) use ($data, $options, $tags): QrCodeImage {

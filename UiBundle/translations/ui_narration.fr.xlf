@@ -162,6 +162,10 @@
                 <source>narration.guided_step_ui_email_template_open</source>
                 <target>Le panneau vous emmène sur les modèles d'e-mail. Les e-mails que le site envoie sont composés de blocks, exactement comme une page.</target>
             </trans-unit>
+            <trans-unit id="HCKLR97">
+                <source>narration.guided_step_ui_email_template_preview</source>
+                <target>Avant de rien envoyer, cliquez sur l'enveloppe au bout de sa ligne : l'e-mail s'ouvre dans un nouvel onglet, tel qu'il sera envoyé. Elle n'apparaît qu'une fois le modèle doté d'au moins un block.</target>
+            </trans-unit>
             <trans-unit id="yq3XDDm">
                 <source>narration.guided_step_ui_email_template_save</source>
                 <target>Enregistrez avec le bouton en bas du formulaire.</target>
@@ -196,7 +200,7 @@
             </trans-unit>
             <trans-unit id="Zej_em.">
                 <source>narration.guided_step_ui_form_action_config</source>
-                <target>Réglez ensuite l'action si besoin. C'est optionnel : ses réglages s'écrivent ici, et successUrl mène vers une page de remerciement après l'envoi.</target>
+                <target>Réglez ensuite l'action si besoin. C'est optionnel : ses réglages s'écrivent ici, successUrl mène vers une page de remerciement après l'envoi, submitLabel fixe le texte du bouton et minDelay le délai anti-robots.</target>
             </trans-unit>
             <trans-unit id="MeB2xYx">
                 <source>narration.guided_step_ui_form_field_template_done</source>
@@ -233,6 +237,10 @@
             <trans-unit id="P7.Gast">
                 <source>narration.guided_step_ui_form_fields</source>
                 <target>Ajoutez les champs, un par information demandée et rien de plus : chaque champ en trop vous coûte des réponses.</target>
+            </trans-unit>
+            <trans-unit id="mDfAE4p">
+                <source>narration.guided_step_ui_form_links</source>
+                <target>Ajoutez des liens sous le bouton si besoin. C'est optionnel : ils s'affichent juste sous le bouton de validation, comme un lien vers la page de connexion sous un formulaire d'inscription.</target>
             </trans-unit>
             <trans-unit id="ffqKDfR">
                 <source>narration.guided_step_ui_form_name</source>

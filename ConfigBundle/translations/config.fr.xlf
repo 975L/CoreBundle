@@ -82,6 +82,10 @@
                 <source>description.essential_action_roles</source>
                 <target>Qui peut faire quoi dans le back-office</target>
             </trans-unit>
+            <trans-unit id="RoUelAD">
+                <source>description.guided_project_config_content_import</source>
+                <target>Un export fait ailleurs, repris ici en une fois.</target>
+            </trans-unit>
             <trans-unit id="DJGspy9">
                 <source>description.guided_project_config_health_check</source>
                 <target>Faire vérifier le site de l'extérieur, lire ce qui est signalé et savoir par quoi commencer</target>
@@ -97,6 +101,10 @@
             <trans-unit id="wod7rWu">
                 <source>description.guided_project_config_not_found</source>
                 <target>Le site note chaque chemin demandé par un visiteur sans être trouvé. Cette liste est ce qui dit quel lien, ici ou sur un autre site, pointe encore vers une page qui a bougé.</target>
+            </trans-unit>
+            <trans-unit id="3ywoMCp">
+                <source>description.guided_project_config_prune</source>
+                <target>Les réglages qu'aucun bundle ne déclare plus, listés avant toute suppression.</target>
             </trans-unit>
             <trans-unit id="LJp0uAy">
                 <source>description.guided_project_config_redirect</source>
@@ -117,6 +125,22 @@
             <trans-unit id="xi28kgp">
                 <source>description.guided_project_config_user_role</source>
                 <target>Décider de ce qu'un compte peut faire dans le back-office : contributeur, éditeur ou administrateur.</target>
+            </trans-unit>
+            <trans-unit id="GtNRnjK">
+                <source>description.guided_step_config_content_import_check</source>
+                <target>Le message en haut de l'écran dit combien d'éléments ont été créés et mis à jour ; ouvrez-en un pour vérifier qu'il est arrivé tel que vous l'attendiez.</target>
+            </trans-unit>
+            <trans-unit id="uzg8bAl">
+                <source>description.guided_step_config_content_import_file</source>
+                <target>Le fichier tel que l'export l'a produit, sans le décompresser ni le modifier.</target>
+            </trans-unit>
+            <trans-unit id="TQeM466">
+                <source>description.guided_step_config_content_import_open</source>
+                <target>Le zip qu'une liste produit avec « Exporter la sélection », sur un autre environnement, s'importe ici.</target>
+            </trans-unit>
+            <trans-unit id="erycMGL">
+                <source>description.guided_step_config_content_import_submit</source>
+                <target>Ce qui existe déjà est mis à jour, le reste est créé : l'import écrit directement dans la base de cet environnement, production comprise.</target>
             </trans-unit>
             <trans-unit id="w22XwFU">
                 <source>description.guided_step_config_health_check_again</source>
@@ -198,6 +222,18 @@
                 <source>description.guided_step_config_not_found_to</source>
                 <target>La page qui le remplace. La seule décision qui reste.</target>
             </trans-unit>
+            <trans-unit id="9nTEyae">
+                <source>description.guided_step_config_prune_delete</source>
+                <target>La suppression est irréversible et emporte la valeur enregistrée : seules les lignes cochées partent.</target>
+            </trans-unit>
+            <trans-unit id="h4IduUc">
+                <source>description.guided_step_config_prune_open</source>
+                <target>Un réglage abandonné par un bundle, ou laissé par un bundle désinstallé, reste en base : cet écran les liste sans rien supprimer.</target>
+            </trans-unit>
+            <trans-unit id="h2BAbNO">
+                <source>description.guided_step_config_prune_review</source>
+                <target>Chaque ligne est cochée d'office ; décochez celles dont la valeur vous servira encore, par exemple pour un bundle désinstallé le temps d'une mise à jour.</target>
+            </trans-unit>
             <trans-unit id="DIWeqL_">
                 <source>description.guided_step_config_redirect_done</source>
                 <target>Une adresse exacte l'emporte toujours sur un dossier, et parmi les dossiers le plus précis l'emporte.</target>
@@ -205,6 +241,10 @@
             <trans-unit id="xOutN9C">
                 <source>description.guided_step_config_redirect_from</source>
                 <target>Le chemin avec son / initial. Terminé par *, il couvre tout ce qui est dessous : /ancien/* redirige /ancien/page comme /ancien/a/b.</target>
+            </trans-unit>
+            <trans-unit id="2.cbeHh">
+                <source>description.guided_step_config_redirect_gone</source>
+                <target>Cochée, l'ancienne adresse répond « supprimée » (410) : rien à indiquer vers où, les moteurs l'oublient plus vite.</target>
             </trans-unit>
             <trans-unit id="g.4_WbX">
                 <source>description.guided_step_config_redirect_open</source>
@@ -256,7 +296,7 @@
             </trans-unit>
             <trans-unit id="tbWt3Ve">
                 <source>description.guided_step_config_settings_translate</source>
-                <target>Un réglage qu'une langue peut changer porte un sélecteur au-dessus de lui : choisissez une langue, et écrivez-y la valeur. Le nom du réglage, lui, ne change jamais - seul ce qu'il dit change.</target>
+                <target>Seuls quelques réglages s'écrivent dans chaque langue, comme l'avertissement d'âge : ouvrez-en un, choisissez une langue au-dessus de la valeur et écrivez-la.</target>
             </trans-unit>
             <trans-unit id="qd4IzF2">
                 <source>description.guided_step_config_settings_value</source>
@@ -862,6 +902,10 @@
                 <source>label.group_theme</source>
                 <target>Thème</target>
             </trans-unit>
+            <trans-unit id="_akpA99">
+                <source>label.guided_project_config_content_import</source>
+                <target>Importer du contenu d'un autre environnement</target>
+            </trans-unit>
             <trans-unit id="RSrMvT0">
                 <source>label.guided_project_config_health_check</source>
                 <target>Lancer un bilan de santé</target>
@@ -877,6 +921,10 @@
             <trans-unit id="qkkr11A">
                 <source>label.guided_project_config_not_found</source>
                 <target>Transformer un lien mort en redirection</target>
+            </trans-unit>
+            <trans-unit id="XZEMKDU">
+                <source>label.guided_project_config_prune</source>
+                <target>Supprimer les configs obsolètes</target>
             </trans-unit>
             <trans-unit id="65dMEYc">
                 <source>label.guided_project_config_redirect</source>
@@ -937,6 +985,22 @@
             <trans-unit id="aOZmqdz">
                 <source>label.guided_projects_intro</source>
                 <target>Votre progression est enregistrée dans ce navigateur, pas sur le site : elle ne vous suivra pas sur un autre ordinateur.</target>
+            </trans-unit>
+            <trans-unit id="TryUJKH">
+                <source>label.guided_step_config_content_import_check</source>
+                <target>Vérifier ce qui est arrivé</target>
+            </trans-unit>
+            <trans-unit id="SZpEyHT">
+                <source>label.guided_step_config_content_import_file</source>
+                <target>Choisir le zip exporté</target>
+            </trans-unit>
+            <trans-unit id="UMNJVfZ">
+                <source>label.guided_step_config_content_import_open</source>
+                <target>Ouvrir l'import de contenu</target>
+            </trans-unit>
+            <trans-unit id="AivVuIN">
+                <source>label.guided_step_config_content_import_submit</source>
+                <target>Importer</target>
             </trans-unit>
             <trans-unit id="R_aUKTH">
                 <source>label.guided_step_config_health_check_again</source>
@@ -1022,6 +1086,18 @@
                 <source>label.guided_step_config_not_found_to</source>
                 <target>Dire où il mène</target>
             </trans-unit>
+            <trans-unit id="EciykoP">
+                <source>label.guided_step_config_prune_delete</source>
+                <target>Supprimer</target>
+            </trans-unit>
+            <trans-unit id="yHDlHaZ">
+                <source>label.guided_step_config_prune_open</source>
+                <target>Ouvrir les configs obsolètes</target>
+            </trans-unit>
+            <trans-unit id="Zxj4pkG">
+                <source>label.guided_step_config_prune_review</source>
+                <target>Relire la liste</target>
+            </trans-unit>
             <trans-unit id="iR_w4ub">
                 <source>label.guided_step_config_redirect_done</source>
                 <target>L'ancienne adresse répond</target>
@@ -1029,6 +1105,10 @@
             <trans-unit id="smTsKNR">
                 <source>label.guided_step_config_redirect_from</source>
                 <target>L'ancienne adresse, ou tout un dossier avec *</target>
+            </trans-unit>
+            <trans-unit id="AV2GBQq">
+                <source>label.guided_step_config_redirect_gone</source>
+                <target>Ou dire qu'elle n'existe plus</target>
             </trans-unit>
             <trans-unit id="Dtd2kY3">
                 <source>label.guided_step_config_redirect_new</source>

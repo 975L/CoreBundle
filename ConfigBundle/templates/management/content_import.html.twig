@@ -8,8 +8,8 @@
     <form method="post" enctype="multipart/form-data">
         <input type="hidden" name="_token" value="{{ csrf_token('management_content_import_index') }}">
         <div class="form-group">
-            <input type="file" name="export" accept="application/zip,.zip" required>
+            <input type="file" name="export" accept="application/zip,.zip" required data-content-import-file>
         </div>
-        <button type="submit" class="btn btn-primary">{{ 'action.content_import'|trans({}, 'config') }}</button>
+        <button type="submit" class="btn btn-primary" data-content-import-submit>{{ 'action.content_import'|trans({}, 'config') }}</button>
     </form>
 {% endblock main %}

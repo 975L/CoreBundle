@@ -47,6 +47,16 @@ class QrCodeGeneratorTest extends TestCase
         $this->assertSame($first->content, $generator->generate('https://example.com/page')->content);
     }
 
+    // A code drawn with options a visitor picks freely leaves nothing behind
+    public function testAnUncachedCodeIsDrawnWithoutAnEntry(): void
+    {
+        $cache = new TagAwareAdapter(new ArrayAdapter());
+        $image = new QrCodeGenerator($cache)->generate('https://example.com/page', cached: false);
+
+        $this->assertStringStartsWith("\x89PNG", $image->content);
+        $this->assertFalse($cache->hasItem('ui_qrcode_' . hash('xxh128', serialize(['https://example.com/page', new QrCodeOptions()]))));
+    }
+
     // Two drawings of the same data are two entries, or a label-less code would be served where a labelled one was asked for
     public function testOptionsArePartOfTheKey(): void
     {

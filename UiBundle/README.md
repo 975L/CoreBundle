@@ -47,6 +47,7 @@ See it in action at [bundles.975l.com/pages/ui-bundle](https://bundles.975l.com/
 - A block set aside in one click: kept whole in the database, rendered nowhere, brought back the same way
 - Live preview of a newly picked image in EasyAdmin, before saving
 - Site-wide media roles (favicon, apple-touch-icon, og-image, logo, the two watermark signatures, error-image pool) with their own admin screen, retrievable anywhere via `site_media()`
+- A shared error page for every status code, showing one of the site's error images or one shipped with the bundle
 - Watermarking on upload for entities that opt in, the dark or light signature picked on the luminance of the very corner it lands in
 - Admin-editable theme (colors, fonts, light/dark mode) compiled to CSS custom properties, and inlinable into emails
 - GDPR cookie banner (`vanilla-cookieconsent` v3, self-hosted), carrying its own enabled/disabled guard
@@ -2701,6 +2702,7 @@ return $qrCodeGenerator->response($image, $request, public: true); // or $image-
 
 - **`Model\QrCodeOptions`** holds plain values (format `png`/`svg`, size, margin, colors in hexadecimal, logo, label and its font), so a caller never depends on the drawing library. An SVG carries the logo but not the label, the writer having no text support.
 - **Tags**: every code carries `QrCodeGenerator::CACHE_TAG`, plus the ones its owner hands over - invalidate those when the url a code encodes changes (a renamed slug, a deleted entity).
+- **`cached: false`** draws the code without keeping it - for options a visitor picks freely (colors from a query string), each of which would otherwise leave a cache entry behind.
 - **`response()`** sends it with an `ETag` and a one-day `max-age`, answering `304` to a browser that already holds it - `public: true` only for a code a proxy may keep too, never one drawn in the back office.
 
 ## PDF thumbnails
@@ -2885,6 +2887,8 @@ Retrieve it anywhere in Twig with the `site_media()` function, which returns `nu
 The favicon, Apple touch icon, logo, its dark-background twin, default Open Graph image, the two watermark signatures and the error-image pool are `Media` rows carrying a `role` (see [Site-wide media](#site-wide-media-favicon-logo-og-image) above for the roles themselves and how they are stored). `Controller\Management\SiteGraphicCrudController` is the screen that fills them, under *Management → Advanced → Site graphics*, gated by `site-role-editor`.
 
 The index shows one button per graphic still missing: each opens the upload form with the role already picked and the choice frozen, so only the file is left to choose. `SiteGraphicAlertProvider` raises the same thing as a dashboard alert, for the four a site can't do without — the dark logo and the two watermark signatures are offered as buttons but never nagged about, a site signing nothing, or drawing a logo that reads on both grounds, being a perfectly finished site. The buttons disappear once the seven singleton graphics exist — `error-image` is a pool, added through the plain "new" action.
+
+**The error page draws from the pool.** `templates/bundles/TwigBundle/Exception/error.html.twig` is registered as TwigBundle's own error template, so every site shows the same page: the message of its status code (`error.text_<code>` in the `ui` domain, `error.text` otherwise) and one `error-image` drawn by `site_random_media()`, else one of the six `images/error-*.webp` shipped here. It extends the site's `layout.html.twig`, and a site's own `templates/bundles/TwigBundle/Exception/` is still searched first.
 
 `SiteGraphicExportProvider`/`SiteGraphicImportProvider` plug them into ConfigBundle's **Export sync (everything)** shortcut and **Import content** screen: a singleton role matches by its own role on import, while the repeatable `error-image` pool is replaced wholesale (no natural key of its own to match against). `SiteGraphicMediaUsageProvider` is what makes the Media library say "this one is the favicon".
 

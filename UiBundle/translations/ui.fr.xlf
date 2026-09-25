@@ -210,6 +210,10 @@
                 <source>description.guided_step_ui_email_template_open</source>
                 <target>Les e-mails que le site envoie sont composés de blocks, exactement comme une page.</target>
             </trans-unit>
+            <trans-unit id="JFg6n8r">
+                <source>description.guided_step_ui_email_template_preview</source>
+                <target>L'enveloppe au bout de sa ligne ouvre l'e-mail dans un nouvel onglet, tel qu'il sera envoyé, sans rien envoyer ; elle n'apparaît qu'une fois le modèle doté d'au moins un block.</target>
+            </trans-unit>
             <trans-unit id="VOmfaZ1">
                 <source>description.guided_step_ui_font_bulk</source>
                 <target>Ajouter une famille ligne par ligne est le chemin long ; ce bouton prend tous les fichiers d'un coup.</target>
@@ -240,7 +244,7 @@
             </trans-unit>
             <trans-unit id="sTVBGBh">
                 <source>description.guided_step_ui_form_action_config</source>
-                <target>Optionnel : ses réglages, et successUrl pour mener vers une page de remerciement.</target>
+                <target>Optionnel : ses réglages, successUrl pour mener vers une page de remerciement, submitLabel pour le texte du bouton et minDelay pour le délai anti-robots.</target>
             </trans-unit>
             <trans-unit id="616jVGU">
                 <source>description.guided_step_ui_form_field_template_done</source>
@@ -269,6 +273,10 @@
             <trans-unit id="KgGbEW5">
                 <source>description.guided_step_ui_form_fields</source>
                 <target>Un champ par information demandée, et rien de plus : chaque champ en trop coûte des réponses.</target>
+            </trans-unit>
+            <trans-unit id="iKhSysG">
+                <source>description.guided_step_ui_form_links</source>
+                <target>Optionnel : affichés juste sous le bouton de validation, comme un lien vers la page de connexion sous un formulaire d'inscription.</target>
             </trans-unit>
             <trans-unit id="VCImx1K">
                 <source>description.guided_step_ui_form_name</source>
@@ -417,6 +425,34 @@
             <trans-unit id="34glBYg">
                 <source>description.reviews_pending_alert</source>
                 <target>Tant qu'un avis n'est pas publié ou écarté, son auteur reste sans réponse et rien ne s'affiche sur la page concernée.</target>
+            </trans-unit>
+            <trans-unit id="sRh3qCg">
+                <source>error.text</source>
+                <target>Nous avons détecté une erreur :-( Nous vous prions de nous en excuser.</target>
+            </trans-unit>
+            <trans-unit id="FjfKQxg">
+                <source>error.text_401</source>
+                <target>Je ne peux pas accéder à cette ressource car l'accès est restreint et nécessite une identification.</target>
+            </trans-unit>
+            <trans-unit id="9nBgmcV">
+                <source>error.text_403</source>
+                <target>Je ne peux pas accéder à cette ressource car l'accès est restreint.</target>
+            </trans-unit>
+            <trans-unit id="6nLPt64">
+                <source>error.text_404</source>
+                <target>La page que je demande n'est pas disponible. Merci de vérifier le lien dans la barre d'adresse.</target>
+            </trans-unit>
+            <trans-unit id="ryPpsV.">
+                <source>error.text_410</source>
+                <target>La page que je demande n'existe plus.</target>
+            </trans-unit>
+            <trans-unit id="gWOVD4r">
+                <source>error.text_500</source>
+                <target>Nous avons détecté une erreur interne :-( Nous vous prions de nous en excuser.</target>
+            </trans-unit>
+            <trans-unit id="VmvIcYy">
+                <source>error.title_code</source>
+                <target>Erreur %code%</target>
             </trans-unit>
             <trans-unit id="_QnNrWi">
                 <source>flash.block_cache_cleared</source>
@@ -2538,6 +2574,10 @@
                 <source>label.guided_step_ui_email_template_open</source>
                 <target>Ouvrir les modèles d'e-mail</target>
             </trans-unit>
+            <trans-unit id="pX8Ffxl">
+                <source>label.guided_step_ui_email_template_preview</source>
+                <target>Le prévisualiser</target>
+            </trans-unit>
             <trans-unit id="Z9rpyhM">
                 <source>label.guided_step_ui_email_template_save</source>
                 <target>Enregistrer</target>
@@ -2609,6 +2649,10 @@
             <trans-unit id="X4RitF7">
                 <source>label.guided_step_ui_form_fields</source>
                 <target>Ajouter les champs</target>
+            </trans-unit>
+            <trans-unit id="68PGCAt">
+                <source>label.guided_step_ui_form_links</source>
+                <target>Ajouter des liens sous le bouton</target>
             </trans-unit>
             <trans-unit id="KTKHTlN">
                 <source>label.guided_step_ui_form_name</source>

@@ -26,6 +26,16 @@
                 "en": "The essential actions now only list what is left to do, and disappear once your site is set up.",
                 "fr": "Les actions essentielles ne listent plus que ce qui reste à faire, et disparaissent une fois votre site configuré.",
                 "es": "Las acciones esenciales solo muestran ya lo que queda por hacer, y desaparecen una vez configurado su sitio."
+            },
+            {
+                "en": "On a page whose address says its language, picking another language from the menu now opens that same page in the language chosen, and the site remembers your choice.",
+                "fr": "Sur une page dont l'adresse dit sa langue, choisir une autre langue dans le menu ouvre désormais cette même page dans la langue choisie, et le site retient votre choix.",
+                "es": "En una página cuya dirección indica su idioma, elegir otro idioma en el menú abre ahora esa misma página en el idioma elegido, y el sitio recuerda su elección."
+            },
+            {
+                "en": "New guided projects walk you through importing content and deleting obsolete settings, and the redirects one now shows how to say a page no longer exists.",
+                "fr": "De nouveaux projets guidés vous accompagnent pour importer du contenu et supprimer les réglages obsolètes, et celui des redirections montre désormais comment dire qu'une page n'existe plus.",
+                "es": "Nuevos proyectos guiados le acompañan para importar contenido y eliminar los ajustes obsoletos, y el de las redirecciones muestra ahora cómo indicar que una página ya no existe."
             }
         ]
     },

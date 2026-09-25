@@ -1,0 +1,25 @@
+{# Every error page of a c975L site: the message of its code when there is one, and one of the error images the site uploaded as its graphics, else one shipped here - a site overrides it from its own templates/bundles/TwigBundle/Exception #}
+{% extends 'layout.html.twig' %}
+{% trans_default_domain 'ui' %}
+
+{% set code = status_code|default(500) %}
+{% set title = 'error.title_code'|trans({'%code%': code}) %}
+
+{% block content %}
+    {% set messageKey = 'error.text_' ~ code %}
+    {% set message = messageKey|trans %}
+    <div class="alert alert-danger text-center">
+        <h2>
+            <img src="{{ asset('bundles/c975lui/icons/thumbs-down.svg') }}" alt="" aria-hidden="true" width="48" loading="lazy"> {{ title }}
+        </h2>
+        <p>
+            <span class="lead"><strong>Ooops...</strong></span><br>
+            {{ message != messageKey ? message : 'error.text'|trans }}
+        </p>
+    </div>
+    {% set errorImage = site_random_media('error-image') %}
+    <twig:c975LUi:Image:Image src="{{ asset(errorImage ? errorImage.filename : 'bundles/c975lui/images/error-' ~ random(1, 6) ~ '.webp') }}" class="img-rounded" alt="" aria-hidden="true"/>
+{% endblock %}
+
+{% block share %}
+{% endblock %}
