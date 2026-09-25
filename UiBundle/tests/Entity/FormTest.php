@@ -180,4 +180,15 @@ class FormTest extends TestCase
 
         $this->assertSame(['Budget'], array_map(static fn (FormOutput $output): string => (string) $output->getLabel(), $form->getVisibleOutputs()));
     }
+
+    // One text for every language, or one per language with "Send" wherever the map has none
+    public function testTheSubmitLabelIsReadFromTheActionConfig(): void
+    {
+        $this->assertNull(new Form()->getSubmitLabel('fr'));
+        $this->assertSame('Je raccourcis', new Form()->setActionConfig(['submitLabel' => 'Je raccourcis'])->getSubmitLabel('en'));
+
+        $form = new Form()->setActionConfig(['submitLabel' => ['fr' => 'Je raccourcis', 'en' => 'Shorten']]);
+        $this->assertSame('Shorten', $form->getSubmitLabel('en'));
+        $this->assertNull($form->getSubmitLabel('es'));
+    }
 }

@@ -556,7 +556,7 @@
             </trans-unit>
             <trans-unit id="b1lgVCs">
                 <source>label.action_config_help</source>
-                <target>Optional, depends on the action - e.g. "send_email": to, from, subject, template, senderEmailField, receiveCopy. For any action: successUrl, the page a successful submission leads to (e.g. a thank-you page), and minDelay, this form's own anti-bot delay in seconds</target>
+                <target>Optional, depends on the action - e.g. "send_email": to, from, subject, template, senderEmailField, receiveCopy. For any action: successUrl, the page a successful submission leads to (e.g. a thank-you page), minDelay, this form's own anti-bot delay in seconds, and submitLabel, the button's wording (one text, or one per language: {"fr": "...", "en": "..."})</target>
             </trans-unit>
             <trans-unit id="3x6lvCI">
                 <source>label.action_help</source>

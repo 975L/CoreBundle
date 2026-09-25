@@ -556,7 +556,7 @@
             </trans-unit>
             <trans-unit id="b1lgVCs">
                 <source>label.action_config_help</source>
-                <target>Opcional, según la acción - ej. "send_email": to, from, subject, template, senderEmailField, receiveCopy. Para cualquier acción: successUrl, la página a la que lleva un envío correcto (ej. una página de agradecimiento), y minDelay, el retraso antirrobots propio de este formulario, en segundos</target>
+                <target>Opcional, según la acción - ej. "send_email": to, from, subject, template, senderEmailField, receiveCopy. Para cualquier acción: successUrl, la página a la que lleva un envío correcto (ej. una página de agradecimiento), minDelay, el retraso antirrobots propio de este formulario, en segundos, y submitLabel, el texto del botón (un texto, o uno por idioma: {"fr": "...", "en": "..."})</target>
             </trans-unit>
             <trans-unit id="3x6lvCI">
                 <source>label.action_help</source>

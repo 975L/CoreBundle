@@ -1,5 +1,14 @@
 # ChangeLog
 
+## v1.38.1
+
+A form sets its own submit button wording
+
+### UiBundle
+
+- A form may set its submit button's wording in `submitLabel`, one text or one per language (25/09/2026)
+- The README and the `c975l-forms-emails` skill document `submitLabel` (25/09/2026)
+
 ## v1.38.0
 
 An image shows a file of its own in each language

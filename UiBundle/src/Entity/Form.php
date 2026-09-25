@@ -153,6 +153,17 @@ class Form implements \Stringable
         return $this->actionConfig['links'] ?? [];
     }
 
+    // The submit button's own wording from $actionConfig's "submitLabel", one text or one per language, null leaving the generic "Send"
+    public function getSubmitLabel(?string $locale = null): ?string
+    {
+        $label = $this->actionConfig['submitLabel'] ?? null;
+        if (is_array($label)) {
+            $label = null !== $locale ? ($label[$locale] ?? null) : null;
+        }
+
+        return is_string($label) && '' !== trim($label) ? trim($label) : null;
+    }
+
     public function setLinks(array $links): self
     {
         // Only entries actually filled in - the collection's "+ Add" row submits an empty pair when left untouched
