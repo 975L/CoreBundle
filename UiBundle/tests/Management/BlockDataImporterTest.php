@@ -10,9 +10,11 @@
 
 namespace c975L\UiBundle\Tests\Management;
 
+use c975L\UiBundle\Entity\Block;
 use c975L\UiBundle\Entity\Media;
 use c975L\UiBundle\Management\BlockDataImporter;
 use c975L\UiBundle\Registry\FormBlockDependencyRegistry;
+use c975L\UiBundle\Service\TranslationCopier;
 use c975L\UiBundle\Validator\FixedIconFormat;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
@@ -53,6 +55,20 @@ class BlockDataImporterTest extends TestCase
         $this->assertSame(['name' => 'contact'], $blocks[0]->getData());
         $this->assertSame('fade-in', $blocks[0]->getAnimation());
         $this->assertSame([$blocks[0]], $persisted);
+    }
+
+    // The archive's translations are handed to the copier with the block they belong to, to be written once it has an id
+    public function testBuildBlocksHandsTheTranslationsToTheCopier(): void
+    {
+        $copier = $this->createMock(TranslationCopier::class);
+        $copier->expects($this->once())
+            ->method('carry')
+            ->with('ui_block', $this->isInstanceOf(Block::class), ['en' => ['content' => 'Hello']]);
+
+        new BlockDataImporter($this->createStub(EntityManagerInterface::class), $this->createStub(FormBlockDependencyRegistry::class), $this->createStub(ValidatorInterface::class), $copier)->buildBlocks([
+            ['kind' => 'text', 'position' => 0, 'translations' => ['en' => ['content' => 'Hello']]],
+            ['kind' => 'text', 'position' => 1],
+        ], null);
     }
 
     // A block set aside comes back set aside, an archive taken mid-redesign restoring the page in the very state it was exported from

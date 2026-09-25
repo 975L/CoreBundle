@@ -13,7 +13,9 @@ namespace c975L\UiBundle\Management;
 use c975L\ConfigBundle\Management\ArchiveFileRegistrar;
 use c975L\UiBundle\Entity\Block;
 use c975L\UiBundle\Entity\Media;
+use c975L\UiBundle\Entity\Translation;
 use c975L\UiBundle\Listener\VichPdfThumbnailListener;
+use c975L\UiBundle\Repository\TranslationRepository;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 // Shared Block/Media serialization for every Sync export carrying a Block collection (Page, Menu) - keeps the recursive container-slot walk in one place instead of duplicated per entity. Mirrors BlockDataImporter on the way back in
@@ -22,6 +24,8 @@ class BlockDataExporter
     public function __construct(
         #[Autowire(param: 'kernel.project_dir')]
         private readonly string $projectDir,
+        // Optional so a construction by hand (a test) needs no repository, and then carries no translations
+        private readonly ?TranslationRepository $translationRepository = null,
     ) {
     }
 
@@ -52,7 +56,7 @@ class BlockDataExporter
             $slots[] = $this->exportBlockData($slot, $files);
         }
 
-        return [
+        return $this->withTranslations([
             'kind' => $block->getKind(),
             'position' => $block->getPosition(),
             'data' => $block->getData(),
@@ -60,7 +64,7 @@ class BlockDataExporter
             'hidden' => $block->isHidden(),
             'medias' => $medias,
             'slots' => $slots,
-        ];
+        ], Translation::OWNER_BLOCK, $block->getId());
     }
 
     // Reads the Media's physical file from disk and registers it for the zip archive (&$files: archive-relative path => disk path), returning the metadata entry with a 'file' reference instead of embedding its bytes - same disk-path convention as PageCrudController::cloneMedia(). Returns null (skipped by the caller) when there is no file or it can't be read, rather than exporting a broken reference. Public: also used directly for a standalone Media not attached to any Block (eg. Page::$ogImage)
@@ -84,7 +88,7 @@ class BlockDataExporter
             $thumbnail = $registeredThumbnail['archivePath'] ?? null;
         }
 
-        return [
+        return $this->withTranslations([
             'role' => $media->getRole(),
             'name' => $media->getName(),
             'alt' => $media->getAlt(),
@@ -101,6 +105,17 @@ class BlockDataExporter
             'originalFilename' => $registered['originalFilename'],
             'file' => $registered['archivePath'],
             'thumbnail' => $thumbnail,
-        ];
+        ], Translation::OWNER_MEDIA, $media->getId());
+    }
+
+    // Adds what a row says in the site's other languages (locale => field => value), carried in the archive since translations name their owner by an id the importing side will not share. Left out when there are none, the shape of a single-language site's archive unchanged. Public: also used for the entity owning the Blocks (eg. a Page's title)
+    public function withTranslations(array $data, string $ownerType, ?int $ownerId): array
+    {
+        $translations = null === $ownerId || null === $this->translationRepository ? [] : $this->translationRepository->findByOwner($ownerType, $ownerId);
+        if ([] !== $translations) {
+            $data['translations'] = $translations;
+        }
+
+        return $data;
     }
 }

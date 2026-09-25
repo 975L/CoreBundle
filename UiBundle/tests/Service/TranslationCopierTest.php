@@ -22,12 +22,21 @@ class TranslationCopierTest extends TestCase
     /** @var list<Translation> */
     private array $persisted = [];
 
+    /** @var list<string> */
+    private array $deleted = [];
+
     private function createCopier(): TranslationCopier
     {
         $repository = $this->createStub(TranslationRepository::class);
         $repository->method('findByOwner')->willReturnCallback(static fn (string $ownerType, int $ownerId): array => 12 === $ownerId
             ? ['en' => ['title' => 'Oak table', 'summary' => 'Oiled by hand'], 'es' => ['title' => 'Mesa de roble', 'summary' => null]]
             : []);
+
+        $repository->method('deleteByOwner')->willReturnCallback(function (string $ownerType, int $ownerId): int {
+            $this->deleted[] = $ownerType . '/' . $ownerId;
+
+            return 0;
+        });
 
         $entityManager = $this->createStub(EntityManagerInterface::class);
         $entityManager->method('persist')->willReturnCallback(function (object $row): void {
@@ -101,5 +110,27 @@ class TranslationCopierTest extends TestCase
 
         $this->assertFalse($copier->write());
         $this->assertCount(3, $this->persisted);
+    }
+
+    // Translations carried by an archive replace what the imported row had, once the flush has given it its id
+    public function testCarriedTranslationsReplaceTheRowsOwnOnceItHasAnId(): void
+    {
+        $copier = $this->createCopier();
+        $row = new class {
+            public ?int $id = null;
+
+            public function getId(): ?int
+            {
+                return $this->id;
+            }
+        };
+        $copier->carry('site_page', $row, ['en' => ['title' => 'About', 'summarySocialNetwork' => null], 'es' => ['title' => 'Acerca de']]);
+
+        $this->assertFalse($copier->write());
+
+        $row->id = 15;
+        $this->assertTrue($copier->write());
+        $this->assertSame(['site_page/15'], $this->deleted);
+        $this->assertSame(['site_page/15/en/title=About', 'site_page/15/es/title=Acerca de'], $this->written());
     }
 }

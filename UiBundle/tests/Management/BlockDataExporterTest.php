@@ -13,6 +13,7 @@ namespace c975L\UiBundle\Tests\Management;
 use c975L\UiBundle\Entity\Block;
 use c975L\UiBundle\Entity\Media;
 use c975L\UiBundle\Management\BlockDataExporter;
+use c975L\UiBundle\Repository\TranslationRepository;
 use PHPUnit\Framework\TestCase;
 
 class BlockDataExporterTest extends TestCase
@@ -42,6 +43,27 @@ class BlockDataExporterTest extends TestCase
             'medias' => [],
             'slots' => [],
         ]], $data);
+    }
+
+    // What a block and its nested slot say in the other languages travel with them, the importing side knowing neither by id
+    public function testExportBlocksCarriesTheTranslationsOfEachBlock(): void
+    {
+        $slot = new Block()->setKind('text')->setPosition(0);
+        new \ReflectionProperty(Block::class, 'id')->setValue($slot, 8);
+        $block = new Block()->setKind('flex_columns')->setPosition(0);
+        new \ReflectionProperty(Block::class, 'id')->setValue($block, 7);
+        $block->addSlot($slot);
+
+        $repository = $this->createStub(TranslationRepository::class);
+        $repository->method('findByOwner')->willReturnCallback(static fn (string $ownerType, int $ownerId): array => 8 === $ownerId
+            ? ['en' => ['content' => '<div>Hello</div>']]
+            : []);
+
+        $files = [];
+        $data = new BlockDataExporter(sys_get_temp_dir(), $repository)->exportBlocks([$block], $files);
+
+        $this->assertArrayNotHasKey('translations', $data[0]);
+        $this->assertSame(['en' => ['content' => '<div>Hello</div>']], $data[0]['slots'][0]['translations']);
     }
 
     // A block set aside travels with the archive as it was left: an export taken mid-redesign restores the page in the very state it was exported from, hidden blocks included

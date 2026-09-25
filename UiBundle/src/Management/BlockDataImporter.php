@@ -12,7 +12,9 @@ namespace c975L\UiBundle\Management;
 
 use c975L\UiBundle\Entity\Block;
 use c975L\UiBundle\Entity\Media;
+use c975L\UiBundle\Entity\Translation;
 use c975L\UiBundle\Registry\FormBlockDependencyRegistry;
+use c975L\UiBundle\Service\TranslationCopier;
 use c975L\UiBundle\Validator\FixedIconFormat;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -42,6 +44,8 @@ class BlockDataImporter
         private readonly EntityManagerInterface $em,
         private readonly FormBlockDependencyRegistry $formBlockDependencyRegistry,
         private readonly ValidatorInterface $validator,
+        // Optional so a construction by hand (a test) needs no copier, and then writes no translations
+        private readonly ?TranslationCopier $translationCopier = null,
     ) {
     }
 
@@ -77,6 +81,7 @@ class BlockDataImporter
         }
 
         $this->em->persist($block);
+        $this->importTranslations(Translation::OWNER_BLOCK, $block, $blockData);
 
         return $block;
     }
@@ -122,7 +127,17 @@ class BlockDataImporter
             $media->setImportedThumbnailPath($filesDir . '/' . $mediaData['thumbnail']);
         }
 
+        $this->importTranslations(Translation::OWNER_MEDIA, $media, $mediaData);
+
         return $media;
+    }
+
+    // Hands the archive's translations to TranslationCopier, which writes them once the flush has given the row its id. An archive written before they were exported says nothing about them, and the row keeps what it has. Public: also used for the entity owning the Blocks (eg. a Page's title)
+    public function importTranslations(string $ownerType, object $row, array $data): void
+    {
+        if (null !== $this->translationCopier && isset($data['translations']) && is_array($data['translations'])) {
+            $this->translationCopier->carry($ownerType, $row, $data['translations']);
+        }
     }
 
     // The share image a Page or a UrlMetadata owns alone, marked before OgImageType's own FixedIconFormat check runs on it - null when the conversion can't handle the file, the caller then keeping the image it already has rather than one stored as SVG markup under a .webp name

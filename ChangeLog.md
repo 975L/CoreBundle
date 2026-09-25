@@ -1,5 +1,20 @@
 # ChangeLog
 
+## v1.36.0
+
+A Sync archive carries the blocks' translations
+
+### UiBundle
+
+- `BlockDataExporter` exports each block's and media's translations (25/09/2026)
+- `BlockDataImporter` hands an archive's translations to `TranslationCopier` (25/09/2026)
+- `TranslationCopier::carry()` writes imported translations over the row's own once it has an id (25/09/2026)
+- `withTranslations()` and `importTranslations()` are public for the entity owning the blocks (25/09/2026)
+
+### The package
+
+- The CI moves to `actions/setup-python@v6` (25/09/2026)
+
 ## v1.35.6
 
 The compiled stylesheets catch up with the sass

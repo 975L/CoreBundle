@@ -17,7 +17,7 @@ use Doctrine\ORM\EntityManagerInterface;
 // What a copied row says in the site's other languages, carried over to its copy: a duplicated page, product or book is the same text in every language, and a copy losing its translations is one an editor translates a second time without being told. Two passes, a translation naming its owner by identifier (see Translation): a duplicator names each row and its copy as it builds the copy, and TranslationCopyListener writes them once the flush has given the copy its id
 class TranslationCopier
 {
-    /** @var list<array{ownerType: string, source: object, copy: object, fields: list<string>|null}> */
+    /** @var list<array{ownerType: string, source: object|null, copy: object, fields: list<string>|null, values?: array<string, array<string, string|null>>}> */
     private array $pending = [];
 
     public function __construct(
@@ -36,7 +36,14 @@ class TranslationCopier
         $this->pending[] = ['ownerType' => $ownerType, 'source' => $source, 'copy' => $copy, 'fields' => $fields];
     }
 
-    // Writes what copy() kept for every copy a flush has saved, and says whether anything was written - a copy not saved yet waits for the flush that saves it
+    // A row and the translations an archive carried for it (see BlockDataExporter), which replace its own once it carries an id - an import writes over what the row had, in every language
+    /** @param array<string, array<string, string|null>> $values locale => field => value, as TranslationRepository::findByOwner() reads them */
+    public function carry(string $ownerType, object $row, array $values): void
+    {
+        $this->pending[] = ['ownerType' => $ownerType, 'source' => null, 'copy' => $row, 'fields' => null, 'values' => $values];
+    }
+
+    // Writes what copy() and carry() kept for every copy a flush has saved, and says whether anything was written - a copy not saved yet waits for the flush that saves it
     public function write(): bool
     {
         $waiting = [];
@@ -50,13 +57,13 @@ class TranslationCopier
                 continue;
             }
 
-            $sourceId = $this->identifier($entry['source']);
-            if (null === $sourceId) {
-                continue;
+            $values = $entry['values'] ?? $this->sourceValues($entry['ownerType'], $entry['source']);
+            if (isset($entry['values'])) {
+                $this->repository->deleteByOwner($entry['ownerType'], $copyId);
             }
 
-            foreach ($this->repository->findByOwner($entry['ownerType'], $sourceId) as $locale => $values) {
-                foreach ($values as $field => $value) {
+            foreach ($values as $locale => $fieldValues) {
+                foreach ($fieldValues as $field => $value) {
                     if (null === $value || (null !== $entry['fields'] && !\in_array($field, $entry['fields'], true))) {
                         continue;
                     }
@@ -74,6 +81,15 @@ class TranslationCopier
         }
 
         return $written;
+    }
+
+    // What the copied row says in the other languages, nothing when it has no id to read them by
+    /** @return array<string, array<string, string|null>> */
+    private function sourceValues(string $ownerType, ?object $source): array
+    {
+        $sourceId = null === $source ? null : $this->identifier($source);
+
+        return null === $sourceId ? [] : $this->repository->findByOwner($ownerType, $sourceId);
     }
 
     // Doctrine's own identifier, whatever the entity calls itself: every c975L entity carries getId()
