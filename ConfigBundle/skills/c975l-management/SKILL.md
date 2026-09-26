@@ -1,6 +1,6 @@
 ---
 name: c975l-management
-description: "Use this skill when a bundle or an application has to add anything to the /management dashboard of a c975L site — a menu entry, an alert, a shortcut, a widget, a guided project, a what's new note, an importmap entry, an admin procedure, an export or an import, a linkable route. Lists every contribution interface, the one wiring rule that makes them work, and the test that proves their targets still exist. Triggers on: MenuProviderInterface, getMenuSection, section icon, internal link, leavesTheAdmin, AlertProviderInterface, ShortcutProviderInterface, DashboardWidgetProviderInterface, GuidedProjectProviderInterface, WhatsNewProviderInterface, ImportmapProviderInterface, ProcedureProviderInterface, ExportProviderInterface, ImportProviderInterface, LinkableRouteProviderInterface, LinkableRouteCacheTagsInterface, getLinkableRouteCacheTags, LinkableRouteRegistry, cacheTags, EssentialActionProviderInterface, narration, highlight selector, creatable, UnusedFeatureBuilder, guided-project parameter, EcosystemUrls, guided project film, BackOfficeAccessVoter, TaggedInterfacePass, TableExporter, ManagementTargetsTestCase, EasyAdmin dashboard, AbstractDashboardController, configureMenuItems, DashboardController, whatsnew.json."
+description: "Use this skill when a bundle or an application has to add anything to the /management dashboard of a c975L site — a menu entry, an alert, a shortcut, a widget, a guided project, a what's new note, an importmap entry, an admin procedure, an export or an import, a linkable route. Lists every contribution interface, the one wiring rule that makes them work, and the test that proves their targets still exist. Triggers on: MenuProviderInterface, getMenuSection, section icon, internal link, leavesTheAdmin, AlertProviderInterface, ShortcutProviderInterface, DashboardWidgetProviderInterface, GuidedProjectProviderInterface, WhatsNewProviderInterface, ImportmapProviderInterface, ProcedureProviderInterface, ExportProviderInterface, ImportProviderInterface, LinkableRouteProviderInterface, LinkableRouteCacheTagsInterface, getLinkableRouteCacheTags, LinkableRouteRegistry, cacheTags, EssentialActionProviderInterface, narration, highlight selector, creatable, UnusedFeatureBuilder, guided-project parameter, EcosystemUrls, guided project film, TutorialFilmUrlProviderInterface, getFilmUrl, BackOfficeAccessVoter, TaggedInterfacePass, TableExporter, ManagementTargetsTestCase, EasyAdmin dashboard, AbstractDashboardController, configureMenuItems, DashboardController, whatsnew.json."
 ---
 
 # c975L ConfigBundle — contributing to /management
@@ -57,6 +57,7 @@ class MyUrlMetadataProvider implements UrlMetadataProviderInterface
 | `DashboardWidgetProviderInterface` | `getDashboardWidgets()` | dashboard widgets |
 | `EssentialActionProviderInterface` | `getEssentialActions()` | entries of the "essential actions" checklist |
 | `GuidedProjectProviderInterface` | `getGuidedProjects()` | replayable guided tours of your screens |
+| `TutorialFilmUrlProviderInterface` | `getFilmUrl()` | the site's own film of a guided project, in place of the ecosystem's |
 | `WhatsNewProviderInterface` | `getEntries()` | user-facing release notes, read from `config/whatsnew.json` |
 | `ProcedureProviderInterface` | `getProcedures()` | admin workflows for the dashboard AI assistant |
 | `ImportmapProviderInterface` | `getImportmapEntries()`, `getAdminImportmapEntries()` | AssetMapper importmap entries, written on `composer update` |
@@ -106,7 +107,8 @@ Two nuances that get lost:
   `/management?guided-project=<slug>` starts it once the page has loaded.
 - Each guided project carries a `film` url, `EcosystemUrls::TUTORIAL_FILM` followed by its slug,
   linked as "Watch the film" in the dashboard list and beside Donovan's citation; nothing checks
-  that a film exists for the slug.
+  that a film exists for the slug. A `TutorialFilmUrlProviderInterface` answering `getFilmUrl($slug)`
+  with a url sends the link to the site's own film instead, null leaving the ecosystem's.
 - A guided project step's `highlight` is a raw CSS selector run through one `document.querySelector`,
   and nothing checks it against the template: prefer a `data-*` marker put on the element for that
   purpose over a structural selector (`table tbody tr:first-child a` stops matching the day a `tbody`

@@ -6,6 +6,11 @@
                 "en": "Your users can now delete their own account, from a page your site links to (/account/delete): it is anonymized right away, as inactive accounts are.",
                 "fr": "Vos utilisateurs peuvent désormais supprimer eux-mêmes leur compte, depuis une page vers laquelle votre site fait un lien (/account/delete) : il est anonymisé immédiatement, comme les comptes inactifs.",
                 "es": "Sus usuarios pueden ahora eliminar ellos mismos su cuenta, desde una página a la que su sitio enlaza (/account/delete): se anonimiza inmediatamente, como las cuentas inactivas."
+            },
+            {
+                "en": "The \"Watch the film\" link of a guided project now leads to your site's own film when it publishes one.",
+                "fr": "Le lien « Voir le film » d'un projet guidé mène désormais au film de votre site lorsqu'il en publie un.",
+                "es": "El enlace «Ver la película» de un proyecto guiado lleva ahora a la película de su sitio cuando publica una."
             }
         ]
     },

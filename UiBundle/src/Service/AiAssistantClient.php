@@ -91,7 +91,7 @@ class AiAssistantClient implements AiAssistantClientInterface
 
             $project = $this->guidedProjectBuilder->getProject($slug);
             if (null !== $project) {
-                // The film beside the button, under the ecosystem's films (see GuidedProjectBuilder::filmUrl())
+                // The film beside the button (see GuidedProjectBuilder::filmUrl())
                 $resolved[] = ['label' => $project['label'], 'url' => '', 'project' => $slug, 'film' => $project['film'] ?? null];
 
                 continue;

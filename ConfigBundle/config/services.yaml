@@ -99,6 +99,7 @@ services:
     c975L\ConfigBundle\Management\GuidedProjectBuilder:
         arguments:
             $guidedProjectProviders: !tagged_iterator c975l.guided_project_provider
+            $tutorialFilmUrlProviders: !tagged_iterator c975l.tutorial_film_url_provider
 
     c975L\ConfigBundle\Management\DashboardWidgetBuilder:
         arguments:

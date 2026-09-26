@@ -13,6 +13,7 @@ namespace c975L\ConfigBundle\Tests\Management;
 use c975L\ConfigBundle\Management\EcosystemUrls;
 use c975L\ConfigBundle\Management\GuidedProjectBuilder;
 use c975L\ConfigBundle\Management\GuidedProjectProviderInterface;
+use c975L\ConfigBundle\Management\TutorialFilmUrlProviderInterface;
 use PHPUnit\Framework\TestCase;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -238,5 +239,21 @@ class GuidedProjectBuilderTest extends TestCase
         $builder = $this->createBuilder([$this->createProvider([$this->project('creer-page', 10)])]);
 
         $this->assertSame(EcosystemUrls::TUTORIAL_FILM . '/creer-page', $builder->getProjects()[0]['film']);
+    }
+
+    // A site publishing films of its own links them there, and leaves the ecosystem's for the projects it has none of
+    public function testASiteFilmWinsOverTheEcosystemOne(): void
+    {
+        $filmUrls = $this->createStub(TutorialFilmUrlProviderInterface::class);
+        $filmUrls->method('getFilmUrl')->willReturnCallback(static fn (string $slug): ?string => 'site-own' === $slug ? '/tutorials/film/site-own' : null);
+
+        $builder = new GuidedProjectBuilder(
+            [$this->createProvider([$this->project('site-own', 10), $this->project('creer-page', 20)])],
+            $this->createSecurity(),
+            $this->createTranslator(),
+            [$filmUrls],
+        );
+
+        $this->assertSame(['/tutorials/film/site-own', EcosystemUrls::TUTORIAL_FILM . '/creer-page'], array_column($builder->getProjects(), 'film'));
     }
 }

@@ -23,6 +23,8 @@ class GuidedProjectBuilder
         private readonly iterable $guidedProjectProviders,
         private readonly Security $security,
         private readonly TranslatorInterface $translator,
+        /** @var iterable<TutorialFilmUrlProviderInterface> */
+        private readonly iterable $tutorialFilmUrlProviders = [],
     ) {
     }
 
@@ -80,9 +82,16 @@ class GuidedProjectBuilder
         ];
     }
 
-    // Where the project's film is shown, the ecosystem's films and its slug: the address answers a project never shot too (bundles.975l.com sends it on to its films' index), so the link is written without knowing which films exist
+    // Where the project's film is shown: the site's own when it publishes one (see TutorialFilmUrlProviderInterface), the ecosystem's otherwise - an address answering a project never shot too (bundles.975l.com sends it on to its films' index), so that link is written without knowing which films exist
     private function filmUrl(string $slug): string
     {
+        foreach ($this->tutorialFilmUrlProviders as $provider) {
+            $url = $provider->getFilmUrl($slug);
+            if (null !== $url) {
+                return $url;
+            }
+        }
+
         return EcosystemUrls::TUTORIAL_FILM . '/' . rawurlencode($slug);
     }
 

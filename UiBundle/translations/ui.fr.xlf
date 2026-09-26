@@ -4118,6 +4118,10 @@
                 <source>label.tuesday</source>
                 <target>Mardi</target>
             </trans-unit>
+            <trans-unit id="7zvMQc9">
+                <source>label.tutorials_collection_source</source>
+                <target>Tutoriels</target>
+            </trans-unit>
             <trans-unit id="2eZSVqt">
                 <source>label.ui_sample_review_pending_author</source>
                 <target>Hélène Vasseur</target>

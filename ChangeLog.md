@@ -1,5 +1,17 @@
 # ChangeLog
 
+## v1.43.0
+
+A site's own tutorial films are linked from its dashboard
+
+### ConfigBundle
+
+- **New `TutorialFilmUrlProviderInterface`: a guided project's film link leads to the site's own film when one answers** (26/09/2026)
+
+### UiBundle
+
+- Translation key for SiteBundle's "Tutorials" collection source (26/09/2026)
+
 ## v1.42.2
 
 The faq block, a page section like the other kinds

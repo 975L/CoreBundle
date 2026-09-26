@@ -33,6 +33,7 @@ use c975L\ConfigBundle\Management\ProcedureProviderInterface;
 use c975L\ConfigBundle\Management\ShortcutProviderInterface;
 use c975L\ConfigBundle\Management\SitemapProviderInterface;
 use c975L\ConfigBundle\Management\StatusProviderInterface;
+use c975L\ConfigBundle\Management\TutorialFilmUrlProviderInterface;
 use c975L\ConfigBundle\Management\UrlMetadataProviderInterface;
 use c975L\ConfigBundle\Management\WhatsNewProviderInterface;
 use c975L\ConfigBundle\Scheduler\MaintenanceTaskProviderInterface;
@@ -110,6 +111,7 @@ class c975LConfigBundle extends AbstractBundle
         $container->addCompilerPass(new TaggedInterfacePass(LinkableRouteProviderInterface::class, 'c975l.linkable_route_provider'));
         $container->addCompilerPass(new TaggedInterfacePass(EssentialActionProviderInterface::class, 'c975l.essential_action_provider'));
         $container->addCompilerPass(new TaggedInterfacePass(GuidedProjectProviderInterface::class, 'c975l.guided_project_provider'));
+        $container->addCompilerPass(new TaggedInterfacePass(TutorialFilmUrlProviderInterface::class, 'c975l.tutorial_film_url_provider'));
         $container->addCompilerPass(new TaggedInterfacePass(DashboardWidgetProviderInterface::class, 'c975l.dashboard_widget_provider'));
         $container->addCompilerPass(new TaggedInterfacePass(HealthCheckProviderInterface::class, 'c975l.health_check_provider'));
         $container->addCompilerPass(new TaggedInterfacePass(HealthCheckAdviceProviderInterface::class, 'c975l.health_check_advice_provider'));
