@@ -1,8 +1,8 @@
 {# Static usage : <twig:c975LConfig:Security:OAuthLogin/> - one button per provider this site configured, nothing at all when it configured none #}
 {# The list comes from the configuration, not from a prop: see c975L\ConfigBundle\Twig\OAuthLoginExtension #}
 
-{# "redirect" is where the visitor comes back to once signed in: a path of this site, dropped by the controller if it is anything else. Left out, they land wherever a form login would have taken them #}
-{% set redirect = redirect|default('') %}
+{# "redirect" is where the visitor comes back to once signed in: a path of this site, dropped by the controller if it is anything else. Left out, the "_target_path" the login url carries is taken, the one a form login follows too #}
+{% set redirect = redirect|default(app.request.query.get('_target_path', '')) %}
 {% set providers = oauth_login_providers() %}
 
 {% if providers is not empty %}

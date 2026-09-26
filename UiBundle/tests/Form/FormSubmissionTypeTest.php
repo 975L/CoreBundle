@@ -354,7 +354,7 @@ class FormSubmissionTypeTest extends TestCase
         $this->assertSame("Logo (400\u{00A0}€)", $this->buildAddedFields([$field])['logo']['options']['label']);
     }
 
-    // Firefox restores moved controls on reload, contradicting the results printed for the defaults: the controls a formula reads opt out, the visitor's own details keep their autofill
+    // Firefox restores moved controls on reload, contradicting the results printed for the defaults: the controls a formula reads opt out, the visitor's own details keep their autofill, and a checkbox, on which HTML forbids the attribute, is left to calculator.js
     public function testTheControlsAFormulaReadsAreNeverRestoredByTheBrowser(): void
     {
         $added = $this->buildAddedFields([
@@ -363,7 +363,7 @@ class FormSubmissionTypeTest extends TestCase
             $this->buildField('name', FormField::TYPE_TEXT, false),
         ]);
 
-        $this->assertSame('off', $added['logo']['options']['attr']['autocomplete']);
+        $this->assertArrayNotHasKey('autocomplete', $added['logo']['options']['attr']);
         $this->assertSame('off', $added['pages']['options']['attr']['autocomplete']);
         $this->assertArrayNotHasKey('autocomplete', $added['name']['options']['attr']);
     }

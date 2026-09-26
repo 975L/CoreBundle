@@ -1,5 +1,16 @@
 # UPGRADE
 
+## v1.40
+
+**`public/maintenance.html` is now generated** by ConfigBundle at every `cache:warmup`, from its maintenance template: stop versioning your own copy, which the next warmup overwrites anyway.
+
+```bash
+git rm --cached public/maintenance.html
+echo 'public/maintenance.html' >> .gitignore
+```
+
+The deployment that removes the file from git deletes it on the server until its own `cache:warmup` writes it again, so that one deployment's first minutes answer a bare 503.
+
 ## v1.39.0
 
 **A migration is needed**, for the `last_login` and `inactivity_notice_sent_at` columns (datetime, nullable) the scaffolded `User` gains, once your `App\Entity\User` implements `c975L\ConfigBundle\Contract\InactivityAwareInterface` in place of `UserInterface` - copy the two properties, their accessors, the constructor and `anonymize()` from the bundle's `scaffold/src/Entity/User.php`:

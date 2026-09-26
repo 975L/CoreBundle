@@ -47,12 +47,12 @@ class OAuthLoginComponentTest extends TestCase
         $this->assertStringContainsString("'label.continue_with'|trans({'%provider%': provider.name}, 'config')", $component);
     }
 
-    // Where the visitor comes back to once signed in - the order they just paid for, when PaymentBundle's invitation is what they clicked. Left out, they land wherever a form login would have taken them
+    // Where the visitor comes back to once signed in - the order they just paid for, when PaymentBundle's invitation is what they clicked. Left out, the "_target_path" the login url carries is taken, as a form login does
     public function testTheComponentCarriesAnOptionalRedirect(): void
     {
         $component = $this->component();
 
-        $this->assertStringContainsString("{% set redirect = redirect|default('') %}", $component);
+        $this->assertStringContainsString("{% set redirect = redirect|default(app.request.query.get('_target_path', '')) %}", $component);
         $this->assertStringContainsString('{provider: provider.key, redirect: redirect}', $component);
     }
 

@@ -111,7 +111,9 @@ any other form.
   (`COMPUTED`) — a name, an email or a message never rides the query string of that GET.
 - An estimate is **shared by its link**: `calculator.js` writes the `COMPUTED` controls moved off their
   default into the page's own query string, keyed by field name, and sets them back on load; those
-  controls carry `autocomplete="off"` so a reload never restores them. Never put a name or email there.
+  controls carry `autocomplete="off"` so a reload never restores them — a checkbox excepted, HTML
+  forbidding the attribute there, and `calculator.js` asking the results again when Firefox restores one.
+  Never put a name or email there.
 - A **reset link** (`reset` target, `.ui-calculator-reset`, `label.calculator_reset`) shows once a
   `COMPUTED` control leaves its default, and puts every control and the query string back to the defaults.
 - A `checkbox` is a numeric type (`FormField::NUMERIC_TYPES`): a yes/no switch reading `1` ticked and

@@ -680,7 +680,8 @@ A site that unchecked its "register" Form has closed registration to every door,
 account carries is refused rather than signed up, while an account that already exists goes on signing in. And
 `/connect/{provider}` takes an optional `redirect`, a path of this site only - anything leading off-site is dropped
 rather than corrected - so a visitor comes back where they clicked rather than on the home page (PaymentBundle's
-order pages use it, see its "Inviting a guest buyer to open an account").
+order pages use it, see its "Inviting a guest buyer to open an account"). Left out, the buttons take the `_target_path`
+the login url carries, the one a form login follows too.
 
 #### Adding another provider
 
@@ -1566,6 +1567,8 @@ Setting the `site-maintenance` config to `true` — from the config list, or fro
 The dashboard toggle generates that token when it closes the site and the entry is still empty — an empty one grants nobody anything, so a site closed without it could only be visited by logging into the back-office. The dashboard then shows the ready-made url alongside the maintenance alert: hand it over to a client signing off on the work or to whoever has to see the site as its visitors will, without giving them an account.
 
 That page is served with **HTTP 503** and a `Retry-After` header, which is what search engines expect from a temporary outage — a `200` would get the maintenance page indexed in place of the real ones, a `404`/`410` would drop them from the index, and a `noindex` on a 503 risks the same. `Retry-After` is deliberately short (one hour, whatever the real length of the outage): it's only a hint, so a crawler coming back too early just meets another 503 and applies its own backoff, whereas too long a delay keeps it away after the site is back up. A `Cache-Control: no-store` keeps any proxy or CDN from serving the maintenance page once it's over.
+
+**The same page covers a deployment.** While `vendor/` and the container are being rewritten, the application can't answer at all, so the web server has to serve a static `public/maintenance.html` itself (an Apache `ErrorDocument 503` behind a flag file the deployment drops). `MaintenancePageCacheWarmer` writes that file from the very template above at every `cache:warmup`, in the default locale and without a CSP nonce, which Apache doesn't send: one panel from the first second of a deployment to the last, and nothing for a site to keep in step. The file is generated, so a site lists `public/maintenance.html` in its `.gitignore`; overriding the template changes both.
 
 `robots.txt`, `humans.txt`, `llms.txt` and the sitemaps are static files under `public/` (see [robots.txt, humans.txt and llms.txt](#robotstxt-humanstxt-and-llmstxt)), served by the web server without going through the listener — they keep answering `200` during maintenance, which matters: a `robots.txt` answering 503 stops crawling on the whole site.
 

@@ -1,5 +1,21 @@
 # ChangeLog
 
+## v1.40.0
+
+The maintenance page is generated for deployments
+
+### ConfigBundle
+
+- **New `MaintenancePageCacheWarmer`, writing `public/maintenance.html` from the maintenance template at every `cache:warmup`** (26/09/2026) **See [UPGRADE.md](UPGRADE.md)**
+- The README and the `c975l-config` skill document the generated page (26/09/2026)
+- The README documents the OAuth `_target_path` fallback (26/09/2026)
+- The OAuth login buttons bring back to the `_target_path` the login url carries, as a form login does (26/09/2026)
+
+### UiBundle
+
+- A calculator checkbox no longer carries `autocomplete="off"`, which HTML forbids there (26/09/2026)
+- The `c975l-forms-emails` skill notes the checkbox exception (26/09/2026)
+
 ## v1.39.1
 
 The language menu moves a /{_locale}/ route to the language picked

@@ -1,6 +1,6 @@
 ---
 name: c975l-config
-description: "Use this skill for any configuration question in a Symfony application built on the c975L ecosystem — where a setting belongs, how to declare one, how to read it, and why .env and container parameters are the wrong answer here. Covers config/configs.json, ConfigServiceInterface, how a group drawer is named and labelled, sensitive and restricted values, severities, the vault key, the loading and pruning commands, and maintenance mode. Triggers on: configs.json, ConfigServiceInterface, ConfigService, config(), configParam(), c975l:config:load-all, c975l:config:set, c975l:config:get, c975l:config:prune, c975l:config:encrypt-sensitive, C975L_VAULT_KEY, sensitive, restricted, severity, feature, UnusedConfigFeatureReader, ConfigAlertProvider, findSensitiveWithValue, site-maintenance, ConfigTranslator, ConfigTranslator::TRANSLATABLE, site_config owner, translate a setting, .env, parameters.yaml, TreeBuilder, ConfigGroupLabelResolver, label.group_, SiteLocales, enabled_locales, LocaleListener, default_locale, translation.yaml, multilingual, isMultilingual, setLocales, language selector, locales_pattern, LocalizedRouteNegotiator, isTranslated, redirectToAskedLanguage, vary, LocalizedUrlGenerator, sameRouteIn, _canonical_route, localized_path, screen_languages, ContentLocaleScreen, contenu, _content_locale_tabs, InternalLinkLocalizerInterface, SESSION_KEY_MANAGEMENT, isManagementPath, ROUTE_PATH, back office language, site-rate-limit."
+description: "Use this skill for any configuration question in a Symfony application built on the c975L ecosystem — where a setting belongs, how to declare one, how to read it, and why .env and container parameters are the wrong answer here. Covers config/configs.json, ConfigServiceInterface, how a group drawer is named and labelled, sensitive and restricted values, severities, the vault key, the loading and pruning commands, and maintenance mode. Triggers on: configs.json, ConfigServiceInterface, ConfigService, config(), configParam(), c975l:config:load-all, c975l:config:set, c975l:config:get, c975l:config:prune, c975l:config:encrypt-sensitive, C975L_VAULT_KEY, sensitive, restricted, severity, feature, UnusedConfigFeatureReader, ConfigAlertProvider, findSensitiveWithValue, site-maintenance, MaintenancePageCacheWarmer, maintenance.html, cache:warmup, deployment, ConfigTranslator, ConfigTranslator::TRANSLATABLE, site_config owner, translate a setting, .env, parameters.yaml, TreeBuilder, ConfigGroupLabelResolver, label.group_, SiteLocales, enabled_locales, LocaleListener, default_locale, translation.yaml, multilingual, isMultilingual, setLocales, language selector, locales_pattern, LocalizedRouteNegotiator, isTranslated, redirectToAskedLanguage, vary, LocalizedUrlGenerator, sameRouteIn, _canonical_route, localized_path, screen_languages, ContentLocaleScreen, contenu, _content_locale_tabs, InternalLinkLocalizerInterface, SESSION_KEY_MANAGEMENT, isManagementPath, ROUTE_PATH, back office language, site-rate-limit."
 ---
 
 # c975L ConfigBundle — configuration
@@ -10,7 +10,7 @@ description: "Use this skill for any configuration question in a Symfony applica
 **Package:** `c975l/core-bundle` · **Bundle:** `c975L\ConfigBundle\` · **Twig namespace:** `@c975LConfig` · **Translation domains:** `config`, `site_config`
 
 **Key source paths** (relative to this bundle's directory inside the package):
-`src/Entity/Config.php`, `src/Service/ConfigService.php`, `src/Service/ConfigServiceInterface.php`, `src/Command/ConfigLoadAllCommand.php`, `src/Command/ConfigSetCommand.php`, `src/Command/ConfigPruneCommand.php`, `src/Command/EncryptSensitiveCommand.php`, `src/Controller/Management/`, `src/Service/SiteLocales.php`, `src/Listener/LocaleListener.php`, `src/Service/LocalizedRouteNegotiator.php`, `src/Service/LocalizedUrlGenerator.php`, `src/Management/ContentLocaleScreen.php`, `config/configs.json`
+`src/Entity/Config.php`, `src/Service/ConfigService.php`, `src/Service/ConfigServiceInterface.php`, `src/Command/ConfigLoadAllCommand.php`, `src/Command/ConfigSetCommand.php`, `src/Command/ConfigPruneCommand.php`, `src/Command/EncryptSensitiveCommand.php`, `src/Controller/Management/`, `src/Service/SiteLocales.php`, `src/Listener/LocaleListener.php`, `src/Service/LocalizedRouteNegotiator.php`, `src/Service/LocalizedUrlGenerator.php`, `src/Management/ContentLocaleScreen.php`, `config/configs.json`, `src/CacheWarmer/MaintenancePageCacheWarmer.php`
 
 **Related skills:** `c975l-management`, `c975l-users`, `c975l-operations` in this same bundle, and `c975l-blocks`, `c975l-media`, `c975l-forms-emails`, `c975l-ui-assets`, `c975l-js-testing` in UiBundle beside it.
 
@@ -239,6 +239,11 @@ crawl of the whole site.
 Do not leave it on for more than a day or two: past that, search engines stop reading the 503 as
 temporary.
 
+The same page covers a **deployment**: `MaintenancePageCacheWarmer` writes `public/maintenance.html`
+from `@c975LConfig/maintenance/index.html.twig` (`standalone: true`, no CSP nonce) at every
+`cache:warmup`, for the web server to serve while the application can't answer. The file is
+generated and belongs in the site's `.gitignore`; overriding the template changes both pages.
+
 `site-rate-limit` is the other entry that answers a visitor rather than an administrator: a
 `restricted` one, shipped `true`, refusing a caller past 60 requests in 10 seconds — see the
 `c975l-operations` skill for what it counts and what it never does.
@@ -259,3 +264,4 @@ temporary.
 - **Do not use emptiness as a meaningful state** on an entry carrying a seeded default.
 - **Do not serve `robots.txt` or a sitemap from a controller** — they must survive maintenance mode.
 - **Do not render a maintenance page with a 200 or a 404.**
+- **Do not version or hand-edit `public/maintenance.html`** — the next `cache:warmup` overwrites it.
