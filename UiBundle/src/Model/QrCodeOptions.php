@@ -17,7 +17,7 @@ final class QrCodeOptions
     public const string FORMAT_SVG = 'svg';
 
     /**
-     * @param string      $format        "png" or "svg" - an SVG carries the logo but never the label, the writer having no text support
+     * @param string      $format        "png" or "svg" - an SVG draws its label as text, in the font's family when the viewer has it
      * @param string      $color         hexadecimal, 3 or 6 characters, with or without "#"
      * @param string|null $logoPath      absolute path of an image painted in the middle - the error correction level is raised to "high" with it, so the covered modules can still be read
      * @param string|null $labelFontPath absolute path of a TrueType font, Open Sans when null

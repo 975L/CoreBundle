@@ -1,5 +1,24 @@
 # ChangeLog
 
+## v1.42.1
+
+The pricing card, one offer among several
+
+### UiBundle
+
+- **New `card--pricing` variant: one offer among several, its name and price centered without the colored band** (26/09/2026)
+- The pricing card grows its price through PaymentBundle's `--price-size` token (26/09/2026)
+- The pricing card's name at the enlarged card's size, `--card-pricing-title-size` (26/09/2026)
+- The pricing card's header icon follows a secondary button's, no longer white on white (26/09/2026)
+- Adds the `card-features` list, each line ticked in the card's accent (26/09/2026)
+- Adds the `card--featured` modifier and the `card-ribbon` badge, putting one offer forward (26/09/2026)
+- A card title set beside a mention (`titleAside`) keeps the title font, no longer the body's (26/09/2026)
+- `--section-title-weight` token for a section's title, 500 by default as before (26/09/2026)
+- `QrCodeGenerator`: an SVG carries its label below the code, as a PNG does (26/09/2026)
+- `QrCodeGenerator`: the label is drawn in the code's color, no longer always black (26/09/2026)
+- New `ui-content-export` guided project, exporting forms to another site (26/09/2026)
+- The `ui-legal-model` guided project highlights its own save button, `data-legal-model-submit` (26/09/2026)
+
 ## v1.42.0
 
 A local account to film the back office with

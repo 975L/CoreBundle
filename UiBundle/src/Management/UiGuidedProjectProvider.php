@@ -74,6 +74,8 @@ class UiGuidedProjectProvider implements GuidedProjectProviderInterface
             $projects[] = $this->aiSearchAnswersProject();
         }
 
+        $projects[] = $this->contentExportProject();
+
         return $projects;
     }
 
@@ -431,11 +433,11 @@ class UiGuidedProjectProvider implements GuidedProjectProviderInterface
                     'highlight' => '[data-action="legal-model#add"]',
                 ],
                 [
-                    // A plain Symfony form on its own screen, not an EasyAdmin CRUD page: there is no "saveAndReturn" action to name here, same as the font bulk import step
+                    // A plain Symfony form on its own screen, not an EasyAdmin CRUD page: there is no "saveAndReturn" action to name here, so the button carries an attribute of its own rather than being the page's first submit
                     'label' => 'label.guided_step_ui_legal_model_apply',
                     'description' => 'description.guided_step_ui_legal_model_apply',
                     'narration' => 'narration.guided_step_ui_legal_model_apply',
-                    'highlight' => 'form button[type="submit"]',
+                    'highlight' => '[data-legal-model-submit]',
                 ],
                 [
                     'label' => 'label.guided_step_ui_legal_model_done',
@@ -862,6 +864,47 @@ class UiGuidedProjectProvider implements GuidedProjectProviderInterface
                     'label' => 'label.guided_step_ui_font_done',
                     'description' => 'description.guided_step_ui_font_done',
                     'narration' => 'narration.guided_step_ui_font_done',
+                ],
+            ],
+        ];
+    }
+
+    // A calculator is built and checked on one environment and read on another, and its formulas are the one kind of content no deployment carries - the other end of ConfigBundle's "config-content-import"
+    private function contentExportProject(): array
+    {
+        return [
+            'slug' => 'ui-content-export',
+            'label' => 'label.guided_project_ui_content_export',
+            'description' => 'description.guided_project_ui_content_export',
+            'translation_domain' => 'ui',
+            'order' => 3140,
+            // Same role the "exportSelection" batch action is given, see FormCrudController::configureActions()
+            'role' => $this->configService->get('site-role-admin'),
+            'steps' => [
+                [
+                    'label' => 'label.guided_step_ui_content_export_open',
+                    'description' => 'description.guided_step_ui_content_export_open',
+                    'narration' => 'narration.guided_step_ui_content_export_open',
+                    'url' => $this->indexUrl(FormCrudController::class),
+                ],
+                [
+                    // EasyAdmin's own "check them all" box, in the index header - the batch actions stay hidden until at least one row is checked, so this step comes before the export button below
+                    'label' => 'label.guided_step_ui_content_export_select',
+                    'description' => 'description.guided_step_ui_content_export_select',
+                    'narration' => 'narration.guided_step_ui_content_export_select',
+                    'highlight' => '#form-batch-checkbox-all',
+                ],
+                [
+                    'label' => 'label.guided_step_ui_content_export_run',
+                    'description' => 'description.guided_step_ui_content_export_run',
+                    'narration' => 'narration.guided_step_ui_content_export_run',
+                    'highlight' => '.action-exportSelection',
+                ],
+                [
+                    // The zip is re-uploaded from ConfigBundle's own import screen, a stricter one this parcours does not walk into - the step names it rather than sending the user there
+                    'label' => 'label.guided_step_ui_content_export_import',
+                    'description' => 'description.guided_step_ui_content_export_import',
+                    'narration' => 'narration.guided_step_ui_content_export_import',
                 ],
             ],
         ];

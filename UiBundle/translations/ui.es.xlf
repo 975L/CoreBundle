@@ -46,6 +46,10 @@
                 <source>description.guided_project_ui_calculator</source>
                 <target>Un formulario que calcula: deslizadores, fórmulas, una cifra destacada y, si lo desea, enviado con sus resultados.</target>
             </trans-unit>
+            <trans-unit id="6aGK0_V">
+                <source>description.guided_project_ui_content_export</source>
+                <target>Llevarse formularios y calculadoras en un zip, fórmulas incluidas, para cargarlos en otro sitio</target>
+            </trans-unit>
             <trans-unit id="QAAW6KH">
                 <source>description.guided_project_ui_email_template</source>
                 <target>Retocar el contenido de un correo que el sitio envía, igual que se retoca una página</target>
@@ -193,6 +197,22 @@
             <trans-unit id="uartqWQ">
                 <source>description.guided_step_ui_calculator_save_fields</source>
                 <target>El nombre de las variables se deriva de las etiquetas. Solo aparece una vez guardados los campos.</target>
+            </trans-unit>
+            <trans-unit id="QhLAp.W">
+                <source>description.guided_step_ui_content_export_import</source>
+                <target>En el otro sitio, la pantalla «Importación de contenido» de los ajustes acepta ese zip: lo que ya existe se actualiza, el resto se crea.</target>
+            </trans-unit>
+            <trans-unit id="ENOwuSL">
+                <source>description.guided_step_ui_content_export_open</source>
+                <target>La exportación parte de esta lista; la de las fuentes tiene el mismo botón.</target>
+            </trans-unit>
+            <trans-unit id="Qe3Gbmm">
+                <source>description.guided_step_ui_content_export_run</source>
+                <target>Se descarga un zip que contiene cada formulario con sus campos y sus fórmulas.</target>
+            </trans-unit>
+            <trans-unit id="Bbwzhtt">
+                <source>description.guided_step_ui_content_export_select</source>
+                <target>Esta casilla las marca todas; también puede marcarlas una a una. El botón de exportación solo aparece cuando hay una marcada.</target>
             </trans-unit>
             <trans-unit id="Sz9PehJ">
                 <source>description.guided_step_ui_email_template_attachments</source>
@@ -2398,6 +2418,10 @@
                 <source>label.guided_project_ui_calculator</source>
                 <target>Crear una calculadora</target>
             </trans-unit>
+            <trans-unit id="9M8UeR6">
+                <source>label.guided_project_ui_content_export</source>
+                <target>Exportar formularios a otro sitio</target>
+            </trans-unit>
             <trans-unit id="j0VRPpz">
                 <source>label.guided_project_ui_email_template</source>
                 <target>Personalizar un correo</target>
@@ -2553,6 +2577,22 @@
             <trans-unit id="CwkgpFm">
                 <source>label.guided_step_ui_calculator_save_fields</source>
                 <target>Guarde antes de escribir una fórmula</target>
+            </trans-unit>
+            <trans-unit id="1ssn4bV">
+                <source>label.guided_step_ui_content_export_import</source>
+                <target>Cargarlo en el otro sitio</target>
+            </trans-unit>
+            <trans-unit id="UuzMfhr">
+                <source>label.guided_step_ui_content_export_open</source>
+                <target>Abrir los formularios</target>
+            </trans-unit>
+            <trans-unit id="WneXyWo">
+                <source>label.guided_step_ui_content_export_run</source>
+                <target>Exportar la selección</target>
+            </trans-unit>
+            <trans-unit id="EL7K78H">
+                <source>label.guided_step_ui_content_export_select</source>
+                <target>Marcar los formularios que llevarse</target>
             </trans-unit>
             <trans-unit id="I.z0lt6">
                 <source>label.guided_step_ui_email_template_attachments</source>

@@ -6,6 +6,16 @@
                 "en": "A new legal model states the licence of the photographs in your galleries, ready to place on a page.",
                 "fr": "Un nouveau modèle juridique indique la licence des photos de vos galeries, prêt à placer sur une page.",
                 "es": "Un nuevo modelo legal indica la licencia de las fotos de sus galerías, listo para colocar en una página."
+            },
+            {
+                "en": "A new guided project shows how to export forms and calculators to another site, formulas included.",
+                "fr": "Un nouveau projet guidé montre comment exporter des formulaires et des calculateurs vers un autre site, formules comprises.",
+                "es": "Un nuevo proyecto guiado muestra cómo exportar formularios y calculadoras a otro sitio, fórmulas incluidas."
+            },
+            {
+                "en": "A QR code in SVG now shows its caption below it, in the code's own color.",
+                "fr": "Un QR code en SVG affiche désormais sa légende en dessous, dans la couleur du code.",
+                "es": "Un código QR en SVG muestra ahora su leyenda debajo, en el color del código."
             }
         ]
     },

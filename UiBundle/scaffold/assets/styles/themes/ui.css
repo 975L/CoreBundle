@@ -59,6 +59,8 @@
 
     /* The measures of the section-level blocks */
     /* --section-head-max-width: 640px; */
+    /* The weight of a section's title - point it at --font-title-weight for sections headed like the page title */
+    /* --section-title-weight: 500; */
     /* The step a section's title starts in on, under its own eyebrow - 0 lines the two up */
     /* --section-head-indent: 32px; */
     /* --hero-text-max-width: 720px; */
@@ -129,6 +131,11 @@
     /* --hero-media-grid-background: #fff; */
     /* The room a hero opening on a background video gives it: the shot is cropped to the section's height, which would otherwise be that of the text alone. Only read when a video is attached */
     /* --hero-video-min-height: 70vh; */
+
+    /* Pricing card - the "card--pricing" variant, one offer among several: the size its price grows to (PaymentBundle's ".price" reads it as --price-size) */
+    /* --card-pricing-price-size: 2.25rem; */
+    /* The size of its name, the enlarged card's */
+    /* --card-pricing-title-size: var(--card-title-size-big); */
 
     /* Text hook - the lead-in phrase of the "text_hook" block and of an article */
     /* --text-hook-size: clamp(17px, 1.7vw, 20px); */

@@ -1052,6 +1052,11 @@ h2.card-header {
   gap: 0.75em;
 }
 
+.card-header__title,
+.card-header__aside {
+  font-family: inherit;
+}
+
 .card-header__aside {
   flex: none;
   font-size: var(--card-header-aside-size);
@@ -1196,6 +1201,73 @@ h2.card-header {
 
 .card--portrait .card-body img {
   max-width: var(--card-portrait-media-max-width);
+}
+
+/* PRICING CARD */
+.card--pricing {
+  text-align: center;
+  --price-size: var(--card-pricing-price-size, 2.25rem);
+}
+
+.card--pricing .card-header,
+.card--pricing h2.card-header {
+  background-color: transparent;
+  color: var(--card-accent, var(--primary-ink));
+  border-bottom: none;
+  text-align: center;
+  padding: 1.25em 1em 0;
+  font-size: var(--card-pricing-title-size, var(--card-title-size-big));
+}
+
+.card--pricing .card-title {
+  font-family: var(--font-family-title);
+  font-size: var(--card-pricing-title-size, var(--card-title-size-big));
+  color: var(--card-accent, var(--primary-ink));
+  margin: 0.5em 0 0.25em;
+}
+
+.card--pricing .card-header .icon {
+  filter: brightness(0) invert(var(--button-secondary-icon-invert, 0));
+}
+
+.card--pricing .card-header:has(.card-header__aside) {
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25em;
+}
+
+.card-features {
+  list-style: none;
+  padding-left: 0;
+  margin: 1em 0;
+  text-align: start;
+}
+
+.card-features li {
+  position: relative;
+  margin: 0.35em 0;
+  padding-inline-start: 1.5em;
+}
+
+.card-features li::before {
+  content: "\2713";
+  position: absolute;
+  inset-inline-start: 0;
+  color: var(--card-accent, var(--primary-ink));
+  font-weight: bold;
+}
+
+.card--featured {
+  border: 2px solid var(--card-accent, var(--primary-ink));
+  box-shadow: var(--box-shadow);
+}
+
+.card-ribbon {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  white-space: nowrap;
 }
 
 /* COLORS */
@@ -2450,7 +2522,7 @@ img.white {
 
 .section-title {
   font-family: var(--font-family-title);
-  font-weight: 500;
+  font-weight: var(--section-title-weight, 500);
   letter-spacing: -0.01em;
   font-size: calc(clamp(30px, 4.4vw, 42px) * var(--font-size-title-scale, 1));
   line-height: 1.1;

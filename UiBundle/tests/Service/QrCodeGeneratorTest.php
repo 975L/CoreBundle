@@ -30,10 +30,24 @@ class QrCodeGeneratorTest extends TestCase
 
     public function testItDrawsAnSvgWhenAsked(): void
     {
-        $image = new QrCodeGenerator(new TagAwareAdapter(new ArrayAdapter()))->generate('https://example.com/page', new QrCodeOptions(format: QrCodeOptions::FORMAT_SVG, label: 'ignored'));
+        $image = new QrCodeGenerator(new TagAwareAdapter(new ArrayAdapter()))->generate('https://example.com/page', new QrCodeOptions(format: QrCodeOptions::FORMAT_SVG));
 
         $this->assertSame('image/svg+xml', $image->mimeType);
         $this->assertStringContainsString('<svg', $image->content);
+        $this->assertStringNotContainsString('<text', $image->content);
+    }
+
+    // The SVG writer ignores labels: the text is added below the code, which grows taller to hold it, as a PNG does
+    public function testAnSvgCarriesItsLabelBelowTheCode(): void
+    {
+        $generator = new QrCodeGenerator(new TagAwareAdapter(new ArrayAdapter()));
+        $plain = new \SimpleXMLElement($generator->generate('https://example.com/page', new QrCodeOptions(format: QrCodeOptions::FORMAT_SVG))->content);
+        $labelled = new \SimpleXMLElement($generator->generate('https://example.com/page', new QrCodeOptions(format: QrCodeOptions::FORMAT_SVG, color: '123456', label: 'example.com/<page>'))->content);
+
+        $this->assertSame('example.com/<page>', (string) $labelled->text);
+        $this->assertSame('#123456', (string) $labelled->text['fill']);
+        $this->assertSame((string) $plain['width'], (string) $labelled['width']);
+        $this->assertGreaterThan((float) $plain['height'], (float) $labelled['height']);
     }
 
     // The whole point of the service: a code asked for again is read back, not drawn a second time

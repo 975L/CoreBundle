@@ -46,6 +46,10 @@
                 <source>description.guided_project_ui_calculator</source>
                 <target>Un formulaire qui calcule : des curseurs, des formules, un chiffre mis en avant, et si vous le voulez, envoyé avec ses résultats.</target>
             </trans-unit>
+            <trans-unit id="6aGK0_V">
+                <source>description.guided_project_ui_content_export</source>
+                <target>Emporter des formulaires et des calculateurs dans un zip, formules comprises, pour les charger dans un autre site</target>
+            </trans-unit>
             <trans-unit id="QAAW6KH">
                 <source>description.guided_project_ui_email_template</source>
                 <target>Reprendre le contenu d'un e-mail que le site envoie, comme on reprend une page</target>
@@ -193,6 +197,22 @@
             <trans-unit id="uartqWQ">
                 <source>description.guided_step_ui_calculator_save_fields</source>
                 <target>Le nom des variables est dérivé des libellés. Il n'apparaît qu'une fois les champs enregistrés.</target>
+            </trans-unit>
+            <trans-unit id="QhLAp.W">
+                <source>description.guided_step_ui_content_export_import</source>
+                <target>Sur l'autre site, l'écran « Import de contenu » des paramètres accepte ce zip : ce qui existe déjà est mis à jour, le reste est créé.</target>
+            </trans-unit>
+            <trans-unit id="ENOwuSL">
+                <source>description.guided_step_ui_content_export_open</source>
+                <target>L'export part de cette liste ; celle des polices a le même bouton.</target>
+            </trans-unit>
+            <trans-unit id="Qe3Gbmm">
+                <source>description.guided_step_ui_content_export_run</source>
+                <target>Un zip est téléchargé, contenant chaque formulaire avec ses champs et ses formules.</target>
+            </trans-unit>
+            <trans-unit id="Bbwzhtt">
+                <source>description.guided_step_ui_content_export_select</source>
+                <target>Cette case les coche toutes ; vous pouvez aussi les cocher une par une. Le bouton d'export n'apparaît qu'une fois une case cochée.</target>
             </trans-unit>
             <trans-unit id="Sz9PehJ">
                 <source>description.guided_step_ui_email_template_attachments</source>
@@ -2398,6 +2418,10 @@
                 <source>label.guided_project_ui_calculator</source>
                 <target>Construire un calculateur</target>
             </trans-unit>
+            <trans-unit id="9M8UeR6">
+                <source>label.guided_project_ui_content_export</source>
+                <target>Exporter des formulaires vers un autre site</target>
+            </trans-unit>
             <trans-unit id="j0VRPpz">
                 <source>label.guided_project_ui_email_template</source>
                 <target>Personnaliser un e-mail</target>
@@ -2553,6 +2577,22 @@
             <trans-unit id="CwkgpFm">
                 <source>label.guided_step_ui_calculator_save_fields</source>
                 <target>Enregistrez avant d'écrire une formule</target>
+            </trans-unit>
+            <trans-unit id="1ssn4bV">
+                <source>label.guided_step_ui_content_export_import</source>
+                <target>Le charger dans l'autre site</target>
+            </trans-unit>
+            <trans-unit id="UuzMfhr">
+                <source>label.guided_step_ui_content_export_open</source>
+                <target>Ouvrir les formulaires</target>
+            </trans-unit>
+            <trans-unit id="WneXyWo">
+                <source>label.guided_step_ui_content_export_run</source>
+                <target>Exporter la sélection</target>
+            </trans-unit>
+            <trans-unit id="EL7K78H">
+                <source>label.guided_step_ui_content_export_select</source>
+                <target>Cocher les formulaires à emporter</target>
             </trans-unit>
             <trans-unit id="I.z0lt6">
                 <source>label.guided_step_ui_email_template_attachments</source>

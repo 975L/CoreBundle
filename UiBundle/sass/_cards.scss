@@ -146,6 +146,12 @@ h2.card-header {
     gap: 0.75em;
 }
 
+// The theme's "*" matches the two spans directly and beats inheritance, so the title set beside a mention fell back on the body font - restated, as the title link below
+.card-header__title,
+.card-header__aside {
+    font-family: inherit;
+}
+
 .card-header__aside {
     flex: none;
     font-size: var(--card-header-aside-size);
@@ -314,4 +320,80 @@ h2.card-header {
 // ".img-responsive" already blocks the picture and centers it, so only its measure is left to say here
 .card--portrait .card-body img {
     max-width: var(--card-portrait-media-max-width);
+}
+
+/* PRICING CARD */
+
+// One offer among several a page sets side by side - a plan, a pack of credits: its name and its price read first, centered, then what it includes and the button taking it. The width is the caller's, three plans or four packs to a row
+.card--pricing {
+    text-align: center;
+    // Read by PaymentBundle's ".price": only a price inside an offer grows, every other price on the site keeping its size
+    --price-size: var(--card-pricing-price-size, 2.25rem);
+}
+
+// The name where the band was, as the portrait card has it: in the card's accent ink rather than on a fill, so the price is the one thing that stands out. The Card component's heading and a hand-written ".card-title" read the same
+.card--pricing .card-header,
+.card--pricing h2.card-header {
+    background-color: transparent;
+    color: var(--card-accent, var(--primary-ink));
+    border-bottom: none;
+    text-align: center;
+    padding: 1.25em 1em 0;
+    font-size: var(--card-pricing-title-size, var(--card-title-size-big));
+}
+
+// The name at the enlarged card's size: without its band it would read smaller than the price under it
+.card--pricing .card-title {
+    font-family: var(--font-family-title);
+    font-size: var(--card-pricing-title-size, var(--card-title-size-big));
+    color: var(--card-accent, var(--primary-ink));
+    margin: 0.5em 0 0.25em;
+}
+
+// No band left to set the icon against: it follows a secondary button's icon, black on the page and white in a dark theme
+.card--pricing .card-header .icon {
+    filter: brightness(0) invert(var(--button-secondary-icon-invert, 0));
+}
+
+// The second mention - what sets this offer apart - under the name rather than at the end of its line, a centered title having no end to put it at
+.card--pricing .card-header:has(.card-header__aside) {
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25em;
+}
+
+// What the offer includes, each line ticked in the accent, flush left inside the centered card: a list is read down its left edge
+.card-features {
+    list-style: none;
+    padding-left: 0;
+    margin: 1em 0;
+    text-align: start;
+}
+
+.card-features li {
+    position: relative;
+    margin: 0.35em 0;
+    padding-inline-start: 1.5em;
+}
+
+.card-features li::before {
+    content: #{"\"\\2713\""};
+    position: absolute;
+    inset-inline-start: 0;
+    color: var(--card-accent, var(--primary-ink));
+    font-weight: bold;
+}
+
+// The offer a page puts forward among the others: outlined in its accent and lifted, a ribbon straddling its top border when it carries one
+.card--featured {
+    border: 2px solid var(--card-accent, var(--primary-ink));
+    box-shadow: var(--box-shadow);
+}
+
+.card-ribbon {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    white-space: nowrap;
 }

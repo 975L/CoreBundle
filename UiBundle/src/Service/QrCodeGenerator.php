@@ -31,6 +31,9 @@ class QrCodeGenerator
     // Carried by every code, so all of them can be dropped at once
     public const string CACHE_TAG = 'ui_qrcode';
 
+    // Space under a label, as the PNG writer leaves it
+    private const int LABEL_MARGIN_BOTTOM = 10;
+
     // A day: the url a code encodes may be retargeted, and a browser would otherwise keep showing the old one
     private const int HTTP_MAX_AGE = 86400;
 
@@ -77,33 +80,87 @@ class QrCodeGenerator
     // Only ever reached on a cache miss
     private function draw(string $data, QrCodeOptions $options): QrCodeImage
     {
-        $hasLabel = null !== $options->label && QrCodeOptions::FORMAT_PNG === $options->format;
+        $isSvg = QrCodeOptions::FORMAT_SVG === $options->format;
+        $font = null === $options->labelFontPath ? new OpenSans($options->labelFontSize) : new Font($options->labelFontPath, $options->labelFontSize);
 
         $result = new Builder()->build(
-            writer: QrCodeOptions::FORMAT_SVG === $options->format ? new SvgWriter() : new PngWriter(),
+            writer: $isSvg ? new SvgWriter() : new PngWriter(),
             data: $data,
             errorCorrectionLevel: null === $options->logoPath ? ErrorCorrectionLevel::Low : ErrorCorrectionLevel::High,
             size: $options->size,
             margin: $options->margin,
             foregroundColor: $this->color($options->color),
             backgroundColor: $this->color($options->backgroundColor),
-            labelText: $hasLabel ? $options->label : '',
-            labelFont: null === $options->labelFontPath ? new OpenSans($options->labelFontSize) : new Font($options->labelFontPath, $options->labelFontSize),
+            labelText: $isSvg ? '' : $options->label ?? '',
+            labelFont: $font,
+            labelTextColor: $this->color($options->color),
             logoPath: $options->logoPath ?? '',
             logoResizeToWidth: $options->logoWidth,
         );
 
-        return new QrCodeImage($result->getString(), $result->getMimeType());
+        $content = $result->getString();
+        if ($isSvg && null !== $options->label && '' !== $options->label) {
+            $content = $this->addSvgLabel($content, $options->label, $font->getPath(), $options);
+        }
+
+        return new QrCodeImage($content, $result->getMimeType());
+    }
+
+    // The SVG writer ignores the label: it is added below the code as the PNG writer lays it out, measured with the same font so its width matches - the viewer draws it with that family when installed, stretched to that width otherwise
+    private function addSvgLabel(string $content, string $label, string $fontPath, QrCodeOptions $options): string
+    {
+        $box = imagettfbbox($options->labelFontSize, 0, $fontPath, $label);
+        if (false === $box) {
+            return $content;
+        }
+
+        $svg = new \SimpleXMLElement($content);
+        $viewBox = explode(' ', (string) $svg['viewBox']);
+        $width = (float) $viewBox[2];
+        $codeHeight = (float) $viewBox[3];
+        $labelWidth = $box[2] - $box[0];
+        $height = $codeHeight + ($box[0] - $box[7]) + self::LABEL_MARGIN_BOTTOM;
+
+        $svg['viewBox'] = '0 0 ' . $width . ' ' . $height;
+        if (isset($svg['height'])) {
+            $svg['height'] = $height . 'px';
+        }
+
+        $background = $svg->addChild('rect');
+        $background->addAttribute('x', '0');
+        $background->addAttribute('y', (string) $codeHeight);
+        $background->addAttribute('width', (string) $width);
+        $background->addAttribute('height', (string) ($height - $codeHeight));
+        $background->addAttribute('fill', '#' . $this->hex($options->backgroundColor));
+
+        // GD reads a font size in points at 96 dpi
+        $font = new FontFilenameParser()->parse($fontPath);
+        $text = $svg->addChild('text', htmlspecialchars($label, \ENT_XML1));
+        $text->addAttribute('x', (string) (($width - $labelWidth) / 2));
+        $text->addAttribute('y', (string) ($height - self::LABEL_MARGIN_BOTTOM));
+        $text->addAttribute('fill', '#' . $this->hex($options->color));
+        $text->addAttribute('font-family', "'" . $font['name'] . "', sans-serif");
+        $text->addAttribute('font-weight', (string) $font['weight']);
+        $text->addAttribute('font-size', (string) round($options->labelFontSize * 96 / 72, 2));
+        $text->addAttribute('textLength', (string) $labelWidth);
+        $text->addAttribute('lengthAdjust', 'spacingAndGlyphs');
+
+        return (string) $svg->asXML();
     }
 
     // A 3 or 6 characters hexadecimal code, with or without "#"
     private function color(string $hex): Color
     {
-        $hex = ltrim($hex, '#');
-        if (3 === strlen($hex)) {
-            $hex = $hex[0] . $hex[0] . $hex[1] . $hex[1] . $hex[2] . $hex[2];
-        }
+        $hex = $this->hex($hex);
 
         return new Color((int) hexdec(substr($hex, 0, 2)), (int) hexdec(substr($hex, 2, 2)), (int) hexdec(substr($hex, 4, 2)));
+    }
+
+    // A 3 or 6 characters hexadecimal code as 6 characters, without "#"
+    private function hex(string $hex): string
+    {
+        $hex = ltrim($hex, '#');
+
+        return 3 === strlen($hex) ? $hex[0] . $hex[0] . $hex[1] . $hex[1] . $hex[2] . $hex[2] : $hex;
     }
 }

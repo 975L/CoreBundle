@@ -142,6 +142,22 @@
                 <source>narration.guided_step_ui_calculator_save_fields</source>
                 <target>Save before writing a single formula: variable names are derived from the labels, and they only appear once the fields are saved.</target>
             </trans-unit>
+            <trans-unit id="upqcYyp">
+                <source>narration.guided_step_ui_content_export_import</source>
+                <target>On the other site, the "Content import" screen of the settings takes that zip. What already exists is updated, the rest is created.</target>
+            </trans-unit>
+            <trans-unit id="E_jF.f8">
+                <source>narration.guided_step_ui_content_export_open</source>
+                <target>Forms and calculators travel from one site to another from this list. The fonts list has the same button.</target>
+            </trans-unit>
+            <trans-unit id="3I1ZfhW">
+                <source>narration.guided_step_ui_content_export_run</source>
+                <target>Export the selection: a zip is downloaded, holding each form with its fields and its formulas.</target>
+            </trans-unit>
+            <trans-unit id="qFxvQQd">
+                <source>narration.guided_step_ui_content_export_select</source>
+                <target>Check the forms to take. This box checks them all, but you can also take them one by one. The export button only shows once a box is checked.</target>
+            </trans-unit>
             <trans-unit id="xhapUqZ">
                 <source>narration.guided_step_ui_email_template_attachments</source>
                 <target>Attach the documents that travel with it. A legal document is attached as the site publishes it, and its PDF is redrawn as soon as the text changes: an e-mail sent months later still carries the version in force.</target>

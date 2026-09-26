@@ -57,7 +57,8 @@ $flat-next: '+ :is(#{$section-flats}), + :is(#{$block-wrappers}) > :is(#{$sectio
 
 .section-title {
     font-family: var(--font-family-title);
-    font-weight: 500;
+    // A token of its own, 500 by default as every site has it: a theme wanting its sections headed like its page title points it at --font-title-weight
+    font-weight: var(--section-title-weight, 500);
     letter-spacing: -0.01em;
     font-size: calc(clamp(30px, 4.4vw, 42px) * var(--font-size-title-scale, 1));
     line-height: 1.1;

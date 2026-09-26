@@ -46,6 +46,10 @@
                 <source>description.guided_project_ui_calculator</source>
                 <target>A form that computes: sliders, formulas, one figure held up - and, if you wish, sent along with its results.</target>
             </trans-unit>
+            <trans-unit id="6aGK0_V">
+                <source>description.guided_project_ui_content_export</source>
+                <target>Take forms and calculators away as a zip, formulas included, to load them into another site</target>
+            </trans-unit>
             <trans-unit id="QAAW6KH">
                 <source>description.guided_project_ui_email_template</source>
                 <target>Rework the content of an e-mail the site sends, the same way a page is reworked</target>
@@ -193,6 +197,22 @@
             <trans-unit id="uartqWQ">
                 <source>description.guided_step_ui_calculator_save_fields</source>
                 <target>Variable names are derived from the labels. They only appear once the fields are saved.</target>
+            </trans-unit>
+            <trans-unit id="QhLAp.W">
+                <source>description.guided_step_ui_content_export_import</source>
+                <target>On the other site, the "Content import" screen of the settings takes that zip: what already exists is updated, the rest is created.</target>
+            </trans-unit>
+            <trans-unit id="ENOwuSL">
+                <source>description.guided_step_ui_content_export_open</source>
+                <target>The export starts from this list; the fonts list has the same button.</target>
+            </trans-unit>
+            <trans-unit id="Qe3Gbmm">
+                <source>description.guided_step_ui_content_export_run</source>
+                <target>A zip is downloaded, holding each form with its fields and its formulas.</target>
+            </trans-unit>
+            <trans-unit id="Bbwzhtt">
+                <source>description.guided_step_ui_content_export_select</source>
+                <target>This box checks them all; you can also check them one by one. The export button only shows once one is checked.</target>
             </trans-unit>
             <trans-unit id="Sz9PehJ">
                 <source>description.guided_step_ui_email_template_attachments</source>
@@ -2398,6 +2418,10 @@
                 <source>label.guided_project_ui_calculator</source>
                 <target>Build a calculator</target>
             </trans-unit>
+            <trans-unit id="9M8UeR6">
+                <source>label.guided_project_ui_content_export</source>
+                <target>Export forms to another site</target>
+            </trans-unit>
             <trans-unit id="j0VRPpz">
                 <source>label.guided_project_ui_email_template</source>
                 <target>Tailor an e-mail</target>
@@ -2553,6 +2577,22 @@
             <trans-unit id="CwkgpFm">
                 <source>label.guided_step_ui_calculator_save_fields</source>
                 <target>Save before writing a formula</target>
+            </trans-unit>
+            <trans-unit id="1ssn4bV">
+                <source>label.guided_step_ui_content_export_import</source>
+                <target>Load it into the other site</target>
+            </trans-unit>
+            <trans-unit id="UuzMfhr">
+                <source>label.guided_step_ui_content_export_open</source>
+                <target>Open the forms</target>
+            </trans-unit>
+            <trans-unit id="WneXyWo">
+                <source>label.guided_step_ui_content_export_run</source>
+                <target>Export the selection</target>
+            </trans-unit>
+            <trans-unit id="EL7K78H">
+                <source>label.guided_step_ui_content_export_select</source>
+                <target>Check the forms to take</target>
             </trans-unit>
             <trans-unit id="I.z0lt6">
                 <source>label.guided_step_ui_email_template_attachments</source>

@@ -142,6 +142,22 @@
                 <source>narration.guided_step_ui_calculator_save_fields</source>
                 <target>Enregistrez avant d'écrire la moindre formule : le nom des variables est dérivé des libellés, et il n'apparaît qu'une fois les champs enregistrés.</target>
             </trans-unit>
+            <trans-unit id="upqcYyp">
+                <source>narration.guided_step_ui_content_export_import</source>
+                <target>Sur l'autre site, l'écran « Import de contenu » des paramètres accepte ce zip. Ce qui existe déjà est mis à jour, le reste est créé.</target>
+            </trans-unit>
+            <trans-unit id="E_jF.f8">
+                <source>narration.guided_step_ui_content_export_open</source>
+                <target>Les formulaires et les calculateurs passent d'un site à l'autre depuis cette liste. Celle des polices a le même bouton.</target>
+            </trans-unit>
+            <trans-unit id="3I1ZfhW">
+                <source>narration.guided_step_ui_content_export_run</source>
+                <target>Exportez la sélection : un zip est téléchargé, contenant chaque formulaire avec ses champs et ses formules.</target>
+            </trans-unit>
+            <trans-unit id="qFxvQQd">
+                <source>narration.guided_step_ui_content_export_select</source>
+                <target>Cochez les formulaires à emporter. Cette case les coche toutes, mais vous pouvez aussi les prendre un par un. Le bouton d'export n'apparaît qu'une fois une case cochée.</target>
+            </trans-unit>
             <trans-unit id="xhapUqZ">
                 <source>narration.guided_step_ui_email_template_attachments</source>
                 <target>Joignez les documents qui partent avec. Un document légal est joint tel que le site le publie, et son PDF est regénéré dès que le texte change : un e-mail envoyé des mois plus tard emporte donc toujours la version en vigueur.</target>

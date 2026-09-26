@@ -142,6 +142,22 @@
                 <source>narration.guided_step_ui_calculator_save_fields</source>
                 <target>Guarde antes de escribir la menor fórmula: el nombre de las variables se deriva de las etiquetas, y solo aparece una vez guardados los campos.</target>
             </trans-unit>
+            <trans-unit id="upqcYyp">
+                <source>narration.guided_step_ui_content_export_import</source>
+                <target>En el otro sitio, la pantalla «Importación de contenido» de los ajustes acepta ese zip. Lo que ya existe se actualiza, el resto se crea.</target>
+            </trans-unit>
+            <trans-unit id="E_jF.f8">
+                <source>narration.guided_step_ui_content_export_open</source>
+                <target>Los formularios y las calculadoras pasan de un sitio a otro desde esta lista. La de las fuentes tiene el mismo botón.</target>
+            </trans-unit>
+            <trans-unit id="3I1ZfhW">
+                <source>narration.guided_step_ui_content_export_run</source>
+                <target>Exporte la selección: se descarga un zip que contiene cada formulario con sus campos y sus fórmulas.</target>
+            </trans-unit>
+            <trans-unit id="qFxvQQd">
+                <source>narration.guided_step_ui_content_export_select</source>
+                <target>Marque los formularios que quiera llevarse. Esta casilla los marca todos, pero también puede marcarlos uno a uno. El botón de exportación solo aparece cuando hay una marcada.</target>
+            </trans-unit>
             <trans-unit id="xhapUqZ">
                 <source>narration.guided_step_ui_email_template_attachments</source>
                 <target>Adjunte los documentos que salen con él. Un documento legal se adjunta tal como lo publica el sitio, y su PDF se regenera en cuanto cambia el texto: así, un correo enviado meses después sigue llevando la versión vigente.</target>
