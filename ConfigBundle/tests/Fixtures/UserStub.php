@@ -10,10 +10,10 @@
 
 namespace c975L\ConfigBundle\Tests\Fixtures;
 
+use c975L\ConfigBundle\Contract\UserInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
-use Symfony\Component\Security\Core\User\UserInterface;
 
-// Stands in for App\Entity\User (app-space, not autoloadable from this bundle checkout) in tests for c975L\ConfigBundle\Service\EmailVerifier/UserRegistrar/PasswordResetter - those only rely on UserInterface/PasswordAuthenticatedUserInterface plus method_exists() duck-typing for getId()/setCreation()/setModification()/setIsVerified()/setIsEnabled(), all provided here
+// Stands in for App\Entity\User (app-space, not autoloadable from this bundle checkout) in tests for c975L\ConfigBundle\Service\EmailVerifier/UserRegistrar/PasswordResetter and AccountController - those only rely on UserInterface/PasswordAuthenticatedUserInterface plus method_exists() duck-typing for getId()/setCreation()/setModification()/setIsVerified()/setIsEnabled(), all provided here
 class UserStub implements UserInterface, PasswordAuthenticatedUserInterface
 {
     private ?int $id = null;

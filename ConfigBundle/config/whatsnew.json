@@ -11,6 +11,16 @@
                 "en": "The \"Watch the film\" link of a guided project now leads to your site's own film when it publishes one.",
                 "fr": "Le lien « Voir le film » d'un projet guidé mène désormais au film de votre site lorsqu'il en publie un.",
                 "es": "El enlace «Ver la película» de un proyecto guiado lleva ahora a la película de su sitio cuando publica una."
+            },
+            {
+                "en": "Your members now have their own page, \"My account\" (/account): their profile, a password change and, depending on the bundles installed, their orders or their credits. Add it to your navbar from the Menus screen.",
+                "fr": "Vos membres ont désormais leur page « Mon compte » (/account) : leur profil, le changement de mot de passe et, selon les bundles installés, leurs commandes ou leurs crédits. Ajoutez-la à votre barre de navigation depuis l'écran Menus.",
+                "es": "Sus miembros tienen ahora su propia página «Mi cuenta» (/account): su perfil, el cambio de contraseña y, según los bundles instalados, sus pedidos o sus créditos. Añádala a su barra de navegación desde la pantalla Menús."
+            },
+            {
+                "en": "A new guided project shows how to export your whole site in one file, ready to be imported on another environment.",
+                "fr": "Un nouveau projet guidé montre comment exporter tout votre site en un seul fichier, prêt à être importé sur un autre environnement.",
+                "es": "Un nuevo proyecto guiado muestra cómo exportar todo su sitio en un solo archivo, listo para importarse en otro entorno."
             }
         ]
     },

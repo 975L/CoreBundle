@@ -1,5 +1,25 @@
 # ChangeLog
 
+## v1.44.0
+
+The member's own page, with a section per bundle
+
+### ConfigBundle
+
+- **New `/account` page (`config_account`, `ROLE_USER`, localised twin), made of page sections: profile, password change, link to the account deletion** (26/09/2026)
+- **New `AccountSectionProviderInterface`: a bundle or the site adds a page section to the member's page, drawn as a block template draws one** (26/09/2026)
+- `config_account` offered as a SiteBundle menu target, in every site language (26/09/2026)
+- No password change for a session opened through OAuth, its account holding a password nobody knows, until the next login through the form (26/09/2026)
+- The password constraint messages ship in the bundle's own `validators` catalogue (26/09/2026)
+- A login no longer opens a session on a stateless firewall to clear the OAuth flag (26/09/2026)
+- New `config-content-export` guided project: the whole site exported in one zip (26/09/2026)
+- Guided project highlights on the roles and value fields and the not-found rows survive TomSelect/Trix (26/09/2026)
+- Guided projects of an application documented, from `order` 20000 up (26/09/2026)
+
+### UiBundle
+
+- **New `Facts` component: a few label/value facts about one thing, laid out as a grid** (26/09/2026)
+
 ## v1.43.0
 
 A site's own tutorial films are linked from its dashboard

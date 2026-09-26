@@ -26,6 +26,26 @@
                 <source>text.account_delete_email_mismatch</source>
                 <target>No es la dirección de correo electrónico de su cuenta</target>
             </trans-unit>
+            <trans-unit id="N8U3bhv">
+                <source>text.current_password_wrong</source>
+                <target>Esta no es su contraseña actual</target>
+            </trans-unit>
+            <trans-unit id="TaG4lmE">
+                <source>text.password_max_length</source>
+                <target>Su contraseña no debe exceder de {{ limit }} caracteres</target>
+            </trans-unit>
+            <trans-unit id="epDiKHK">
+                <source>text.password_min_length</source>
+                <target>Su contraseña debe tener al menos {{ limit }} caracteres</target>
+            </trans-unit>
+            <trans-unit id="G1fcoic">
+                <source>text.password_mismatch</source>
+                <target>Las contraseñas deben coincidir.</target>
+            </trans-unit>
+            <trans-unit id="aK3FX9r">
+                <source>text.password_required</source>
+                <target>Por favor, introduzca una contraseña</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>

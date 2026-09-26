@@ -1,6 +1,6 @@
 ---
 name: c975l-users
-description: "Use this skill when working on accounts, roles or access control in a Symfony application built on the c975L ecosystem — the User contract, the site-role-* settings, ROLE_SUPER_ADMIN and restricted configs, previewing a lower role, registration and its anti-spam layers, password reset, login throttling and back-office access. Triggers on: UserInterface contract, UserCrudController, site-role-admin, site-role-editor, site-role-contributor, ROLE_CONTRIBUTOR, ROLE_SUPER_ADMIN, RolePreview, role preview, View as, RolePreviewRoleVoter, RolePreviewRoleVoterPass, RolePreviewBanner, user-roles-available, UserManagementVoter, BackOfficeAccessVoter, C975L_ACCESS_BACK_OFFICE, EmailVerifier, UserRegistrar, PasswordResetter, isEnabled, isVerified, UserChecker, sendEmailConfirmation, resend confirmation, confirmation cooldown, EmailVerifier::COOLDOWN, delete a user, unverified account, ON DELETE SET NULL, login_throttling, access_control, register form, reset_password_request, honeypot, DnsEmail, user-creation-notification, InactivityAwareInterface, users-cleanup, c975l:config:users-cleanup, UsersCleanupCommand, InactiveUserFinder, UserAnonymizedEvent, AccountDeleteController, config_account_delete, delete my account, right to erasure, LastLoginSubscriber, lastLogin, user-inactivity-days, user-inactivity-notice-days, anonymize, inactive accounts, tutorial-account, c975l:config:tutorial-account, TutorialAccount, tutorial@example.com, end-to-end account, screen recorder account."
+description: "Use this skill when working on accounts, roles or access control in a Symfony application built on the c975L ecosystem — the User contract, the site-role-* settings, ROLE_SUPER_ADMIN and restricted configs, previewing a lower role, registration and its anti-spam layers, password reset, login throttling and back-office access. Triggers on: UserInterface contract, UserCrudController, site-role-admin, site-role-editor, site-role-contributor, ROLE_CONTRIBUTOR, ROLE_SUPER_ADMIN, RolePreview, role preview, View as, RolePreviewRoleVoter, RolePreviewRoleVoterPass, RolePreviewBanner, user-roles-available, UserManagementVoter, BackOfficeAccessVoter, C975L_ACCESS_BACK_OFFICE, EmailVerifier, UserRegistrar, PasswordResetter, isEnabled, isVerified, UserChecker, sendEmailConfirmation, resend confirmation, confirmation cooldown, EmailVerifier::COOLDOWN, delete a user, unverified account, ON DELETE SET NULL, login_throttling, access_control, register form, reset_password_request, honeypot, DnsEmail, user-creation-notification, InactivityAwareInterface, users-cleanup, c975l:config:users-cleanup, UsersCleanupCommand, InactiveUserFinder, UserAnonymizedEvent, AccountDeleteController, config_account_delete, delete my account, AccountController, config_account, my account page, /account, AccountSectionProviderInterface, AccountSectionBuilder, AccountPasswordType, change password, right to erasure, LastLoginSubscriber, lastLogin, user-inactivity-days, user-inactivity-notice-days, anonymize, inactive accounts, tutorial-account, c975l:config:tutorial-account, TutorialAccount, tutorial@example.com, end-to-end account, screen recorder account."
 ---
 
 # c975L ConfigBundle — users, roles and access
@@ -179,6 +179,26 @@ A user deletes their own account at `/account/delete` (`config_account_delete`, 
 404 for a User without `InactivityAwareInterface`, 403 for a `ROLE_SUPER_ADMIN`): typing their email
 again anonymizes it the same way, dispatches `UserAnonymizedEvent`, then logs them out and returns the
 firewall's logout response. No menu links to it, the site does.
+
+## The member's own page
+
+`/account` and `/{_locale}/account` (`config_account`, `ROLE_USER`, answered through
+`LocalizedRouteNegotiator` like PaymentBundle's orders) open on two page sections ConfigBundle draws
+itself: the profile — email, creation and last login read with `??` since only the scaffold's `User`
+has them, the language read, all laid out by UiBundle's `Facts` component, and a link to
+`/account/delete` when that page would accept the account — then `AccountPasswordType` (current
+password checked by `UserPassword`, the new one under the scaffold's constraints, whose messages the
+bundle's own `validators` catalogue carries too). One page section per provider follows. A password is
+only changed under `IS_AUTHENTICATED_FULLY`, hashed and flushed by `PasswordResetter`. A session opened
+through OAuth (`OAuthLoginController::SESSION_OAUTH_LOGIN`) gets no form: its account holds a password
+nobody knows, and nothing on the account itself tells it apart.
+
+A section is an `AccountSectionProviderInterface::getAccountSections(UserInterface $user)` entry —
+`title` and `translation_domain`, a `template` drawing one page section as a block template does
+(`block-section`, `section-wrap`, UiBundle's `Section/_head.html.twig`), given its `context` plus the
+translated `title` and an `anchor_id` only (`with_context = false`), a `position` lowest first (PaymentBundle 10, PurchaseCreditsBundle 20) —
+autoconfigured and merged by `AccountSectionBuilder`. `LinkableRouteProvider` offers `config_account`
+as a SiteBundle menu target in every site language.
 
 ## Tutorial account
 

@@ -1,0 +1,56 @@
+{# Rendered by AccountController on the same layouts as the account deletion page, each part a page section and a block of its own, so a site overriding this template (templates/bundles/c975LConfigBundle/account/index.html.twig) replaces one part without copying the rest #}
+{% extends ['layout.html.twig', '@c975LSite/layout.html.twig', '@c975LUi/layout.html.twig'] %}
+{% trans_default_domain 'config' %}
+
+{% set title = 'label.my_account'|trans %}
+
+{# A page of one account alone, as the login page: nothing to offer a search result #}
+{% set robots = 'noindex, follow' %}
+
+{% block content %}
+    {# "blocks", so the sections read the rhythm a composed page gives its own (see UiBundle's sass/_page-sections.scss) #}
+    <div class="account blocks">
+        {% block account_profile %}
+            <section class="block-section account-profile" id="account-profile">
+                <div class="section-wrap">
+                    {{ include('@c975LUi/components/Section/_head.html.twig', {title: 'label.account_profile'|trans}, with_context = false) }}
+                    {# Read with "??": creation and last login live on the site's own User (see the scaffold), which may not declare them #}
+                    {% set creation = app.user.creation ?? null %}
+                    {% set lastLogin = app.user.lastLogin ?? null %}
+                    <twig:c975LUi:Facts:Facts facts="{{ [
+                        {label: 'label.email'|trans, value: app.user.email ?? app.user.userIdentifier},
+                        {label: 'label.account_created'|trans, value: creation ? creation|format_datetime('long', 'none') : null},
+                        {label: 'label.last_login'|trans, value: lastLogin ? lastLogin|format_datetime('long', 'short') : null},
+                        {label: 'label.language'|trans, value: app.request.locale|language_name(app.request.locale)|capitalize},
+                    ] }}"/>
+                    {% if deletable %}
+                        <p><a href="{{ path('config_account_delete') }}" class="btn btn-danger">{{ 'label.account_delete'|trans }}</a></p>
+                    {% endif %}
+                </div>
+            </section>
+        {% endblock %}
+
+        {% block account_password %}
+            <section class="block-section account-password" id="account-password">
+                <div class="section-wrap">
+                    {{ include('@c975LUi/components/Section/_head.html.twig', {title: 'label.change_password'|trans}, with_context = false) }}
+                    {% if passwordForm %}
+                        {{ form_start(passwordForm) }}
+                            {{ form_widget(passwordForm) }}
+                            <button class="btn btn-primary" type="submit">{{ 'label.change_password'|trans }}</button>
+                        {{ form_end(passwordForm) }}
+                    {% else %}
+                        <p class="text">{{ 'text.password_oauth'|trans }}</p>
+                    {% endif %}
+                </div>
+            </section>
+        {% endblock %}
+
+        {# Each one a page section drawn by its own template, as a block's is: handed its translated title and its anchor, and nothing of this page's variables #}
+        {% block account_sections %}
+            {% for section in sections %}
+                {{ include(section.template, section.context|merge({title: section.title|trans({}, section.translation_domain), anchor_id: 'account-section-' ~ loop.index}), with_context = false) }}
+            {% endfor %}
+        {% endblock %}
+    </div>
+{% endblock %}

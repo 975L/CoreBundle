@@ -14,6 +14,18 @@
                 <source>narration.content_import</source>
                 <target>"Import content" takes in an archive exported from another site, for instance pages carried out with their blocks and their pictures.</target>
             </trans-unit>
+            <trans-unit id="GpCKJ6q">
+                <source>narration.guided_step_config_content_export_carry</source>
+                <target>Keep the zip as it is, without unzipping it. On the other environment, a super administrator imports it at once from the content import.</target>
+            </trans-unit>
+            <trans-unit id="0O60V..">
+                <source>narration.guided_step_config_content_export_download</source>
+                <target>Click "Export sync (everything)". A single zip file gathers the content of every installed bundle: pages, fonts, settings, redirects.</target>
+            </trans-unit>
+            <trans-unit id="YcW3saw">
+                <source>narration.guided_step_config_content_export_open</source>
+                <target>The panel brings you back to the dashboard. The full export is one of its shortcuts: one click, and the file downloads.</target>
+            </trans-unit>
             <trans-unit id="1qn8pWP">
                 <source>narration.guided_step_config_content_import_check</source>
                 <target>The message at the top of the screen says how many items were created and updated. Open one to check it arrived as you expected.</target>

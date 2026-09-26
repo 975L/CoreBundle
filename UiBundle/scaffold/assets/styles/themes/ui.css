@@ -69,6 +69,8 @@
     /* --alert-max-width: 700px; */
     /* The narrowest a contact_details field column may get before its grid drops one - raise it for a design whose labels wrap, lower it to keep more fields on a line */
     /* --contact-details-col-min: 210px; */
+    /* The narrowest a Facts column may get before its grid drops one (the member's profile, for one) - same reading as the contact_details one above */
+    /* --facts-col-min: 210px; */
 
     /* One segment of a "progress_tracker" - a plain bar of the border color, filled with the brand one. The clip is what turns it into something else: a diamond with polygon(50% 0, 100% 50%, 50% 100%, 0 50%), a chevron, a tally. The segments share the row's width whatever their number, so only their height is set here */
     /* --tracker-segment-height: 22px; */

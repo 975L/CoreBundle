@@ -27,9 +27,9 @@ See it in action at [bundles.975l.com/pages/config-bundle](https://bundles.975l.
 
 - **Config entries** — [declare](#defining-config-entries-for-your-bundle) · [load](#loading-config-entries-into-the-database) · [prune](#pruning-entries-no-longer-declared) · [set from the CLI](#setting-values-from-the-command-line) · [encrypt](#encrypting-sensitive-values) · [read in PHP/Twig](#reading-config-values) · [timezone](#timezone)
 - **Dashboard** — [EasyAdmin interface](#easyadmin-interface) · [export for deployment](#deploying-to-production--export) · [ROLE_SUPER_ADMIN-only entries](#restricting-configs-to-role_super_admin) · [Export button in another CRUD](#adding-an-export-button-to-another-bundles-crud-controller)
-- **Users & access** — [scaffold and first account](#installing-the-scaffold-and-the-first-account) · [users and roles](#users) · [ROLE_SUPER_ADMIN configs](#restricting-configs-to-role_super_admin) · [disabling registration](#disabling-registration) · [registration anti-spam](#registration-anti-spam-protections) · [login throttling](#login-throttling) · [back-office access control](#back-office-access-control) · [account activation](#account-activation-isenabled)
+- **Users & access** — [scaffold and first account](#installing-the-scaffold-and-the-first-account) · [users and roles](#users) · [ROLE_SUPER_ADMIN configs](#restricting-configs-to-role_super_admin) · [disabling registration](#disabling-registration) · [registration anti-spam](#registration-anti-spam-protections) · [login throttling](#login-throttling) · [back-office access control](#back-office-access-control) · [account activation](#account-activation-isenabled) · [the member's own page](#the-members-own-page-account)
 - **Site maintenance** — [Maintenance mode](#maintenance-mode) · [Rate limiting the front](#rate-limiting-the-front) · [Messenger cleanup](#messenger-cleanup) · [Sessions cleanup](#sessions-cleanup) · [Inactive accounts](#inactive-accounts) · [Health check](#health-check) · [Backup](#backup) · [Spreading scheduled commands](#spreading-scheduled-commands-across-installs) · [Status report](#status-report--letting-another-system-read-what-this-site-runs) · [Dev profile](#dev-profile--automating-what-the-dev-toolbar-shows) · [Deprecations](#deprecations--reading-the-log-monolog-isolates)
-- **Extension points for other bundles** — [menu items](#contributing-menu-items-from-other-bundles) · [dashboard alerts](#contributing-dashboard-alerts-from-other-bundles) · [shortcuts](#contributing-dashboard-shortcuts-from-other-bundles) · [essential actions](#contributing-essential-actions-from-other-bundles) · [widgets](#contributing-dashboard-widgets-from-other-bundles) · [guided projects](#contributing-guided-projects-from-other-bundles) · [health check providers](#contributing-health-check-providers-from-other-bundles) and [advice](#contributing-health-check-advice-from-other-bundles) · [maintenance tasks](#contributing-maintenance-tasks-from-other-bundles) · [status data](#contributing-status-data-from-other-bundles) · [sitemaps](#contributing-a-sitemap-from-other-bundles) · [urls to describe](#contributing-urls-to-describe-from-other-bundles) · [importmap entries](#contributing-importmap-entries-from-other-bundles) · [import](#contributing-import-providers-from-other-bundles) and [export providers](#contributing-export-providers-from-other-bundles) · ["What's new" entries](#contributing-whats-new-entries-from-other-bundles) · [linkable routes](#contributing-linkable-routes-for-sitebundle-menus) · [localised routes](#answering-both-shop-and-enshop) · [language screens](#opening-the-same-edit-screen-on-another-language) · [dev profile paths](#contributing-dev-profile-paths-from-other-bundles) · [AI assistant procedures](#contributing-procedures-for-the-dashboard-ai-assistant)
+- **Extension points for other bundles** — [menu items](#contributing-menu-items-from-other-bundles) · [dashboard alerts](#contributing-dashboard-alerts-from-other-bundles) · [shortcuts](#contributing-dashboard-shortcuts-from-other-bundles) · [essential actions](#contributing-essential-actions-from-other-bundles) · [widgets](#contributing-dashboard-widgets-from-other-bundles) · [guided projects](#contributing-guided-projects-from-other-bundles) · [health check providers](#contributing-health-check-providers-from-other-bundles) and [advice](#contributing-health-check-advice-from-other-bundles) · [maintenance tasks](#contributing-maintenance-tasks-from-other-bundles) · [status data](#contributing-status-data-from-other-bundles) · [sitemaps](#contributing-a-sitemap-from-other-bundles) · [urls to describe](#contributing-urls-to-describe-from-other-bundles) · [importmap entries](#contributing-importmap-entries-from-other-bundles) · [import](#contributing-import-providers-from-other-bundles) and [export providers](#contributing-export-providers-from-other-bundles) · ["What's new" entries](#contributing-whats-new-entries-from-other-bundles) · [linkable routes](#contributing-linkable-routes-for-sitebundle-menus) · [member's page sections](#adding-a-section-to-the-members-page) · [localised routes](#answering-both-shop-and-enshop) · [language screens](#opening-the-same-edit-screen-on-another-language) · [dev profile paths](#contributing-dev-profile-paths-from-other-bundles) · [AI assistant procedures](#contributing-procedures-for-the-dashboard-ai-assistant)
 - **For coding agents** — [AI agent skills](#ai-agent-skills)
 
 ## Features
@@ -56,6 +56,7 @@ See it in action at [bundles.975l.com/pages/config-bundle](https://bundles.975l.
 - `c975l:config:messenger-cleanup`, purging failed Messenger messages past their retention and emailing a digest of the ones worth an admin's attention, with a dashboard screen to read, replay or delete them
 - `c975l:config:sessions-cleanup`, deleting the expired rows of the `sessions` table nightly, PHP's own garbage collection being a dice roll a managed host can simply never throw
 - `c975l:config:users-cleanup`, warning then anonymizing the accounts nobody logged in to for three years, as the GDPR's storage limitation asks
+- `/account`, the member's own page: their profile, a password change, and the sections other bundles and the site add to it (`AccountSectionProviderInterface`)
 - `/account/delete`, where a signed-in user deletes their own account (GDPR right to erasure), anonymized the same way
 - The languages a site offers, declared once in `framework.enabled_locales`: a language selector in the back office, the front office following the one a visitor picks, and the block content translated per language (see `c975l/ui-bundle`)
 - Maintenance mode closing the site to its visitors, answering the search-engine-friendly 503 they expect from a temporary outage, with a dashboard alert turning to danger once it has lasted long enough to cost indexing
@@ -722,6 +723,58 @@ php bin/console c975l:config:set user-creation-notification false
 ```
 
 It never gets in the way of the registration itself: notification off, `email-from`/`email-to` not seeded yet, mailer down — the account is created and the visitor gets their confirmation email regardless. Only accounts created by the registration flow are announced, not the bootstrap admin `c975l:config:user-create`/`c975l:site:create` build (you're at the console when it happens).
+
+### The member's own page (`/account`)
+
+`/account` and `/{_locale}/account` (route `config_account`, `ROLE_USER`) gather what concerns the signed-in member. ConfigBundle draws its first two sections itself: the profile — email, registration date and last login (read on the site's `User` when it has them), the language being read, laid out by UiBundle's `Facts` component, and a link to [`/account/delete`](#inactive-accounts) when that page would accept the account — then the password change: the current password, then the new one twice, under the scaffold's constraints. A remembered session can read the page but not change the password, which asks for a full login.
+
+A session opened through [a provider](#signing-in-with-google-oauth) is offered no password change: its account holds a password nobody knows, so the section says to log out and use "Forgot password" instead. This is read from the session, not from the account, so a member who owns a password but signed in with Google that time sees the same message.
+
+No menu carries the page: pick **My account** as a navbar or footer target in SiteBundle's menus (see [linkable routes](#contributing-linkable-routes-for-sitebundle-menus)), or link it yourself with `{{ localized_path('config_account') }}`. The template, `@c975LConfig/account/index.html.twig`, splits into an `account_profile`, an `account_password` and an `account_sections` block, so an override in `templates/bundles/c975LConfigBundle/account/index.html.twig` replaces one without copying the other.
+
+#### Adding a section to the member's page
+
+Every other part of the page is a section, contributed by implementing `AccountSectionProviderInterface` — autoconfigured like `MenuProviderInterface`, nothing to tag. PaymentBundle adds the latest orders, PurchaseCreditsBundle the balance and the packs; an application adds its own the same way, from `src/`:
+
+```php
+namespace App\Account;
+
+use App\Repository\ShortcutRepository;
+use c975L\ConfigBundle\Account\AccountSectionProviderInterface;
+use c975L\ConfigBundle\Contract\UserInterface;
+
+class ShortcutsAccountSection implements AccountSectionProviderInterface
+{
+    public function __construct(private readonly ShortcutRepository $shortcutRepository)
+    {
+    }
+
+    public function getAccountSections(UserInterface $user): array
+    {
+        return [[
+            'title' => 'label.my_shortcuts',          // translation key
+            'translation_domain' => 'messages',
+            'template' => 'account/_shortcuts.html.twig',
+            'context' => ['shortcuts' => $this->shortcutRepository->findBy(['user' => $user])],
+            'position' => 30,                         // lowest first, 0 when left out
+        ]];
+    }
+}
+```
+
+Each section is a page section, drawn by its `template` as a block template draws one: a single root element, which the page lays out with the same rhythm as a composed page's blocks. The template receives its `context`, plus `title` already translated and `anchor_id` — not the page's own variables, only Twig's globals (`app`...) besides:
+
+```twig
+{# templates/account/_shortcuts.html.twig #}
+<section class="block-section" id="{{ anchor_id }}">
+    <div class="section-wrap">
+        {{ include('@c975LUi/components/Section/_head.html.twig') }}
+        {# ... the shortcuts #}
+    </div>
+</section>
+```
+
+A block template taking a `title` and an `anchor_id` can stand as a section as it is, which is how PurchaseCreditsBundle shows its packs block there. Return `[]` for a member the section has nothing to say to. The bundles' positions leave room around them: PaymentBundle's orders at `10`, PurchaseCreditsBundle's credits at `20`.
 
 ---
 
@@ -1447,7 +1500,7 @@ Make sure your bundle's `services.yaml` includes the `Management/` folder in its
 
 The `/management` dashboard shows a "Guided projects" button next to the guided tour. Where the tour *shows* the back office, a project puts the user to work in it: a real task to carry out — create a page, add a block to it, put it in a menu — with a panel following them from screen to screen.
 
-`ConfigGuidedProjectProvider` ships this bundle's own nine, in the 1000 block `GuidedProjectProviderInterface` reserves it: find and change a setting, run the health check, rehearse the maintenance switch, turn a missing page into a redirect, write a redirect by hand (`config-redirect`, a whole folder moved at once with a trailing `*`), describe an url no entity carries, give an account its roles, see the back office as another role, and replay or drop the messages that failed for good (`config-messenger-failed`, held at `ROLE_SUPER_ADMIN`: an admin opens that screen but is only shown the failure, the buttons it walks being a super admin's — they carry `data-messenger-retry`, `data-messenger-delete` and `data-messenger-delete-group` for its steps to point at).
+`ConfigGuidedProjectProvider` ships this bundle's own, in the 1000 block `GuidedProjectProviderInterface` reserves it: find and change a setting, run the health check, rehearse the maintenance switch, turn a missing page into a redirect, write a redirect by hand (`config-redirect`, a whole folder moved at once with a trailing `*`), describe an url no entity carries, give an account its roles, see the back office as another role, and replay or drop the messages that failed for good (`config-messenger-failed`, held at `ROLE_SUPER_ADMIN`: an admin opens that screen but is only shown the failure, the buttons it walks being a super admin's — they carry `data-messenger-retry`, `data-messenger-delete` and `data-messenger-delete-group` for its steps to point at), export the whole site in one zip (`config-content-export`, the "export sync all" dashboard tile), import content exported from another site (`config-content-import`), and prune the settings no bundle declares any more (`config-prune`).
 
 A project is a **replayable exercise**, not a wizard to get through once. Nothing is derived from the site's own data, so a project is still worth following on a site already full of pages, and still worth replaying once done. Consequently it carries no `isDone`: nothing is ever detected server-side, the user says when a step is done. Whatever they create along the way stays on the site — deleting the practice page is their call.
 
@@ -1464,11 +1517,12 @@ class MyGuidedProjectProvider implements GuidedProjectProviderInterface
     {
         return [
             [
-                'slug' => 'creer-page',
-                'label' => 'label.guided_project_creer_page',
-                'description' => 'description.guided_project_creer_page',
+                'slug' => 'my-page-creation',
+                'label' => 'label.guided_project_my_page_creation',
+                'description' => 'description.guided_project_my_page_creation',
                 'translation_domain' => 'my_bundle',
-                'order' => 10,
+                // A bundle's own thousand-block, see GuidedProjectProviderInterface
+                'order' => 11010,
                 'steps' => [
                     ['label' => 'label.step_open_pages', 'url' => '/management/page'],
                     ['label' => 'label.step_click_new', 'description' => 'description.step_click_new', 'highlight' => '.action-new'],
@@ -1481,6 +1535,8 @@ class MyGuidedProjectProvider implements GuidedProjectProviderInterface
 ```
 
 Make sure your bundle's `services.yaml` includes the `Management/` folder in its `src/` resource so the class is registered.
+
+An application contributes its own projects the same way, from one `src/Management/GuidedProjectProvider.php`: its `order` runs from 20000 up, after every bundle's, and its slugs start with a word naming no bundle.
 
 **`order`** decides the display order across every provider (low to high) — a deliberate sequence, the one the user is meant to follow, unlike menus/alerts which sort alphabetically. **`role`** is optional: a project needing a role the current user lacks is dropped, the screens it walks through being out of their reach anyway. It may list several roles, all required and each held outright (no `role_hierarchy` is shipped), for a parcours walking screens gated on different bars. **`slug`** must be unique across every bundle contributing projects.
 

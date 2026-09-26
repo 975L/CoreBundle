@@ -14,6 +14,18 @@
                 <source>narration.content_import</source>
                 <target>«Importar contenido» recoge un archivo exportado desde otro sitio, por ejemplo páginas llevadas con sus bloques y sus imágenes.</target>
             </trans-unit>
+            <trans-unit id="GpCKJ6q">
+                <source>narration.guided_step_config_content_export_carry</source>
+                <target>Conserve el zip tal cual, sin descomprimirlo. En el otro entorno, un superadministrador lo importa de una vez desde la importación de contenido.</target>
+            </trans-unit>
+            <trans-unit id="0O60V..">
+                <source>narration.guided_step_config_content_export_download</source>
+                <target>Haga clic en « Exportar la sincronización (todo) ». Un solo archivo zip reúne el contenido de cada bundle instalado: páginas, fuentes, ajustes, redirecciones.</target>
+            </trans-unit>
+            <trans-unit id="YcW3saw">
+                <source>narration.guided_step_config_content_export_open</source>
+                <target>El panel le lleva de vuelta al panel de control. La exportación completa es uno de sus accesos directos: un clic, y el archivo se descarga.</target>
+            </trans-unit>
             <trans-unit id="1qn8pWP">
                 <source>narration.guided_step_config_content_import_check</source>
                 <target>El mensaje en la parte superior de la pantalla indica cuántos elementos se crearon y actualizaron. Abra uno para comprobar que llegó tal como lo esperaba.</target>

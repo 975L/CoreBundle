@@ -2027,6 +2027,7 @@ Block templates are thin adapters around a set of Symfony UX Twig components liv
 | `<twig:c975LUi:Contact:Details>` | Contact details panel, publishing the same fields as a schema.org JSON-LD graph |
 | `<twig:c975LUi:Cta:Band>` | Centered call-to-action panel (title/text/button) |
 | `<twig:c975LUi:Expertise:Banner>` | Dark panel with text and a list of tags |
+| `<twig:c975LUi:Facts:Facts>` | A few facts about one thing (`facts`: a list of `{label, value}`), each label above its value, a fact with an empty value left out |
 | `<twig:c975LUi:Favorite:Button>` | The heart a visitor puts a thing aside with, repainted from their own browser |
 | `<twig:c975LUi:Feature:Bar>` | Row of short arguments (title + caption) |
 | `<twig:c975LUi:Hero:Hero>` | Header banner with title, subtitle, optional CTA buttons and image or background video |

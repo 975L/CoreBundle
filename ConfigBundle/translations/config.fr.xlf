@@ -82,6 +82,10 @@
                 <source>description.essential_action_roles</source>
                 <target>Qui peut faire quoi dans le back-office</target>
             </trans-unit>
+            <trans-unit id="09u2h9T">
+                <source>description.guided_project_config_content_export</source>
+                <target>Tout le contenu du site en un seul zip, prêt à être importé ailleurs.</target>
+            </trans-unit>
             <trans-unit id="RoUelAD">
                 <source>description.guided_project_config_content_import</source>
                 <target>Un export fait ailleurs, repris ici en une fois.</target>
@@ -125,6 +129,18 @@
             <trans-unit id="xi28kgp">
                 <source>description.guided_project_config_user_role</source>
                 <target>Décider de ce qu'un compte peut faire dans le back-office : contributeur, éditeur ou administrateur.</target>
+            </trans-unit>
+            <trans-unit id="uQsSrc2">
+                <source>description.guided_step_config_content_export_carry</source>
+                <target>Gardez le zip tel quel ; sur l'autre environnement, un super administrateur le reprend depuis l'import de contenu.</target>
+            </trans-unit>
+            <trans-unit id="lAFhIc0">
+                <source>description.guided_step_config_content_export_download</source>
+                <target>Un seul zip réunit le contenu de chaque bundle installé : pages, polices, réglages, redirections…</target>
+            </trans-unit>
+            <trans-unit id="FeuC1sY">
+                <source>description.guided_step_config_content_export_open</source>
+                <target>L'export complet est un raccourci du tableau de bord, sans écran intermédiaire.</target>
             </trans-unit>
             <trans-unit id="GtNRnjK">
                 <source>description.guided_step_config_content_import_check</source>
@@ -526,6 +542,10 @@
                 <source>flash.oauth_registration_closed</source>
                 <target>Ce site n'accepte pas de nouvelles inscriptions pour le moment.</target>
             </trans-unit>
+            <trans-unit id="ynalhi5">
+                <source>flash.password_changed</source>
+                <target>Votre mot de passe a été modifié</target>
+            </trans-unit>
             <trans-unit id="ZD8H9hY">
                 <source>flash.user_registration_disabled</source>
                 <target>Inscription des utilisateurs désactivée</target>
@@ -549,6 +569,10 @@
             <trans-unit id="iL.nOO8">
                 <source>help.value_translation</source>
                 <target>La valeur dans cette langue seulement — celle qui a été saisie reste intacte.</target>
+            </trans-unit>
+            <trans-unit id="O_dwBKY">
+                <source>label.account_created</source>
+                <target>Inscrit le</target>
             </trans-unit>
             <trans-unit id="iK4DG3x">
                 <source>label.account_delete</source>
@@ -577,6 +601,10 @@
             <trans-unit id="Rstu.Mi">
                 <source>label.account_inactivity_text</source>
                 <target>Pour protéger vos données personnelles, nous ne conservons pas les comptes inutilisés. Connectez-vous pour garder le vôtre, rien de plus.</target>
+            </trans-unit>
+            <trans-unit id="1yVnMgR">
+                <source>label.account_profile</source>
+                <target>Profil</target>
             </trans-unit>
             <trans-unit id="s0jNbR8">
                 <source>label.account_validation_button</source>
@@ -686,6 +714,10 @@
                 <source>label.boolean</source>
                 <target>Booléen (Vrai/Faux)</target>
             </trans-unit>
+            <trans-unit id="WJF9KOe">
+                <source>label.change_password</source>
+                <target>Changer de mot de passe</target>
+            </trans-unit>
             <trans-unit id="fqXGPNB">
                 <source>label.config</source>
                 <target>Configuration</target>
@@ -765,6 +797,10 @@
             <trans-unit id="emPIlPf">
                 <source>label.creation</source>
                 <target>Création</target>
+            </trans-unit>
+            <trans-unit id="9c4z0Po">
+                <source>label.current_password</source>
+                <target>Mot de passe actuel</target>
             </trans-unit>
             <trans-unit id="id1d4o4">
                 <source>label.dashboard</source>
@@ -918,6 +954,10 @@
                 <source>label.group_theme</source>
                 <target>Thème</target>
             </trans-unit>
+            <trans-unit id="XDpFqMy">
+                <source>label.guided_project_config_content_export</source>
+                <target>Exporter le contenu vers un autre environnement</target>
+            </trans-unit>
             <trans-unit id="_akpA99">
                 <source>label.guided_project_config_content_import</source>
                 <target>Importer du contenu d'un autre environnement</target>
@@ -1001,6 +1041,18 @@
             <trans-unit id="aOZmqdz">
                 <source>label.guided_projects_intro</source>
                 <target>Votre progression est enregistrée dans ce navigateur, pas sur le site : elle ne vous suivra pas sur un autre ordinateur.</target>
+            </trans-unit>
+            <trans-unit id="v8kPZur">
+                <source>label.guided_step_config_content_export_carry</source>
+                <target>L'importer sur l'autre environnement</target>
+            </trans-unit>
+            <trans-unit id="EuiOKY9">
+                <source>label.guided_step_config_content_export_download</source>
+                <target>Télécharger l'export complet</target>
+            </trans-unit>
+            <trans-unit id="PTLFpQl">
+                <source>label.guided_step_config_content_export_open</source>
+                <target>Ouvrir le tableau de bord</target>
             </trans-unit>
             <trans-unit id="TryUJKH">
                 <source>label.guided_step_config_content_import_check</source>
@@ -1934,6 +1986,14 @@
                 <source>label.label</source>
                 <target>Étiquette</target>
             </trans-unit>
+            <trans-unit id="Ogsv.lD">
+                <source>label.language</source>
+                <target>Langue</target>
+            </trans-unit>
+            <trans-unit id="eyLPrtp">
+                <source>label.last_login</source>
+                <target>Dernière connexion</target>
+            </trans-unit>
             <trans-unit id="7BYqEbj">
                 <source>label.links</source>
                 <target>Liens</target>
@@ -2073,6 +2133,10 @@
             <trans-unit id="baXk6pr">
                 <source>label.modification</source>
                 <target>Modification</target>
+            </trans-unit>
+            <trans-unit id="UxNy_E0">
+                <source>label.my_account</source>
+                <target>Mon compte</target>
             </trans-unit>
             <trans-unit id="oyd10Po">
                 <source>label.new_password</source>
@@ -2453,6 +2517,10 @@
             <trans-unit id="vcT08Ej">
                 <source>text.logged_in_as</source>
                 <target>Vous êtes connecté en tant que %user%,</target>
+            </trans-unit>
+            <trans-unit id="hAwsDaz">
+                <source>text.password_oauth</source>
+                <target>Vous êtes connecté par un compte externe (Google…) : pour vous donner un mot de passe, déconnectez-vous puis passez par « Mot de passe oublié » depuis la page de connexion.</target>
             </trans-unit>
             <trans-unit id="g6ka9K.">
                 <source>text.user_created</source>

@@ -14,6 +14,18 @@
                 <source>narration.content_import</source>
                 <target>« Importer du contenu » reprend une archive exportée depuis un autre site, par exemple des pages emportées avec leurs blocks et leurs images.</target>
             </trans-unit>
+            <trans-unit id="GpCKJ6q">
+                <source>narration.guided_step_config_content_export_carry</source>
+                <target>Gardez le zip tel quel, sans le décompresser. Sur l'autre environnement, un super administrateur l'importe en une fois depuis l'import de contenu.</target>
+            </trans-unit>
+            <trans-unit id="0O60V..">
+                <source>narration.guided_step_config_content_export_download</source>
+                <target>Cliquez sur « Exporter la synchro (tout) ». Un seul fichier zip réunit le contenu de chaque bundle installé : pages, polices, réglages, redirections.</target>
+            </trans-unit>
+            <trans-unit id="YcW3saw">
+                <source>narration.guided_step_config_content_export_open</source>
+                <target>Le panneau vous ramène au tableau de bord. L'export complet y est un raccourci : un clic, et le fichier se télécharge.</target>
+            </trans-unit>
             <trans-unit id="1qn8pWP">
                 <source>narration.guided_step_config_content_import_check</source>
                 <target>Le message en haut de l'écran dit combien d'éléments ont été créés et mis à jour. Ouvrez-en un pour vérifier qu'il est arrivé tel que vous l'attendiez.</target>

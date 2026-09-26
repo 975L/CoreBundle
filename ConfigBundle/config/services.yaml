@@ -88,6 +88,10 @@ services:
         arguments:
             $procedureProviders: !tagged_iterator c975l.procedure_provider
 
+    c975L\ConfigBundle\Account\AccountSectionBuilder:
+        arguments:
+            $providers: !tagged_iterator c975l.account_section_provider
+
     c975L\ConfigBundle\Management\LinkableRouteRegistry:
         arguments:
             $providers: !tagged_iterator c975l.linkable_route_provider

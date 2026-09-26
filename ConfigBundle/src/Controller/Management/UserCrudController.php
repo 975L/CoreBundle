@@ -90,7 +90,9 @@ class UserCrudController extends AbstractCrudController
             ->setChoices($this->roleChoices($isFrozen))
             ->allowMultipleChoices()
             ->renderExpanded(false)
-            ->setRequired(false);
+            ->setRequired(false)
+            // Marks the whole row for the guided project's highlight, TomSelect hiding the #User_roles select itself
+            ->setFormTypeOption('row_attr', ['data-guided-user-roles' => '']);
 
         // A disabled field is ignored on submit and keeps its stored value, whatever gets posted
         if ($isFrozen) {

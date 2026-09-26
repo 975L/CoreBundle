@@ -1,0 +1,15 @@
+{# Static usage: <twig:c975LUi:Facts:Facts facts="{{ [{label: 'Email', value: user.email}, {label: 'Member since', value: date}] }}"/> #}
+{# A few facts about one thing, each label above its value, laid out as the fields of Contact:Details are: a row on a wide slot, one column on a phone. A fact whose value is empty is left out, so a caller passes what it has without an "if" per line #}
+{% props facts = [] %}
+{% set facts = facts|filter(fact => fact.value is not same as(null) and fact.value != '') %}
+{% if facts is not empty %}
+    {# Each pair wrapped in a <div>, the shape a <dl> takes to be laid out as a grid #}
+    <dl{{ attributes.defaults({class: 'facts'}) }}>
+        {% for fact in facts %}
+            <div class="facts__item">
+                <dt>{{ fact.label }}</dt>
+                <dd>{{ fact.value }}</dd>
+            </div>
+        {% endfor %}
+    </dl>
+{% endif %}

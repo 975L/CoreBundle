@@ -26,6 +26,26 @@
                 <source>text.account_delete_email_mismatch</source>
                 <target>This is not the email address of your account</target>
             </trans-unit>
+            <trans-unit id="N8U3bhv">
+                <source>text.current_password_wrong</source>
+                <target>This is not your current password</target>
+            </trans-unit>
+            <trans-unit id="TaG4lmE">
+                <source>text.password_max_length</source>
+                <target>Your password should be at most {{ limit }} characters</target>
+            </trans-unit>
+            <trans-unit id="epDiKHK">
+                <source>text.password_min_length</source>
+                <target>Your password should be at least {{ limit }} characters</target>
+            </trans-unit>
+            <trans-unit id="G1fcoic">
+                <source>text.password_mismatch</source>
+                <target>The password fields must match.</target>
+            </trans-unit>
+            <trans-unit id="aK3FX9r">
+                <source>text.password_required</source>
+                <target>Please enter a password</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>

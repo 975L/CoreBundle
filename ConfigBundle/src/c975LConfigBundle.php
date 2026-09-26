@@ -10,6 +10,7 @@
 
 namespace c975L\ConfigBundle;
 
+use c975L\ConfigBundle\Account\AccountSectionProviderInterface;
 use c975L\ConfigBundle\Contract\UserInterface;
 use c975L\ConfigBundle\DependencyInjection\Compiler\DeclaredUrlsHealthCheckPass;
 use c975L\ConfigBundle\DependencyInjection\Compiler\RolePreviewRoleVoterPass;
@@ -122,6 +123,7 @@ class c975LConfigBundle extends AbstractBundle
         $container->addCompilerPass(new TaggedInterfacePass(StatusProviderInterface::class, 'c975l.status_provider'));
         $container->addCompilerPass(new TaggedInterfacePass(MaintenanceTaskProviderInterface::class, 'c975l.maintenance_task_provider'));
         $container->addCompilerPass(new TaggedInterfacePass(BackupPathProviderInterface::class, 'c975l.backup_path_provider'));
+        $container->addCompilerPass(new TaggedInterfacePass(AccountSectionProviderInterface::class, 'c975l.account_section_provider'));
         // Collected by OAuthLoginProviderRegistry: a "sign in with X" shipped by another bundle or by an application is enabled by existing, with no list to edit here
         $container->addCompilerPass(new TaggedInterfacePass(OAuthLoginProviderInterface::class, 'c975l.oauth_login_provider'));
         // Only ever has anything to collect in dev, every implementation being marked #[When('dev')] - the pass itself stays registered in every environment, it simply tags nothing in prod

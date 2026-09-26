@@ -24,7 +24,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-// This bundle's own guided projects, running the 1000 block GuidedProjectProviderInterface reserves them - the same docblock stating every other bundle's, so a range is read there rather than recopied here. Each carries the role its own screen is gated by, so a parcours is never offered to someone its very first step turns away - the dashboard the list is started from opens to a contributor (see BackOfficeAccessVoter), and four of these eleven walk a screen only an admin may read, one a screen whose buttons only a super admin is shown, and two a screen a super admin alone opens. Only the opening step of each carries an url: from there the parcours walks the screen the user has been sent to, highlighting the button or the field they are meant to use next - one they click themselves, which brings the panel back on that very step (see assets/js/guided-project.js resume())
+// This bundle's own guided projects, running the 1000 block GuidedProjectProviderInterface reserves them - the same docblock stating every other bundle's, so a range is read there rather than recopied here. Each carries the role its own screen is gated by, so a parcours is never offered to someone its very first step turns away - the dashboard the list is started from opens to a contributor (see BackOfficeAccessVoter), and five of these twelve walk a screen only an admin may read, one a screen whose buttons only a super admin is shown, and two a screen a super admin alone opens. Only the opening step of each carries an url: from there the parcours walks the screen the user has been sent to, highlighting the button or the field they are meant to use next - one they click themselves, which brings the panel back on that very step (see assets/js/guided-project.js resume())
 class ConfigGuidedProjectProvider implements GuidedProjectProviderInterface
 {
     public function __construct(
@@ -47,6 +47,7 @@ class ConfigGuidedProjectProvider implements GuidedProjectProviderInterface
             $this->userRoleProject(),
             $this->rolePreviewProject(),
             $this->messengerFailedProject(),
+            $this->contentExportProject(),
             $this->contentImportProject(),
             $this->pruneProject(),
         ];
@@ -80,7 +81,7 @@ class ConfigGuidedProjectProvider implements GuidedProjectProviderInterface
                     'label' => 'label.guided_step_config_user_role_roles',
                     'description' => 'description.guided_step_config_user_role_roles',
                     'narration' => 'narration.guided_step_config_user_role_roles',
-                    'highlight' => '#User_roles',
+                    'highlight' => '[data-guided-user-roles]',
                 ],
                 [
                     'label' => 'label.guided_step_config_user_role_save',
@@ -155,11 +156,11 @@ class ConfigGuidedProjectProvider implements GuidedProjectProviderInterface
                     'url' => $this->indexUrl(NotFoundCrudController::class),
                 ],
                 [
-                    // Sorted by "lastSeen" descending (see NotFoundCrudController::configureCrud()), so the first row is the link that broke most recently
+                    // Sorted by "lastSeen" descending (see NotFoundCrudController::configureCrud()), so the first row EasyAdmin marks with its entity id is the link that broke most recently
                     'label' => 'label.guided_step_config_not_found_row',
                     'description' => 'description.guided_step_config_not_found_row',
                     'narration' => 'narration.guided_step_config_not_found_row',
-                    'highlight' => 'table tbody tr:first-child',
+                    'highlight' => 'tr[data-id]',
                 ],
                 [
                     // A custom action, so EasyAdmin names its button after it just the same - it opens RedirectCrudController's "new" with the dead path already set (see its createEntity())
@@ -326,7 +327,7 @@ class ConfigGuidedProjectProvider implements GuidedProjectProviderInterface
                 'label' => 'label.guided_step_config_settings_value',
                 'description' => 'description.guided_step_config_settings_value',
                 'narration' => 'narration.guided_step_config_settings_value',
-                'highlight' => '#Config_value',
+                'highlight' => '[data-guided-config-value]',
             ],
         ];
 
@@ -518,6 +519,40 @@ class ConfigGuidedProjectProvider implements GuidedProjectProviderInterface
                     'label' => 'label.guided_step_config_url_metadata_done',
                     'description' => 'description.guided_step_config_url_metadata_done',
                     'narration' => 'narration.guided_step_config_url_metadata_done',
+                ],
+            ],
+        ];
+    }
+
+    // The upstream half of config-content-import: the whole site in one zip, which no screen opens but a dashboard tile
+    private function contentExportProject(): array
+    {
+        return [
+            'slug' => 'config-content-export',
+            'label' => 'label.guided_project_config_content_export',
+            'description' => 'description.guided_project_config_content_export',
+            'translation_domain' => 'config',
+            // Right before the import it feeds, no renumbering needed
+            'order' => 1085,
+            // The bar the "export sync all" shortcut declares, and ConfigShortcutController::exportSyncAll() checks
+            'role' => $this->configService->get('site-role-admin'),
+            'steps' => [
+                [
+                    'label' => 'label.guided_step_config_content_export_open',
+                    'description' => 'description.guided_step_config_content_export_open',
+                    'narration' => 'narration.guided_step_config_content_export_open',
+                    'url' => $this->urlGenerator->generate('management'),
+                ],
+                [
+                    'label' => 'label.guided_step_config_content_export_download',
+                    'description' => 'description.guided_step_config_content_export_download',
+                    'narration' => 'narration.guided_step_config_content_export_download',
+                    'highlight' => 'form[action$="/config/export-sync-all-shortcut"] button',
+                ],
+                [
+                    'label' => 'label.guided_step_config_content_export_carry',
+                    'description' => 'description.guided_step_config_content_export_carry',
+                    'narration' => 'narration.guided_step_config_content_export_carry',
                 ],
             ],
         ];

@@ -341,7 +341,9 @@ class ConfigCrudController extends AbstractCrudController
         if ($isEdit) {
             $field = $field->setHelp(Config::TYPE_JSON === $kind
                 ? t('help.value_json', [], 'config')
-                : t('help.value', [], 'config'));
+                : t('help.value', [], 'config'))
+                // Marks the whole row for the guided project's highlight: a choice kind's TomSelect or an html kind's Trix hides the #Config_value input itself
+                ->setFormTypeOption('row_attr', ['data-guided-config-value' => '']);
         }
 
         return $field;

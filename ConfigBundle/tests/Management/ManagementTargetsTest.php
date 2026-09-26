@@ -33,8 +33,14 @@ class ManagementTargetsTest extends ManagementTargetsTestCase
             new ConfigEssentialActionProvider($this->createConfigService(), $this->adminUrlGenerator()),
             new ConfigGuidedProjectProvider($this->adminUrlGenerator(), $this->createConfigService(), $this->urlGenerator(), new SiteLocales(['fr', 'en'], 'fr')),
             new SocialMenuProvider($this->createConfigService()),
-            new LinkableRouteProvider(),
+            new LinkableRouteProvider(new SiteLocales(['fr', 'en'], 'fr')),
         ];
+    }
+
+    // The front-end controllers too, the member's own page being offered as a menu target (see LinkableRouteProvider)
+    protected function controllerDirectories(): array
+    {
+        return [...parent::controllerDirectories(), __DIR__ . '/../../src/Controller'];
     }
 
     // Anything but "site-url" answers a role, the only two shapes these providers read - a configured site url adds the sidebar's link to the site itself, the one link carrying an url rather than a route

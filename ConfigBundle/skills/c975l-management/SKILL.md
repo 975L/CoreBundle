@@ -109,10 +109,26 @@ Two nuances that get lost:
   linked as "Watch the film" in the dashboard list and beside Donovan's citation; nothing checks
   that a film exists for the slug. A `TutorialFilmUrlProviderInterface` answering `getFilmUrl($slug)`
   with a url sends the link to the site's own film instead, null leaving the ecosystem's.
+- **An application's own guided projects** (a site walking its editors through its own screens: "add a
+  resistant", "create a shortcut") come from one `src/Management/GuidedProjectProvider.php` in the app,
+  autoconfigured like a bundle's. Its `order` runs from 20000 up, after every bundle's block; its slugs
+  start with a word naming no bundle (the site's, `resistance-resistant-creation`), which is also what
+  sets its films apart from the bundles' when the site is filmed; its `role` can be a voter attribute as
+  well as a role, `isGranted()` reading either, but with no subject: the voter must vote on a null one
+  (as `BackOfficeAccessVoter::ACCESS` does), an entity voter abstaining and the project disappearing. An
+  app with no translation catalogue of its own declares `messages` as its `translation_domain` and
+  writes its labels, descriptions and narrations literally, in its language, as its `MenuProvider`
+  does, the literal strings passing through untouched. Give the fields a step fills a real example as
+  their placeholder (`setFormTypeOption('attr.placeholder', ...)`, taken from the site's own content):
+  it guides the editor, and it is what a film of the parcours types in. Its films are published and shown by SiteBundle (skill `c975l-site-pages`, "Tutorial films");
+  without SiteBundle, its film link points at the ecosystem's index, where the slug has no film.
 - A guided project step's `highlight` is a raw CSS selector run through one `document.querySelector`,
   and nothing checks it against the template: prefer a `data-*` marker put on the element for that
   purpose over a structural selector (`table tbody tr:first-child a` stops matching the day a `tbody`
-  per band is introduced). A step highlighting an action shown conditionally must itself be added
+  per band is introduced). A field EasyAdmin draws through TomSelect (a `ChoiceField` not rendered
+  native) or Trix (`TextEditorField`) hides its own `#Entity_field` input: mark its row instead, with
+  `->setFormTypeOption('row_attr', ['data-guided-...' => ''])`. On an index, `tr[data-id]` is the first
+  entity row EasyAdmin draws. A step highlighting an action shown conditionally must itself be added
   conditionally — an action behind a `displayIf()` leaves the step lighting up nothing, and one drawn
   on a single row of a single screen is not worth a step at all.
 - A menu entry and a guided project step each take an optional `narration`: what the step sounds like

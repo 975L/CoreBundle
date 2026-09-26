@@ -82,6 +82,10 @@
                 <source>description.essential_action_roles</source>
                 <target>Who can do what in the back office</target>
             </trans-unit>
+            <trans-unit id="09u2h9T">
+                <source>description.guided_project_config_content_export</source>
+                <target>The whole site content in a single zip, ready to be imported elsewhere.</target>
+            </trans-unit>
             <trans-unit id="RoUelAD">
                 <source>description.guided_project_config_content_import</source>
                 <target>An export made elsewhere, brought in here at once.</target>
@@ -125,6 +129,18 @@
             <trans-unit id="xi28kgp">
                 <source>description.guided_project_config_user_role</source>
                 <target>Decide what an account may do in the back office: contributor, editor or administrator.</target>
+            </trans-unit>
+            <trans-unit id="uQsSrc2">
+                <source>description.guided_step_config_content_export_carry</source>
+                <target>Keep the zip as it is; on the other environment, a super administrator brings it in from the content import.</target>
+            </trans-unit>
+            <trans-unit id="lAFhIc0">
+                <source>description.guided_step_config_content_export_download</source>
+                <target>A single zip gathers the content of every installed bundle: pages, fonts, settings, redirects…</target>
+            </trans-unit>
+            <trans-unit id="FeuC1sY">
+                <source>description.guided_step_config_content_export_open</source>
+                <target>The full export is a dashboard shortcut, with no screen in between.</target>
             </trans-unit>
             <trans-unit id="GtNRnjK">
                 <source>description.guided_step_config_content_import_check</source>
@@ -526,6 +542,10 @@
                 <source>flash.oauth_registration_closed</source>
                 <target>This site isn't taking new registrations at the moment.</target>
             </trans-unit>
+            <trans-unit id="ynalhi5">
+                <source>flash.password_changed</source>
+                <target>Your password has been changed</target>
+            </trans-unit>
             <trans-unit id="ZD8H9hY">
                 <source>flash.user_registration_disabled</source>
                 <target>User registration disabled</target>
@@ -549,6 +569,10 @@
             <trans-unit id="iL.nOO8">
                 <source>help.value_translation</source>
                 <target>The value in this language alone — the one that was typed stays untouched.</target>
+            </trans-unit>
+            <trans-unit id="O_dwBKY">
+                <source>label.account_created</source>
+                <target>Member since</target>
             </trans-unit>
             <trans-unit id="iK4DG3x">
                 <source>label.account_delete</source>
@@ -577,6 +601,10 @@
             <trans-unit id="Rstu.Mi">
                 <source>label.account_inactivity_text</source>
                 <target>To protect your personal data, we do not keep unused accounts. Log in to keep yours, nothing else is needed.</target>
+            </trans-unit>
+            <trans-unit id="1yVnMgR">
+                <source>label.account_profile</source>
+                <target>Profile</target>
             </trans-unit>
             <trans-unit id="s0jNbR8">
                 <source>label.account_validation_button</source>
@@ -686,6 +714,10 @@
                 <source>label.boolean</source>
                 <target>Boolean (True/False)</target>
             </trans-unit>
+            <trans-unit id="WJF9KOe">
+                <source>label.change_password</source>
+                <target>Change password</target>
+            </trans-unit>
             <trans-unit id="fqXGPNB">
                 <source>label.config</source>
                 <target>Configuration</target>
@@ -765,6 +797,10 @@
             <trans-unit id="emPIlPf">
                 <source>label.creation</source>
                 <target>Creation</target>
+            </trans-unit>
+            <trans-unit id="9c4z0Po">
+                <source>label.current_password</source>
+                <target>Current password</target>
             </trans-unit>
             <trans-unit id="id1d4o4">
                 <source>label.dashboard</source>
@@ -918,6 +954,10 @@
                 <source>label.group_theme</source>
                 <target>Theme</target>
             </trans-unit>
+            <trans-unit id="XDpFqMy">
+                <source>label.guided_project_config_content_export</source>
+                <target>Export content to another environment</target>
+            </trans-unit>
             <trans-unit id="_akpA99">
                 <source>label.guided_project_config_content_import</source>
                 <target>Import content from another environment</target>
@@ -1001,6 +1041,18 @@
             <trans-unit id="aOZmqdz">
                 <source>label.guided_projects_intro</source>
                 <target>Your progress is stored in this browser, not on the site: it won't follow you to another computer.</target>
+            </trans-unit>
+            <trans-unit id="v8kPZur">
+                <source>label.guided_step_config_content_export_carry</source>
+                <target>Import it on the other environment</target>
+            </trans-unit>
+            <trans-unit id="EuiOKY9">
+                <source>label.guided_step_config_content_export_download</source>
+                <target>Download the full export</target>
+            </trans-unit>
+            <trans-unit id="PTLFpQl">
+                <source>label.guided_step_config_content_export_open</source>
+                <target>Open the dashboard</target>
             </trans-unit>
             <trans-unit id="TryUJKH">
                 <source>label.guided_step_config_content_import_check</source>
@@ -1934,6 +1986,14 @@
                 <source>label.label</source>
                 <target>Label</target>
             </trans-unit>
+            <trans-unit id="Ogsv.lD">
+                <source>label.language</source>
+                <target>Language</target>
+            </trans-unit>
+            <trans-unit id="eyLPrtp">
+                <source>label.last_login</source>
+                <target>Last login</target>
+            </trans-unit>
             <trans-unit id="7BYqEbj">
                 <source>label.links</source>
                 <target>Links</target>
@@ -2073,6 +2133,10 @@
             <trans-unit id="baXk6pr">
                 <source>label.modification</source>
                 <target>Modification</target>
+            </trans-unit>
+            <trans-unit id="UxNy_E0">
+                <source>label.my_account</source>
+                <target>My account</target>
             </trans-unit>
             <trans-unit id="oyd10Po">
                 <source>label.new_password</source>
@@ -2453,6 +2517,10 @@
             <trans-unit id="vcT08Ej">
                 <source>text.logged_in_as</source>
                 <target>You are logged in as %user%,</target>
+            </trans-unit>
+            <trans-unit id="hAwsDaz">
+                <source>text.password_oauth</source>
+                <target>You are signed in through an external account (Google…): to give yourself a password, log out, then use "Forgot password" from the login page.</target>
             </trans-unit>
             <trans-unit id="g6ka9K.">
                 <source>text.user_created</source>
