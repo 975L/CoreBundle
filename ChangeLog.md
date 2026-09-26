@@ -1,5 +1,17 @@
 # ChangeLog
 
+## v1.42.0
+
+A local account to film the back office with
+
+### ConfigBundle
+
+- **New `c975l:config:tutorial-account`, opening a throwaway local account with a fresh password printed as JSON** (26/09/2026)
+- `--as` picks the tutorial account's level, contributor by default (26/09/2026)
+- `--close` removes the tutorial account (26/09/2026)
+- The tutorial account is refused outside `dev` (26/09/2026)
+- `RolePreview::ladder()` public (26/09/2026)
+
 ## v1.41.1
 
 The account deletion scaffold test reads the flash before any redirect

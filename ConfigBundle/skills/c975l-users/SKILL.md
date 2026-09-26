@@ -1,6 +1,6 @@
 ---
 name: c975l-users
-description: "Use this skill when working on accounts, roles or access control in a Symfony application built on the c975L ecosystem — the User contract, the site-role-* settings, ROLE_SUPER_ADMIN and restricted configs, previewing a lower role, registration and its anti-spam layers, password reset, login throttling and back-office access. Triggers on: UserInterface contract, UserCrudController, site-role-admin, site-role-editor, site-role-contributor, ROLE_CONTRIBUTOR, ROLE_SUPER_ADMIN, RolePreview, role preview, View as, RolePreviewRoleVoter, RolePreviewRoleVoterPass, RolePreviewBanner, user-roles-available, UserManagementVoter, BackOfficeAccessVoter, C975L_ACCESS_BACK_OFFICE, EmailVerifier, UserRegistrar, PasswordResetter, isEnabled, isVerified, UserChecker, sendEmailConfirmation, resend confirmation, confirmation cooldown, EmailVerifier::COOLDOWN, delete a user, unverified account, ON DELETE SET NULL, login_throttling, access_control, register form, reset_password_request, honeypot, DnsEmail, user-creation-notification, InactivityAwareInterface, users-cleanup, c975l:config:users-cleanup, UsersCleanupCommand, InactiveUserFinder, UserAnonymizedEvent, AccountDeleteController, config_account_delete, delete my account, right to erasure, LastLoginSubscriber, lastLogin, user-inactivity-days, user-inactivity-notice-days, anonymize, inactive accounts."
+description: "Use this skill when working on accounts, roles or access control in a Symfony application built on the c975L ecosystem — the User contract, the site-role-* settings, ROLE_SUPER_ADMIN and restricted configs, previewing a lower role, registration and its anti-spam layers, password reset, login throttling and back-office access. Triggers on: UserInterface contract, UserCrudController, site-role-admin, site-role-editor, site-role-contributor, ROLE_CONTRIBUTOR, ROLE_SUPER_ADMIN, RolePreview, role preview, View as, RolePreviewRoleVoter, RolePreviewRoleVoterPass, RolePreviewBanner, user-roles-available, UserManagementVoter, BackOfficeAccessVoter, C975L_ACCESS_BACK_OFFICE, EmailVerifier, UserRegistrar, PasswordResetter, isEnabled, isVerified, UserChecker, sendEmailConfirmation, resend confirmation, confirmation cooldown, EmailVerifier::COOLDOWN, delete a user, unverified account, ON DELETE SET NULL, login_throttling, access_control, register form, reset_password_request, honeypot, DnsEmail, user-creation-notification, InactivityAwareInterface, users-cleanup, c975l:config:users-cleanup, UsersCleanupCommand, InactiveUserFinder, UserAnonymizedEvent, AccountDeleteController, config_account_delete, delete my account, right to erasure, LastLoginSubscriber, lastLogin, user-inactivity-days, user-inactivity-notice-days, anonymize, inactive accounts, tutorial-account, c975l:config:tutorial-account, TutorialAccount, tutorial@example.com, end-to-end account, screen recorder account."
 ---
 
 # c975L ConfigBundle — users, roles and access
@@ -10,7 +10,7 @@ description: "Use this skill when working on accounts, roles or access control i
 **Package:** `c975l/core-bundle` · **Bundle:** `c975L\ConfigBundle\`
 
 **Key source paths** (relative to this bundle's directory inside the package):
-`src/Contract/UserInterface.php`, `src/Controller/Management/UserCrudController.php`, `src/Controller/RolePreviewController.php`, `src/Security/`, `src/Service/UserRegistrar.php`, `src/Service/EmailVerifier.php`, `src/Service/PasswordResetter.php`, `src/Service/UserFormSeeder.php`, `src/EventSubscriber/LoginRequestSubscriber.php`, `src/Command/UserCreateCommand.php`, `src/Command/UsersCleanupCommand.php`, `src/Contract/InactivityAwareInterface.php`, `src/Service/InactiveUserFinder.php`, `src/EventSubscriber/LastLoginSubscriber.php`, `src/Event/UserAnonymizedEvent.php`, `src/Controller/AccountDeleteController.php`, `scaffold/src/`
+`src/Contract/UserInterface.php`, `src/Controller/Management/UserCrudController.php`, `src/Controller/RolePreviewController.php`, `src/Security/`, `src/Service/UserRegistrar.php`, `src/Service/EmailVerifier.php`, `src/Service/PasswordResetter.php`, `src/Service/UserFormSeeder.php`, `src/EventSubscriber/LoginRequestSubscriber.php`, `src/Command/UserCreateCommand.php`, `src/Command/UsersCleanupCommand.php`, `src/Contract/InactivityAwareInterface.php`, `src/Service/InactiveUserFinder.php`, `src/EventSubscriber/LastLoginSubscriber.php`, `src/Event/UserAnonymizedEvent.php`, `src/Controller/AccountDeleteController.php`, `src/Command/TutorialAccountCommand.php`, `src/Service/TutorialAccount.php`, `scaffold/src/`
 
 **Related skills:** `c975l-config`, `c975l-management` in this same bundle, and `c975l-forms-emails` in UiBundle beside it.
 
@@ -180,6 +180,15 @@ A user deletes their own account at `/account/delete` (`config_account_delete`, 
 again anonymizes it the same way, dispatches `UserAnonymizedEvent`, then logs them out and returns the
 firewall's logout response. No menu links to it, the site does.
 
+## Tutorial account
+
+`c975l:config:tutorial-account` opens a throwaway account for whatever drives the back office in a
+browser on a development copy — a tutorial recorder, an end-to-end run, a screenshot tool. It prints
+`{"email": ..., "password": ...}` on one line, the password fresh on every call; `--as` picks the level
+from `RolePreview::ladder()` (`contributor` by default, failing on a level whose `site-role-*` is
+empty), `--email` overrides `tutorial@example.com`, and `--close` removes it. An account left behind
+is taken over, never duplicated. The command refuses to run outside the `dev` environment.
+
 ## Do not
 
 - **Do not type a property against `App\Entity\User`** from a bundle. Use the contract.
@@ -187,6 +196,8 @@ firewall's logout response. No menu links to it, the site does.
 - **Do not list `ROLE_SUPER_ADMIN` in `user-roles-available`.**
 - **Do not reduce the token's roles to preview a level** — the firewall writes it back to the session
   as the real one. Go through `RolePreview`.
+- **Do not keep the tutorial account** once the run is over, nor open it anywhere but `dev` — close it
+  with `--close`.
 - **Do not check `ROLE_ADMIN` in a controller** — read `site-role-admin` or `site-role-editor`.
 - **Do not gate a screen open to the whole back office on `site-role-editor`** — use
   `BackOfficeAccessVoter::ACCESS`, or an admin-only account is turned away.

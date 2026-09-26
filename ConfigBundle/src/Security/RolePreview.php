@@ -98,9 +98,9 @@ class RolePreview
         return \is_string($level) ? $level : null;
     }
 
-    // A role config left empty (c975l:config:load-all not run yet, or a site emptying it) drops its level rather than matching an empty role
+    // Each level and the role it stands for, top to bottom - also what c975l:config:tutorial-account opens its account at. A role config left empty (c975l:config:load-all not run yet, or a site emptying it) drops its level rather than matching an empty role
     /** @return array<string, string> */
-    private function ladder(): array
+    public function ladder(): array
     {
         $ladder = [];
         foreach (self::LADDER as $level => $role) {

@@ -74,7 +74,7 @@ See it in action at [bundles.975l.com/pages/config-bundle](https://bundles.975l.
 - The ecosystem's account layer: `User` CRUD, registration, email confirmation and password reset, on forms and emails seeded once and editable from the back-office afterwards
 - "Sign in with Google" on the login page, enabled by filling two config keys and nothing else — no new dependency, no migration, and extensible to other providers via `OAuthLoginProviderInterface`
 - `c975l:skills:install`, linking the agent skills every registered bundle ships into `.claude/skills/`, where a coding agent actually reads them
-- `c975l:scaffold:install`, installing every installed c975L bundle's scaffold files into the app and backing up whatever it would replace, `c975l:scaffold:diff` telling the files this app customized on purpose from the ones whose scaffold has moved on since, and `c975l:config:user-create` to bootstrap the first admin on an app with no site foundation
+- `c975l:scaffold:install`, installing every installed c975L bundle's scaffold files into the app and backing up whatever it would replace, `c975l:scaffold:diff` telling the files this app customized on purpose from the ones whose scaffold has moved on since, and `c975l:config:user-create` to bootstrap the first admin on an app with no site foundation; `c975l:config:tutorial-account` opens (and `--close` removes) a throwaway, development-only account for whatever drives the back office in a browser - a tutorial recorder, an end-to-end run
 
 ## Installation
 
