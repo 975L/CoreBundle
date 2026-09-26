@@ -3462,6 +3462,10 @@
                 <source>label.phone</source>
                 <target>Phone</target>
             </trans-unit>
+            <trans-unit id="mZknWRt">
+                <source>label.photo_licence</source>
+                <target>Photographs licence</target>
+            </trans-unit>
             <trans-unit id="Rfi.GLm">
                 <source>label.position</source>
                 <target>Position</target>

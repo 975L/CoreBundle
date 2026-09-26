@@ -56,6 +56,7 @@ See it in action at [bundles.975l.com/pages/config-bundle](https://bundles.975l.
 - `c975l:config:messenger-cleanup`, purging failed Messenger messages past their retention and emailing a digest of the ones worth an admin's attention, with a dashboard screen to read, replay or delete them
 - `c975l:config:sessions-cleanup`, deleting the expired rows of the `sessions` table nightly, PHP's own garbage collection being a dice roll a managed host can simply never throw
 - `c975l:config:users-cleanup`, warning then anonymizing the accounts nobody logged in to for three years, as the GDPR's storage limitation asks
+- `/account/delete`, where a signed-in user deletes their own account (GDPR right to erasure), anonymized the same way
 - The languages a site offers, declared once in `framework.enabled_locales`: a language selector in the back office, the front office following the one a visitor picks, and the block content translated per language (see `c975l/ui-bundle`)
 - Maintenance mode closing the site to its visitors, answering the search-engine-friendly 503 they expect from a temporary outage, with a dashboard alert turning to danger once it has lasted long enough to cost indexing
 - Sitemap generation (one sub-sitemap per bundle plus the sitemap index), extensible via `SitemapProviderInterface`
@@ -2125,6 +2126,8 @@ Declared by `ConfigMaintenanceTaskProvider`, so it runs nightly with nothing to 
 **Anonymized, not deleted**: the payments, invoices and credits referring to the account stay for the accounting retention, the row keeping nothing that identifies a person. `UserAnonymizedEvent` is dispatched for each one, for an app unlinking what its users own. Logging in restarts the clock (`LastLoginSubscriber`), and an account created before the clock existed gets the whole period from the first run.
 
 It acts on a `User` implementing `InactivityAwareInterface`, which the scaffolded one does; an older one is left alone until it does (see `UPGRADE.md`). Declared by `ConfigMaintenanceTaskProvider`, weekly.
+
+**Deleting one's own account** (GDPR right to erasure): `/account/delete` (route `config_account_delete`, `IS_AUTHENTICATED_FULLY`) explains what happens, then asks the user to type their own email address again, which an account signed in with Google can do as well. Confirmed, the account is anonymized exactly as above - `anonymize()`, `UserAnonymizedEvent`, flush - then logged out through the firewall, which sends them to its `logout.target` with the cookies it clears. A `User` not implementing `InactivityAwareInterface` gets a 404, and a `ROLE_SUPER_ADMIN` a 403: the site's owner goes through another super admin or the CLI, since nobody left could hand that role back from the back office. No menu carries it: the site links to it where it sees fit, e.g. `<a href="{{ path('config_account_delete') }}">`, and detaches what its users own in a `UserAnonymizedEvent` listener, which covers the cleanup command at the same time.
 
 ---
 

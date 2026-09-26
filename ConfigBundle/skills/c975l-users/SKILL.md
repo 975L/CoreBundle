@@ -1,6 +1,6 @@
 ---
 name: c975l-users
-description: "Use this skill when working on accounts, roles or access control in a Symfony application built on the c975L ecosystem — the User contract, the site-role-* settings, ROLE_SUPER_ADMIN and restricted configs, previewing a lower role, registration and its anti-spam layers, password reset, login throttling and back-office access. Triggers on: UserInterface contract, UserCrudController, site-role-admin, site-role-editor, site-role-contributor, ROLE_CONTRIBUTOR, ROLE_SUPER_ADMIN, RolePreview, role preview, View as, RolePreviewRoleVoter, RolePreviewRoleVoterPass, RolePreviewBanner, user-roles-available, UserManagementVoter, BackOfficeAccessVoter, C975L_ACCESS_BACK_OFFICE, EmailVerifier, UserRegistrar, PasswordResetter, isEnabled, isVerified, UserChecker, sendEmailConfirmation, resend confirmation, confirmation cooldown, EmailVerifier::COOLDOWN, delete a user, unverified account, ON DELETE SET NULL, login_throttling, access_control, register form, reset_password_request, honeypot, DnsEmail, user-creation-notification, InactivityAwareInterface, users-cleanup, c975l:config:users-cleanup, UsersCleanupCommand, InactiveUserFinder, UserAnonymizedEvent, LastLoginSubscriber, lastLogin, user-inactivity-days, user-inactivity-notice-days, anonymize, inactive accounts."
+description: "Use this skill when working on accounts, roles or access control in a Symfony application built on the c975L ecosystem — the User contract, the site-role-* settings, ROLE_SUPER_ADMIN and restricted configs, previewing a lower role, registration and its anti-spam layers, password reset, login throttling and back-office access. Triggers on: UserInterface contract, UserCrudController, site-role-admin, site-role-editor, site-role-contributor, ROLE_CONTRIBUTOR, ROLE_SUPER_ADMIN, RolePreview, role preview, View as, RolePreviewRoleVoter, RolePreviewRoleVoterPass, RolePreviewBanner, user-roles-available, UserManagementVoter, BackOfficeAccessVoter, C975L_ACCESS_BACK_OFFICE, EmailVerifier, UserRegistrar, PasswordResetter, isEnabled, isVerified, UserChecker, sendEmailConfirmation, resend confirmation, confirmation cooldown, EmailVerifier::COOLDOWN, delete a user, unverified account, ON DELETE SET NULL, login_throttling, access_control, register form, reset_password_request, honeypot, DnsEmail, user-creation-notification, InactivityAwareInterface, users-cleanup, c975l:config:users-cleanup, UsersCleanupCommand, InactiveUserFinder, UserAnonymizedEvent, AccountDeleteController, config_account_delete, delete my account, right to erasure, LastLoginSubscriber, lastLogin, user-inactivity-days, user-inactivity-notice-days, anonymize, inactive accounts."
 ---
 
 # c975L ConfigBundle — users, roles and access
@@ -10,7 +10,7 @@ description: "Use this skill when working on accounts, roles or access control i
 **Package:** `c975l/core-bundle` · **Bundle:** `c975L\ConfigBundle\`
 
 **Key source paths** (relative to this bundle's directory inside the package):
-`src/Contract/UserInterface.php`, `src/Controller/Management/UserCrudController.php`, `src/Controller/RolePreviewController.php`, `src/Security/`, `src/Service/UserRegistrar.php`, `src/Service/EmailVerifier.php`, `src/Service/PasswordResetter.php`, `src/Service/UserFormSeeder.php`, `src/EventSubscriber/LoginRequestSubscriber.php`, `src/Command/UserCreateCommand.php`, `src/Command/UsersCleanupCommand.php`, `src/Contract/InactivityAwareInterface.php`, `src/Service/InactiveUserFinder.php`, `src/EventSubscriber/LastLoginSubscriber.php`, `src/Event/UserAnonymizedEvent.php`, `scaffold/src/`
+`src/Contract/UserInterface.php`, `src/Controller/Management/UserCrudController.php`, `src/Controller/RolePreviewController.php`, `src/Security/`, `src/Service/UserRegistrar.php`, `src/Service/EmailVerifier.php`, `src/Service/PasswordResetter.php`, `src/Service/UserFormSeeder.php`, `src/EventSubscriber/LoginRequestSubscriber.php`, `src/Command/UserCreateCommand.php`, `src/Command/UsersCleanupCommand.php`, `src/Contract/InactivityAwareInterface.php`, `src/Service/InactiveUserFinder.php`, `src/EventSubscriber/LastLoginSubscriber.php`, `src/Event/UserAnonymizedEvent.php`, `src/Controller/AccountDeleteController.php`, `scaffold/src/`
 
 **Related skills:** `c975l-config`, `c975l-management` in this same bundle, and `c975l-forms-emails` in UiBundle beside it.
 
@@ -174,6 +174,11 @@ template; still unused at the end of the notice, it is **anonymized, never delet
 it stays for the accounting retention. A disabled account is anonymized without a notice. The app's
 `anonymize()` blanks its own personal fields, and an app unlinking what a user owns listens to
 `UserAnonymizedEvent`. `LastLoginSubscriber` restarts the clock on every login.
+
+A user deletes their own account at `/account/delete` (`config_account_delete`, fully authenticated,
+404 for a User without `InactivityAwareInterface`, 403 for a `ROLE_SUPER_ADMIN`): typing their email
+again anonymizes it the same way, dispatches `UserAnonymizedEvent`, then logs them out and returns the
+firewall's logout response. No menu links to it, the site does.
 
 ## Do not
 

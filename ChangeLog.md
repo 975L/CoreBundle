@@ -1,5 +1,22 @@
 # ChangeLog
 
+## v1.41.0
+
+A user deletes their own account
+
+### ConfigBundle
+
+- **New `/account/delete` (`config_account_delete`), where a signed-in user deletes their own account, anonymized as `c975l:config:users-cleanup` does** (26/09/2026)
+- New `AccountDeleteType`, the account's email typed again to confirm (26/09/2026)
+- A super admin is refused the account deletion (26/09/2026)
+- The account deletion returns the firewall's logout response (26/09/2026)
+- The README and the `c975l-users` skill document the account deletion (26/09/2026)
+
+### UiBundle
+
+- New `france/photo-licence` legal model, in the three locales (26/09/2026)
+- The README and the `c975l-blocks` skill list the photographs licence model (26/09/2026)
+
 ## v1.40.0
 
 The maintenance page is generated for deployments

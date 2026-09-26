@@ -29,6 +29,7 @@ class LegalModelCatalogTest extends TestCase
 
         $this->assertContains('france/cookies', $all);
         $this->assertContains('france/terms-of-use', $all);
+        $this->assertContains('france/photo-licence', $all);
         $this->assertSame(array_values($all), $all);
         $this->assertSame(array_unique($all), $all);
     }

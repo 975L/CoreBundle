@@ -22,6 +22,7 @@ class LegalModelCatalog
             'label.cookies_policy' => 'france/cookies',
             'label.copyright' => 'france/copyright',
             'label.legal_notice' => 'france/legal-notice',
+            'label.photo_licence' => 'france/photo-licence',
             'label.privacy_policy' => 'france/privacy-policy',
             'label.terms_of_sales' => 'france/terms-of-sales',
             'label.terms_of_use' => 'france/terms-of-use',

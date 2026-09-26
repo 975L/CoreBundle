@@ -1850,6 +1850,7 @@ the locale a filename suffix:
 | Cookies policy | `@c975LUi/models/france/cookies.{locale}.html.twig` |
 | Copyright | `@c975LUi/models/france/copyright.{locale}.html.twig` |
 | Legal notice | `@c975LUi/models/france/legal-notice.{locale}.html.twig` |
+| Photographs licence | `@c975LUi/models/france/photo-licence.{locale}.html.twig` |
 | Privacy policy | `@c975LUi/models/france/privacy-policy.{locale}.html.twig` |
 | Terms of sales | `@c975LUi/models/france/terms-of-sales.{locale}.html.twig` |
 | Terms of use | `@c975LUi/models/france/terms-of-use.{locale}.html.twig` |

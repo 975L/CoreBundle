@@ -360,10 +360,10 @@ script — nothing to do with the billed JavaScript API above.
 
 ## Legal models
 
-The legal notice, privacy policy, terms of sales and use, cookies and copyright are **this bundle's**:
-the `legal_model` block renders them and the **Legal models** screen customizes them section by
-section. A site running a shop with no page management needs them just as much. **Do not write legal
-text into a template**, and do not duplicate the models in a satellite bundle.
+The legal notice, privacy policy, terms of sales and use, cookies, copyright and photographs licence
+are **this bundle's**: the `legal_model` block renders them and the **Legal models** screen customizes
+them section by section. A site running a shop with no page management needs them just as much. **Do
+not write legal text into a template**, and do not duplicate the models in a satellite bundle.
 
 A model states only the processing the site actually does: `site-has-accounts` (bool, `true` by
 default) drops the account, password and login-identifier passages of the privacy policy on a site

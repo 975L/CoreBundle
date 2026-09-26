@@ -386,6 +386,10 @@
                 <source>description.whatsnew</source>
                 <target>What changed recently on this dashboard and across every installed bundle.</target>
             </trans-unit>
+            <trans-unit id="1IMEbQm">
+                <source>flash.account_deleted</source>
+                <target>My account has been deleted.</target>
+            </trans-unit>
             <trans-unit id="duvD5dn">
                 <source>flash.config_cache_cleared</source>
                 <target>Config cache cleared</target>
@@ -545,6 +549,18 @@
             <trans-unit id="iL.nOO8">
                 <source>help.value_translation</source>
                 <target>The value in this language alone — the one that was typed stays untouched.</target>
+            </trans-unit>
+            <trans-unit id="iK4DG3x">
+                <source>label.account_delete</source>
+                <target>Delete my account</target>
+            </trans-unit>
+            <trans-unit id="PlJHyuZ">
+                <source>label.account_delete_button</source>
+                <target>Delete my account</target>
+            </trans-unit>
+            <trans-unit id="FT4XlCY">
+                <source>label.account_delete_email</source>
+                <target>Your email address</target>
             </trans-unit>
             <trans-unit id="9TP0HP4">
                 <source>label.account_inactivity_button</source>
@@ -2401,6 +2417,30 @@
             <trans-unit id="bjdEET4">
                 <source>label.whatsnew_see_all</source>
                 <target>See all release notes</target>
+            </trans-unit>
+            <trans-unit id="t.3NeWs">
+                <source>text.account_delete_accounting</source>
+                <target>your payments, invoices and credits are kept anonymously, for the time the law requires accounting records to be kept;</target>
+            </trans-unit>
+            <trans-unit id="D2DcS9S">
+                <source>text.account_delete_confirm</source>
+                <target>To confirm, type your email address: %email%</target>
+            </trans-unit>
+            <trans-unit id="WXs9.kK">
+                <source>text.account_delete_content</source>
+                <target>what this site linked to your account is detached from it.</target>
+            </trans-unit>
+            <trans-unit id="r484HjH">
+                <source>text.account_delete_intro</source>
+                <target>Deleting your account anonymizes it right away:</target>
+            </trans-unit>
+            <trans-unit id="UnfzxRL">
+                <source>text.account_delete_irreversible</source>
+                <target>This cannot be undone.</target>
+            </trans-unit>
+            <trans-unit id="J4HpwMt">
+                <source>text.account_delete_personal_data</source>
+                <target>your email address, your name and your password are erased, and nobody can log in to this account anymore;</target>
             </trans-unit>
             <trans-unit id="_FiPpZh">
                 <source>text.account_inactivity_deadline</source>

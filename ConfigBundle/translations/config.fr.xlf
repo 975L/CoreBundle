@@ -386,6 +386,10 @@
                 <source>description.whatsnew</source>
                 <target>Ce qui a changé récemment sur ce tableau de bord et dans tous les bundles installés.</target>
             </trans-unit>
+            <trans-unit id="1IMEbQm">
+                <source>flash.account_deleted</source>
+                <target>Mon compte a été supprimé.</target>
+            </trans-unit>
             <trans-unit id="duvD5dn">
                 <source>flash.config_cache_cleared</source>
                 <target>Cache de configuration vidé</target>
@@ -545,6 +549,18 @@
             <trans-unit id="iL.nOO8">
                 <source>help.value_translation</source>
                 <target>La valeur dans cette langue seulement — celle qui a été saisie reste intacte.</target>
+            </trans-unit>
+            <trans-unit id="iK4DG3x">
+                <source>label.account_delete</source>
+                <target>Je supprime mon compte</target>
+            </trans-unit>
+            <trans-unit id="PlJHyuZ">
+                <source>label.account_delete_button</source>
+                <target>Je supprime mon compte</target>
+            </trans-unit>
+            <trans-unit id="FT4XlCY">
+                <source>label.account_delete_email</source>
+                <target>Mon adresse e-mail</target>
             </trans-unit>
             <trans-unit id="9TP0HP4">
                 <source>label.account_inactivity_button</source>
@@ -2401,6 +2417,30 @@
             <trans-unit id="bjdEET4">
                 <source>label.whatsnew_see_all</source>
                 <target>Voir toutes les notes de version</target>
+            </trans-unit>
+            <trans-unit id="t.3NeWs">
+                <source>text.account_delete_accounting</source>
+                <target>mes paiements, factures et crédits sont conservés de façon anonyme, le temps que la loi impose de garder les pièces comptables ;</target>
+            </trans-unit>
+            <trans-unit id="D2DcS9S">
+                <source>text.account_delete_confirm</source>
+                <target>Pour confirmer, je saisis mon adresse e-mail : %email%</target>
+            </trans-unit>
+            <trans-unit id="WXs9.kK">
+                <source>text.account_delete_content</source>
+                <target>ce que ce site rattachait à mon compte en est détaché.</target>
+            </trans-unit>
+            <trans-unit id="r484HjH">
+                <source>text.account_delete_intro</source>
+                <target>Supprimer mon compte l'anonymise immédiatement :</target>
+            </trans-unit>
+            <trans-unit id="UnfzxRL">
+                <source>text.account_delete_irreversible</source>
+                <target>Je ne pourrai pas revenir en arrière.</target>
+            </trans-unit>
+            <trans-unit id="J4HpwMt">
+                <source>text.account_delete_personal_data</source>
+                <target>mon adresse e-mail, mon nom et mon mot de passe sont effacés, et plus personne ne peut se connecter à ce compte ;</target>
             </trans-unit>
             <trans-unit id="_FiPpZh">
                 <source>text.account_inactivity_deadline</source>

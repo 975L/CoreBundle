@@ -386,6 +386,10 @@
                 <source>description.whatsnew</source>
                 <target>Lo que ha cambiado recientemente en este panel y en todos los bundles instalados.</target>
             </trans-unit>
+            <trans-unit id="1IMEbQm">
+                <source>flash.account_deleted</source>
+                <target>Mi cuenta ha sido eliminada.</target>
+            </trans-unit>
             <trans-unit id="duvD5dn">
                 <source>flash.config_cache_cleared</source>
                 <target>Caché de configuración vaciada</target>
@@ -545,6 +549,18 @@
             <trans-unit id="iL.nOO8">
                 <source>help.value_translation</source>
                 <target>El valor solo en este idioma: el que se escribió permanece intacto.</target>
+            </trans-unit>
+            <trans-unit id="iK4DG3x">
+                <source>label.account_delete</source>
+                <target>Eliminar mi cuenta</target>
+            </trans-unit>
+            <trans-unit id="PlJHyuZ">
+                <source>label.account_delete_button</source>
+                <target>Eliminar mi cuenta</target>
+            </trans-unit>
+            <trans-unit id="FT4XlCY">
+                <source>label.account_delete_email</source>
+                <target>Su dirección de correo electrónico</target>
             </trans-unit>
             <trans-unit id="9TP0HP4">
                 <source>label.account_inactivity_button</source>
@@ -2401,6 +2417,30 @@
             <trans-unit id="bjdEET4">
                 <source>label.whatsnew_see_all</source>
                 <target>Ver todas las notas de versión</target>
+            </trans-unit>
+            <trans-unit id="t.3NeWs">
+                <source>text.account_delete_accounting</source>
+                <target>sus pagos, facturas y créditos se conservan de forma anónima, durante el tiempo que la ley exige conservar los documentos contables;</target>
+            </trans-unit>
+            <trans-unit id="D2DcS9S">
+                <source>text.account_delete_confirm</source>
+                <target>Para confirmar, escriba su dirección de correo electrónico: %email%</target>
+            </trans-unit>
+            <trans-unit id="WXs9.kK">
+                <source>text.account_delete_content</source>
+                <target>lo que este sitio vinculaba a su cuenta queda desvinculado de ella.</target>
+            </trans-unit>
+            <trans-unit id="r484HjH">
+                <source>text.account_delete_intro</source>
+                <target>Eliminar su cuenta la anonimiza inmediatamente:</target>
+            </trans-unit>
+            <trans-unit id="UnfzxRL">
+                <source>text.account_delete_irreversible</source>
+                <target>No se puede deshacer.</target>
+            </trans-unit>
+            <trans-unit id="J4HpwMt">
+                <source>text.account_delete_personal_data</source>
+                <target>su dirección de correo electrónico, su nombre y su contraseña se borran, y nadie puede volver a conectarse a esta cuenta;</target>
             </trans-unit>
             <trans-unit id="_FiPpZh">
                 <source>text.account_inactivity_deadline</source>

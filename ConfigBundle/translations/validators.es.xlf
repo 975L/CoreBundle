@@ -22,6 +22,10 @@
                 <source>label.static_asset_path</source>
                 <target>Esta ruta se sirve como un archivo, la redirección nunca se aplicaría</target>
             </trans-unit>
+            <trans-unit id="hsRY63H">
+                <source>text.account_delete_email_mismatch</source>
+                <target>No es la dirección de correo electrónico de su cuenta</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>

@@ -1,0 +1,29 @@
+{# Rendered by AccountDeleteController - the app's own scaffolded layout first, then SiteBundle's, then UiBundle's minimal one, as UiBundle's form page does, so it works whichever foundation is installed #}
+{% extends ['layout.html.twig', '@c975LSite/layout.html.twig', '@c975LUi/layout.html.twig'] %}
+{% trans_default_domain 'config' %}
+
+{% set title = 'label.account_delete'|trans %}
+
+{# A page of one account alone, as the login page: nothing to offer a search result #}
+{% set robots = 'noindex, follow' %}
+
+{% block content %}
+    <div class="alert alert-warning text">
+        <p>{{ 'text.account_delete_intro'|trans }}</p>
+        <ul>
+            <li>{{ 'text.account_delete_personal_data'|trans }}</li>
+            <li>{{ 'text.account_delete_accounting'|trans }}</li>
+            <li>{{ 'text.account_delete_content'|trans }}</li>
+        </ul>
+        <p>{{ 'text.account_delete_irreversible'|trans }}</p>
+    </div>
+
+    {{ form_start(form) }}
+        <p class="text">{{ 'text.account_delete_confirm'|trans({'%email%': app.user.email}) }}</p>
+        {{ form_row(form.email) }}
+
+        <button class="btn btn-large btn-danger" type="submit">
+            {{ 'label.account_delete_button'|trans }}
+        </button>
+    {{ form_end(form) }}
+{% endblock %}
