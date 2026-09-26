@@ -7,6 +7,7 @@ use c975L\ConfigBundle\Contract\InactivityAwareInterface;
 use c975L\ConfigBundle\Event\UserAnonymizedEvent;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
+use Symfony\Component\HttpFoundation\Session\FlashBagAwareSessionInterface;
 
 // ConfigBundle's /account/delete, through the site's own firewall and User: the account's owner deleting it, anonymized as c975l:config:users-cleanup does
 class AccountDeleteControllerTest extends FunctionalTestCase
@@ -52,9 +53,10 @@ class AccountDeleteControllerTest extends FunctionalTestCase
         $this->assertStringEndsWith('@' . InactivityAwareInterface::ANONYMIZED_DOMAIN, (string) $user->getEmail());
         $this->assertFalse($user->isEnabled());
 
-        // The flash survives the logout, which empties the session it was added to - read from the next request's session rather than from the home page, which a site may redirect further
-        $client->followRedirect();
-        $this->assertNotEmpty($client->getRequest()->getSession()->getFlashBag()->peek('success'));
+        // The flash survives the logout, which empties the session - read from the deletion's own session, since a home page rendering the flashes would consume them
+        $session = $client->getRequest()->getSession();
+        $this->assertInstanceOf(FlashBagAwareSessionInterface::class, $session);
+        $this->assertNotEmpty($session->getFlashBag()->peek('success'));
 
         // Logged out: the page is now the firewall's again
         $client->request('GET', '/account/delete');
@@ -64,8 +66,8 @@ class AccountDeleteControllerTest extends FunctionalTestCase
     // Kept on one kernel, so the listener above and the entity manager read back below are the ones the requests used
     private function authenticatedClient(): KernelBrowser
     {
-        // A site whose User doesn't implement it yet gets a 404 there, as intended (see UPGRADE.md)
-        if (!is_subclass_of(User::class, InactivityAwareInterface::class)) {
+        // A site whose User doesn't implement it yet gets a 404 there, as intended (see UPGRADE.md) - checked by reflection, which PHPStan doesn't narrow on a site where it always holds
+        if (!new \ReflectionClass(User::class)->implementsInterface(InactivityAwareInterface::class)) {
             $this->markTestSkipped('App\\Entity\\User does not implement InactivityAwareInterface yet.');
         }
 

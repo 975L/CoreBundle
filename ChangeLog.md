@@ -1,5 +1,14 @@
 # ChangeLog
 
+## v1.41.1
+
+The account deletion scaffold test reads the flash before any redirect
+
+### ConfigBundle
+
+- The scaffolded `AccountDeleteControllerTest` reads the flash from the deletion's own session (26/09/2026)
+- The scaffolded `AccountDeleteControllerTest` checks the User's interface by reflection, for PHPStan (26/09/2026)
+
 ## v1.41.0
 
 A user deletes their own account
