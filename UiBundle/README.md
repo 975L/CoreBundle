@@ -2514,7 +2514,7 @@ play button, so accepting third-party cookies can't be mistaken for pressing pla
 
 ### FAQ (`faq`)
 
-An optional title over a list of questions, each unfolding under its own summary. It is built on
+A page section like the other kinds, its optional title drawn by the shared section head over a list of questions, each unfolding under its own summary. It is built on
 `<details>`/`<summary>` rather than on a script: the accordion works before any JavaScript loads, a
 printed page shows every answer, and the browser's own "find in page" opens the section holding the
 match. Opening a question folds the one already open, the questions of a block sharing one `name`

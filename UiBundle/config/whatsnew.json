@@ -13,6 +13,11 @@
                 "es": "Un nuevo proyecto guiado muestra cómo exportar formularios y calculadoras a otro sitio, fórmulas incluidas."
             },
             {
+                "en": "The FAQ block now lines up with the other sections of your pages, its title included.",
+                "fr": "Le block FAQ s'aligne désormais sur les autres sections de vos pages, titre compris.",
+                "es": "El bloque FAQ se alinea ahora con las demás secciones de sus páginas, título incluido."
+            },
+            {
                 "en": "A QR code in SVG now shows its caption below it, in the code's own color.",
                 "fr": "Un QR code en SVG affiche désormais sa légende en dessous, dans la couleur du code.",
                 "es": "Un código QR en SVG muestra ahora su leyenda debajo, en el color del código."

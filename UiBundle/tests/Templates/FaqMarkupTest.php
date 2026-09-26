@@ -75,6 +75,16 @@ class FaqMarkupTest extends TestCase
         $this->assertSame('Oui, partout en Europe.', $payload['mainEntity'][0]['acceptedAnswer']['text']);
     }
 
+    // A page section like every other kind, so it takes the page's rhythm and measure, headed by the shared section title
+    public function testTheBlockIsAPageSectionHeadedLikeTheOthers(): void
+    {
+        $html = $this->render(['items' => self::ITEMS, 'title' => 'Questions fréquentes', 'anchor_id' => 'faq-1']);
+
+        $this->assertStringContainsString('<section class="block-section faq faq--cols1" id="faq-1">', $html);
+        $this->assertStringContainsString('<div class="section-wrap">', $html);
+        $this->assertStringContainsString('<h2 class="section-title">Questions fréquentes</h2>', $html);
+    }
+
     // Google reads a FAQPage as one ordered list, and a two-column layout says the page is not one
     public function testTheTwoColumnLayoutPublishesNoPayloadAtAll(): void
     {
@@ -93,7 +103,10 @@ class FaqMarkupTest extends TestCase
 
     private function render(array $context): string
     {
-        $twig = new Environment(new FilesystemLoader(\dirname(__DIR__, 2) . '/templates'));
+        // The bundle's namespace too, the block drawing its title through the shared section head
+        $loader = new FilesystemLoader(\dirname(__DIR__, 2) . '/templates');
+        $loader->addPath(\dirname(__DIR__, 2) . '/templates', 'c975LUi');
+        $twig = new Environment($loader);
 
         return $twig->render('blocks/Faq.html.twig', $context);
     }

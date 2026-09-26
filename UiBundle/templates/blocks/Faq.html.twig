@@ -2,19 +2,20 @@
 {% set items = items|default([])|filter(item => item.question|default('')) %}
 {% if items is not empty %}
     {% set columns = columns|default(1) %}
-    <section class="faq faq--cols{{ columns }}"{% if anchor_id %} id="{{ anchor_id }}"{% endif %}>
-        {% if title|default('') %}
-            <h2>{{ title }}</h2>
-        {% endif %}
-        {# One name shared by the questions of this block, as the product items do: the browser folds the open answer when another unfolds, without a script - and scoped by the anchor, so two blocks on a page leave each other alone #}
-        {% set group = 'faq-' ~ (anchor_id|default('') ?: 'items') %}
-        <div class="faq__items">
-            {% for item in items %}
-                <details class="faq__item" name="{{ group }}"{% if loop.first and openFirst|default(false) %} open{% endif %}>
-                    <summary class="faq__question">{{ item.question }}</summary>
-                    <div class="faq__answer">{{ item.answer|default('')|raw }}</div>
-                </details>
-            {% endfor %}
+    {# A page section like every other kind: the page's rhythm and measure through "block-section"/"section-wrap", its title through the shared head #}
+    <section class="block-section faq faq--cols{{ columns }}"{% if anchor_id|default('') %} id="{{ anchor_id }}"{% endif %}>
+        <div class="section-wrap">
+            {{ include('@c975LUi/components/Section/_head.html.twig', {title: title|default(''), eyebrow: ''}) }}
+            {# One name shared by the questions of this block, as the product items do: the browser folds the open answer when another unfolds, without a script - and scoped by the anchor, so two blocks on a page leave each other alone #}
+            {% set group = 'faq-' ~ (anchor_id|default('') ?: 'items') %}
+            <div class="faq__items">
+                {% for item in items %}
+                    <details class="faq__item" name="{{ group }}"{% if loop.first and openFirst|default(false) %} open{% endif %}>
+                        <summary class="faq__question">{{ item.question }}</summary>
+                        <div class="faq__answer">{{ item.answer|default('')|raw }}</div>
+                    </details>
+                {% endfor %}
+            </div>
         </div>
     </section>
 

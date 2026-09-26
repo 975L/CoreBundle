@@ -311,7 +311,8 @@ each unfolding under its own `<summary>`, and a schema.org `FAQPage` payload bui
 questions, which is what puts the answers in a search result. It is `<details>`/`<summary>` and not a
 script, so the accordion works before any JavaScript loads and a printed page shows every answer. The
 `<details>` of a block share one `name` (`faq-<anchor>`, `faq-items` without one), so opening a question
-folds the other one open in that block only.
+folds the other one open in that block only. It renders as a page section like the other kinds
+(`block-section`, `section-wrap`), its title drawn by the shared `components/Section/_head.html.twig`.
 
 **The payload is published in one column only.** schema.org reads a `FAQPage` as one ordered list, and
 the block's two-column option says the page is not one — so a two-column FAQ renders the questions and

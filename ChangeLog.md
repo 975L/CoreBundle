@@ -1,5 +1,14 @@
 # ChangeLog
 
+## v1.42.2
+
+The faq block, a page section like the other kinds
+
+### UiBundle
+
+- **The faq block renders as a page section (`block-section`, `section-wrap`), a visible change on every site** (26/09/2026)
+- The faq block's title goes through the shared section head (26/09/2026)
+
 ## v1.42.1
 
 The pricing card, one offer among several
