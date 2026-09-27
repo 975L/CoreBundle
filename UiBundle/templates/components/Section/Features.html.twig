@@ -1,17 +1,33 @@
-{# Static usage: <twig:c975LUi:Section:Features cards="{{ [{icon: '', title: '...', text: '...'}] }}" [eyebrow=""] [title=""] [id=""]/> #}
+{# Static usage: <twig:c975LUi:Section:Features cards="{{ [{icon: '', title: '...', text: '...'}] }}" [eyebrow=""] [title=""] [intro=""] [variant="tiles"] [id=""]/> #}
 {# Dynamic usage (Block system): see templates/blocks/SectionFeatures.html.twig #}
 {# A headingless <section> is invalid HTML, hence the <div> fallback #}
 {% set tag = (eyebrow|default('') or title|default('')) ? 'section' : 'div' %}
 <{{ tag }} class="section-features-section"{% if id is defined and id %} id="{{ id }}"{% endif %}>
     <div class="section-wrap">
         {{ include('@c975LUi/components/Section/_head.html.twig') }}
+        {% if intro|default('') %}
+            <p class="section-lead">{{ intro }}</p>
+        {% endif %}
         {# No row at all rather than an empty one: the head's own bottom margin would otherwise hang below it #}
         {% if cards|length %}
-            <div class="section-features">
-                {% for c in cards %}
-                    <twig:c975LUi:Card:Card title="{{ c.title }}" level="h3" icon="{{ c.icon ? [c.icon, '', 22, 22] : [] }}" content="{{ c.text }}"/>
-                {% endfor %}
-            </div>
+            {% if variant|default('') == 'tiles' %}
+                {# Tiles: the icon in a disc of the primary color over a bold title and its text, centered - the disc a wrapper of its own, as a filter turning the icon white would whiten a background set on the image too #}
+                <div class="section-features section-features--tiles">
+                    {% for c in cards %}
+                        <div class="feature-tile">
+                            {% if c.icon %}<span class="feature-tile__icon"><img src="{{ asset(c.icon) }}" alt="" aria-hidden="true" width="28" height="28" loading="lazy"></span>{% endif %}
+                            <h3 class="feature-tile__title">{{ c.title }}</h3>
+                            <div class="feature-tile__text">{{ c.text|raw }}</div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="section-features">
+                    {% for c in cards %}
+                        <twig:c975LUi:Card:Card title="{{ c.title }}" level="h3" icon="{{ c.icon ? [c.icon, '', 22, 22] : [] }}" content="{{ c.text }}"/>
+                    {% endfor %}
+                </div>
+            {% endif %}
         {% endif %}
     </div>
 </{{ tag }}>

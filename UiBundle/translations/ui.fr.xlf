@@ -542,6 +542,14 @@
                 <source>flash.stylesheet_compiled</source>
                 <target>Feuilles de style recompilées</target>
             </trans-unit>
+            <trans-unit id="RwULaK1">
+                <source>help.comparison_cells</source>
+                <target>Une valeur par colonne, séparées par | : ✓ ou oui pour une coche, ✗ ou non pour une croix, sinon quelques mots. Ex. : ✓ | souvent payant</target>
+            </trans-unit>
+            <trans-unit id="jZhfP4b">
+                <source>help.comparison_highlight</source>
+                <target>Numéro de la colonne à mettre en avant, en comptant les offres à partir de 1 (vide : aucune).</target>
+            </trans-unit>
             <trans-unit id="QQjuExD">
                 <source>label.accent</source>
                 <target>Couleur d'accent</target>
@@ -1130,6 +1138,14 @@
                 <source>label.block_collection_entry_description</source>
                 <target>Un seul élément d'une collection externe, mis en avant</target>
             </trans-unit>
+            <trans-unit id="4P0XAts">
+                <source>label.block_comparison_table</source>
+                <target>Tableau comparatif</target>
+            </trans-unit>
+            <trans-unit id="1ZmkueK">
+                <source>label.block_comparison_table_description</source>
+                <target>Offres côte à côte, coches, croix ou quelques mots</target>
+            </trans-unit>
             <trans-unit id="5bLnE9a">
                 <source>label.block_contact_details</source>
                 <target>Coordonnées</target>
@@ -1473,6 +1489,10 @@
             <trans-unit id="rNkvkGH">
                 <source>label.category_text</source>
                 <target>Texte</target>
+            </trans-unit>
+            <trans-unit id="ZuVxHgT">
+                <source>label.cells</source>
+                <target>Cellules</target>
             </trans-unit>
             <trans-unit id="FmMAhdO">
                 <source>label.choose_block_kind</source>
@@ -2117,6 +2137,10 @@
             <trans-unit id="PrnCmc_">
                 <source>label.file_name_help</source>
                 <target>Utilisé pour nommer le fichier stocké. Sert aussi de titre à la carte de téléchargement si plusieurs fichiers sont attachés.</target>
+            </trans-unit>
+            <trans-unit id="tVAnNOj">
+                <source>label.first_column</source>
+                <target>En-tête de la première colonne</target>
             </trans-unit>
             <trans-unit id="ZpKkgFn">
                 <source>label.flip_card_media_help</source>
@@ -2946,6 +2970,10 @@
                 <source>label.hero_title_level_help</source>
                 <target>h1 quand ce hero ouvre la page et en porte le titre, h2 quand le gabarit de page affiche déjà son propre titre au-dessus.</target>
             </trans-unit>
+            <trans-unit id="qO8m3b6">
+                <source>label.highlight</source>
+                <target>Colonne mise en avant</target>
+            </trans-unit>
             <trans-unit id="p_CIk0t">
                 <source>label.hook</source>
                 <target>Phrase d'accroche</target>
@@ -3034,6 +3062,10 @@
                 <source>label.inline</source>
                 <target>Afficher en ligne (sans balise p)</target>
             </trans-unit>
+            <trans-unit id="YtqDGiK">
+                <source>label.intro</source>
+                <target>Introduction</target>
+            </trans-unit>
             <trans-unit id="HBJI6qv">
                 <source>label.items</source>
                 <target>Arguments</target>
@@ -3045,6 +3077,10 @@
             <trans-unit id="NdoELG0">
                 <source>label.kind</source>
                 <target>Type</target>
+            </trans-unit>
+            <trans-unit id="y.9x3G.">
+                <source>label.label</source>
+                <target>Libellé</target>
             </trans-unit>
             <trans-unit id="RzBZ4z7">
                 <source>label.latest_update</source>
@@ -3830,6 +3866,10 @@
                 <source>label.role</source>
                 <target>Rôle</target>
             </trans-unit>
+            <trans-unit id="4PLSE.R">
+                <source>label.rows</source>
+                <target>Lignes</target>
+            </trans-unit>
             <trans-unit id="bMMjC9k">
                 <source>label.same_window</source>
                 <target>Même Fenêtre</target>
@@ -4205,6 +4245,10 @@
             <trans-unit id="RDBtYWz">
                 <source>label.variant_thumbnail</source>
                 <target>Miniature (sans cadre, plus petite)</target>
+            </trans-unit>
+            <trans-unit id="IxpKw4z">
+                <source>label.variant_tiles</source>
+                <target>Tuiles centrées</target>
             </trans-unit>
             <trans-unit id="M3Bgg9j">
                 <source>label.vertical_align</source>

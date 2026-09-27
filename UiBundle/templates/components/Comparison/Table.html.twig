@@ -1,0 +1,49 @@
+{# Static usage: <twig:c975LUi:Comparison:Table columns="{{ [{label: 'Us'}, {label: 'Others'}] }}" rows="{{ [{label: 'Point', cells: '✓ | ✗'}] }}" [eyebrow=""] [title=""] [firstColumn=""] [highlight="1"] [id=""]/> #}
+{# Dynamic usage (Block system): see templates/blocks/ComparisonTable.html.twig #}
+{# A cell reading ✓ or ✗ (or yes / no, in the site's three languages) is drawn as a tick or a cross, any other words written as they are #}
+{% set yes = ['✓', '✔', 'yes', 'oui', 'sí', 'si'] %}
+{% set no = ['✗', '✘', '×', 'no', 'non'] %}
+{% set highlight = highlight|default(0) ?: 0 %}
+{% set tag = (eyebrow|default('') or title|default('')) ? 'section' : 'div' %}
+<{{ tag }} class="comparison-table-section"{% if id is defined and id %} id="{{ id }}"{% endif %}>
+    <div class="section-wrap">
+        {{ include('@c975LUi/components/Section/_head.html.twig') }}
+        {% if columns|default([])|length and rows|default([])|length %}
+            <div class="comparison-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th scope="col">{{ firstColumn|default('') }}</th>
+                            {% for column in columns %}
+                                <th scope="col"{% if loop.index == highlight %} class="comparison-table__highlight"{% endif %}>{{ column.label }}</th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for key, row in rows %}
+                            {% set cells = (row.cells|default(''))|split('|')|map(c => c|trim) %}
+                            {# A neutral mark, turned into its own pencil for an editor alone (see edit-pencils.js) #}
+                            <tr data-edit-item="rows.{{ key }}">
+                                <th scope="row">{{ row.label }}</th>
+                                {% for column in columns %}
+                                    {% set cell = cells[loop.index0] ?? '' %}
+                                    <td{% if loop.index == highlight %} class="comparison-table__highlight"{% endif %}>
+                                        {% if cell|lower in yes %}
+                                            <svg class="comparison-table__yes" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m4 12 6 6L20 6"/></svg>
+                                            <span class="sr-only">{{ 'label.yes'|trans({}, 'ui') }}</span>
+                                        {% elseif cell|lower in no %}
+                                            <svg class="comparison-table__no" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6 6 18"/></svg>
+                                            <span class="sr-only">{{ 'label.no'|trans({}, 'ui') }}</span>
+                                        {% else %}
+                                            <span class="comparison-table__text">{{ cell }}</span>
+                                        {% endif %}
+                                    </td>
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+    </div>
+</{{ tag }}>

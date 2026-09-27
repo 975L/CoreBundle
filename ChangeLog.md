@@ -1,5 +1,20 @@
 # ChangeLog
 
+## v1.46.0
+
+The comparison table block, and features shown as tiles
+
+### UiBundle
+
+- **New `comparison_table` block: offers side by side, one column highlighted, ticks, crosses or a few words per cell** (27/09/2026)
+- `section_features` gets an optional `intro` sentence under its head (27/09/2026)
+- `section_features` gets a centered "tiles" variant, its icon in a primary disc (27/09/2026)
+- Front pencils: a `data-edit-item="rows.3"` mark opens its block's form on that very item (`focusItem`), each `comparison_table` row carrying one (27/09/2026)
+- `comparison_table` fits a phone's width, tighter cells instead of a sideways scroll (27/09/2026)
+- A `hero` without media stays one centered column on a desktop instead of leaving its right half empty (27/09/2026)
+- A card given CSS classes keeps the height of its row of cards, its wrapper no longer standing in its place (27/09/2026)
+- `comparison_table` cells read in the text's font, a theme's th rule no longer giving them the titles' one (27/09/2026)
+
 ## v1.45.0
 
 The member's account page, and an emailed login code for admins

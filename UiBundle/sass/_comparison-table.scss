@@ -1,0 +1,62 @@
+// comparison_table: the offers side by side, the one set apart tinted over its whole height, ticks green and crosses red
+.comparison-table {
+    width: min(820px, 100%);
+    margin: 0 auto;
+    overflow-x: auto;
+}
+
+.comparison-table table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+// The text's own type in every cell, headers included: a theme's th rule would otherwise give the column heads and the row labels the titles' font
+.comparison-table th,
+.comparison-table td {
+    font-family: var(--font-family-body, inherit);
+    font-size: 1em;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border-color, #ddd);
+    text-align: center;
+}
+
+.comparison-table tbody th {
+    font-weight: 400;
+    text-align: start;
+}
+
+.comparison-table thead th {
+    border-bottom-width: 3px;
+    border-bottom-color: var(--primary-ink);
+}
+
+.comparison-table__highlight {
+    background: color-mix(in srgb, var(--comparison-table-highlight, #2e7d32) 10%, transparent);
+    font-weight: 700;
+}
+
+.comparison-table__yes {
+    color: var(--comparison-table-yes, #2e7d32);
+}
+
+.comparison-table__no {
+    color: var(--comparison-table-no, #c62828);
+}
+
+.comparison-table__text {
+    font-size: 0.9em;
+    font-style: italic;
+    color: var(--label-color, #666);
+}
+
+// On a phone the three columns share the width rather than scroll sideways: tighter cells, a smaller type
+@media (max-width: 575px) {
+    .comparison-table {
+        font-size: 0.875em;
+    }
+
+    .comparison-table th,
+    .comparison-table td {
+        padding: 8px 6px;
+    }
+}

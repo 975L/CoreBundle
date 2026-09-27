@@ -360,4 +360,10 @@
     /* --icon-filter: none; */
     /* --required-color: #000; */
     /* --disabled: #808080; */
+    /* The ground of a section_features tile ("tiles" variant) */
+    /* --feature-tile-background: color-mix(in srgb, var(--primary) 6%, transparent); */
+    /* The comparison_table block: the tint of the column set apart, then its ticks and crosses */
+    /* --comparison-table-highlight: #2e7d32; */
+    /* --comparison-table-yes: #2e7d32; */
+    /* --comparison-table-no: #c62828; */
 }

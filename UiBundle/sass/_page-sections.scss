@@ -83,6 +83,7 @@ main :is(.blocks, .block-animation, .block-editable) > :is(
     .hero,
     .text-section,
     .section-features-section,
+    .comparison-table-section,
     .section-cards-section,
     .expertise-banner,
     .process-steps,
@@ -99,6 +100,7 @@ main :is(.blocks, .block-animation, .block-editable) > :is(
 // The shared rhythm, on the top edge only: a block owns the room above it and declares nothing below, so any two blocks are parted by exactly one step whichever pair they are. A bottom padding anywhere here would be added to the next block's top one and part that pair by two, which is what .hero and .cta-band used to do
 .block-section,
 .section-features-section,
+.comparison-table-section,
 .section-cards-section,
 .expertise-banner,
 .process-steps,
@@ -174,6 +176,7 @@ main :is(.blocks, .block-animation, .block-editable) > :is(
 
 // As a column slot the page-level top padding would misalign the column against its siblings
 .flex-columns__col > .section-features-section,
+.flex-columns__col > .comparison-table-section,
 .flex-columns__col > .section-cards-section,
 .flex-columns__col > .expertise-banner,
 .flex-columns__col > .process-steps,
@@ -718,10 +721,50 @@ main :is(.blocks, #{$block-wrappers}) > :is(#{$block-wrappers}):has(#{$flat-next
 }
 
 /* ---- section_features ---- */
+// The optional sentence under the head, on the head's own measure, larger than body copy
+.section-lead {
+    max-width: var(--section-head-max-width, 640px);
+    margin: 0 0 24px;
+    font-size: 1.15em;
+}
+
 .section-features {
     display: grid;
     grid-template-columns: 1fr;
     gap: 24px;
+}
+
+// The "tiles" variant: an entry per tile, on the section's own ground unless a site paints one, its icon white in a disc of the primary color over a bold title, centered, three to a row on a desktop
+.section-features--tiles {
+    grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr));
+}
+
+.feature-tile {
+    padding: 24px 20px;
+    border-radius: var(--radius-card, 12px);
+    background: var(--feature-tile-background, transparent);
+    text-align: center;
+}
+
+.feature-tile__icon {
+    display: inline-flex;
+    padding: 12px;
+    border-radius: 50%;
+    background: var(--primary);
+}
+
+.feature-tile__icon img {
+    display: block;
+    filter: brightness(0) invert(1);
+}
+
+.feature-tile__title {
+    margin: 12px 0 6px;
+    font-size: 1.25em;
+}
+
+.feature-tile__text > :last-child {
+    margin-bottom: 0;
 }
 
 // Items reuse .card, whose width/margin are tuned for the flex ".cards" row, not for a grid cell
@@ -1134,6 +1177,21 @@ main :is(.blocks, #{$block-wrappers}) > :is(#{$block-wrappers}):has(#{$flat-next
 
     .hero__media {
         max-width: none;
+    }
+
+    // A hero with nothing to set beside its text stays one centered column, rather than leaving the right half of the page empty
+    .hero:not(:has(.hero__media, .hero__stat)) .section-wrap {
+        grid-template-columns: 1fr;
+        justify-items: center;
+        text-align: center;
+    }
+
+    .hero:not(:has(.hero__media, .hero__stat)) .hero__cta {
+        justify-content: center;
+    }
+
+    .hero:not(:has(.hero__media, .hero__stat)) .hero__sub {
+        margin-inline: auto;
     }
 
     .expertise-banner__inner {

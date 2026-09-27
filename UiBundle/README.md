@@ -284,7 +284,7 @@ When you call `$page->removeBlock($block)`, the trait queues the block in a `pen
 
 Call `Service\LegalModelEditUrl::build()` first in your own implementation, as SiteBundle does: a `legal_model` block is edited on its own customization screen (see [Legal models](#legal-models)), not on its row in your form, and that helper answers `null` for everything else.
 
-**An entity of your own gets the same pencil.** Wrap its public page in `<twig:c975LUi:Edit:Entity entity="{{ resistant }}">…</twig:c975LUi:Edit:Entity>`: `entity_edit_url()` finds the CRUD by name (`App\Entity\Resistant` → `App\Controller\Management\ResistantCrudController`) and answers `null` for anyone below `site-role-editor`. Put that wrapper around a render cache, never inside it — a cached fragment is served to every visitor. Inside one, mark elements neutrally instead: `data-edit-entity="<kind>:<id>"` on a card, the kind being the CRUD's route path, and `data-edit-field="<property>"` on a section of a fiche. The `edit-pencils` controller the layout mounts for editors (from `entity_edit_pattern()`) turns those marks into edit urls, a field opening its entity's form on that very field.
+**An entity of your own gets the same pencil.** Wrap its public page in `<twig:c975LUi:Edit:Entity entity="{{ resistant }}">…</twig:c975LUi:Edit:Entity>`: `entity_edit_url()` finds the CRUD by name (`App\Entity\Resistant` → `App\Controller\Management\ResistantCrudController`) and answers `null` for anyone below `site-role-editor`. Put that wrapper around a render cache, never inside it — a cached fragment is served to every visitor. Inside one, mark elements neutrally instead: `data-edit-entity="<kind>:<id>"` on a card, the kind being the CRUD's route path, and `data-edit-field="<property>"` on a section of a fiche. The `edit-pencils` controller the layout mounts for editors (from `entity_edit_pattern()`) turns those marks into edit urls, a field opening its entity's form on that very field. A block's own template can mark one of its items the same way, `data-edit-item="rows.3"` (a collection property, then the entry's stored key): the pencil opens the block's form on that entry (`focusItem`), as each `comparison_table` row does.
 
 ### Where a block sits
 
@@ -510,6 +510,7 @@ The bundle ships the following kinds out of the box (see `config/services.yaml` 
 | `cta_band` | Page sections | `CtaBandType` | `blocks/CtaBand.html.twig` |
 | `document_download` | Elements | `DocumentDownloadType` | `blocks/DocumentDownload.html.twig` |
 | `expertise_banner` | Page sections | `ExpertiseBannerType` | `blocks/ExpertiseBanner.html.twig` |
+| `comparison_table` | Page sections | `ComparisonTableType` | `blocks/ComparisonTable.html.twig` |
 | `feature_bar` | Page sections | `FeatureBarType` | `blocks/FeatureBar.html.twig` |
 | `favorite_link` | Navigation | `FavoriteLinkType` | `blocks/FavoriteLink.html.twig` |
 | `flip_card` | Elements | `FlipCardType` | `blocks/FlipCard.html.twig` |
@@ -799,7 +800,7 @@ The same move works at the finger, from the row's move handle (see [At the finge
 
 ## Anchors (in-page navigation)
 
-Every "Page sections" kind above (`hero`, `feature_bar`, `section_features`, `flex_columns`, `section_cards`, `expertise_banner`, `process_steps`, `faq`, `portfolio_grid`, `video_grid`, `cta_band`, `collection`) has an optional **Anchor** field, letting an editor build a one-page nav (a `menu_link` block - see `c975L/SiteBundle`'s README - pointing straight at a section of the same page).
+Every "Page sections" kind above (`hero`, `feature_bar`, `section_features`, `comparison_table`, `flex_columns`, `section_cards`, `expertise_banner`, `process_steps`, `faq`, `portfolio_grid`, `video_grid`, `cta_band`, `collection`) has an optional **Anchor** field, letting an editor build a one-page nav (a `menu_link` block - see `c975L/SiteBundle`'s README - pointing straight at a section of the same page).
 
 - Typing an anchor (e.g. `Services`) slugifies it (`services`). Leaving it empty falls back to slugifying the block's own title.
 - The final HTML `id` rendered on the section is always `{slug}-{block.id}` (e.g. `services-42`) - the trailing block id is added at render time, not stored, so two blocks of the same kind on the same page (or the same title reused elsewhere) never collide.
@@ -3045,7 +3046,7 @@ A `hero` block's "Heading level of the title" field (`HeroType::$titleLevel`) pi
 
 ### Headings and the `<section>` element
 
-Every section-level kind whose title is optional (`section_cards`, `flex_columns`, `section_features`, `portfolio_grid`, `collection`, `text_section`, `feature_bar`) follows the same two rules, both of them what the W3C validator asks for:
+Every section-level kind whose title is optional (`section_cards`, `flex_columns`, `section_features`, `comparison_table`, `portfolio_grid`, `collection`, `text_section`, `feature_bar`) follows the same two rules, both of them what the W3C validator asks for:
 
 - with an eyebrow but no title, the eyebrow *is* the section's heading and renders as `<h2 class="section-eyebrow">` instead of `<p>` — it keeps its exact eyebrow look, and the slots' own `<h3>` no longer skip a level down from the page's `<h1>`;
 - with neither, the wrapper renders as a `<div>` instead of a headingless `<section>` (same rule already applied to the `form` block).

@@ -320,14 +320,40 @@ class BlockFixtureProvider implements BlockFixtureProviderInterface
                     ],
                 ],
             ],
+            'comparison_table' => [
+                '' => [
+                    'eyebrow' => 'Surtitre du comparatif',
+                    'title' => 'Ce qui nous distingue',
+                    'firstColumn' => 'Ce que vous obtenez',
+                    'columns' => [['label' => 'Notre offre'], ['label' => 'Offre habituelle']],
+                    'highlight' => 1,
+                    'rows' => [
+                        ['label' => 'Premier point', 'cells' => '✓ | ✓'],
+                        ['label' => 'Deuxième point', 'cells' => '✓ | souvent payant'],
+                        ['label' => 'Troisième point', 'cells' => '✓ | ✗'],
+                    ],
+                ],
+            ],
             'section_features' => [
                 '' => [
                     'eyebrow' => 'Surtitre de la section',
                     'title' => 'Le titre de la section, sur une ou deux lignes.',
+                    'intro' => 'Une phrase qui dit ce que les cartes ont en commun.',
                     'cards' => [
                         ['icon' => 'bundles/c975lui/icons/pen-ruler.svg', 'title' => 'Première carte', 'text' => '<p>Deux lignes décrivant ce que cette carte présente.</p>'],
                         ['icon' => 'bundles/c975lui/icons/layer-group.svg', 'title' => 'Deuxième carte', 'text' => '<p>Deux lignes décrivant ce que cette carte présente.</p>'],
                         ['icon' => 'bundles/c975lui/icons/code.svg', 'title' => 'Troisième carte', 'text' => '<p>Deux lignes décrivant ce que cette carte présente.</p>'],
+                    ],
+                ],
+                'label.variant_tiles' => [
+                    'variant' => 'tiles',
+                    'eyebrow' => 'Surtitre de la section',
+                    'title' => 'Le titre de la section, sur une ou deux lignes.',
+                    'intro' => 'Une phrase qui dit ce que les tuiles ont en commun.',
+                    'cards' => [
+                        ['icon' => 'bundles/c975lui/icons/pen-ruler.svg', 'title' => 'Première tuile', 'text' => '<p>Une ou deux lignes pour cet argument.</p>'],
+                        ['icon' => 'bundles/c975lui/icons/layer-group.svg', 'title' => 'Deuxième tuile', 'text' => '<p>Une ou deux lignes pour cet argument.</p>'],
+                        ['icon' => 'bundles/c975lui/icons/code.svg', 'title' => 'Troisième tuile', 'text' => '<p>Une ou deux lignes pour cet argument.</p>'],
                     ],
                 ],
             ],

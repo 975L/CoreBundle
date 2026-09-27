@@ -542,6 +542,14 @@
                 <source>flash.stylesheet_compiled</source>
                 <target>Hojas de estilo recompiladas</target>
             </trans-unit>
+            <trans-unit id="RwULaK1">
+                <source>help.comparison_cells</source>
+                <target>Un valor por columna, separados por |: ✓ o sí para una marca, ✗ o no para una cruz, si no unas palabras. Ej.: ✓ | a menudo de pago</target>
+            </trans-unit>
+            <trans-unit id="jZhfP4b">
+                <source>help.comparison_highlight</source>
+                <target>Número de la columna a destacar, contando las ofertas desde 1 (vacío: ninguna).</target>
+            </trans-unit>
             <trans-unit id="QQjuExD">
                 <source>label.accent</source>
                 <target>Color de acento</target>
@@ -1130,6 +1138,14 @@
                 <source>label.block_collection_entry_description</source>
                 <target>Un solo elemento de una colección externa, destacado</target>
             </trans-unit>
+            <trans-unit id="4P0XAts">
+                <source>label.block_comparison_table</source>
+                <target>Tabla comparativa</target>
+            </trans-unit>
+            <trans-unit id="1ZmkueK">
+                <source>label.block_comparison_table_description</source>
+                <target>Ofertas lado a lado, marcas, cruces o unas palabras</target>
+            </trans-unit>
             <trans-unit id="5bLnE9a">
                 <source>label.block_contact_details</source>
                 <target>Datos de contacto</target>
@@ -1473,6 +1489,10 @@
             <trans-unit id="rNkvkGH">
                 <source>label.category_text</source>
                 <target>Texto</target>
+            </trans-unit>
+            <trans-unit id="ZuVxHgT">
+                <source>label.cells</source>
+                <target>Celdas</target>
             </trans-unit>
             <trans-unit id="FmMAhdO">
                 <source>label.choose_block_kind</source>
@@ -2117,6 +2137,10 @@
             <trans-unit id="PrnCmc_">
                 <source>label.file_name_help</source>
                 <target>Se usa para nombrar el archivo almacenado. También sirve de título de la tarjeta de descarga si hay varios archivos adjuntos.</target>
+            </trans-unit>
+            <trans-unit id="tVAnNOj">
+                <source>label.first_column</source>
+                <target>Encabezado de la primera columna</target>
             </trans-unit>
             <trans-unit id="ZpKkgFn">
                 <source>label.flip_card_media_help</source>
@@ -2946,6 +2970,10 @@
                 <source>label.hero_title_level_help</source>
                 <target>h1 cuando este hero abre la página y lleva su título, h2 cuando la plantilla de página ya muestra su propio título encima.</target>
             </trans-unit>
+            <trans-unit id="qO8m3b6">
+                <source>label.highlight</source>
+                <target>Columna destacada</target>
+            </trans-unit>
             <trans-unit id="p_CIk0t">
                 <source>label.hook</source>
                 <target>Frase gancho</target>
@@ -3034,6 +3062,10 @@
                 <source>label.inline</source>
                 <target>Mostrar en Línea (sin etiqueta p)</target>
             </trans-unit>
+            <trans-unit id="YtqDGiK">
+                <source>label.intro</source>
+                <target>Introducción</target>
+            </trans-unit>
             <trans-unit id="HBJI6qv">
                 <source>label.items</source>
                 <target>Elementos</target>
@@ -3045,6 +3077,10 @@
             <trans-unit id="NdoELG0">
                 <source>label.kind</source>
                 <target>Tipo</target>
+            </trans-unit>
+            <trans-unit id="y.9x3G.">
+                <source>label.label</source>
+                <target>Etiqueta</target>
             </trans-unit>
             <trans-unit id="RzBZ4z7">
                 <source>label.latest_update</source>
@@ -3830,6 +3866,10 @@
                 <source>label.role</source>
                 <target>Rol</target>
             </trans-unit>
+            <trans-unit id="4PLSE.R">
+                <source>label.rows</source>
+                <target>Filas</target>
+            </trans-unit>
             <trans-unit id="bMMjC9k">
                 <source>label.same_window</source>
                 <target>Misma Ventana</target>
@@ -4205,6 +4245,10 @@
             <trans-unit id="RDBtYWz">
                 <source>label.variant_thumbnail</source>
                 <target>Miniatura (sin marco, más pequeña)</target>
+            </trans-unit>
+            <trans-unit id="IxpKw4z">
+                <source>label.variant_tiles</source>
+                <target>Mosaicos centrados</target>
             </trans-unit>
             <trans-unit id="M3Bgg9j">
                 <source>label.vertical_align</source>

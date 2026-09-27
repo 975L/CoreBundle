@@ -52,6 +52,28 @@ class EditPencilsBehaviourTest extends JsCase
         $this->assertSame([null, null], $urls);
     }
 
+    // A row of a table opens the form of the block around it on that very row, the block's own "focusBlock" kept
+    public function testAnItemOpensTheBlockAroundItOnThatItem(): void
+    {
+        $url = $this->pencils(
+            '<div data-block-edit-url="/management/page/1/edit?focusBlock=42"><table><tr id="row" data-edit-item="rows.3"><td></td></tr></table></div>',
+            'return root.querySelector("#row").dataset.blockEditUrl;'
+        );
+
+        $this->assertSame('/management/page/1/edit?focusBlock=42&focusItem=rows.3', $url);
+    }
+
+    // Outside any block (the component used statically, or a visitor with no url written) there is nothing to open
+    public function testAnItemOutsideABlockIsLeftAlone(): void
+    {
+        $url = $this->pencils(
+            '<table><tr id="row" data-edit-item="rows.0"><td></td></tr></table>',
+            'return root.querySelector("#row").dataset.blockEditUrl ?? null;'
+        );
+
+        $this->assertNull($url);
+    }
+
     // A listing grows as the visitor scrolls: the cards it appends are marked too, the appended node itself included
     public function testACardAppendedLaterIsGivenItsFormToo(): void
     {

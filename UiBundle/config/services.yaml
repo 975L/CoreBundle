@@ -454,6 +454,21 @@ services:
               pickable: true
               cacheable: true
 
+    ui.block.comparison_table:
+        class: stdClass
+        tags:
+            - name: ui.block
+              kind: comparison_table
+              label: "label.block_comparison_table"
+              description: "label.block_comparison_table_description"
+              form: c975L\UiBundle\Form\Block\ComparisonTableType
+              translatable: 'eyebrow, title, firstColumn, columns[].label, rows[].label, rows[].cells'
+              template: '@c975LUi/blocks/ComparisonTable.html.twig'
+              category: 'label.category_sections'
+              priority: 75
+              pickable: true
+              cacheable: true
+
     ui.block.section_features:
         class: stdClass
         tags:
@@ -462,7 +477,7 @@ services:
               label: "label.block_section_features"
               description: "label.block_section_features_description"
               form: c975L\UiBundle\Form\Block\SectionFeaturesType
-              translatable: 'eyebrow, title, cards[].title, cards[].text'
+              translatable: 'eyebrow, title, intro, cards[].title, cards[].text'
               template: '@c975LUi/blocks/SectionFeatures.html.twig'
               category: 'label.category_sections'
               priority: 80

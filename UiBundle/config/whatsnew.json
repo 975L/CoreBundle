@@ -1,5 +1,30 @@
 [
     {
+        "date": "2026-09-27",
+        "description": [
+            {
+                "en": "A new comparison table block sets your offer beside others, point by point, your own column highlighted.",
+                "fr": "Un nouveau block tableau comparatif place votre offre à côté des autres, point par point, votre colonne mise en avant.",
+                "es": "Un nuevo bloque de tabla comparativa sitúa su oferta junto a otras, punto por punto, con su columna destacada."
+            },
+            {
+                "en": "The features section can now open with a short introduction, and show its entries as centered tiles.",
+                "fr": "La section d'atouts peut maintenant s'ouvrir sur une courte introduction, et présenter ses entrées en tuiles centrées.",
+                "es": "La sección de ventajas ahora puede abrirse con una breve introducción y mostrar sus entradas como mosaicos centrados."
+            },
+            {
+                "en": "The edit pencil on a comparison table row opens the form right on that row.",
+                "fr": "Le crayon d'édition d'une ligne du tableau comparatif ouvre le formulaire directement sur cette ligne.",
+                "es": "El lápiz de edición de una fila de la tabla comparativa abre el formulario directamente en esa fila."
+            },
+            {
+                "en": "A hero without an image now stays centered on a wide screen.",
+                "fr": "Un bandeau d'accueil sans image reste désormais centré sur grand écran.",
+                "es": "Un encabezado sin imagen ahora permanece centrado en pantalla ancha."
+            }
+        ]
+    },
+    {
         "date": "2026-09-26",
         "description": [
             {

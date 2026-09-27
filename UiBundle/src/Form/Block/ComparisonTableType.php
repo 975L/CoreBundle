@@ -12,14 +12,15 @@ namespace c975L\UiBundle\Form\Block;
 
 use c975L\UiBundle\Service\BlockAnchorSlugger;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
-use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\Range;
 
-class SectionFeaturesType extends AbstractType
+// A comparison at a glance: what is compared down the first column, one column per offer, one of them set apart, each cell a tick, a cross or a few words
+class ComparisonTableType extends AbstractType
 {
     use HasAnchorFieldTrait;
 
@@ -40,24 +41,29 @@ class SectionFeaturesType extends AbstractType
                 'label' => 'label.title',
                 'required' => false,
             ])
-            // A sentence under the head saying what the cards have in common, optional as every block written before it has none
-            ->add('intro', TextareaType::class, [
-                'label' => 'label.intro',
+            // The head of the first column, over what is compared
+            ->add('firstColumn', TextType::class, [
+                'label' => 'label.first_column',
                 'required' => false,
             ])
-            // The card by default; "tiles" draws each entry as a centered tile, its icon in a disc over a bold title, all centered - a row of arguments rather than of panels
-            ->add('variant', ChoiceType::class, [
-                'label' => 'label.variant',
-                'required' => false,
-                'choices' => [
-                    'label.variant_card' => '',
-                    'label.variant_tiles' => 'tiles',
-                ],
-                'placeholder' => false,
+            ->add('columns', CollectionType::class, [
+                'label' => 'label.columns',
+                'entry_type' => ComparisonColumnType::class,
+                'allow_add' => true,
+                'allow_delete' => true,
+                'by_reference' => false,
+                'prototype' => true,
             ])
-            ->add('cards', CollectionType::class, [
-                'label' => 'label.cards',
-                'entry_type' => SectionFeatureItemType::class,
+            // The column set apart, counted from 1 over the offers - the site's own, usually
+            ->add('highlight', IntegerType::class, [
+                'label' => 'label.highlight',
+                'help' => 'help.comparison_highlight',
+                'required' => false,
+                'constraints' => [new Range(min: 1)],
+            ])
+            ->add('rows', CollectionType::class, [
+                'label' => 'label.rows',
+                'entry_type' => ComparisonRowType::class,
                 'allow_add' => true,
                 'allow_delete' => true,
                 'by_reference' => false,

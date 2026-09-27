@@ -119,6 +119,15 @@ $radius: var(--block-radius, var(--radius-card));
     margin: 0;
 }
 
+// A card given the site's own classes sits in a wrapper of its own (see BlockExtension::wrapInCssClasses), which is the item the row stretches: the card inside follows it, so a row of cards keeps one height whatever each one holds
+.cards > :not(.card, .flip-card):has(> .card) {
+    display: flex;
+}
+
+.cards > :not(.card, .flip-card):has(> .card) > .card {
+    flex: 1 1 auto;
+}
+
 // The band takes the card's own accent, so a card marked "red" is not headed with a --primary blue. The fallback is what an unaccented card has always shown - and what the ".card-header" the management accordion reuses outside any card shows, --card-accent being set by the twelve classes above and by nothing else
 .card-header,
 h2.card-header {

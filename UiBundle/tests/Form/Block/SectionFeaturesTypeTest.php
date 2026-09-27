@@ -14,7 +14,9 @@ use c975L\UiBundle\Form\Block\SectionFeatureItemType;
 use c975L\UiBundle\Form\Block\SectionFeaturesType;
 use c975L\UiBundle\Service\BlockAnchorSlugger;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\String\Slugger\AsciiSlugger;
@@ -51,6 +53,25 @@ class SectionFeaturesTypeTest extends TestCase
 
         $this->assertSame(CollectionType::class, $added['cards']['type']);
         $this->assertSame(SectionFeatureItemType::class, $added['cards']['options']['entry_type']);
+    }
+
+    // The intro is optional, every block written before it having none
+    public function testIntroIsAnOptionalTextarea(): void
+    {
+        $added = $this->buildAddedFields();
+
+        $this->assertSame(TextareaType::class, $added['intro']['type']);
+        $this->assertFalse($added['intro']['options']['required']);
+    }
+
+    // The card stays the default, stored as an empty variant, "tiles" the only other one
+    public function testVariantOffersCardByDefaultAndTiles(): void
+    {
+        $added = $this->buildAddedFields();
+
+        $this->assertSame(ChoiceType::class, $added['variant']['type']);
+        $this->assertSame(['label.variant_card' => '', 'label.variant_tiles' => 'tiles'], $added['variant']['options']['choices']);
+        $this->assertFalse($added['variant']['options']['placeholder']);
     }
 
     public function testConfigureOptionsDefaultsToNullDataClassAndUiTranslationDomain(): void

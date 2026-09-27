@@ -542,6 +542,14 @@
                 <source>flash.stylesheet_compiled</source>
                 <target>Stylesheets recompiled</target>
             </trans-unit>
+            <trans-unit id="RwULaK1">
+                <source>help.comparison_cells</source>
+                <target>One value per column, separated by |: ✓ or yes for a tick, ✗ or no for a cross, otherwise a few words. E.g.: ✓ | often paid</target>
+            </trans-unit>
+            <trans-unit id="jZhfP4b">
+                <source>help.comparison_highlight</source>
+                <target>Number of the column to highlight, counting the offers from 1 (empty: none).</target>
+            </trans-unit>
             <trans-unit id="QQjuExD">
                 <source>label.accent</source>
                 <target>Accent color</target>
@@ -1130,6 +1138,14 @@
                 <source>label.block_collection_entry_description</source>
                 <target>A single item of an external collection, put forward</target>
             </trans-unit>
+            <trans-unit id="4P0XAts">
+                <source>label.block_comparison_table</source>
+                <target>Comparison table</target>
+            </trans-unit>
+            <trans-unit id="1ZmkueK">
+                <source>label.block_comparison_table_description</source>
+                <target>Offers side by side, ticks, crosses or a few words</target>
+            </trans-unit>
             <trans-unit id="5bLnE9a">
                 <source>label.block_contact_details</source>
                 <target>Contact details</target>
@@ -1473,6 +1489,10 @@
             <trans-unit id="rNkvkGH">
                 <source>label.category_text</source>
                 <target>Text</target>
+            </trans-unit>
+            <trans-unit id="ZuVxHgT">
+                <source>label.cells</source>
+                <target>Cells</target>
             </trans-unit>
             <trans-unit id="FmMAhdO">
                 <source>label.choose_block_kind</source>
@@ -2117,6 +2137,10 @@
             <trans-unit id="PrnCmc_">
                 <source>label.file_name_help</source>
                 <target>Used to name the stored file. Also used as the download card's title when several files are attached.</target>
+            </trans-unit>
+            <trans-unit id="tVAnNOj">
+                <source>label.first_column</source>
+                <target>First column heading</target>
             </trans-unit>
             <trans-unit id="ZpKkgFn">
                 <source>label.flip_card_media_help</source>
@@ -2946,6 +2970,10 @@
                 <source>label.hero_title_level_help</source>
                 <target>h1 when this hero opens the page and carries its title, h2 when the page template already prints its own title above it.</target>
             </trans-unit>
+            <trans-unit id="qO8m3b6">
+                <source>label.highlight</source>
+                <target>Highlighted column</target>
+            </trans-unit>
             <trans-unit id="p_CIk0t">
                 <source>label.hook</source>
                 <target>Hook phrase</target>
@@ -3034,6 +3062,10 @@
                 <source>label.inline</source>
                 <target>Display Inline (without p tag)</target>
             </trans-unit>
+            <trans-unit id="YtqDGiK">
+                <source>label.intro</source>
+                <target>Introduction</target>
+            </trans-unit>
             <trans-unit id="HBJI6qv">
                 <source>label.items</source>
                 <target>Items</target>
@@ -3045,6 +3077,10 @@
             <trans-unit id="NdoELG0">
                 <source>label.kind</source>
                 <target>Kind</target>
+            </trans-unit>
+            <trans-unit id="y.9x3G.">
+                <source>label.label</source>
+                <target>Label</target>
             </trans-unit>
             <trans-unit id="RzBZ4z7">
                 <source>label.latest_update</source>
@@ -3830,6 +3866,10 @@
                 <source>label.role</source>
                 <target>Role</target>
             </trans-unit>
+            <trans-unit id="4PLSE.R">
+                <source>label.rows</source>
+                <target>Rows</target>
+            </trans-unit>
             <trans-unit id="bMMjC9k">
                 <source>label.same_window</source>
                 <target>Same Window</target>
@@ -4205,6 +4245,10 @@
             <trans-unit id="RDBtYWz">
                 <source>label.variant_thumbnail</source>
                 <target>Thumbnail (no frame, smaller)</target>
+            </trans-unit>
+            <trans-unit id="IxpKw4z">
+                <source>label.variant_tiles</source>
+                <target>Centered tiles</target>
             </trans-unit>
             <trans-unit id="M3Bgg9j">
                 <source>label.vertical_align</source>

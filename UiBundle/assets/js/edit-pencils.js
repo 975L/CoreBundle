@@ -15,6 +15,8 @@ export default class extends Controller {
 
     static FIELD = "[data-edit-field]";
 
+    static ITEM = "[data-edit-item]";
+
     connect() {
         this.stamp(document.body);
 
@@ -46,6 +48,15 @@ export default class extends Controller {
             const entity = element.parentElement?.closest("[data-block-edit-url]:not([data-edit-field])");
             if (entity) {
                 element.dataset.blockEditUrl = `${entity.dataset.blockEditUrl.split("?")[0]}?focusField=${encodeURIComponent(element.dataset.editField)}`;
+            }
+        });
+
+        // An item of a block (a row of a table, "rows.3") takes the block's own url, its "focusBlock" kept, opened on that very item by block-focus.js
+        this.matching(root, this.constructor.ITEM).forEach((element) => {
+            const block = element.parentElement?.closest("[data-block-edit-url]:not([data-edit-item])");
+            if (block) {
+                const url = block.dataset.blockEditUrl;
+                element.dataset.blockEditUrl = `${url}${url.includes("?") ? "&" : "?"}focusItem=${encodeURIComponent(element.dataset.editItem)}`;
             }
         });
     }
