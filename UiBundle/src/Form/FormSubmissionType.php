@@ -16,6 +16,7 @@ use c975L\UiBundle\Service\FormBotProtection;
 use c975L\UiBundle\Service\FormTranslator;
 use c975L\UiBundle\Service\PriceFormatter;
 use c975L\UiBundle\Validator\Constraints\DnsEmail;
+use c975L\UiBundle\Validator\Constraints\PasswordPolicy;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -34,10 +35,7 @@ use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Email;
 use Symfony\Component\Validator\Constraints\IsTrue;
-use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
-use Symfony\Component\Validator\Constraints\NotCompromisedPassword;
-use Symfony\Component\Validator\Constraints\PasswordStrength;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 // Builds a plain Symfony form from a c975L\UiBundle\Entity\Form's FormField collection - one input per field, keyed by FormField::getName(), unmapped to any entity (see FormController, which hands the submitted array straight to FormActionRegistry). Also adds the same protections every c975L bundle's own public forms already share: honeypot, captcha (site-wide config, same keys contact/register/reset already read - see CaptchaType), receive-copy (per-Form, see Form::$actionConfig's "offerReceiveCopy") - all three switched off by the "protections" option for a calculator given no action, which submits nothing
@@ -97,7 +95,7 @@ class FormSubmissionType extends AbstractType
 
         $this->applyTypeOptions($fieldOptions, $field, $prefilled);
 
-        // RepeatedType wraps two sub-fields (its own "first_options"/"second_options"), it doesn't take the same flat options as every other field type. A repeated password field always means "set a new password" (unlike a plain TYPE_PASSWORD field, which could be re-entering an existing one) - Length/PasswordStrength/NotCompromisedPassword enforce the same minimum policy ChangePasswordFormType already does
+        // RepeatedType wraps two sub-fields (its own "first_options"/"second_options"), it doesn't take the same flat options as every other field type. A repeated password field always means "set a new password" (unlike a plain TYPE_PASSWORD field, which could be re-entering an existing one) - PasswordPolicy enforces the same rule ChangePasswordFormType does
         if (FormField::TYPE_PASSWORD_REPEATED === $field->getType()) {
             $builder->add($field->getName(), RepeatedType::class, [
                 'type' => PasswordType::class,
@@ -105,7 +103,7 @@ class FormSubmissionType extends AbstractType
                 'first_options' => [
                     'label' => $this->formTranslator->getLabel($field),
                     'translation_domain' => false,
-                    'constraints' => [...$constraints, new Length(min: 8, max: 25), new PasswordStrength(), new NotCompromisedPassword()],
+                    'constraints' => [...$constraints, new PasswordPolicy()],
                     'attr' => array_merge($fieldOptions['attr'], ['autocomplete' => 'new-password']),
                 ],
                 'second_options' => ['label' => 'label.password_confirm', 'attr' => array_filter(['placeholder' => $this->formTranslator->getPlaceholder($field), 'autocomplete' => 'new-password'])],

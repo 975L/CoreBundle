@@ -90,6 +90,22 @@ input {
     transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
+// A select dressed as the text fields around it, the browser's own arrow kept: left bare, it sat flush against its label and the button under it
+select {
+    display: block;
+    width: 100%;
+    height: 34px;
+    margin-block: var(--input-margin-block);
+    margin-bottom: 1em;
+    padding: 6px 12px;
+    font-size: 14px;
+    background-color: var(--input-background);
+    border: 1px solid transparent;
+    border-bottom: 2px solid var(--input-border-bottom-color);
+    border-radius: 0;
+    color: var(--form-input-color);
+}
+
 input[type="text"] {
     writing-mode: horizontal-tb !important;
     padding-block: 1px;
@@ -100,6 +116,16 @@ button[type="submit"],
 input[type="submit"] {
     width: 100%;
     border: none;
+}
+
+// A form standing inside a page section rather than being the page: flush with the section's edge like the content around it, and its button sized to its label
+.form--section {
+    margin-inline: 0;
+}
+
+.form--section button[type="submit"] {
+    width: auto;
+    margin-inline: 0;
 }
 
 // The checkbox's own row, the input a direct child: a bare descendant match also caught the div form_widget() wraps every row in whenever it sits one level deeper - which a calculator's fields column is - and laid the whole form out on one reversed line

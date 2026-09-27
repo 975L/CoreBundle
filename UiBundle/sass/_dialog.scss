@@ -1,0 +1,40 @@
+// The confirmation dialog (components/Dialog/Dialog.html.twig): a card centered over the dimmed page, as narrow as a message reads
+.ui-dialog {
+    width: min(36rem, calc(100vw - 2rem));
+    max-height: calc(100vh - 4rem);
+    padding: 2rem 1.5rem 1.5rem;
+    overflow: auto;
+    border: 0;
+    border-radius: var(--radius-panel);
+    background: var(--background);
+    color: var(--text);
+
+    &::backdrop {
+        background: rgb(0 0 0 / 50%);
+        backdrop-filter: blur(2px);
+    }
+}
+
+.ui-dialog .ui-dialog__title {
+    margin-top: 0;
+    padding-right: 2rem;
+}
+
+// The cross, top right, outside the flow so the title keeps the first line
+.ui-dialog .ui-dialog__close {
+    position: absolute;
+    width: auto;
+    margin: 0;
+    top: 0.5rem;
+    right: 0.75rem;
+
+    button {
+        width: auto;
+        border: 0;
+        background: transparent;
+        color: var(--text);
+        font-size: 1.75rem;
+        line-height: 1;
+        cursor: pointer;
+    }
+}

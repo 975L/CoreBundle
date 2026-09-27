@@ -54,7 +54,6 @@ class UiGuidedProjectProvider implements GuidedProjectProviderInterface
             $this->siteGraphicProject(),
             $this->legalModelProject(),
             $this->aiAssistantProject(),
-            $this->aiSearchSetupProject(),
             $this->formProject(),
             $this->calculatorProject(),
             $this->formFieldTemplateProject(),
@@ -75,6 +74,7 @@ class UiGuidedProjectProvider implements GuidedProjectProviderInterface
         }
 
         $projects[] = $this->contentExportProject();
+        $projects[] = $this->aiSearchSetupProject();
 
         return $projects;
     }
@@ -87,8 +87,8 @@ class UiGuidedProjectProvider implements GuidedProjectProviderInterface
             'label' => 'label.guided_project_ui_ai_search_setup',
             'description' => 'description.guided_project_ui_ai_search_setup',
             'translation_domain' => 'ui',
-            // Right after the rephrasing's key: both are set once, as the site opens
-            'order' => 3045,
+            // Appended after the others, at the step of 10 the interface states
+            'order' => 3150,
             // The bar ConfigCrudController sets on its own index and edit
             'role' => $this->configService->get('site-role-admin'),
             'steps' => [
@@ -185,7 +185,7 @@ class UiGuidedProjectProvider implements GuidedProjectProviderInterface
             'label' => 'label.guided_project_ui_media_add',
             'description' => 'description.guided_project_ui_media_add',
             'translation_domain' => 'ui',
-            // Appended after the review one rather than slipped beside "ui-media", the ten above keeping their orders
+            // Appended after the review one rather than slipped beside "ui-media", the ones above keeping their orders
             'order' => 3110,
             // The bar MediaCrudController sets on Action::NEW, the same as on the rest of the library
             'role' => $this->configService->get('site-role-editor'),
@@ -236,7 +236,7 @@ class UiGuidedProjectProvider implements GuidedProjectProviderInterface
             'label' => 'label.guided_project_ui_review',
             'description' => 'description.guided_project_ui_review',
             'translation_domain' => 'ui',
-            // After the nine above, the walk-through being appended to them
+            // After the projects above, the walk-through being appended to them
             'order' => 3100,
             'role' => $this->configService->get('site-role-editor'),
             'steps' => [

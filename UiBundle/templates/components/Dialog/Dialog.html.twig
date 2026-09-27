@@ -1,0 +1,9 @@
+{# <twig:c975LUi:Dialog:Dialog id="account-delete" title="Delete my account">content</twig:c975LUi:Dialog:Dialog>, opened by any <button type="button" commandfor="account-delete" command="show-modal"> #}
+{# A native <dialog> opened by the browser's own invoker commands, so no script at all: it keeps the focus inside, Escape closes it, the page under it goes inert, and method="dialog" closes it from the cross #}
+<dialog class="ui-dialog" id="{{ id }}" aria-labelledby="{{ id }}-title">
+    <form method="dialog" class="ui-dialog__close">
+        <button type="submit" aria-label="{{ 'label.close'|trans({}, 'ui') }}">&times;</button>
+    </form>
+    <h2 class="ui-dialog__title" id="{{ id }}-title">{{ title }}</h2>
+    {% block content %}{% endblock %}
+</dialog>

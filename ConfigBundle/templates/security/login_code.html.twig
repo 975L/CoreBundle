@@ -1,0 +1,25 @@
+{# Rendered by LoginCodeController - the app's own scaffolded layout first, then SiteBundle's, then UiBundle's minimal one, as the account pages do #}
+{% extends ['layout.html.twig', '@c975LSite/layout.html.twig', '@c975LUi/layout.html.twig'] %}
+{% trans_default_domain 'config' %}
+
+{% set title = 'label.login_code_heading'|trans %}
+
+{# A step of one login alone: nothing to offer a search result #}
+{% set robots = 'noindex, follow' %}
+
+{% block content %}
+    <p class="text">{{ 'text.login_code_intro'|trans }}</p>
+
+    {{ form_start(form) }}
+        {{ form_row(form.code) }}
+        <button class="btn btn-large btn-primary" type="submit">
+            {{ 'label.login_code_button'|trans }}
+        </button>
+    {{ form_end(form) }}
+
+    <form method="post" action="{{ path('config_login_code_resend') }}">
+        <input type="hidden" name="_token" value="{{ csrf_token('login_code_resend') }}">
+        <button class="btn btn-secondary btn-small" type="submit">{{ 'label.login_code_resend'|trans }}</button>
+        <a class="btn btn-secondary btn-small" href="{{ logout_path() }}">{{ 'label.signout'|trans }}</a>
+    </form>
+{% endblock %}

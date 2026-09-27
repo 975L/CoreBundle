@@ -400,7 +400,7 @@
             </trans-unit>
             <trans-unit id="HmXaT6b">
                 <source>description.guided_step_ui_review_pick</source>
-                <target>Le texte, la note et le nom sont ceux de son auteur : cet écran ne les réécrit pas. Le crayon n'apparaît que sur un avis auquel ce site peut répondre - un avis venu d'une plateforme où il ne republie pas se lit ici et se modère là-bas.</target>
+                <target>Ouvrez avec le crayon, au bout de sa ligne, un avis en attente écrit sur le site. Le texte, la note et le nom sont ceux de son auteur : cet écran ne les réécrit pas. Le crayon n'apparaît d'ailleurs que sur un avis auquel ce site peut répondre.</target>
             </trans-unit>
             <trans-unit id="dGJXfNy">
                 <source>description.guided_step_ui_review_reply</source>
@@ -1485,6 +1485,10 @@
             <trans-unit id="MXpeMi7">
                 <source>label.city</source>
                 <target>Ville</target>
+            </trans-unit>
+            <trans-unit id="CzzpYWY">
+                <source>label.close</source>
+                <target>Fermer</target>
             </trans-unit>
             <trans-unit id="m0L.u3G">
                 <source>label.closes</source>

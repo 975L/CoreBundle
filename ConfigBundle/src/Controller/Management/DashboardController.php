@@ -134,11 +134,12 @@ class DashboardController extends AbstractDashboardController
         return $this->siteLocales->isMultilingual() ? $dashboard->setLocales($this->siteLocales->all()) : $dashboard;
     }
 
-    // "View as" one entry per level below the account's own, and the way back while one is previewed (see RolePreview) - read off the user's real roles, isGranted() already answering for the previewed level
+    // The account's own page, where a site with an administrator alone changes its address and password too (see AccountController), then "View as" one entry per level below the account's own, and the way back while one is previewed (see RolePreview) - read off the user's real roles, isGranted() already answering for the previewed level
     #[\Override]
     public function configureUserMenu(UserInterface $user): UserMenu
     {
-        $userMenu = parent::configureUserMenu($user);
+        $userMenu = parent::configureUserMenu($user)
+            ->addMenuItems([MenuItem::linkToUrl($this->translator->trans('label.my_account', [], 'config'), 'fa fa-user', $this->generateUrl('config_account'))]);
         $token = $this->csrfTokenManager->getToken(RolePreviewController::CSRF_ID)->getValue();
 
         $items = [];

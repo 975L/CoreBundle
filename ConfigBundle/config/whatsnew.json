@@ -1,5 +1,35 @@
 [
     {
+        "date": "2026-09-27",
+        "description": [
+            {
+                "en": "A new security setting asks admins for a code sent by email when they log in from a new device; the device is then recognized for 30 days. A dashboard tile switches it on and off.",
+                "fr": "Un nouveau réglage de sécurité demande aux admins un code reçu par email quand ils se connectent depuis un nouvel appareil ; l'appareil est ensuite reconnu 30 jours. Une tuile du tableau de bord l'active ou le désactive.",
+                "es": "Un nuevo ajuste de seguridad pide a los admins un código recibido por email cuando inician sesión desde un nuevo dispositivo; el dispositivo se reconoce después durante 30 días. Un mosaico del panel lo activa o desactiva."
+            },
+            {
+                "en": "A new guided project shows how to turn on the admins' login code, and what it asks of them.",
+                "fr": "Un nouveau projet guidé montre comment activer le code de connexion des admins, et ce qu'il leur demande.",
+                "es": "Un nuevo proyecto guiado muestra cómo activar el código de conexión de los administradores, y lo que les pide."
+            },
+            {
+                "en": "Your members can now change their email address from \"My account\": the new one only replaces the old once they confirm it from their mailbox.",
+                "fr": "Vos membres peuvent désormais changer leur adresse email depuis « Mon compte » : la nouvelle ne remplace l'ancienne qu'une fois confirmée depuis leur messagerie.",
+                "es": "Sus miembros pueden ahora cambiar su dirección de correo electrónico desde «Mi cuenta»: la nueva solo sustituye a la anterior una vez confirmada desde su buzón."
+            },
+            {
+                "en": "\"My account\" is now in the back office's user menu, so you change your own email address and password there too.",
+                "fr": "« Mon compte » figure désormais dans le menu utilisateur du back-office : vous y changez vous aussi votre adresse email et votre mot de passe.",
+                "es": "«Mi cuenta» figura ahora en el menú de usuario del back office: usted también cambia allí su dirección de correo electrónico y su contraseña."
+            },
+            {
+                "en": "Deleting an account now also deletes its unpaid baskets, and the page says plainly that paid orders stay in the member's name for as long as the law requires.",
+                "fr": "Supprimer un compte supprime désormais aussi ses paniers non payés, et la page dit clairement que les commandes payées restent au nom du membre le temps que la loi impose.",
+                "es": "Eliminar una cuenta elimina ahora también sus cestas sin pagar, y la página indica claramente que los pedidos pagados se conservan a nombre del miembro durante el tiempo que exige la ley."
+            }
+        ]
+    },
+    {
         "date": "2026-09-26",
         "description": [
             {

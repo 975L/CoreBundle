@@ -90,13 +90,16 @@ class OffsiteSynchronizer
     public function purgeBackupDirs(string $remoteSubPath, int $keepDays, int $timeout = 600): array
     {
         $result = $this->run([
-            'delete', '--rmdirs', '--min-age', sprintf('%dd', $keepDays), $this->remote($remoteSubPath),
+            'delete', '--min-age', sprintf('%dd', $keepDays), $this->remote($remoteSubPath),
         ], $timeout);
 
         // A destination where nothing has ever been overwritten or deleted has no previous/ folder at all, which rclone reports as an error. There is nothing to purge, and it is not a failure: left as one it warns on the very first run, then every night for as long as the site's files don't change - a permanent warning being how a real one goes unnoticed
-        return !$result['ok'] && str_contains((string) $result['error'], 'directory not found')
-            ? ['ok' => true, 'error' => null, 'output' => '']
-            : $result;
+        if (!$result['ok'] && str_contains((string) $result['error'], 'directory not found')) {
+            return ['ok' => true, 'error' => null, 'output' => ''];
+        }
+
+        // The folders emptied above, in a pass of their own: "delete --rmdirs" also tries every folder still inside the window and reports each one as "directory not empty", so the purge failed every night the window held anything - which is always. "rmdirs" only ever removes what is empty, and says nothing of the rest
+        return $result['ok'] ? $this->run(['rmdirs', '--leave-root', $this->remote($remoteSubPath)], $timeout) : $result;
     }
 
     private function remote(string $subPath): string

@@ -380,7 +380,7 @@
             </trans-unit>
             <trans-unit id="CJRTQgn">
                 <source>narration.guided_step_ui_review_pick</source>
-                <target>Abra una opinión con el lápiz, al final de su fila. El texto, la valoración y el nombre son los de su autor: esta pantalla no los reescribe. El lápiz, además, solo aparece en una opinión a la que este sitio puede responder.</target>
+                <target>Elija una opinión pendiente escrita en el sitio: sobre ella se decide el paso siguiente. El texto, la nota y el nombre son de su autor: esta pantalla no los reescribe. El lápiz solo aparece en una opinión a la que este sitio puede responder - una venida de una plataforma donde no republica se lee aquí y se modera allí.</target>
             </trans-unit>
             <trans-unit id="jrjzfDU">
                 <source>narration.guided_step_ui_review_reply</source>

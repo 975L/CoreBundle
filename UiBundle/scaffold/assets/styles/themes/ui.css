@@ -224,6 +224,9 @@
        column it accompanies. It hides what slides under it, so it cannot be transparent. */
     /* --audio-sticky-background: var(--background); */
 
+    /* A media's title - a video's, a player's - at one scale whatever rank the page gives it. */
+    /* --media-title-size: calc(1.3rem * var(--font-size-title-scale, 1)); */
+
     /* The two-sided card. Its own shape and its own surfaces, sharing nothing with the plain card above: a
        flip card is an object a visitor reaches for - outlined, rounded, titled - where a card is a panel to
        read, so retuning one here never moves the other. The back is what the turn reveals, hence a surface

@@ -238,8 +238,22 @@ class DashboardControllerTest extends TestCase
         $this->assertSame(3, $this->userMenuItemCount(['ROLE_EDITOR']) - $this->userMenuItemCount(['ROLE_USER']));
     }
 
+    // Every account reaches its own page from the back office, a site with an administrator alone having no navbar link to it
+    public function testTheUserMenuLinksTheAccountPage(): void
+    {
+        $urls = array_map(static fn ($item): ?string => $item->getLinkUrl(), $this->userMenuItems(['ROLE_USER']));
+
+        $this->assertContains('/config_account', $urls);
+    }
+
     // How many entries the user menu holds for an account carrying these roles
     private function userMenuItemCount(array $roles): int
+    {
+        return \count($this->userMenuItems($roles));
+    }
+
+    // The entries of the user menu for an account carrying these roles
+    private function userMenuItems(array $roles): array
     {
         $controller = $this->createController(false, []);
 
@@ -251,7 +265,7 @@ class DashboardControllerTest extends TestCase
             'router' => $router,
         ]));
 
-        return \count($controller->configureUserMenu(new InMemoryUser('account', null, $roles))->getAsDto()->getItems());
+        return $controller->configureUserMenu(new InMemoryUser('account', null, $roles))->getAsDto()->getItems();
     }
 
     // Renders index() for a user granted exactly these attributes, and hands back the status and the variables the template was given

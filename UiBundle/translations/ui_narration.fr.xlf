@@ -380,7 +380,7 @@
             </trans-unit>
             <trans-unit id="CJRTQgn">
                 <source>narration.guided_step_ui_review_pick</source>
-                <target>Ouvrez un avis avec le crayon, au bout de sa ligne. Le texte, la note et le nom sont ceux de son auteur : cet écran ne les réécrit pas. Le crayon n'apparaît d'ailleurs que sur un avis auquel ce site peut répondre.</target>
+                <target>Choisissez un avis en attente, écrit sur le site : c'est sur lui que se décide l'étape suivante. Le texte, la note et le nom sont ceux de son auteur : cet écran ne les réécrit pas. Le crayon n'apparaît que sur un avis auquel ce site peut répondre - un avis venu d'une plateforme où il ne republie pas se lit ici et se modère là-bas.</target>
             </trans-unit>
             <trans-unit id="jrjzfDU">
                 <source>narration.guided_step_ui_review_reply</source>

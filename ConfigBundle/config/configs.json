@@ -66,6 +66,17 @@
         "description": "description.user_inactivity_notice_days"
     },
     {
+        "label": "label.login_admin_code",
+        "slug": "login-admin-code",
+        "sensitive": false,
+        "restricted": false,
+        "value": "false",
+        "kind": "bool",
+        "group": "security",
+        "severity": null,
+        "description": "description.login_admin_code"
+    },
+    {
         "label": "label.site_maintenance",
         "slug": "site-maintenance",
         "sensitive": false,

@@ -62,6 +62,18 @@
                 <source>narration.guided_step_config_health_check_run</source>
                 <target>Lance el control con el botón situado en la parte superior de la página. Se pone en cola una tarea por familia de comprobaciones: la página no espera nada, los resultados llegan poco a poco.</target>
             </trans-unit>
+            <trans-unit id="xAO.F1b">
+                <source>narration.guided_step_config_login_code_done</source>
+                <target>Una vez tecleado el código, el dispositivo se reconoce durante 30 días. Cambiar la contraseña olvida todos los dispositivos a la vez.</target>
+            </trans-unit>
+            <trans-unit id="AFJDcnS">
+                <source>narration.guided_step_config_login_code_enable</source>
+                <target>Haga clic en el acceso directo del código de conexión: a partir de ahora, un administrador que se conecta con su contraseña desde un dispositivo nuevo recibe un código de 6 cifras por email.</target>
+            </trans-unit>
+            <trans-unit id="G2JfTwB">
+                <source>narration.guided_step_config_login_code_open</source>
+                <target>El panel le devuelve al panel de control. El código de conexión se activa desde sus accesos directos, como el mantenimiento.</target>
+            </trans-unit>
             <trans-unit id="CibE15s">
                 <source>narration.guided_step_config_maintenance_check</source>
                 <target>Compruebe lo que ven sus visitantes: abra el sitio en una ventana de navegación privada, es exactamente lo que tienen delante.</target>
@@ -180,7 +192,7 @@
             </trans-unit>
             <trans-unit id="Bq8DMmE">
                 <source>narration.guided_step_config_role_preview_menu</source>
-                <target>Abra su menú, arriba a la derecha, y elija Ver como, seguido de un nivel inferior al suyo.</target>
+                <target>Abra su menú: tras «Mi cuenta», elija una de sus entradas «Ver como».</target>
             </trans-unit>
             <trans-unit id="f8uhAaw">
                 <source>narration.guided_step_config_role_preview_open</source>

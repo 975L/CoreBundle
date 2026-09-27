@@ -380,7 +380,7 @@
             </trans-unit>
             <trans-unit id="CJRTQgn">
                 <source>narration.guided_step_ui_review_pick</source>
-                <target>Open a review with the pencil, at the end of its row. The text, the score and the name are its author's: this screen does not rewrite them. The pencil only shows on a review this site can answer.</target>
+                <target>Pick a pending review written on the site: it is the one the next step decides on. The text, the score and the name are its author's: this screen does not rewrite them. The pencil only shows on a review this site can answer - one from a platform it does not publish back to is read here and moderated over there.</target>
             </trans-unit>
             <trans-unit id="jrjzfDU">
                 <source>narration.guided_step_ui_review_reply</source>

@@ -58,8 +58,9 @@ class AccountDeleteController extends AbstractController
         }
 
         // Same sequence as the cleanup command, so a listener detaching what the account owns runs before the flush
+        $email = $user->getEmail();
         $user->anonymize();
-        $this->eventDispatcher->dispatch(new UserAnonymizedEvent($user));
+        $this->eventDispatcher->dispatch(new UserAnonymizedEvent($user, $email));
         $this->entityManager->flush();
 
         // Logged out before the flash is added: the logout empties the session, and a flash added earlier would go with it. Its response is kept, carrying the cookies the firewall clears

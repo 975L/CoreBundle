@@ -120,7 +120,7 @@ class AccountDeleteControllerTest extends TestCase
         $entityManager->expects($this->once())->method('flush');
         $eventDispatcher = $this->createMock(EventDispatcherInterface::class);
         $eventDispatcher->expects($this->once())->method('dispatch')->with($this->callback(
-            static fn (object $event) => $event instanceof UserAnonymizedEvent && $event->user === $user
+            static fn (object $event) => $event instanceof UserAnonymizedEvent && $event->user === $user && self::EMAIL === $event->email
         ))->willReturnArgument(0);
         $security = $this->createMock(Security::class);
         $security->expects($this->once())->method('logout')->with(false);

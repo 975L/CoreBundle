@@ -18,18 +18,6 @@
                 <source>text.email_taken</source>
                 <target>There is already an account with this email</target>
             </trans-unit>
-            <trans-unit id="DY8kkID">
-                <source>text.password_complexity</source>
-                <target>Your password must be at least 8 characters long and include one lowercase letter, one uppercase letter, one digit and one special character</target>
-            </trans-unit>
-            <trans-unit id="TaG4lmE">
-                <source>text.password_max_length</source>
-                <target>Your password should be at most {{ limit }} characters</target>
-            </trans-unit>
-            <trans-unit id="epDiKHK">
-                <source>text.password_min_length</source>
-                <target>Your password should be at least {{ limit }} characters</target>
-            </trans-unit>
             <trans-unit id="G1fcoic">
                 <source>text.password_mismatch</source>
                 <target>The password fields must match.</target>

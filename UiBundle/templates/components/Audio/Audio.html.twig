@@ -1,8 +1,10 @@
-{# Static usage : <twig:c975LUi:Audio:Audio src="your-path/file.ext" type="audio/mpeg" [title="optional title"] [description="optional description"] [sticky="true"] [class="your-css-classes"]/> #}
+{# Static usage : <twig:c975LUi:Audio:Audio src="your-path/file.ext" type="audio/mpeg" [title="optional title"] [description="optional description"] [sticky="true"] [class="your-css-classes"] [level="h3"]/> #}
+{# The title's rank: <h3> by default, under whatever section holds the player, <h2> when the block stands straight in the page. Matched, not interpolated: it writes a tag name #}
+{% set level = level|default('') in ['h2', 'h3', 'h4'] ? level : 'h3' %}
 {# Same <figure>/title/description structure as Video:Video and Video:Iframe, so every media block is captioned identically #}
 {# Sticky: the player comes to rest against the bottom of the screen and follows the reader down the page, the way the summary of anchors rests against its top - it has to be a direct child of the column it accompanies, a sticky element never leaving its own containing block #}
 <figure class="audio-figure{% if sticky|default(false) %} audio-figure--sticky{% endif %}">
-    {% if title is defined and title %}<h3 class="audio-title">{{ title }}</h3>{% endif %}
+    {% if title is defined and title %}<{{ level }} class="audio-title">{{ title }}</{{ level }}>{% endif %}
     <audio controls class="{{ class|default([])|join(' ') }}">
         <source src="{{ src }}" type="{{ type|default('audio/mpeg') }}">
         <p>{{ 'label.audio_not_supported'|trans({}, "ui") }} <a href="{{ src }}">{{ 'label.download'|trans({}, "ui") }}</a></p>

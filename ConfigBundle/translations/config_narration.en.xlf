@@ -62,6 +62,18 @@
                 <source>narration.guided_step_config_health_check_run</source>
                 <target>Run the check with the button at the top of the page. One job per family of checks is queued: the page waits for nothing, the results land as they come.</target>
             </trans-unit>
+            <trans-unit id="xAO.F1b">
+                <source>narration.guided_step_config_login_code_done</source>
+                <target>Once the code is typed, the device is recognized for 30 days. Changing the password forgets every device at once.</target>
+            </trans-unit>
+            <trans-unit id="AFJDcnS">
+                <source>narration.guided_step_config_login_code_enable</source>
+                <target>Click the login code shortcut: from now on, an admin logging in with their password from a new device receives a 6-digit code by email.</target>
+            </trans-unit>
+            <trans-unit id="G2JfTwB">
+                <source>narration.guided_step_config_login_code_open</source>
+                <target>The panel brings you back to the dashboard. The login code is turned on from its shortcuts, like the maintenance.</target>
+            </trans-unit>
             <trans-unit id="CibE15s">
                 <source>narration.guided_step_config_maintenance_check</source>
                 <target>Check what your visitors see: open the site in a private browsing window, that is exactly what they have in front of them.</target>
@@ -180,7 +192,7 @@
             </trans-unit>
             <trans-unit id="Bq8DMmE">
                 <source>narration.guided_step_config_role_preview_menu</source>
-                <target>Open your menu, at the top right, and choose View as, followed by a level below yours.</target>
+                <target>Open your menu: past "My account", choose one of its "View as" entries.</target>
             </trans-unit>
             <trans-unit id="f8uhAaw">
                 <source>narration.guided_step_config_role_preview_open</source>

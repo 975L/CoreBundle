@@ -54,6 +54,14 @@
                 <source>text.map_point_coordinates_required</source>
                 <target>Introduzca a la vez una latitud y una longitud.</target>
             </trans-unit>
+            <trans-unit id="DY8kkID">
+                <source>text.password_complexity</source>
+                <target>Su contraseña debe tener al menos 8 caracteres e incluir una minúscula, una mayúscula, un dígito y un carácter especial</target>
+            </trans-unit>
+            <trans-unit id="TaG4lmE">
+                <source>text.password_max_length</source>
+                <target>Su contraseña no debe exceder de {{ limit }} caracteres</target>
+            </trans-unit>
             <trans-unit id="G1fcoic">
                 <source>text.password_mismatch</source>
                 <target>Las contraseñas no coinciden</target>

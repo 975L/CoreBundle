@@ -100,11 +100,12 @@ class UsersCleanupCommandTest extends TestCase
     public function testAnonymizesAndDispatches(): void
     {
         $user = $this->createMock(InactivityAwareInterface::class);
+        $user->method('getEmail')->willReturn('user@example.test');
         $user->expects($this->once())->method('anonymize');
 
         $finder = $this->finder(toAnonymize: [$user]);
         $dispatcher = $this->createMock(EventDispatcherInterface::class);
-        $dispatcher->expects($this->once())->method('dispatch')->with($this->callback(fn (object $event): bool => $event instanceof UserAnonymizedEvent && $event->user === $user));
+        $dispatcher->expects($this->once())->method('dispatch')->with($this->callback(fn (object $event): bool => $event instanceof UserAnonymizedEvent && $event->user === $user && 'user@example.test' === $event->email));
 
         $tester = new CommandTester($this->command([], $finder, $dispatcher));
 

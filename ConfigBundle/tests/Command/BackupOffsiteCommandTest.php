@@ -168,7 +168,8 @@ class BackupOffsiteCommandTest extends TestCase
             ),
             (array) $calls,
         );
-        $this->assertContains('delete --rmdirs --min-age 15d storagebox:example.com/previous', (array) $calls);
+        $this->assertContains('delete --min-age 15d storagebox:example.com/previous', (array) $calls);
+        $this->assertContains('rmdirs --leave-root storagebox:example.com/previous', (array) $calls);
     }
 
     // The guard is a share of what the folder holds, not a fixed count: a family of derived images regenerated under new names removes hundreds of files legitimately, and a count that let those through would let an emptied gallery through as well

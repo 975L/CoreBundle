@@ -88,8 +88,9 @@ class UsersCleanupCommand extends Command
         // Anonymizes the accounts warned long enough ago, before warning new ones so an account is never both in the same run
         $anonymized = $this->inactiveUserFinder->findToAnonymize(new \DateTime('-' . $days . ' days'), new \DateTime('-' . $noticeDays . ' days'));
         foreach ($anonymized as $user) {
+            $email = $user->getEmail();
             $user->anonymize();
-            $this->eventDispatcher->dispatch(new UserAnonymizedEvent($user));
+            $this->eventDispatcher->dispatch(new UserAnonymizedEvent($user, $email));
         }
 
         // Warns the accounts about to reach the limit, the date being written down only once the email has left

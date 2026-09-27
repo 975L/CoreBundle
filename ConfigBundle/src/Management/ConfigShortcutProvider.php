@@ -12,7 +12,9 @@ namespace c975L\ConfigBundle\Management;
 
 use c975L\ConfigBundle\Controller\Management\ConfigPruneController;
 use c975L\ConfigBundle\Controller\Management\ConfigShortcutController;
+use c975L\ConfigBundle\Controller\Management\LoginCodeShortcutController;
 use c975L\ConfigBundle\Controller\Management\MaintenanceShortcutController;
+use c975L\ConfigBundle\Security\LoginCode;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\ConfigBundle\Service\UserFormSeeder;
 use c975L\UiBundle\Repository\FormRepository;
@@ -32,10 +34,6 @@ class ConfigShortcutProvider implements ShortcutProviderInterface
     // A declaration of shortcuts, one entry each: its length says how many the dashboard offers
     public function getShortcuts(): array
     {
-        $maintenanceEnabled = (bool) $this->configService->get('site-maintenance');
-        // Found by its action, the one thing an admin cannot rename from the back-office - a form renamed there would otherwise take this tile away with it, while the site kept registering people (see RegistrationStatusProvider, which reads the same field)
-        $registerForm = $this->formRepository->findOneBy(['action' => UserFormSeeder::REGISTER_ACTION]);
-
         return [
             [
                 'label' => $this->translator->trans('label.config_clear_cache', [], 'config'),
@@ -104,6 +102,20 @@ class ConfigShortcutProvider implements ShortcutProviderInterface
                 'role' => 'ROLE_SUPER_ADMIN',
                 'category' => ShortcutProviderInterface::CATEGORY_EXPORT,
             ],
+            ...$this->toggles(),
+        ];
+    }
+
+    // The row of what the site has switched on, each tile flipping its own state
+    /** @return list<array<string, mixed>> */
+    private function toggles(): array
+    {
+        $maintenanceEnabled = (bool) $this->configService->get('site-maintenance');
+        $loginCodeEnabled = true === $this->configService->get(LoginCode::CONFIG);
+        // Found by its action, the one thing an admin cannot rename from the back-office - a form renamed there would otherwise take this tile away with it, while the site kept registering people (see RegistrationStatusProvider, which reads the same field)
+        $registerForm = $this->formRepository->findOneBy(['action' => UserFormSeeder::REGISTER_ACTION]);
+
+        return [
             [
                 'label' => $this->translator->trans(
                     null !== $registerForm && $registerForm->isEnabled() ? 'label.user_registration_disable' : 'label.user_registration_enable',
@@ -127,6 +139,16 @@ class ConfigShortcutProvider implements ShortcutProviderInterface
                 'icon' => 'fa fa-wrench',
                 'route' => MaintenanceShortcutController::TOGGLE_ROUTE_MAINTENANCE,
                 'active' => $maintenanceEnabled,
+                'role' => $this->configService->get('site-role-admin'),
+                'category' => ShortcutProviderInterface::CATEGORY_TOGGLE,
+            ],
+            [
+                'label' => $this->translator->trans($loginCodeEnabled ? 'label.login_code_disable' : 'label.login_code_enable', [], 'config'),
+                'icon' => 'fas fa-user-shield',
+                'route' => LoginCodeShortcutController::TOGGLE_ROUTE,
+                'active' => $loginCodeEnabled,
+                // A code asked is a safeguard switched on, never a state to flag as the builder would read 'active'
+                'warning' => false,
                 'role' => $this->configService->get('site-role-admin'),
                 'category' => ShortcutProviderInterface::CATEGORY_TOGGLE,
             ],

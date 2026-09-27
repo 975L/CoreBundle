@@ -34,6 +34,10 @@
                 <source>description.email_to_name</source>
                 <target>Nom utilisé pour recevoir les notifications depuis le site.</target>
             </trans-unit>
+            <trans-unit id="orf8m_Z">
+                <source>description.login_admin_code</source>
+                <target>Un admin qui se connecte par mot de passe depuis un navigateur inconnu reçoit un code à 6 chiffres par email, à saisir avant d'accéder au site. Le navigateur est ensuite reconnu 30 jours, ou jusqu'au prochain changement de mot de passe. Si l'email ne part pas, la connexion passe sans code.</target>
+            </trans-unit>
             <trans-unit id="qsbLUOC">
                 <source>description.login_google_oauth_client_id</source>
                 <target>Identifiant client (« ID client OAuth ») du projet Google de ce site, qui active le bouton « Continuer avec Google » sur la page de connexion. Voir la procédure « Connecter la connexion Google ». Laisser vide pour ne pas proposer la connexion Google.</target>
@@ -309,6 +313,10 @@
             <trans-unit id="Tbwp4sB">
                 <source>label.email_to_name</source>
                 <target>Nom de l'email (destinataire)</target>
+            </trans-unit>
+            <trans-unit id="1Tzf4Z_">
+                <source>label.login_admin_code</source>
+                <target>Code par email pour les admins sur un nouvel appareil</target>
             </trans-unit>
             <trans-unit id=".GtjiDJ">
                 <source>label.login_google_oauth_client_id</source>

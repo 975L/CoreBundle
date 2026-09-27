@@ -1,5 +1,6 @@
 {# Adapter for the dynamic Block system — resolves the uploaded media, file and format alike, into the Audio component #}
 {% set audio = block.media|first %}
 {% if audio %}
-    <twig:c975LUi:Audio:Audio src="{{ vich_uploader_asset(audio) }}" type="{{ audio.mimeType }}" title="{{ title|default('') }}" description="{{ description|default('') }}" class="{{ class|default([]) }}"/>
+    {# "h2": a block's title is a section's title, the same rank as Card's - and what the page's <h1> is directly followed by when the block opens it #}
+    <twig:c975LUi:Audio:Audio src="{{ vich_uploader_asset(audio) }}" type="{{ audio.mimeType }}" title="{{ title|default('') }}" description="{{ description|default('') }}" class="{{ class|default([]) }}" level="h2"/>
 {% endif %}

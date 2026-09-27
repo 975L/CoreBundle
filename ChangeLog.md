@@ -1,5 +1,44 @@
 # ChangeLog
 
+## v1.45.0
+
+The member's account page, and an emailed login code for admins
+
+### ConfigBundle
+
+- **Email change on `/account`, confirmed from the new address before it replaces the old one** (27/09/2026)
+- **New `AccountProfileType`: every column of the site's own `User` editable on the member's page, read off its mapping** (27/09/2026)
+- New `EmailChanger` service and `config_account_email_confirm` route, the new address carried by the signed link (27/09/2026)
+- `UserAnonymizedEvent` carries the address held before anonymization (27/09/2026)
+- **New `login-admin-code` setting: an emailed code for an admin's password login from an unknown browser** (27/09/2026)
+- New `LoginCode`, `TrustedDevice`, `LoginCodeSubscriber` and `config_login_code` route (27/09/2026)
+- New `login_code` email template (27/09/2026)
+- A dashboard toggle tile switches the admin login code on and off (27/09/2026)
+- New `config-login-code` guided project walks the admin login code tile (27/09/2026)
+- New `account_email_change` and `account_email_changed` email templates (27/09/2026)
+- No email change for a session opened through OAuth (27/09/2026)
+- New `EmailVerifier::sendSignedLink()`, shared by registration and email change (27/09/2026)
+- "My account" in the back office's user menu (27/09/2026)
+- The account deletion page says paid orders stay nominative, and the rest is deleted (27/09/2026)
+- **Data export at `/account/export` (GDPR access and portability), each bundle adding its part through `AccountDataProviderInterface`** (27/09/2026)
+- The export holds the favorites, ratings and reviews written here (27/09/2026)
+- An `account_password_changed` email after every password change (27/09/2026)
+- "Sign out my other devices" on `/account`: the password hashed again, every other session and remember-me cookie dropped (27/09/2026)
+- The profile says how the member signed in, and offers the site's OAuth providers (27/09/2026)
+- The column a member logs in with left out of the profile form (27/09/2026)
+- Sign out and account deletion at the bottom of `/account`, confirmed in a dialog, disabled and explained for the owner (27/09/2026)
+- `/account` sections on the tight rhythm, their forms and texts aligned with the section edge (27/09/2026)
+
+### UiBundle
+
+- **New `Dialog` component: a native `<dialog>` opened with no script through `commandfor`** (27/09/2026)
+- **New `block_page_url()` and `BlockPageUrlProviderInterface`: where the site shows a block of some kind** (27/09/2026)
+- New `.blocks--tight` page modifier, its tables flush left, and `.form--section` form variant (27/09/2026)
+- A `select` styled like the text fields around it (27/09/2026)
+- **New `PasswordPolicy` constraint: a lowercase, an uppercase, a digit, a sign, 8 characters at least, replacing `PasswordStrength` on every new password** (27/09/2026)
+- The `ui-ai-search-setup` guided project moves to 3150, back on the step of 10 (27/09/2026)
+- The `ui-review` guided project asks to pick a pending review written on the site (27/09/2026)
+
 ## v1.44.0
 
 The member's own page, with a section per bundle

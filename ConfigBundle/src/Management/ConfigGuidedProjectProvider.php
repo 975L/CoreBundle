@@ -24,7 +24,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-// This bundle's own guided projects, running the 1000 block GuidedProjectProviderInterface reserves them - the same docblock stating every other bundle's, so a range is read there rather than recopied here. Each carries the role its own screen is gated by, so a parcours is never offered to someone its very first step turns away - the dashboard the list is started from opens to a contributor (see BackOfficeAccessVoter), and five of these twelve walk a screen only an admin may read, one a screen whose buttons only a super admin is shown, and two a screen a super admin alone opens. Only the opening step of each carries an url: from there the parcours walks the screen the user has been sent to, highlighting the button or the field they are meant to use next - one they click themselves, which brings the panel back on that very step (see assets/js/guided-project.js resume())
+// This bundle's own guided projects, running the 1000 block GuidedProjectProviderInterface reserves them - the same docblock stating every other bundle's, so a range is read there rather than recopied here. Each carries the role its own screen is gated by, so a parcours is never offered to someone its very first step turns away - the dashboard the list is started from opens to a contributor (see BackOfficeAccessVoter), and six of these thirteen walk a screen only an admin may read, one a screen whose buttons only a super admin is shown, and two a screen a super admin alone opens. Only the opening step of each carries an url: from there the parcours walks the screen the user has been sent to, highlighting the button or the field they are meant to use next - one they click themselves, which brings the panel back on that very step (see assets/js/guided-project.js resume())
 class ConfigGuidedProjectProvider implements GuidedProjectProviderInterface
 {
     public function __construct(
@@ -41,6 +41,7 @@ class ConfigGuidedProjectProvider implements GuidedProjectProviderInterface
             $this->settingsProject(),
             $this->healthCheckProject(),
             $this->maintenanceProject(),
+            $this->loginCodeProject(),
             $this->notFoundProject(),
             $this->redirectProject(),
             $this->urlMetadataProject(),
@@ -115,7 +116,7 @@ class ConfigGuidedProjectProvider implements GuidedProjectProviderInterface
                     'url' => $this->urlGenerator->generate('management'),
                 ],
                 [
-                    // EasyAdmin's own user menu button, where DashboardController::configureUserMenu() adds one "View as" entry per level below the account's - the desktop header's, the responsive header drawing a hidden one first
+                    // EasyAdmin's own user menu button, where DashboardController::configureUserMenu() adds "My account" then one "View as" entry per level below the account's - the desktop header's, the responsive header drawing a hidden one first
                     'label' => 'label.guided_step_config_role_preview_menu',
                     'description' => 'description.guided_step_config_role_preview_menu',
                     'narration' => 'narration.guided_step_config_role_preview_menu',
@@ -462,6 +463,39 @@ class ConfigGuidedProjectProvider implements GuidedProjectProviderInterface
                     'label' => 'label.guided_step_config_maintenance_done',
                     'description' => 'description.guided_step_config_maintenance_done',
                     'narration' => 'narration.guided_step_config_maintenance_done',
+                ],
+            ],
+        ];
+    }
+
+    // A safeguard switched from a tile, which nothing else explains: what the code asks of an admin, and for how long a device is spared it
+    private function loginCodeProject(): array
+    {
+        return [
+            'slug' => 'config-login-code',
+            'label' => 'label.guided_project_config_login_code',
+            'description' => 'description.guided_project_config_login_code',
+            'translation_domain' => 'config',
+            'order' => 1035,
+            // The bar the login code toggle shortcut declares
+            'role' => $this->configService->get('site-role-admin'),
+            'steps' => [
+                [
+                    'label' => 'label.guided_step_config_login_code_open',
+                    'description' => 'description.guided_step_config_login_code_open',
+                    'narration' => 'narration.guided_step_config_login_code_open',
+                    'url' => $this->urlGenerator->generate('management'),
+                ],
+                [
+                    'label' => 'label.guided_step_config_login_code_enable',
+                    'description' => 'description.guided_step_config_login_code_enable',
+                    'narration' => 'narration.guided_step_config_login_code_enable',
+                    'highlight' => 'form[action$="/config/login-code-toggle"] button',
+                ],
+                [
+                    'label' => 'label.guided_step_config_login_code_done',
+                    'description' => 'description.guided_step_config_login_code_done',
+                    'narration' => 'narration.guided_step_config_login_code_done',
                 ],
             ],
         ];

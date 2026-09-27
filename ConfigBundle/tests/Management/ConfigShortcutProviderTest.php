@@ -12,6 +12,7 @@ namespace c975L\ConfigBundle\Tests\Management;
 
 use c975L\ConfigBundle\Controller\Management\ConfigPruneController;
 use c975L\ConfigBundle\Controller\Management\ConfigShortcutController;
+use c975L\ConfigBundle\Controller\Management\LoginCodeShortcutController;
 use c975L\ConfigBundle\Controller\Management\MaintenanceShortcutController;
 use c975L\ConfigBundle\Management\ConfigShortcutProvider;
 use c975L\ConfigBundle\Management\ShortcutProviderInterface;
@@ -111,6 +112,21 @@ class ConfigShortcutProviderTest extends TestCase
         $this->assertSame('label.maintenance_enable', $shortcuts[9]['label']);
         $this->assertSame('ROLE_ADMIN', $shortcuts[9]['role']);
         $this->assertSame(ShortcutProviderInterface::CATEGORY_TOGGLE, $shortcuts[9]['category']);
+        // The admins' login code, a safeguard whose "on" is never painted as a warning
+        $this->assertSame(LoginCodeShortcutController::TOGGLE_ROUTE, $shortcuts[10]['route']);
+        $this->assertSame('label.login_code_enable', $shortcuts[10]['label']);
+        $this->assertFalse($shortcuts[10]['active']);
+        $this->assertFalse($shortcuts[10]['warning']);
+        $this->assertSame(ShortcutProviderInterface::CATEGORY_TOGGLE, $shortcuts[10]['category']);
+    }
+
+    // Switched on, the tile offers to switch it off and shows as active
+    public function testGetShortcutsOffersToDisableTheLoginCodeWhenEnabled(): void
+    {
+        $provider = new ConfigShortcutProvider($this->createTranslator(), $this->createConfigService(['login-admin-code' => true]), $this->createFormRepository());
+
+        $this->assertSame('label.login_code_disable', $provider->getShortcuts()[10]['label']);
+        $this->assertTrue($provider->getShortcuts()[10]['active']);
     }
 
     // When registration is already enabled, the tile offers to disable it and is marked active
@@ -142,7 +158,7 @@ class ConfigShortcutProviderTest extends TestCase
         $provider = new ConfigShortcutProvider($this->createTranslator(), $this->createConfigService(['site-maintenance' => true]), $this->createFormRepository());
 
         foreach ($provider->getShortcuts() as $shortcut) {
-            if (ConfigShortcutController::REGISTRATION_ENABLED_TOGGLE_ROUTE !== $shortcut['route']) {
+            if (!\in_array($shortcut['route'], [ConfigShortcutController::REGISTRATION_ENABLED_TOGGLE_ROUTE, LoginCodeShortcutController::TOGGLE_ROUTE], true)) {
                 $this->assertArrayNotHasKey('warning', $shortcut);
             }
         }

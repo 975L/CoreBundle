@@ -148,11 +148,11 @@ class ConfigGuidedProjectProviderTest extends TestCase
         $projects = $this->createProvider()->getGuidedProjects();
 
         $this->assertSame(
-            ['config-settings', 'config-health-check', 'config-maintenance', 'config-not-found', 'config-redirect', 'config-url-metadata', 'config-user-role', 'config-role-preview', 'config-messenger-failed', 'config-content-export', 'config-content-import', 'config-prune'],
+            ['config-settings', 'config-health-check', 'config-maintenance', 'config-login-code', 'config-not-found', 'config-redirect', 'config-url-metadata', 'config-user-role', 'config-role-preview', 'config-messenger-failed', 'config-content-export', 'config-content-import', 'config-prune'],
             array_column($projects, 'slug')
         );
-        // 1040 rather than a value after 1050: the missing pages are walked to the redirects, the screen the url metadata has nothing to do with
-        $this->assertSame([1010, 1020, 1030, 1040, 1045, 1050, 1060, 1070, 1080, 1085, 1090, 1100], array_column($projects, 'order'));
+        // 1040 rather than a value after 1050: the missing pages are walked to the redirects, the screen the url metadata has nothing to do with. 1035 keeps the login code beside the maintenance, both dashboard toggles
+        $this->assertSame([1010, 1020, 1030, 1035, 1040, 1045, 1050, 1060, 1070, 1080, 1085, 1090, 1100], array_column($projects, 'order'));
     }
 
     // A project is offered on a dashboard a contributor now reaches, so one walking an admin screen has to say so or its very first step answers a 403
@@ -168,6 +168,7 @@ class ConfigGuidedProjectProviderTest extends TestCase
                 'config-settings' => 'site-role-admin',
                 'config-health-check' => 'site-role-admin',
                 'config-maintenance' => 'site-role-admin',
+                'config-login-code' => 'site-role-admin',
                 // The three whose screens answer an editor (see NotFoundCrudController, RedirectCrudController, UrlMetadataCrudController)
                 'config-not-found' => 'site-role-editor',
                 'config-redirect' => 'site-role-editor',
@@ -272,7 +273,7 @@ class ConfigGuidedProjectProviderTest extends TestCase
         $routes = [];
         $this->createProvider($routes)->getGuidedProjects();
 
-        $this->assertSame(['management_health_check_index', 'management', 'management', 'management_config_messenger_failed', 'management', 'management_content_import_index', 'management_config_prune_index'], $routes);
+        $this->assertSame(['management_health_check_index', 'management', 'management', 'management', 'management_config_messenger_failed', 'management', 'management_content_import_index', 'management_config_prune_index'], $routes);
     }
 
     // A label or description with no translation reads as its own key in the panel

@@ -34,6 +34,10 @@
                 <source>description.email_to_name</source>
                 <target>Nombre utilizado para recibir las notificaciones desde el sitio.</target>
             </trans-unit>
+            <trans-unit id="orf8m_Z">
+                <source>description.login_admin_code</source>
+                <target>Un admin que inicia sesión con contraseña desde un navegador desconocido recibe un código de 6 cifras por email, que debe introducir antes de acceder al sitio. El navegador se reconoce después durante 30 días, o hasta el próximo cambio de contraseña. Si el email no puede enviarse, el inicio de sesión se completa sin código.</target>
+            </trans-unit>
             <trans-unit id="qsbLUOC">
                 <source>description.login_google_oauth_client_id</source>
                 <target>Identificador de cliente («ID de cliente de OAuth») del proyecto de Google de este sitio, que activa el botón «Continuar con Google» en la página de inicio de sesión. Véase el procedimiento «Conectar el inicio de sesión con Google». Dejar vacío para no ofrecer el inicio de sesión con Google.</target>
@@ -309,6 +313,10 @@
             <trans-unit id="Tbwp4sB">
                 <source>label.email_to_name</source>
                 <target>Nombre del correo (destinatario)</target>
+            </trans-unit>
+            <trans-unit id="1Tzf4Z_">
+                <source>label.login_admin_code</source>
+                <target>Código por email para los admins en un nuevo dispositivo</target>
             </trans-unit>
             <trans-unit id=".GtjiDJ">
                 <source>label.login_google_oauth_client_id</source>

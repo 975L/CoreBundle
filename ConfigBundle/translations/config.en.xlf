@@ -94,6 +94,10 @@
                 <source>description.guided_project_config_health_check</source>
                 <target>Have the site checked from the outside, read what is reported and know where to start</target>
             </trans-unit>
+            <trans-unit id="tMAPxLY">
+                <source>description.guided_project_config_login_code</source>
+                <target>A stolen password is no longer enough to enter the back office from an unknown device</target>
+            </trans-unit>
             <trans-unit id="EHg5ZWS">
                 <source>description.guided_project_config_maintenance</source>
                 <target>Rehearse, on a quiet day, the move nobody wants to discover on the day it is needed</target>
@@ -177,6 +181,18 @@
             <trans-unit id=".gWOAiY">
                 <source>description.guided_step_config_health_check_run</source>
                 <target>One job per family of checks is queued: the page waits for nothing, the results land as they come.</target>
+            </trans-unit>
+            <trans-unit id="DooTrFo">
+                <source>description.guided_step_config_login_code_done</source>
+                <target>Once the code is typed, the device is recognized for 30 days; changing the password forgets them all at once.</target>
+            </trans-unit>
+            <trans-unit id="ELPJxhZ">
+                <source>description.guided_step_config_login_code_enable</source>
+                <target>Every admin account logging in with its password from a new device receives a 6-digit code by email.</target>
+            </trans-unit>
+            <trans-unit id="QHQGOSx">
+                <source>description.guided_step_config_login_code_open</source>
+                <target>The setting is switched from the dashboard shortcuts, with no screen in between.</target>
             </trans-unit>
             <trans-unit id="KUmw7pU">
                 <source>description.guided_step_config_maintenance_check</source>
@@ -284,7 +300,7 @@
             </trans-unit>
             <trans-unit id="IGVYKG0">
                 <source>description.guided_step_config_role_preview_menu</source>
-                <target>Open your menu and choose one of its "View as" entries.</target>
+                <target>Open your menu, at the top right: below My account, which leads to your address and password, choose View as, followed by a level below yours.</target>
             </trans-unit>
             <trans-unit id="LX1nN.Y">
                 <source>description.guided_step_config_role_preview_open</source>
@@ -478,6 +494,18 @@
                 <source>flash.content_import_unsupported_kind</source>
                 <target>No import provider is registered yet for "%kind%"</target>
             </trans-unit>
+            <trans-unit id="SHNqVJY">
+                <source>flash.email_change_sent</source>
+                <target>If this address is available, a confirmation link has just been sent to it.</target>
+            </trans-unit>
+            <trans-unit id="8rJggx5">
+                <source>flash.email_changed</source>
+                <target>Your email address has been changed.</target>
+            </trans-unit>
+            <trans-unit id="inTY_oz">
+                <source>flash.email_taken</source>
+                <target>This address is already used by another account: your address was not changed.</target>
+            </trans-unit>
             <trans-unit id="cZp7sGW">
                 <source>flash.health_check_already_running</source>
                 <target>A run is already in progress. Wait for it to finish before starting another.</target>
@@ -489,6 +517,26 @@
             <trans-unit id="Adv4I1e">
                 <source>flash.health_check_run_invalid_token</source>
                 <target>Invalid security token, please try again</target>
+            </trans-unit>
+            <trans-unit id="gg676Mr">
+                <source>flash.login_code_disabled</source>
+                <target>The admin login code is disabled.</target>
+            </trans-unit>
+            <trans-unit id="aDwKHrH">
+                <source>flash.login_code_enabled</source>
+                <target>Admins will receive a code by email when logging in from a new device.</target>
+            </trans-unit>
+            <trans-unit id="qnZu8hW">
+                <source>flash.login_code_exhausted</source>
+                <target>Too many wrong codes: you have been logged out.</target>
+            </trans-unit>
+            <trans-unit id="FMWAdYh">
+                <source>flash.login_code_not_resent</source>
+                <target>Wait a minute before asking for a new code.</target>
+            </trans-unit>
+            <trans-unit id="QCksWg5">
+                <source>flash.login_code_resent</source>
+                <target>A new code has just been sent.</target>
             </trans-unit>
             <trans-unit id="YmaBUaQ">
                 <source>flash.maintenance_disabled</source>
@@ -546,6 +594,14 @@
                 <source>flash.password_changed</source>
                 <target>Your password has been changed</target>
             </trans-unit>
+            <trans-unit id="G4INMIX">
+                <source>flash.profile_saved</source>
+                <target>Your profile has been saved.</target>
+            </trans-unit>
+            <trans-unit id="wdBHr4o">
+                <source>flash.sessions_closed</source>
+                <target>Your other devices have been signed out.</target>
+            </trans-unit>
             <trans-unit id="ZD8H9hY">
                 <source>flash.user_registration_disabled</source>
                 <target>User registration disabled</target>
@@ -586,6 +642,30 @@
                 <source>label.account_delete_email</source>
                 <target>Your email address</target>
             </trans-unit>
+            <trans-unit id="J5lcNHs">
+                <source>label.account_email_change_button</source>
+                <target>Confirm my new address</target>
+            </trans-unit>
+            <trans-unit id="it.C_UW">
+                <source>label.account_email_change_heading</source>
+                <target>Confirm your new email address</target>
+            </trans-unit>
+            <trans-unit id="rZ4nb8m">
+                <source>label.account_email_change_text</source>
+                <target>You asked to use this address for your account. Click the button below to confirm it: it will replace the previous one.</target>
+            </trans-unit>
+            <trans-unit id="ipnXiiz">
+                <source>label.account_email_changed_heading</source>
+                <target>Your email address has been changed</target>
+            </trans-unit>
+            <trans-unit id="1yGzhYi">
+                <source>label.account_email_changed_text</source>
+                <target>The email address of your account is now {{ email }}. If you did not make this change, contact us right away.</target>
+            </trans-unit>
+            <trans-unit id="hUjcRwx">
+                <source>label.account_export</source>
+                <target>Download my data</target>
+            </trans-unit>
             <trans-unit id="9TP0HP4">
                 <source>label.account_inactivity_button</source>
                 <target>Log in</target>
@@ -601,6 +681,14 @@
             <trans-unit id="Rstu.Mi">
                 <source>label.account_inactivity_text</source>
                 <target>To protect your personal data, we do not keep unused accounts. Log in to keep yours, nothing else is needed.</target>
+            </trans-unit>
+            <trans-unit id="K1Q3r82">
+                <source>label.account_password_changed_heading</source>
+                <target>Your password has been changed</target>
+            </trans-unit>
+            <trans-unit id=".Y1v2Bw">
+                <source>label.account_password_changed_text</source>
+                <target>The password of your account has just been changed. If you did not make this change, use "Forgot password" from the login page and contact us right away.</target>
             </trans-unit>
             <trans-unit id="1yVnMgR">
                 <source>label.account_profile</source>
@@ -713,6 +801,10 @@
             <trans-unit id="13FkC7i">
                 <source>label.boolean</source>
                 <target>Boolean (True/False)</target>
+            </trans-unit>
+            <trans-unit id="ozwGdPL">
+                <source>label.change_email</source>
+                <target>Change email address</target>
             </trans-unit>
             <trans-unit id="WJF9KOe">
                 <source>label.change_password</source>
@@ -858,6 +950,10 @@
                 <source>label.false</source>
                 <target>False</target>
             </trans-unit>
+            <trans-unit id="jzQYHlK">
+                <source>label.firstname</source>
+                <target>First name</target>
+            </trans-unit>
             <trans-unit id="9kwOG_r">
                 <source>label.forgot_password</source>
                 <target>Forgot your password?</target>
@@ -965,6 +1061,10 @@
             <trans-unit id="RSrMvT0">
                 <source>label.guided_project_config_health_check</source>
                 <target>Run a health check</target>
+            </trans-unit>
+            <trans-unit id="LxPH_QZ">
+                <source>label.guided_project_config_login_code</source>
+                <target>Ask admins for a code</target>
             </trans-unit>
             <trans-unit id="crTt37.">
                 <source>label.guided_project_config_maintenance</source>
@@ -1089,6 +1189,18 @@
             <trans-unit id="AcvSEaZ">
                 <source>label.guided_step_config_health_check_run</source>
                 <target>Run the check now</target>
+            </trans-unit>
+            <trans-unit id="YEy0IBV">
+                <source>label.guided_step_config_login_code_done</source>
+                <target>Now you know</target>
+            </trans-unit>
+            <trans-unit id="N48Phjy">
+                <source>label.guided_step_config_login_code_enable</source>
+                <target>Turn the login code on</target>
+            </trans-unit>
+            <trans-unit id="ZWWpPNs">
+                <source>label.guided_step_config_login_code_open</source>
+                <target>Open the dashboard</target>
             </trans-unit>
             <trans-unit id="nMjkcTU">
                 <source>label.guided_step_config_maintenance_check</source>
@@ -1994,9 +2106,53 @@
                 <source>label.last_login</source>
                 <target>Last login</target>
             </trans-unit>
+            <trans-unit id="MAr5IcF">
+                <source>label.lastname</source>
+                <target>Last name</target>
+            </trans-unit>
             <trans-unit id="7BYqEbj">
                 <source>label.links</source>
                 <target>Links</target>
+            </trans-unit>
+            <trans-unit id="V3mBDm2">
+                <source>label.locale</source>
+                <target>Preferred language</target>
+            </trans-unit>
+            <trans-unit id="Dz6KAhK">
+                <source>label.login_code</source>
+                <target>Code received by email</target>
+            </trans-unit>
+            <trans-unit id="QIW7uFr">
+                <source>label.login_code_button</source>
+                <target>Confirm</target>
+            </trans-unit>
+            <trans-unit id="EKag_cD">
+                <source>label.login_code_disable</source>
+                <target>Disable the admin login code</target>
+            </trans-unit>
+            <trans-unit id="62.3DBj">
+                <source>label.login_code_enable</source>
+                <target>Enable the admin login code</target>
+            </trans-unit>
+            <trans-unit id="PgarLGE">
+                <source>label.login_code_heading</source>
+                <target>Login code</target>
+            </trans-unit>
+            <trans-unit id="UraoYu0">
+                <source>label.login_code_resend</source>
+                <target>Send another code</target>
+            </trans-unit>
+            <trans-unit id="kK5OjYB">
+                <source>label.login_code_text</source>
+                <target>Here is the code to complete your login. It is valid for 10 minutes. If you did not start this login, change your password.</target>
+            </trans-unit>
+            <trans-unit id="dr1IC3R">
+                <source>label.login_password</source>
+                <target>Password</target>
+            </trans-unit>
+            <trans-unit id="V86_pQi">
+                <source>label.login_with</source>
+                <target>Signed in with</target>
             </trans-unit>
             <trans-unit id="vDCVRyf">
                 <source>label.maintenance</source>
@@ -2137,6 +2293,10 @@
             <trans-unit id="UxNy_E0">
                 <source>label.my_account</source>
                 <target>My account</target>
+            </trans-unit>
+            <trans-unit id="SZ2j3lb">
+                <source>label.new_email</source>
+                <target>New email address</target>
             </trans-unit>
             <trans-unit id="oyd10Po">
                 <source>label.new_password</source>
@@ -2289,6 +2449,14 @@
             <trans-unit id="0PZB8zr">
                 <source>label.roles</source>
                 <target>Roles</target>
+            </trans-unit>
+            <trans-unit id="znwE9XF">
+                <source>label.save</source>
+                <target>Save</target>
+            </trans-unit>
+            <trans-unit id="HwuD6cN">
+                <source>label.sessions_close</source>
+                <target>Sign out my other devices</target>
             </trans-unit>
             <trans-unit id="RZMXcMI">
                 <source>label.severity</source>
@@ -2462,6 +2630,10 @@
                 <source>label.user_registration_enable</source>
                 <target>Enable user registration</target>
             </trans-unit>
+            <trans-unit id="6ta.Ukc">
+                <source>label.username</source>
+                <target>Username</target>
+            </trans-unit>
             <trans-unit id="GQQkfB3">
                 <source>label.users</source>
                 <target>Users</target>
@@ -2484,7 +2656,7 @@
             </trans-unit>
             <trans-unit id="t.3NeWs">
                 <source>text.account_delete_accounting</source>
-                <target>your payments, invoices and credits are kept anonymously, for the time the law requires accounting records to be kept;</target>
+                <target>your paid orders, invoices and credits are kept in your name, for the time the law requires accounting records to be kept;</target>
             </trans-unit>
             <trans-unit id="D2DcS9S">
                 <source>text.account_delete_confirm</source>
@@ -2492,7 +2664,11 @@
             </trans-unit>
             <trans-unit id="WXs9.kK">
                 <source>text.account_delete_content</source>
-                <target>what this site linked to your account is detached from it.</target>
+                <target>anything else this site kept for you that nothing requires keeping is deleted.</target>
+            </trans-unit>
+            <trans-unit id="PpmYM3h">
+                <source>text.account_delete_definitive</source>
+                <target>Deleting your account is permanent: you will not be able to undo it.</target>
             </trans-unit>
             <trans-unit id="r484HjH">
                 <source>text.account_delete_intro</source>
@@ -2502,6 +2678,10 @@
                 <source>text.account_delete_irreversible</source>
                 <target>This cannot be undone.</target>
             </trans-unit>
+            <trans-unit id="hzqVkBe">
+                <source>text.account_delete_owner</source>
+                <target>As the site's owner, your account cannot be deleted from here: another super administrator or the command line has to do it, otherwise nobody could administer the site anymore.</target>
+            </trans-unit>
             <trans-unit id="J4HpwMt">
                 <source>text.account_delete_personal_data</source>
                 <target>your email address, your name and your password are erased, and nobody can log in to this account anymore;</target>
@@ -2509,6 +2689,10 @@
             <trans-unit id="_FiPpZh">
                 <source>text.account_inactivity_deadline</source>
                 <target>Without a login by %date%, your account will be anonymized.</target>
+            </trans-unit>
+            <trans-unit id="JWtDMh7">
+                <source>text.email_change</source>
+                <target>A confirmation link is sent to the new address: it only replaces the current one once that link is opened.</target>
             </trans-unit>
             <trans-unit id="m3ORa7e">
                 <source>text.link_expires_in</source>
@@ -2518,9 +2702,29 @@
                 <source>text.logged_in_as</source>
                 <target>You are logged in as %user%,</target>
             </trans-unit>
+            <trans-unit id="M8DbqdH">
+                <source>text.login_also_with</source>
+                <target>You can also sign in with %providers%, using the same email address: nothing to link.</target>
+            </trans-unit>
+            <trans-unit id="zlCUjMn">
+                <source>text.login_code_expired</source>
+                <target>This code has expired, ask for a new one.</target>
+            </trans-unit>
+            <trans-unit id="SjvyvEQ">
+                <source>text.login_code_intro</source>
+                <target>You are logging in from a new device: a 6-digit code has just been sent to your email address.</target>
+            </trans-unit>
+            <trans-unit id="NgwGFZ7">
+                <source>text.login_code_invalid</source>
+                <target>This code is not the right one.</target>
+            </trans-unit>
             <trans-unit id="hAwsDaz">
                 <source>text.password_oauth</source>
                 <target>You are signed in through an external account (Google…): to give yourself a password, log out, then use "Forgot password" from the login page.</target>
+            </trans-unit>
+            <trans-unit id="CX8vDp9">
+                <source>text.sessions_close</source>
+                <target>Closes every other session open on this account, "Remember me" included: useful after using a shared computer or losing a device. You stay signed in here.</target>
             </trans-unit>
             <trans-unit id="g6ka9K.">
                 <source>text.user_created</source>

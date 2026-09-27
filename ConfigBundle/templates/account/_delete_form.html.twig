@@ -1,0 +1,20 @@
+{# What deleting the account does, then the address typed again - drawn by the deletion page and by the dialog of the member's page alike, the form posting to AccountDeleteController either way #}
+{% trans_default_domain 'config' %}
+<div class="alert alert-warning text">
+    <p>{{ 'text.account_delete_intro'|trans }}</p>
+    <ul>
+        <li>{{ 'text.account_delete_personal_data'|trans }}</li>
+        <li>{{ 'text.account_delete_accounting'|trans }}</li>
+        <li>{{ 'text.account_delete_content'|trans }}</li>
+    </ul>
+    <p>{{ 'text.account_delete_irreversible'|trans }}</p>
+</div>
+
+{{ form_start(form, {action: path('config_account_delete')}) }}
+    <p class="text">{{ 'text.account_delete_confirm'|trans({'%email%': app.user.email}) }}</p>
+    {{ form_row(form.email) }}
+
+    <button class="btn btn-large btn-danger" type="submit">
+        {{ 'label.account_delete_button'|trans }}
+    </button>
+{{ form_end(form) }}

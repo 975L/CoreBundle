@@ -9,6 +9,7 @@
     {% set width = poster.width %}
     {% set height = poster.height %}
 {% endif %}
+{# "h2": a block's title is a section's title, the same rank as Card's - and what the page's <h1> is directly followed by when the block opens it #}
 {% if video %}
-    <twig:c975LUi:Video:Video src="{{ vich_uploader_asset(video) }}" type="{{ video.mimeType }}" poster="{{ poster ? vich_uploader_asset(poster) : '' }}" title="{{ title|default('') }}" description="{{ description|default('') }}" autoplay="{{ 'autoplay' in options }}" muted="{{ 'muted' in options }}" loop="{{ 'loop' in options }}" width="{{ width }}" height="{{ height }}" class="{{ class|default([]) }}"/>
+    <twig:c975LUi:Video:Video src="{{ vich_uploader_asset(video) }}" type="{{ video.mimeType }}" poster="{{ poster ? vich_uploader_asset(poster) : '' }}" title="{{ title|default('') }}" description="{{ description|default('') }}" autoplay="{{ 'autoplay' in options }}" muted="{{ 'muted' in options }}" loop="{{ 'loop' in options }}" width="{{ width }}" height="{{ height }}" class="{{ class|default([]) }}" level="h2"/>
 {% endif %}

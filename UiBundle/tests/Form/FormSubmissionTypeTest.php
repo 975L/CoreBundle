@@ -19,6 +19,7 @@ use c975L\UiBundle\Service\ContentTranslator;
 use c975L\UiBundle\Service\FormBotProtection;
 use c975L\UiBundle\Service\FormTranslator;
 use c975L\UiBundle\Validator\Constraints\DnsEmail;
+use c975L\UiBundle\Validator\Constraints\PasswordPolicy;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -41,10 +42,7 @@ use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
 use Symfony\Component\Validator\Constraints\Email;
 use Symfony\Component\Validator\Constraints\IsTrue;
-use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
-use Symfony\Component\Validator\Constraints\NotCompromisedPassword;
-use Symfony\Component\Validator\Constraints\PasswordStrength;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -256,9 +254,7 @@ class FormSubmissionTypeTest extends TestCase
         $constraints = $added['plainPassword']['options']['first_options']['constraints'];
 
         $this->assertInstanceOf(NotBlank::class, $constraints[0]);
-        $this->assertInstanceOf(Length::class, $constraints[1]);
-        $this->assertInstanceOf(PasswordStrength::class, $constraints[2]);
-        $this->assertInstanceOf(NotCompromisedPassword::class, $constraints[3]);
+        $this->assertInstanceOf(PasswordPolicy::class, $constraints[1]);
     }
 
     // Without this, a browser's password manager treats the email+password pair as a login form and autofills the visitor's already-saved password for this site

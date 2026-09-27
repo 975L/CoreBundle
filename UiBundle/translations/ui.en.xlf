@@ -400,7 +400,7 @@
             </trans-unit>
             <trans-unit id="HmXaT6b">
                 <source>description.guided_step_ui_review_pick</source>
-                <target>The text, the score and the name are its author's: this screen does not rewrite them. The pencil only shows on a review this site can answer - one from a platform it does not publish back to is read here and moderated over there.</target>
+                <target>Open, with the pencil at the end of its row, a pending review written on the site. The text, the score and the name are its author's: this screen does not rewrite them. The pencil only shows on a review this site can answer.</target>
             </trans-unit>
             <trans-unit id="dGJXfNy">
                 <source>description.guided_step_ui_review_reply</source>
@@ -1485,6 +1485,10 @@
             <trans-unit id="MXpeMi7">
                 <source>label.city</source>
                 <target>City</target>
+            </trans-unit>
+            <trans-unit id="CzzpYWY">
+                <source>label.close</source>
+                <target>Close</target>
             </trans-unit>
             <trans-unit id="m0L.u3G">
                 <source>label.closes</source>

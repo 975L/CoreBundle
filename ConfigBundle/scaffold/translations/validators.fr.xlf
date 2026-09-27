@@ -18,18 +18,6 @@
                 <source>text.email_taken</source>
                 <target>Un compte existe déjà avec cette adresse email</target>
             </trans-unit>
-            <trans-unit id="DY8kkID">
-                <source>text.password_complexity</source>
-                <target>Votre mot de passe doit comporter au moins 8 caractères et inclure une minuscule, une majuscule, un chiffre et un caractère spécial</target>
-            </trans-unit>
-            <trans-unit id="TaG4lmE">
-                <source>text.password_max_length</source>
-                <target>Votre mot de passe ne doit pas dépasser {{ limit }} caractères</target>
-            </trans-unit>
-            <trans-unit id="epDiKHK">
-                <source>text.password_min_length</source>
-                <target>Votre mot de passe doit comporter au moins {{ limit }} caractères</target>
-            </trans-unit>
             <trans-unit id="G1fcoic">
                 <source>text.password_mismatch</source>
                 <target>Les mots de passe doivent être identiques.</target>

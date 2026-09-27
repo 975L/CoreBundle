@@ -92,6 +92,10 @@ services:
         arguments:
             $providers: !tagged_iterator c975l.account_section_provider
 
+    c975L\ConfigBundle\Account\AccountDataCollector:
+        arguments:
+            $providers: !tagged_iterator c975l.account_data_provider
+
     c975L\ConfigBundle\Management\LinkableRouteRegistry:
         arguments:
             $providers: !tagged_iterator c975l.linkable_route_provider

@@ -154,6 +154,7 @@ img.white {
 .audio-title {
     margin-bottom: 0.5rem;
     font-family: var(--font-family-title);
+    font-size: var(--media-title-size);
     color: var(--section-text, var(--text));
     text-align: start;
 }

@@ -1,6 +1,6 @@
 ---
 name: c975l-users
-description: "Use this skill when working on accounts, roles or access control in a Symfony application built on the c975L ecosystem — the User contract, the site-role-* settings, ROLE_SUPER_ADMIN and restricted configs, previewing a lower role, registration and its anti-spam layers, password reset, login throttling and back-office access. Triggers on: UserInterface contract, UserCrudController, site-role-admin, site-role-editor, site-role-contributor, ROLE_CONTRIBUTOR, ROLE_SUPER_ADMIN, RolePreview, role preview, View as, RolePreviewRoleVoter, RolePreviewRoleVoterPass, RolePreviewBanner, user-roles-available, UserManagementVoter, BackOfficeAccessVoter, C975L_ACCESS_BACK_OFFICE, EmailVerifier, UserRegistrar, PasswordResetter, isEnabled, isVerified, UserChecker, sendEmailConfirmation, resend confirmation, confirmation cooldown, EmailVerifier::COOLDOWN, delete a user, unverified account, ON DELETE SET NULL, login_throttling, access_control, register form, reset_password_request, honeypot, DnsEmail, user-creation-notification, InactivityAwareInterface, users-cleanup, c975l:config:users-cleanup, UsersCleanupCommand, InactiveUserFinder, UserAnonymizedEvent, AccountDeleteController, config_account_delete, delete my account, AccountController, config_account, my account page, /account, AccountSectionProviderInterface, AccountSectionBuilder, AccountPasswordType, change password, right to erasure, LastLoginSubscriber, lastLogin, user-inactivity-days, user-inactivity-notice-days, anonymize, inactive accounts, tutorial-account, c975l:config:tutorial-account, TutorialAccount, tutorial@example.com, end-to-end account, screen recorder account."
+description: "Use this skill when working on accounts, roles or access control in a Symfony application built on the c975L ecosystem — the User contract, the site-role-* settings, ROLE_SUPER_ADMIN and restricted configs, previewing a lower role, registration and its anti-spam layers, password reset, login throttling and back-office access. Triggers on: UserInterface contract, UserCrudController, site-role-admin, site-role-editor, site-role-contributor, ROLE_CONTRIBUTOR, ROLE_SUPER_ADMIN, RolePreview, role preview, View as, RolePreviewRoleVoter, RolePreviewRoleVoterPass, RolePreviewBanner, user-roles-available, UserManagementVoter, BackOfficeAccessVoter, C975L_ACCESS_BACK_OFFICE, EmailVerifier, UserRegistrar, PasswordResetter, isEnabled, isVerified, UserChecker, sendEmailConfirmation, resend confirmation, confirmation cooldown, EmailVerifier::COOLDOWN, delete a user, unverified account, ON DELETE SET NULL, login_throttling, access_control, register form, reset_password_request, honeypot, DnsEmail, user-creation-notification, InactivityAwareInterface, users-cleanup, c975l:config:users-cleanup, UsersCleanupCommand, InactiveUserFinder, UserAnonymizedEvent, AccountDeleteController, config_account_delete, delete my account, AccountController, config_account, my account page, /account, AccountSectionProviderInterface, AccountSectionBuilder, AccountPasswordType, PasswordPolicy, password rules, change password, AccountEmailType, EmailChanger, change email, config_account_email_confirm, account_email_change, account_email_changed, AccountProfileType, AccountProfileTypeExtension, AccountDataProviderInterface, AccountDataCollector, config_account_export, data export, account_password_changed, sendSignedLink, right to erasure, LastLoginSubscriber, lastLogin, user-inactivity-days, user-inactivity-notice-days, anonymize, inactive accounts, tutorial-account, c975l:config:tutorial-account, login-admin-code, LoginCode, LoginCodeShortcutController, LoginCodeSubscriber, LoginCodeController, config_login_code, config_login_code_resend, config-login-code, RememberMeBadge, TrustedDevice, trusted device, login_code, two-factor, 2FA, email code, TutorialAccount, tutorial@example.com, end-to-end account, screen recorder account."
 ---
 
 # c975L ConfigBundle — users, roles and access
@@ -10,7 +10,7 @@ description: "Use this skill when working on accounts, roles or access control i
 **Package:** `c975l/core-bundle` · **Bundle:** `c975L\ConfigBundle\`
 
 **Key source paths** (relative to this bundle's directory inside the package):
-`src/Contract/UserInterface.php`, `src/Controller/Management/UserCrudController.php`, `src/Controller/RolePreviewController.php`, `src/Security/`, `src/Service/UserRegistrar.php`, `src/Service/EmailVerifier.php`, `src/Service/PasswordResetter.php`, `src/Service/UserFormSeeder.php`, `src/EventSubscriber/LoginRequestSubscriber.php`, `src/Command/UserCreateCommand.php`, `src/Command/UsersCleanupCommand.php`, `src/Contract/InactivityAwareInterface.php`, `src/Service/InactiveUserFinder.php`, `src/EventSubscriber/LastLoginSubscriber.php`, `src/Event/UserAnonymizedEvent.php`, `src/Controller/AccountDeleteController.php`, `src/Command/TutorialAccountCommand.php`, `src/Service/TutorialAccount.php`, `scaffold/src/`
+`src/Contract/UserInterface.php`, `src/Controller/Management/UserCrudController.php`, `src/Controller/RolePreviewController.php`, `src/Security/`, `src/Service/UserRegistrar.php`, `src/Service/EmailVerifier.php`, `src/Service/PasswordResetter.php`, `src/Service/UserFormSeeder.php`, `src/EventSubscriber/LoginRequestSubscriber.php`, `src/Command/UserCreateCommand.php`, `src/Command/UsersCleanupCommand.php`, `src/Contract/InactivityAwareInterface.php`, `src/Service/InactiveUserFinder.php`, `src/EventSubscriber/LastLoginSubscriber.php`, `src/Event/UserAnonymizedEvent.php`, `src/Controller/AccountDeleteController.php`, `src/Security/LoginCode.php`, `src/Security/TrustedDevice.php`, `src/EventSubscriber/LoginCodeSubscriber.php`, `src/Controller/LoginCodeController.php`, `src/Command/TutorialAccountCommand.php`, `src/Service/TutorialAccount.php`, `scaffold/src/`
 
 **Related skills:** `c975l-config`, `c975l-management` in this same bundle, and `c975l-forms-emails` in UiBundle beside it.
 
@@ -165,6 +165,17 @@ Every account created through `UserRegistrar` also notifies the site's own `emai
 `kernel.default_locale`. Uncheck `user-creation-notification` to stop it. It never gets in the way of
 the registration itself.
 
+## Email code for admins
+
+`login-admin-code` (bool, off by default, not restricted, flipped by the dashboard tile `LoginCodeShortcutController::TOGGLE_ROUTE`) makes `LoginCodeSubscriber` hold a password login
+(`app_login` only) of an account granted `site-role-admin` on `config_login_code` until the 6-digit code
+`LoginCode` emailed (template `login_code`, `{{ code }}`) is typed; every other route redirects there, the
+logout and `_`-prefixed routes aside. 10 minutes per code, a resend per minute, 5 wrong codes log out.
+`TrustedDevice` then sets a 30-day cookie signed with `kernel.secret` over the identifier, the expiry and the
+password hash — no table, and a password change forgets every browser. A code that cannot be sent lets the
+login through (logged), so a mailer outage never locks the admin out. The held login's remember-me badge is
+disabled, so no cookie skips the code. The `config-login-code` guided project walks the tile.
+
 ## Inactive accounts
 
 `c975l:config:users-cleanup`, scheduled weekly by `ConfigMaintenanceTaskProvider`, acts only on a
@@ -173,12 +184,13 @@ User implementing **`InactivityAwareInterface`** (the scaffolded one does). An a
 template; still unused at the end of the notice, it is **anonymized, never deleted**, so what refers to
 it stays for the accounting retention. A disabled account is anonymized without a notice. The app's
 `anonymize()` blanks its own personal fields, and an app unlinking what a user owns listens to
-`UserAnonymizedEvent`. `LastLoginSubscriber` restarts the clock on every login.
+`UserAnonymizedEvent` (its `email` is the address held before `anonymize()`). `LastLoginSubscriber` restarts the clock on every login.
 
 A user deletes their own account at `/account/delete` (`config_account_delete`, fully authenticated,
 404 for a User without `InactivityAwareInterface`, 403 for a `ROLE_SUPER_ADMIN`): typing their email
 again anonymizes it the same way, dispatches `UserAnonymizedEvent`, then logs them out and returns the
-firewall's logout response. No menu links to it, the site does.
+firewall's logout response. No menu links to it, the site does. PaymentBundle's `UserAnonymizedEvent`
+listener deletes the account's unpaid baskets; paid orders, invoices and credits stay, nominative.
 
 ## The member's own page
 
@@ -186,19 +198,39 @@ firewall's logout response. No menu links to it, the site does.
 `LocalizedRouteNegotiator` like PaymentBundle's orders) open on two page sections ConfigBundle draws
 itself: the profile — email, creation and last login read with `??` since only the scaffold's `User`
 has them, the language read, all laid out by UiBundle's `Facts` component, and a link to
-`/account/delete` when that page would accept the account — then `AccountPasswordType` (current
-password checked by `UserPassword`, the new one under the scaffold's constraints, whose messages the
-bundle's own `validators` catalogue carries too). One page section per provider follows. A password is
+then `AccountPasswordType` (current password checked by `UserPassword`, the new one under UiBundle's
+`PasswordPolicy`, the rule registration and reset share). One page section per provider follows, then
+`account_actions`: sign out, and the deletion when `/account/delete` would accept the account — a
+`<twig:c975LUi:Dialog:Dialog>` drawing `account/_delete_form.html.twig` (the page's own form, posted
+there), disabled with `text.account_delete_owner` for a `ROLE_SUPER_ADMIN`. A password is
 only changed under `IS_AUTHENTICATED_FULLY`, hashed and flushed by `PasswordResetter`. A session opened
 through OAuth (`OAuthLoginController::SESSION_OAUTH_LOGIN`) gets no form: its account holds a password
 nobody knows, and nothing on the account itself tells it apart.
+
+Between them, `AccountEmailType` (current password, new address) hands the address to `EmailChanger`,
+which sends the `account_email_change` template to it — nothing when an account holds it, the flash
+being the same — through `EmailVerifier::sendSignedLink()`, the new address in the signed URL's
+`email` parameter. `config_account_email_confirm` (`/account/email/confirm`, `ROLE_USER`) validates the
+link against the current address (`getEmail()`, not the identifier), swaps it with `setEmail()`, and sends `account_email_changed` to the
+old one. No `pendingEmail` column. Hidden for an OAuth session, whose provider finds the account by
+that address. `AccountProfileType` (bound to `App\Entity\User`) holds every mapped column but
+`AccountProfileType::MANAGED_FIELDS`, type guessed, `locale` as the site's languages, labels
+`label.<snake_case>` in `config` when translated; an `AbstractTypeExtension` changes or removes one.
+Any column the site adds is member-editable: one it keeps for itself (credits, a ban) must be removed that way.
+The profile section shows it once it has a field; the column equal to `getUserIdentifier()` is left out.
+`/account/export` (`config_account_export`, fully authenticated) downloads `AccountDataCollector`'s JSON:
+`ProfileAccountDataProvider` (`profile`, no password), `ActivityAccountDataProvider` (UiBundle's favorites,
+ratings, reviews) plus every `AccountDataProviderInterface`. `PasswordResetter`
+sends `account_password_changed` after every change (`notify: false` for `AccountSessionsType`, which
+hashes the same password again to sign every other device out). `SESSION_OAUTH_LOGIN` holds the provider's name.
 
 A section is an `AccountSectionProviderInterface::getAccountSections(UserInterface $user)` entry —
 `title` and `translation_domain`, a `template` drawing one page section as a block template does
 (`block-section`, `section-wrap`, UiBundle's `Section/_head.html.twig`), given its `context` plus the
 translated `title` and an `anchor_id` only (`with_context = false`), a `position` lowest first (PaymentBundle 10, PurchaseCreditsBundle 20) —
 autoconfigured and merged by `AccountSectionBuilder`. `LinkableRouteProvider` offers `config_account`
-as a SiteBundle menu target in every site language.
+as a SiteBundle menu target in every site language, and the back office's user menu links it for
+every account.
 
 ## Tutorial account
 
@@ -212,12 +244,18 @@ is taken over, never duplicated. The command refuses to run outside the `dev` en
 ## Do not
 
 - **Do not type a property against `App\Entity\User`** from a bundle. Use the contract.
+- **Do not write the new address before it is confirmed**, nor add a pending column — the signed
+  link carries it. Go through `EmailChanger`.
+- **Do not put `PasswordStrength` or a hand-made `Length`/`Regex` on a new password** — use
+  `PasswordPolicy`, one rule for every form.
 - **Do not add a `role_hierarchy`** expecting `ROLE_ADMIN` to imply `ROLE_EDITOR`.
 - **Do not list `ROLE_SUPER_ADMIN` in `user-roles-available`.**
 - **Do not reduce the token's roles to preview a level** — the firewall writes it back to the session
   as the real one. Go through `RolePreview`.
 - **Do not keep the tutorial account** once the run is over, nor open it anywhere but `dev` — close it
   with `--close`.
+- **Do not gate Google's or remember-me logins behind the login code**, nor lock the login when the code
+  cannot be sent — the admin would be shut out of the site they have to repair.
 - **Do not check `ROLE_ADMIN` in a controller** — read `site-role-admin` or `site-role-editor`.
 - **Do not gate a screen open to the whole back office on `site-role-editor`** — use
   `BackOfficeAccessVoter::ACCESS`, or an admin-only account is turned away.

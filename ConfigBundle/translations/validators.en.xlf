@@ -30,13 +30,13 @@
                 <source>text.current_password_wrong</source>
                 <target>This is not your current password</target>
             </trans-unit>
-            <trans-unit id="TaG4lmE">
-                <source>text.password_max_length</source>
-                <target>Your password should be at most {{ limit }} characters</target>
+            <trans-unit id="tRDrJNh">
+                <source>text.email_invalid</source>
+                <target>This email address is not valid.</target>
             </trans-unit>
-            <trans-unit id="epDiKHK">
-                <source>text.password_min_length</source>
-                <target>Your password should be at least {{ limit }} characters</target>
+            <trans-unit id="DIc4dyr">
+                <source>text.email_required</source>
+                <target>Please enter an email address.</target>
             </trans-unit>
             <trans-unit id="G1fcoic">
                 <source>text.password_mismatch</source>

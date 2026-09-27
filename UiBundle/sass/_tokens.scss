@@ -16,6 +16,8 @@
         --alert-warning-background: #f9dba7;
         // The ground a sticky player writes on, which cannot be transparent: it hides the column sliding under it
         --audio-sticky-background: var(--background);
+        // A media's title - a video's, a player's - at the h3 scale whatever its rank: a block's title is an <h2>, and the theme's h2 rule would blow the one in a "video_grid" cell up to a page heading. The standalone block states its own, a section title's (see sass/_images.scss)
+        --media-title-size: calc(1.3rem * var(--font-size-title-scale, 1));
         // The two buttons pulling to the top and to the bottom of the page (sass/_scroll-buttons.scss), which a long page is walked with
         --back-pull-background-color: #bababa;
         --back-pull-background-color-hover: #9c9fa3;

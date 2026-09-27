@@ -2,15 +2,13 @@
 
 namespace App\Form;
 
+use c975L\UiBundle\Validator\Constraints\PasswordPolicy;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
-use Symfony\Component\Validator\Constraints\NotCompromisedPassword;
-use Symfony\Component\Validator\Constraints\PasswordStrength;
 
 class ChangePasswordFormType extends AbstractType
 {
@@ -30,14 +28,7 @@ class ChangePasswordFormType extends AbstractType
                         new NotBlank(
                             message: 'text.password_required',
                         ),
-                        new Length(
-                            min: 8,
-                            max: 25,
-                            minMessage: 'text.password_min_length',
-                            maxMessage: 'text.password_max_length',
-                        ),
-                        new PasswordStrength(),
-                        new NotCompromisedPassword(),
+                        new PasswordPolicy(),
                     ],
                     'label' => 'label.new_password',
                 ],

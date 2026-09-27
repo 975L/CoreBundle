@@ -32,7 +32,7 @@ class OAuthLoginController extends AbstractController
 
     private const string SESSION_REDIRECT = 'config_oauth_redirect';
 
-    // Set once a provider opened the session: its account may hold a password nobody knows, so AccountController offers no password change for it
+    // The name of the provider that opened the session ("Google"): its account may hold a password nobody knows, so AccountController offers no password change for it, and says how the member signed in
     public const string SESSION_OAUTH_LOGIN = 'config_oauth_login';
 
     public function __construct(
@@ -125,7 +125,7 @@ class OAuthLoginController extends AbstractController
 
         $redirect = $session->remove(self::SESSION_REDIRECT);
         $response = $security->login($resolution->user, 'form_login');
-        $request->getSession()->set(self::SESSION_OAUTH_LOGIN, true);
+        $request->getSession()->set(self::SESSION_OAUTH_LOGIN, $oauthProvider->getName());
 
         // Where they clicked from wins over the firewall's own target path, which is where a form login would have gone. Read back through the same check as on the way in: a session can be written to by anything else running in the same app
         if (is_string($redirect) && null !== $this->relativePath($redirect)) {

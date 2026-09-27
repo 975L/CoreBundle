@@ -142,9 +142,20 @@ class OffsiteSynchronizerTest extends TestCase
             ->purgeBackupDirs('previous', 15);
 
         $this->assertSame(
-            ['delete', '--rmdirs', '--min-age', '15d', 'storagebox:example.com/previous'],
-            $captured['arguments'],
+            ['delete', '--min-age', '15d', 'storagebox:example.com/previous'],
+            $captured['calls'][0],
         );
+    }
+
+    // The folders are left to "rmdirs", which removes only the empty ones: "delete --rmdirs" reported every folder still inside the window as "directory not empty", and the purge warned on every run
+    public function testTheEmptiedFoldersAreRemovedWithoutTouchingTheOnesStillInTheWindow(): void
+    {
+        $captured = new \ArrayObject();
+        $this->createSynchronizerReturning(['ok' => true, 'error' => null, 'output' => ''], $captured)
+            ->purgeBackupDirs('previous', 15);
+
+        $this->assertSame(['rmdirs', '--leave-root', 'storagebox:example.com/previous'], $captured['calls'][1]);
+        $this->assertNotContains('--rmdirs', $captured['calls'][0]);
     }
 
     // Overriding the run rather than putting a fake binary on the PATH: what is under test is what this class makes of an exit code and a message, and a host that happens to have a real rclone would otherwise answer instead
@@ -171,6 +182,7 @@ class OffsiteSynchronizerTest extends TestCase
             protected function run(array $arguments, int $timeout): array
             {
                 $this->captured['arguments'] = $arguments;
+                $this->captured['calls'] = [...($this->captured['calls'] ?? []), $arguments];
                 $this->captured['timeout'] = $timeout;
 
                 return $this->result;

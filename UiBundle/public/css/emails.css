@@ -15,6 +15,7 @@
     --alert-success-background: #d0e9c6;
     --alert-warning-background: #f9dba7;
     --audio-sticky-background: var(--background);
+    --media-title-size: calc(1.3rem * var(--font-size-title-scale, 1));
     --back-pull-background-color: #bababa;
     --back-pull-background-color-hover: #9c9fa3;
     --back-pull-color: #333;

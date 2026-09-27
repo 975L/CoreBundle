@@ -1,4 +1,5 @@
 {# Adapter for the dynamic Block system — maps Block data to the Video:Iframe component #}
 {# The block's single media is the player's poster, either imported from the platform or uploaded by hand (see VideoPosterImporter) #}
 {% set posterMedia = block.media|first|default(null) %}
-<twig:c975LUi:Video:Iframe src="{{ src }}" title="{{ title|default('') }}" description="{{ description|default('') }}" poster="{{ posterMedia and posterMedia.filename ? vich_uploader_asset(posterMedia) : '' }}" width="{{ width }}" height="{{ height }}" class="{{ class }}"/>
+{# "h2": a block's title is a section's title, the same rank as Card's - and what the page's <h1> is directly followed by when the block opens it #}
+<twig:c975LUi:Video:Iframe src="{{ src }}" title="{{ title|default('') }}" description="{{ description|default('') }}" poster="{{ posterMedia and posterMedia.filename ? vich_uploader_asset(posterMedia) : '' }}" width="{{ width }}" height="{{ height }}" class="{{ class }}" level="h2"/>

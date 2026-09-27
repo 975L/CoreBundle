@@ -42,19 +42,26 @@ class EmailVerifier
     // Rendered here rather than from a Twig file: the layout wrapping it comes from whichever bundle registers an EmailLayoutProviderInterface (SiteBundle's branded one when installed, UiBundle's plain fallback otherwise), so this bundle sends the same email whether or not a site foundation sits on top of it. Through EmailService, so registration gets the same "email-debug" preview as every other email. False when the template was renamed or deleted from the back-office, an empty email being worse than none - and false too where the address was written to less than an hour ago
     public function sendEmailConfirmation(string $verifyEmailRouteName, UserInterface $user, string $subject, string $to): bool
     {
+        return $this->sendSignedLink(self::EMAIL_TEMPLATE, $verifyEmailRouteName, $user, ['id' => $this->getUserId($user)], $subject, $to);
+    }
+
+    // A signed link to that route, bound to the account's id and to $boundTo (its identifier by default), sent in that named template to that address - what the registration and the change of address (see EmailChanger) both send. $extraParams travel in the signed URL, so none of them can be altered on the way back. Same cooldown and same false as sendEmailConfirmation()
+    /** @param array<string, scalar|null> $extraParams */
+    public function sendSignedLink(string $template, string $routeName, UserInterface $user, array $extraParams, string $subject, string $to, ?string $boundTo = null): bool
+    {
         // The registration form answers the same thing whether or not the address is already taken, so anyone may post a stranger's address and have this email sent to them. The form's rate limiter counts the caller and nothing else, and one address after another out of one's own IPv6 block walks straight through it: the ceiling that matters here is the one on the mailbox being written to
         if ($this->withinCooldown($to)) {
             return false;
         }
 
         $signatureComponents = $this->verifyEmailHelper->generateSignature(
-            $verifyEmailRouteName,
+            $routeName,
             (string) $this->getUserId($user),
-            $user->getUserIdentifier(),
-            ['id' => $this->getUserId($user)]
+            $boundTo ?? $user->getUserIdentifier(),
+            $extraParams
         );
 
-        $html = $this->emailTemplateRenderer->renderNamed(self::EMAIL_TEMPLATE, [
+        $html = $this->emailTemplateRenderer->renderNamed($template, [
             'signed_url' => $signatureComponents->getSignedUrl(),
             'expires_at' => $this->translator->trans('text.link_expires_in', [], 'config')
                 . ' ' . $this->translator->trans(

@@ -8,8 +8,8 @@
 {% set robots = 'noindex, follow' %}
 
 {% block content %}
-    {# "blocks", so the sections read the rhythm a composed page gives its own (see UiBundle's sass/_page-sections.scss) #}
-    <div class="account blocks">
+    {# "blocks", so the sections read the rhythm a composed page gives its own, the tight step for a page of short ones (see UiBundle's sass/_page-sections.scss) #}
+    <div class="account blocks blocks--tight">
         {% block account_profile %}
             <section class="block-section account-profile" id="account-profile">
                 <div class="section-wrap">
@@ -22,12 +22,36 @@
                         {label: 'label.account_created'|trans, value: creation ? creation|format_datetime('long', 'none') : null},
                         {label: 'label.last_login'|trans, value: lastLogin ? lastLogin|format_datetime('long', 'short') : null},
                         {label: 'label.language'|trans, value: app.request.locale|language_name(app.request.locale)|capitalize},
+                        {label: 'label.login_with'|trans, value: loginProvider ?? 'label.login_password'|trans},
                     ] }}"/>
-                    {% if deletable %}
-                        <p><a href="{{ path('config_account_delete') }}" class="btn btn-danger">{{ 'label.account_delete'|trans }}</a></p>
+                    {% if otherProviders is not empty %}
+                        <p>{{ 'text.login_also_with'|trans({'%providers%': otherProviders|join(', ')}) }}</p>
+                    {% endif %}
+                    {# The site's own fields, added to AccountProfileType by an extension, null when it added none #}
+                    {% if profileForm %}
+                        {{ form_start(profileForm, {attr: {class: 'form--section'}}) }}
+                            {{ form_widget(profileForm) }}
+                            <button class="btn btn-primary" type="submit">{{ 'label.save'|trans }}</button>
+                        {{ form_end(profileForm) }}
                     {% endif %}
                 </div>
             </section>
+        {% endblock %}
+
+        {# Left out for a session opened through a provider, which finds its account by this very address #}
+        {% block account_email %}
+            {% if emailForm %}
+                <section class="block-section account-email" id="account-email">
+                    <div class="section-wrap">
+                        {{ include('@c975LUi/components/Section/_head.html.twig', {title: 'label.change_email'|trans}, with_context = false) }}
+                        <p>{{ 'text.email_change'|trans }}</p>
+                        {{ form_start(emailForm, {attr: {class: 'form--section'}}) }}
+                            {{ form_widget(emailForm) }}
+                            <button class="btn btn-primary" type="submit">{{ 'label.change_email'|trans }}</button>
+                        {{ form_end(emailForm) }}
+                    </div>
+                </section>
+            {% endif %}
         {% endblock %}
 
         {% block account_password %}
@@ -35,15 +59,31 @@
                 <div class="section-wrap">
                     {{ include('@c975LUi/components/Section/_head.html.twig', {title: 'label.change_password'|trans}, with_context = false) }}
                     {% if passwordForm %}
-                        {{ form_start(passwordForm) }}
+                        {{ form_start(passwordForm, {attr: {class: 'form--section'}}) }}
                             {{ form_widget(passwordForm) }}
                             <button class="btn btn-primary" type="submit">{{ 'label.change_password'|trans }}</button>
                         {{ form_end(passwordForm) }}
                     {% else %}
-                        <p class="text">{{ 'text.password_oauth'|trans }}</p>
+                        <p>{{ 'text.password_oauth'|trans }}</p>
                     {% endif %}
                 </div>
             </section>
+        {% endblock %}
+
+        {# The same password asked again, as the password change: a session opened through a provider has no password it knows #}
+        {% block account_sessions %}
+            {% if sessionsForm %}
+                <section class="block-section account-sessions" id="account-sessions">
+                    <div class="section-wrap">
+                        {{ include('@c975LUi/components/Section/_head.html.twig', {title: 'label.sessions_close'|trans}, with_context = false) }}
+                        <p>{{ 'text.sessions_close'|trans }}</p>
+                        {{ form_start(sessionsForm, {attr: {class: 'form--section'}}) }}
+                            {{ form_widget(sessionsForm) }}
+                            <button class="btn btn-primary" type="submit">{{ 'label.sessions_close'|trans }}</button>
+                        {{ form_end(sessionsForm) }}
+                    </div>
+                </section>
+            {% endif %}
         {% endblock %}
 
         {# Each one a page section drawn by its own template, as a block's is: handed its translated title and its anchor, and nothing of this page's variables #}
@@ -51,6 +91,31 @@
             {% for section in sections %}
                 {{ include(section.template, section.context|merge({title: section.title|trans({}, section.translation_domain), anchor_id: 'account-section-' ~ loop.index}), with_context = false) }}
             {% endfor %}
+        {% endblock %}
+
+        {# Last, after everything the account holds: its data downloaded, leaving the session, and erasing the account in a dialog asking for the address again - disabled for the site's owner, with why #}
+        {% block account_actions %}
+            <section class="block-section account-actions" id="account-actions">
+                <div class="section-wrap">
+                    <div class="flex-center">
+                        <a href="{{ path('config_account_export') }}" class="btn btn-secondary">{{ 'label.account_export'|trans }}</a>
+                        <a href="{{ logout_path() }}" class="btn btn-secondary">{{ 'label.signout'|trans }}</a>
+                        {% if deleteForm %}
+                            <button type="button" class="btn btn-danger" commandfor="account-delete-dialog" command="show-modal" aria-describedby="account-delete-note">{{ 'label.account_delete'|trans }}</button>
+                        {% elseif is_granted('ROLE_SUPER_ADMIN') %}
+                            <button type="button" class="btn btn-danger" disabled aria-describedby="account-delete-note">{{ 'label.account_delete'|trans }}</button>
+                        {% endif %}
+                    </div>
+                    {% if deleteForm %}
+                        <p class="text text-center" id="account-delete-note">{{ 'text.account_delete_definitive'|trans }}</p>
+                        <twig:c975LUi:Dialog:Dialog id="account-delete-dialog" title="{{ 'label.account_delete'|trans }}">
+                            {{ include('@c975LConfig/account/_delete_form.html.twig', {form: deleteForm}) }}
+                        </twig:c975LUi:Dialog:Dialog>
+                    {% elseif is_granted('ROLE_SUPER_ADMIN') %}
+                        <p class="text text-center" id="account-delete-note">{{ 'text.account_delete_owner'|trans }}</p>
+                    {% endif %}
+                </div>
+            </section>
         {% endblock %}
     </div>
 {% endblock %}

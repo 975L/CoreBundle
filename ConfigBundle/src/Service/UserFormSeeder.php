@@ -11,6 +11,7 @@
 namespace c975L\ConfigBundle\Service;
 
 use c975L\ConfigBundle\Command\UsersCleanupCommand;
+use c975L\ConfigBundle\Security\LoginCode;
 use c975L\UiBundle\Contract\EmailTemplateProviderInterface;
 use c975L\UiBundle\Entity\EmailBlock;
 use c975L\UiBundle\Entity\FormField;
@@ -117,6 +118,25 @@ class UserFormSeeder implements EmailTemplateProviderInterface
                 [EmailBlock::TYPE_TEXT, null, null, $this->trans('label.password_reset_text', $locale), null, null],
                 [EmailBlock::TYPE_BUTTON, null, null, null, $this->trans('label.password_reset_button', $locale), '{{ reset_url }}'],
                 [EmailBlock::TYPE_TEXT, null, null, '{{ expires_at }}', null, null],
+            ];
+            $blocks[EmailChanger::CONFIRM_TEMPLATE][$locale] = [
+                [EmailBlock::TYPE_HEADING, $this->trans('label.account_email_change_heading', $locale), EmailBlock::LEVEL_H1, null, null, null],
+                [EmailBlock::TYPE_TEXT, null, null, $this->trans('label.account_email_change_text', $locale), null, null],
+                [EmailBlock::TYPE_BUTTON, null, null, null, $this->trans('label.account_email_change_button', $locale), '{{ signed_url }}'],
+                [EmailBlock::TYPE_TEXT, null, null, '{{ expires_at }}', null, null],
+            ];
+            $blocks[EmailChanger::NOTICE_TEMPLATE][$locale] = [
+                [EmailBlock::TYPE_HEADING, $this->trans('label.account_email_changed_heading', $locale), EmailBlock::LEVEL_H1, null, null, null],
+                [EmailBlock::TYPE_TEXT, null, null, $this->trans('label.account_email_changed_text', $locale), null, null],
+            ];
+            $blocks[PasswordResetter::NOTICE_TEMPLATE][$locale] = [
+                [EmailBlock::TYPE_HEADING, $this->trans('label.account_password_changed_heading', $locale), EmailBlock::LEVEL_H1, null, null, null],
+                [EmailBlock::TYPE_TEXT, null, null, $this->trans('label.account_password_changed_text', $locale), null, null],
+            ];
+            $blocks[LoginCode::EMAIL_TEMPLATE][$locale] = [
+                [EmailBlock::TYPE_HEADING, $this->trans('label.login_code_heading', $locale), EmailBlock::LEVEL_H1, null, null, null],
+                [EmailBlock::TYPE_TEXT, null, null, $this->trans('label.login_code_text', $locale), null, null],
+                [EmailBlock::TYPE_HEADING, '{{ code }}', EmailBlock::LEVEL_H2, null, null, null],
             ];
             $blocks[UsersCleanupCommand::EMAIL_TEMPLATE][$locale] = [
                 [EmailBlock::TYPE_HEADING, $this->trans('label.account_inactivity_heading', $locale), EmailBlock::LEVEL_H1, null, null, null],

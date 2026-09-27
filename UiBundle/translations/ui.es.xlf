@@ -400,7 +400,7 @@
             </trans-unit>
             <trans-unit id="HmXaT6b">
                 <source>description.guided_step_ui_review_pick</source>
-                <target>El texto, la nota y el nombre son de su autor: esta pantalla no los reescribe. El lápiz solo aparece en una opinión a la que este sitio puede responder - una venida de una plataforma donde no republica se lee aquí y se modera allí.</target>
+                <target>Abra con el lápiz, al final de su fila, una opinión pendiente escrita en el sitio. El texto, la valoración y el nombre son los de su autor: esta pantalla no los reescribe. El lápiz, además, solo aparece en una opinión a la que este sitio puede responder.</target>
             </trans-unit>
             <trans-unit id="dGJXfNy">
                 <source>description.guided_step_ui_review_reply</source>
@@ -1485,6 +1485,10 @@
             <trans-unit id="MXpeMi7">
                 <source>label.city</source>
                 <target>Ciudad</target>
+            </trans-unit>
+            <trans-unit id="CzzpYWY">
+                <source>label.close</source>
+                <target>Cerrar</target>
             </trans-unit>
             <trans-unit id="m0L.u3G">
                 <source>label.closes</source>

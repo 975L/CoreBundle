@@ -111,6 +111,16 @@ main :is(.blocks, .block-animation, .block-editable) > :is(
     padding-top: var(--section-space, #{$section-space});
 }
 
+// A page of short sections read one after the other (a member's own page) rather than a composed page: each is parted by the tight step, the full one leaving more room than content
+.blocks--tight {
+    --section-space: var(--section-space-tight, #{$section-space-tight});
+}
+
+// Its tables start at the section's edge like the text above them, SiteBundle centering every table of a page
+.blocks--tight table {
+    margin-inline: 0;
+}
+
 // Lighter than the sections above: text_section commonly opens a page, right under its own <h1>
 .text-section {
     padding-top: var(--section-space-tight, #{$section-space-tight});

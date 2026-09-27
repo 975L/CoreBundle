@@ -18,18 +18,6 @@
                 <source>text.email_taken</source>
                 <target>Ya existe una cuenta con este correo electrónico</target>
             </trans-unit>
-            <trans-unit id="DY8kkID">
-                <source>text.password_complexity</source>
-                <target>Su contraseña debe tener al menos 8 caracteres e incluir una minúscula, una mayúscula, un dígito y un carácter especial</target>
-            </trans-unit>
-            <trans-unit id="TaG4lmE">
-                <source>text.password_max_length</source>
-                <target>Su contraseña no debe exceder de {{ limit }} caracteres</target>
-            </trans-unit>
-            <trans-unit id="epDiKHK">
-                <source>text.password_min_length</source>
-                <target>Su contraseña debe tener al menos {{ limit }} caracteres</target>
-            </trans-unit>
             <trans-unit id="G1fcoic">
                 <source>text.password_mismatch</source>
                 <target>Las contraseñas deben coincidir.</target>

@@ -23,7 +23,7 @@ class UserStub implements UserInterface, PasswordAuthenticatedUserInterface
     private ?\DateTime $creation = null;
     private ?\DateTime $modification = null;
 
-    public function __construct(private readonly string $email = 'user@example.test')
+    public function __construct(private string $email = 'user@example.test')
     {
     }
 
@@ -42,6 +42,18 @@ class UserStub implements UserInterface, PasswordAuthenticatedUserInterface
     public function getUserIdentifier(): string
     {
         return $this->email;
+    }
+
+    public function getEmail(): string
+    {
+        return $this->email;
+    }
+
+    public function setEmail(string $email): static
+    {
+        $this->email = $email;
+
+        return $this;
     }
 
     public function getRoles(): array

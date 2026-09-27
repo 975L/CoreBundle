@@ -15,6 +15,7 @@
     --alert-success-background: #d0e9c6;
     --alert-warning-background: #f9dba7;
     --audio-sticky-background: var(--background);
+    --media-title-size: calc(1.3rem * var(--font-size-title-scale, 1));
     --back-pull-background-color: #bababa;
     --back-pull-background-color-hover: #9c9fa3;
     --back-pull-color: #333;
@@ -1335,6 +1336,43 @@ label[for=contact_form_username],
   pointer-events: none;
 }
 
+.ui-dialog {
+  width: min(36rem, 100vw - 2rem);
+  max-height: calc(100vh - 4rem);
+  padding: 2rem 1.5rem 1.5rem;
+  overflow: auto;
+  border: 0;
+  border-radius: var(--radius-panel);
+  background: var(--background);
+  color: var(--text);
+}
+.ui-dialog::backdrop {
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(2px);
+}
+
+.ui-dialog .ui-dialog__title {
+  margin-top: 0;
+  padding-right: 2rem;
+}
+
+.ui-dialog .ui-dialog__close {
+  position: absolute;
+  width: auto;
+  margin: 0;
+  top: 0.5rem;
+  right: 0.75rem;
+}
+.ui-dialog .ui-dialog__close button {
+  width: auto;
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  font-size: 1.75rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
 /* DOCUMENT DOWNLOAD */
 .document-downloads {
   display: flex;
@@ -1862,6 +1900,21 @@ input[type=date], input[type=datetime-local], input[type=email], input[type=mont
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
+select {
+  display: block;
+  width: 100%;
+  height: 34px;
+  margin-block: var(--input-margin-block);
+  margin-bottom: 1em;
+  padding: 6px 12px;
+  font-size: 14px;
+  background-color: var(--input-background);
+  border: 1px solid transparent;
+  border-bottom: 2px solid var(--input-border-bottom-color);
+  border-radius: 0;
+  color: var(--form-input-color);
+}
+
 input[type=text] {
   writing-mode: horizontal-tb !important;
   padding-block: 1px;
@@ -1872,6 +1925,15 @@ button[type=submit],
 input[type=submit] {
   width: 100%;
   border: none;
+}
+
+.form--section {
+  margin-inline: 0;
+}
+
+.form--section button[type=submit] {
+  width: auto;
+  margin-inline: 0;
 }
 
 form div div:has(input[type=radio]),
@@ -2318,6 +2380,7 @@ img.white {
 .audio-title {
   margin-bottom: 0.5rem;
   font-family: var(--font-family-title);
+  font-size: var(--media-title-size);
   color: var(--section-text, var(--text));
   text-align: start;
 }
@@ -2588,6 +2651,14 @@ main :is(.blocks, .block-animation, .block-editable) > :is(.block-section,
 .flex-columns-section,
 .cta-band {
   padding-top: var(--section-space, clamp(48px, 8vw, 84px));
+}
+
+.blocks--tight {
+  --section-space: var(--section-space-tight, clamp(24px, 4vw, 48px));
+}
+
+.blocks--tight table {
+  margin-inline: 0;
 }
 
 .text-section {

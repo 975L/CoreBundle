@@ -1,13 +1,15 @@
-{# <twig:c975LUi:Video:Video src="your-path/file.ext" type="video/mp4" [poster="path/file.ext"] [title="optional title"] [description="optional description"] [caption="false"] [autoplay="true"] [muted="true"] [loop="true"] [class="your-css-classes"] [width="auto"] [height="auto"]/> #}
+{# <twig:c975LUi:Video:Video src="your-path/file.ext" type="video/mp4" [poster="path/file.ext"] [title="optional title"] [description="optional description"] [caption="false"] [autoplay="true"] [muted="true"] [loop="true"] [class="your-css-classes"] [width="auto"] [height="auto"] [level="h3"]/> #}
 {% set poster = poster | default("") %}
 {% set autoplay = autoplay | default(false) | to_bool %}
 {% set muted = muted | default(false) | to_bool %}
 {% set loop = loop | default(false) | to_bool %}
 {# Turns the heading and the legend off, for a page laying out its own around this component - same prop, same meaning as Video:Iframe's #}
 {% set caption = caption is defined ? caption|to_bool : true %}
+{# The title's rank: <h3> by default, under whatever section holds the player, <h2> when the block stands straight in the page. Matched, not interpolated: it writes a tag name #}
+{% set level = level|default('') in ['h2', 'h3', 'h4'] ? level : 'h3' %}
 {# Same <figure>/title/description structure as Video:Iframe, so both video kinds are captioned identically #}
 <figure class="video-figure">
-    {% if caption and title is defined and title %}<h3 class="video-title">{{ title }}</h3>{% endif %}
+    {% if caption and title is defined and title %}<{{ level }} class="video-title">{{ title }}</{{ level }}>{% endif %}
     {# "playsinline" always set, as on Hero's and Slider's <video>: without it iOS Safari takes playback fullscreen, breaking any layout counting on the video where it sits - and an autoplay there becomes a takeover of the screen #}
     <video controls playsinline class="img img-responsive {{ class|default([])|join(' ') }}" {% if poster != '' %} poster="{{ poster }}" {% endif %} {% if autoplay %} autoplay {% endif %} {% if muted %} muted {% endif %} {% if loop %} loop {% endif %}  {% if width is defined and width != "" %} width="{{ width }}" {% endif %} {% if height is defined and height != "" %} height="{{ height }}" {% endif %}>
         <source src="{{ src }}" type="{{ type }}">
