@@ -14,6 +14,7 @@ use c975L\UiBundle\Form\BlockClassChoiceType;
 use c975L\UiBundle\Form\TrixEditorType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\UrlType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -39,6 +40,14 @@ class VideoIframeType extends AbstractType
                 'help' => 'label.video_import_poster_help',
                 'required' => false,
                 'label_attr' => ['class' => 'checkbox-switch'],
+            ])
+            // The day the video went online on its platform, without which no VideoObject is published: filled by "c975l:ui:video-upload-dates", or typed by hand where the platform gives none
+            ->add('uploadDate', DateType::class, [
+                'label' => 'label.video_upload_date',
+                'help' => 'label.video_upload_date_help',
+                'required' => false,
+                'widget' => 'single_text',
+                'input' => 'string',
             ])
             ->add('title', TextType::class, [
                 'label' => 'label.title',

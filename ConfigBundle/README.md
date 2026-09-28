@@ -624,6 +624,17 @@ security:
 
 `LoginRequestSubscriber` sits in front of that, needing no configuration: a POST to the `app_login` route carrying no usable `_username` is sent straight back to the form. Scanners post to `/login` with none of the expected fields, and Symfony's `FormLoginAuthenticator` answers that with a `BadRequestHttpException` — a legitimate 400, but one the kernel logs at `ERROR` level, so a few bots a night are enough to bury the real errors of a production log. Nothing is let through: such a request could never authenticate anyone, it just gets the redirect a failed login would have gotten anyway. A site whose login route is named otherwise than `app_login` (the scaffold's own name) simply never sees the subscriber act.
 
+### Login form in the page's language
+
+`LoginEntryPoint` sends an anonymous visitor asking for a members' page to the login form in that page's language: `/login` has no localised url, so `/en/account` would otherwise open it in whatever language the session or the browser says. A route carrying its own `_locale` leads to `/login?_locale=en`, which `LocaleListener` reads and keeps; any other route leads to the bare `/login`, as Symfony's own entry point does. `c975l:site:create` sets it on the `main` firewall. If your site predates this, add it yourself:
+
+```yaml
+security:
+    firewalls:
+        main:
+            entry_point: c975L\ConfigBundle\Security\LoginEntryPoint
+```
+
 ### Back-office access control
 
 `c975l:site:create` also declares `- { path: ^/management, roles: IS_AUTHENTICATED_FULLY }` under `access_control` in `config/packages/security.yaml` (same step again), so an anonymous visitor gets the login form instead of a bare 403. On the skeleton's `lazy: true` firewall it also makes the token resolve up front, without which `c975l/config-bundle`'s dashboard runs before the firewall has restored it. `IS_AUTHENTICATED_FULLY` rather than a role, on purpose: which roles grant the back office is editable from the dashboard (`site-role-editor`, `site-role-admin`), so the screens check it themselves. If your site predates this, add it yourself:

@@ -1,5 +1,39 @@
 # ChangeLog
 
+## v1.47.0
+
+Shared JSON-LD builder, video and faq structured data, and the whole site translated in one command
+
+### ConfigBundle
+
+- New `LoginEntryPoint`: an anonymous visitor asking for `/en/...` reaches the login form in English, as `/login?_locale=en` (28/09/2026)
+- `ConfigTranslator` hands `c975l:translate:content` the settings written in words, `site-age-warning` today (28/09/2026)
+
+### UiBundle
+
+- The captcha is off in the `dev` environment, whose production keys refuse localhost (27/09/2026)
+- A form field's label links its words in brackets ("I accept the [terms of use]") instead of appending "(read)", the seeded terms checkboxes using it (27/09/2026)
+- Brackets in a label are only read when the field has a url, the last pair being the link (28/09/2026)
+- The notification email lists a linked label without its brackets (28/09/2026)
+- The register form shows the "Continue with Google" buttons too, when a provider is configured (27/09/2026)
+- The `france/terms-of-sales` model includes PurchaseCreditsBundle's credits section after "payment", nothing when that bundle is absent (28/09/2026)
+- The `france/privacy-policy` model gets a "third-parties" section: reCAPTCHA, OAuth sign-in and Google Maps when configured, plus PaymentBundle's and the site's own `templates/legal/privacy-policy.{locale}.html.twig` (28/09/2026)
+- The `france/terms-of-use` model includes the site's own `templates/legal/terms-of-use.{locale}.html.twig` before "personal-data", nothing when it has none (28/09/2026)
+- The layout adds an `hreflang="x-default"` link to a page's language group, the site's default language (28/09/2026)
+- New `captcha_configured()` Twig function and `CaptchaVerifier::isConfigured()`, the keys set whatever the environment (28/09/2026)
+- **New `JsonLdBuilder`: the encoding, breadcrumb, item list and plain text every bundle's structured data shares** (28/09/2026)
+- New Twig `json_ld()`, `breadcrumb_json_ld()` and the `json_ld_text` filter (28/09/2026)
+- `video` block: a `VideoObject` when it has a title and a cover, dated by its file (28/09/2026)
+- `faq` block and `ContactSnippetBuilder` encode through `JsonLdBuilder`, an invalid byte no longer emptying the graph (28/09/2026)
+- `faq` block: a question with no answer yet is left out of the `FAQPage` (28/09/2026)
+- `faq` blocks of one page share the `FAQPage`'s `@id`, merged into one FAQ instead of several (28/09/2026)
+- A `contact_details` block named like the site takes the site publisher's `@id`, so the home page publishes one business and not two (28/09/2026)
+- `video_iframe` block: new `uploadDate` field and a `VideoObject` whose `embedUrl` is the player's (28/09/2026)
+- New `c975l:ui:video-upload-dates` command filling `uploadDate` from YouTube, Vimeo or Dailymotion (28/09/2026)
+- **New `c975l:translate:content` command: translates what the site says - pages, blocks, menus, forms - into a declared language through the AI key, moved from bundles.975l.com** (28/09/2026)
+- New `TranslatableTextProviderInterface`, through which each bundle hands the command its texts, and `BlockTextCollector` reading a set of blocks' texts (28/09/2026)
+- `FormTextProvider` hands over the form fields and result lines (28/09/2026)
+
 ## v1.46.0
 
 The comparison table block, and features shown as tiles

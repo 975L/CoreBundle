@@ -154,6 +154,26 @@ class SendEmailFormActionTest extends TestCase
         $this->assertSame(["Logo (400\u{00A0}€)" => 'label.yes'], $captured->context['fields']);
     }
 
+    // The email has no link to draw: a linked label reads without its brackets, a bracketed unit without url stays as typed
+    public function testHandleDropsTheBracketsOfALinkedLabel(): void
+    {
+        $captured = null;
+        $emailService = $this->createStub(EmailService::class);
+        $emailService->method('send')->willReturnCallback(function (EmailSendRequest $request) use (&$captured): bool {
+            $captured = $request;
+
+            return true;
+        });
+
+        $form = new Form()->setName('contact');
+        $form->addField(new FormField()->setName('cgu')->setLabel('I accept the [terms of use]')->setUrl('https://example.com/cgu')->setType(FormField::TYPE_CHECKBOX));
+        $form->addField(new FormField()->setName('width')->setLabel('Width [cm]')->setType(FormField::TYPE_TEXT));
+
+        $this->createAction($emailService)->handle($form, ['cgu' => true, 'width' => '12']);
+
+        $this->assertSame(['I accept the terms of use' => 'label.yes', 'Width [cm]' => '12'], $captured->context['fields']);
+    }
+
     // A formula reads "1.6", the visitor picked "A4" - the email says what they picked
     public function testHandleWritesAChoiceByTheLabelOfItsOption(): void
     {

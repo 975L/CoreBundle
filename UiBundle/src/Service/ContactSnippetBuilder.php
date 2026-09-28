@@ -10,6 +10,7 @@
 
 namespace c975L\UiBundle\Service;
 
+use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\UiBundle\Registry\SameAsRegistry;
 
 // Builds the schema.org graph a "contact_details" block publishes as JSON-LD, out of the very fields it displays.
@@ -29,8 +30,11 @@ class ContactSnippetBuilder
     // schema.org's own day names, stored as-is so no mapping is needed here; the display side translates them
     public const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
-    public function __construct(private readonly SameAsRegistry $sameAsRegistry)
-    {
+    public function __construct(
+        private readonly SameAsRegistry $sameAsRegistry,
+        private readonly JsonLdBuilder $jsonLdBuilder,
+        private readonly ?ConfigServiceInterface $configService = null,
+    ) {
     }
 
     // $imageUrl is resolved by the caller rather than read from the data: only a template can turn an attached Media into an absolute URL
@@ -48,8 +52,9 @@ class ContactSnippetBuilder
         return $this->clean([
             '@context' => 'https://schema.org',
             '@type' => \in_array($type, self::TYPES, true) ? $type : self::TYPES[0],
+            '@id' => $this->publisherId($name),
             'name' => $name,
-            'description' => $this->plainText($data['description'] ?? ''),
+            'description' => $this->jsonLdBuilder->plainText($data['description'] ?? ''),
             'image' => trim((string) $imageUrl),
             'telephone' => $this->telephones($data),
             'email' => $this->value($data, 'email'),
@@ -67,14 +72,7 @@ class ContactSnippetBuilder
     // The same graph, encoded for a <script type="application/ld+json">; empty string when there is nothing to publish
     public function buildJson(array $data, ?string $imageUrl = null): string
     {
-        $snippet = $this->build($data, $imageUrl);
-
-        if ([] === $snippet) {
-            return '';
-        }
-
-        // JSON_HEX_TAG matters: it turns a "</script>" typed into any field into <, which no browser closes the tag on
-        return json_encode($snippet, \JSON_HEX_TAG | \JSON_HEX_AMP | \JSON_HEX_APOS | \JSON_HEX_QUOT | \JSON_UNESCAPED_SLASHES | \JSON_UNESCAPED_UNICODE);
+        return $this->jsonLdBuilder->encode($this->build($data, $imageUrl));
     }
 
     // Both numbers when both are filled in: schema.org reads a "telephone" array as several numbers for the same node
@@ -158,12 +156,17 @@ class ContactSnippetBuilder
         return $hours > 23 || $minutes > 59 ? '' : sprintf('%02d:%02d', $hours, $minutes);
     }
 
-    // The description is rich text; a graph carries the words only
-    private function plainText(mixed $html): string
+    // The business a contact block describes is the one publishing the site: under the same "@id" as SiteBundle's publisher node, a search engine merges the two into one entity instead of reading two businesses on the home page. None on a personal site, whose publisher is a person and not this business
+    private function publisherId(string $name): string
     {
-        $text = html_entity_decode(strip_tags((string) $html), \ENT_QUOTES | \ENT_HTML5, 'UTF-8');
+        $siteUrl = trim((string) $this->configService?->get('site-url'));
 
-        return trim((string) preg_replace('/\s+/u', ' ', $text));
+        // Only the site's own business shares its publisher's node: a partner or a second agency would otherwise be merged into it
+        if ('' === $siteUrl || 'Person' === $this->configService?->get('site-schema-type') || $name !== trim((string) $this->configService?->get('site-name'))) {
+            return '';
+        }
+
+        return JsonLdBuilder::publisherId($siteUrl);
     }
 
     private function value(array $data, string $key): string

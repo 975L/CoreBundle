@@ -10,4 +10,8 @@
         {{ form_widget(form) }}
         {% include '@c975LUi/components/Form/_submit.html.twig' %}
     {{ form_end(form) }}
+    {# An account opened in one click too, as on the login page: one button per provider configured, nothing when none is #}
+    {% if 'register' == uiForm.action %}
+        <twig:c975LConfig:Security:OAuthLogin/>
+    {% endif %}
 </div>

@@ -30,6 +30,14 @@ class OAuthLoginComponentTest extends TestCase
         $this->assertStringContainsString(self::COMPONENT_TAG, $login);
     }
 
+    // The register form offers the same buttons, an account being opened in one click too - and that form alone, a contact form having nothing to do with them
+    public function testTheRegisterFormRendersTheComponent(): void
+    {
+        $form = (string) file_get_contents(\dirname(__DIR__, 3) . '/UiBundle/templates/components/Form/Form.html.twig');
+
+        $this->assertMatchesRegularExpression("~\{% if 'register' == uiForm\.action %\}\s*" . preg_quote(self::COMPONENT_TAG, '~') . '~', $form);
+    }
+
     // c975LConfig:Security:OAuthLogin is templates/components/Security/OAuthLogin.html.twig and nothing else
     public function testTheComponentNameMatchesAFileThatExists(): void
     {

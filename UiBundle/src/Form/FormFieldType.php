@@ -56,9 +56,10 @@ class FormFieldType extends AbstractType
                 'label' => 'label.field_placeholder',
                 'required' => false,
             ])
-            // Rendered as a link right after the label when set (e.g. a checkbox's "J'accepte les [CGU]") - see FormSubmissionType
+            // The label's words in brackets become the link (e.g. a checkbox's "I accept the [terms of use]"), else a "(read)" one follows it - see FormSubmissionType
             ->add('url', TextType::class, [
                 'label' => 'label.field_url',
+                'help' => 'text.field_url_help',
                 'required' => false,
             ])
             ->add('required', CheckboxType::class, [

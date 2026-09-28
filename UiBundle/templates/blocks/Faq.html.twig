@@ -23,14 +23,18 @@
     {% if 1 == columns %}
         {# Appended one by one rather than mapped: the list was filtered above, and json_encode writes gapped keys as an object where schema.org asks for an array #}
         {% set questions = [] %}
-        {% for item in items %}
+        {# A question still unanswered is shown but not published: an Answer with no text is what a validator refuses #}
+        {% for item in items|filter(item => item.answer|default('')|json_ld_text) %}
             {% set questions = questions|merge([{
                 '@type': 'Question',
                 'name': item.question,
-                'acceptedAnswer': {'@type': 'Answer', 'text': item.answer|default('')|striptags},
+                'acceptedAnswer': {'@type': 'Answer', 'text': item.answer|default('')|json_ld_text},
             }]) %}
         {% endfor %}
-        {% set faqJsonLd = {'@context': 'https://schema.org', '@type': 'FAQPage', 'mainEntity': questions} %}
-        <script type="application/ld+json">{{ faqJsonLd|json_encode(constant('JSON_HEX_TAG') b-or constant('JSON_HEX_AMP') b-or constant('JSON_HEX_APOS') b-or constant('JSON_HEX_QUOT') b-or constant('JSON_UNESCAPED_UNICODE'))|raw }}</script>
+        {% if questions is not empty %}
+            {# One "@id" per page, shared by every faq block on it: a page gathering several blocks publishes one FAQPage holding all their questions, the nodes being merged on it, rather than several FAQPage where one is expected #}
+            {% set faqJsonLd = {'@context': 'https://schema.org', '@type': 'FAQPage', '@id': app.request|default(null) ? absolute_url(app.request.pathinfo) ~ '#faq' : '', 'mainEntity': questions}|filter(value => value is not empty) %}
+            <script type="application/ld+json">{{ json_ld(faqJsonLd) }}</script>
+        {% endif %}
     {% endif %}
 {% endif %}

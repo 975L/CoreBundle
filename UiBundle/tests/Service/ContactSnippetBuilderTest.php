@@ -10,16 +10,18 @@
 
 namespace c975L\UiBundle\Tests\Service;
 
+use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\UiBundle\Contract\SameAsProviderInterface;
 use c975L\UiBundle\Registry\SameAsRegistry;
 use c975L\UiBundle\Service\ContactSnippetBuilder;
+use c975L\UiBundle\Service\JsonLdBuilder;
 use PHPUnit\Framework\TestCase;
 
 class ContactSnippetBuilderTest extends TestCase
 {
     private function builder(): ContactSnippetBuilder
     {
-        return new ContactSnippetBuilder(new SameAsRegistry());
+        return new ContactSnippetBuilder(new SameAsRegistry(), new JsonLdBuilder());
     }
 
     // The whole point of the kind: a field left empty is dropped from the graph instead of published blank
@@ -43,7 +45,7 @@ class ContactSnippetBuilderTest extends TestCase
         $registry = new SameAsRegistry();
         $registry->addProvider($this->provider(['https://www.google.com/maps?cid=1', 'https://facebook.com/example']));
 
-        $snippet = new ContactSnippetBuilder($registry)->build(['name' => 'Garage Central']);
+        $snippet = new ContactSnippetBuilder($registry, new JsonLdBuilder())->build(['name' => 'Garage Central']);
 
         $this->assertSame(['https://www.google.com/maps?cid=1', 'https://facebook.com/example'], $snippet['sameAs']);
     }
@@ -55,7 +57,7 @@ class ContactSnippetBuilderTest extends TestCase
         $registry->addProvider($this->provider(['https://www.google.com/maps?cid=1', '  ']));
         $registry->addProvider($this->provider(['https://www.google.com/maps?cid=1']));
 
-        $snippet = new ContactSnippetBuilder($registry)->build(['name' => 'Garage Central']);
+        $snippet = new ContactSnippetBuilder($registry, new JsonLdBuilder())->build(['name' => 'Garage Central']);
 
         $this->assertSame(['https://www.google.com/maps?cid=1'], $snippet['sameAs']);
     }
@@ -216,5 +218,42 @@ class ContactSnippetBuilderTest extends TestCase
         $json = $this->builder()->buildJson(['name' => 'Garage Central', 'schemaType' => 'AutoRepair']);
 
         $this->assertStringStartsWith('{"@context":"https://schema.org","@type":"AutoRepair"', $json);
+    }
+
+    // The business the block describes is the site's publisher: one "@id" for both, so the home page reads one business and not two
+    public function testTheBlockTakesTheSitePublishersId(): void
+    {
+        $snippet = $this->builderWithConfig(['site-url' => 'https://garage.test/', 'site-schema-type' => 'LocalBusiness', 'site-name' => 'Garage Central'])->build(['name' => 'Garage Central']);
+
+        $this->assertSame('https://garage.test/#organization', $snippet['@id']);
+    }
+
+    // A personal site's publisher is a person, which this business is not
+    public function testNoIdIsSharedWithAPersonalSite(): void
+    {
+        $snippet = $this->builderWithConfig(['site-url' => 'https://garage.test', 'site-schema-type' => 'Person', 'site-name' => 'Garage Central'])->build(['name' => 'Garage Central']);
+
+        $this->assertArrayNotHasKey('@id', $snippet);
+    }
+
+    // A partner or a second agency is a business of its own, not the site's publisher
+    public function testNoIdIsSharedWithAnotherBusiness(): void
+    {
+        $snippet = $this->builderWithConfig(['site-url' => 'https://garage.test/', 'site-schema-type' => 'LocalBusiness', 'site-name' => 'Garage Central'])->build(['name' => 'Carrosserie Voisine']);
+
+        $this->assertArrayNotHasKey('@id', $snippet);
+    }
+
+    public function testNoIdWithoutASiteUrl(): void
+    {
+        $this->assertArrayNotHasKey('@id', $this->builder()->build(['name' => 'Garage Central']));
+    }
+
+    private function builderWithConfig(array $configs): ContactSnippetBuilder
+    {
+        $configService = $this->createStub(ConfigServiceInterface::class);
+        $configService->method('get')->willReturnCallback(static fn (string $key): mixed => $configs[$key] ?? null);
+
+        return new ContactSnippetBuilder(new SameAsRegistry(), new JsonLdBuilder(), $configService);
     }
 }

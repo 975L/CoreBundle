@@ -76,7 +76,7 @@ class FormFieldTemplateImportDefaultsCommand extends Command
         ],
         [
             'name' => 'cgu',
-            'fieldLabel' => 'J\'accepte les conditions générales d\'utilisation',
+            'fieldLabel' => 'J\'accepte les [conditions générales d\'utilisation]',
             'placeholder' => null,
             'type' => FormField::TYPE_CHECKBOX,
             'required' => true,

@@ -199,6 +199,26 @@ class ConfigTranslatorTest extends TestCase
         $this->translator()->stage($config, 'en', 'Adults only');
     }
 
+    // The translate command gets the setting's own text, and nothing for one left empty
+    public function testTheTranslateCommandGetsTheSettingsWrittenInWords(): void
+    {
+        $this->contentTranslator->method('isActive')->willReturn(true);
+        $this->configRepository->method('findOneBySlug')->willReturn($this->config(Config::TYPE_HTML, 'Réservé aux adultes'));
+
+        $this->assertSame(
+            [['owner' => ConfigTranslator::OWNER, 'ownerId' => 7, 'field' => ConfigTranslator::FIELD, 'source' => 'Réservé aux adultes', 'label' => 'Config site-age-warning']],
+            [...$this->translator()->getTranslatableTexts()],
+        );
+    }
+
+    public function testAnEmptySettingHandsNothingToTranslate(): void
+    {
+        $this->contentTranslator->method('isActive')->willReturn(true);
+        $this->configRepository->method('findOneBySlug')->willReturn($this->config(Config::TYPE_HTML, '  '));
+
+        $this->assertSame([], [...$this->translator()->getTranslatableTexts()]);
+    }
+
     private function translator(): ConfigTranslator
     {
         return new ConfigTranslator($this->contentTranslator, $this->configRepository);

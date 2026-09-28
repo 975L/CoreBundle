@@ -67,6 +67,43 @@
 	</section>
 	{% endif %}
 
+	{# The providers some features hand data to, each named only when this site uses it - the payment one and the site's own coming from PaymentBundle and from the app's templates/legal/, when they exist. No section at all when none is used #}
+	{% set captchaUsed = captcha_configured() %}
+	{% set oauthNames = oauth_login_providers()|map(provider => provider.name)|join(' or ') %}
+	{% set mapSettings = ui_map_settings() %}
+	{% set googleMapsUsed = 'google' == mapSettings.provider and mapSettings.usable %}
+	{% set otherProviders %}
+		{% include '@c975LPayment/legal/privacy-policy.en.html.twig' ignore missing %}
+		{% include 'legal/privacy-policy.en.html.twig' ignore missing %}
+	{% endset %}
+	{% if captchaUsed or oauthNames or googleMapsUsed or otherProviders|trim is not empty %}
+	<section data-legal-id="third-parties">
+		<h2>Third-party services</h2>
+		<div>
+			Some features of <strong>{{ legal_var('site-name') }}</strong> rely on service providers, which then receive only the data their service needs. Some may process it outside the European Union, under the safeguards provided by the GDPR (adequacy decision or standard contractual clauses).
+		</div>
+		{% if captchaUsed %}
+		<h3 data-legal-id="third-parties.recaptcha">Form protection (Google reCAPTCHA)</h3>
+		<div>
+			Forms are protected against bots by Google reCAPTCHA. When a form is sent, Google receives your IP address and information about your browser and browsing, to estimate whether a human sent it. This data is processed under <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Google's privacy policy</a>.
+		</div>
+		{% endif %}
+		{% if oauthNames %}
+		<h3 data-legal-id="third-parties.oauth">Sign-in with {{ oauthNames }}</h3>
+		<div>
+			If you choose to sign in with {{ oauthNames }}, the chosen service sends us your email address, which it has verified; we keep nothing else. That service then knows that you use <strong>{{ legal_var('site-name') }}</strong>.
+		</div>
+		{% endif %}
+		{% if googleMapsUsed %}
+		<h3 data-legal-id="third-parties.google-maps">Maps (Google Maps)</h3>
+		<div>
+			Maps are displayed by Google Maps, only once you have accepted third-party content. Google then receives your IP address and may set its own cookies.
+		</div>
+		{% endif %}
+		{{ otherProviders }}
+	</section>
+	{% endif %}
+
 	<section data-legal-id="your-rights">
 		<h2>Your Rights</h2>
 		<div>
@@ -106,7 +143,7 @@
 		<div>
 			The information posted on
 			<strong>{{ legal_var('site-name') }}</strong>
-			is publicly accessible. Our servers and service providers are located in the European area. Thus, if you wish to provide us with personal information, you accept that it will be transferred, processed and stored in the European area.
+			is publicly accessible. Our servers are located in the European area, where your personal information is stored and processed; only the providers that may be listed under "Third-party services" can receive part of it, under the conditions described there.
 		</div>
 		<div>
 			We collect and store the following personal data:

@@ -13,6 +13,7 @@ namespace c975L\UiBundle\Tests\Twig;
 use c975L\UiBundle\Registry\SameAsRegistry;
 use c975L\UiBundle\Service\ContactSnippetBuilder;
 use c975L\UiBundle\Service\GoogleMapsLinkBuilder;
+use c975L\UiBundle\Service\JsonLdBuilder;
 use c975L\UiBundle\Twig\ContactExtension;
 use PHPUnit\Framework\TestCase;
 use Twig\Extension\AttributeExtension;
@@ -21,7 +22,7 @@ class ContactExtensionTest extends TestCase
 {
     private function extension(): ContactExtension
     {
-        return new ContactExtension(new ContactSnippetBuilder(new SameAsRegistry()), new GoogleMapsLinkBuilder());
+        return new ContactExtension(new ContactSnippetBuilder(new SameAsRegistry(), new JsonLdBuilder()), new GoogleMapsLinkBuilder());
     }
 
     // Names locked: templates/components/Contact/Details.html.twig calls both, and a rename would fail there silently

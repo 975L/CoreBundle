@@ -23,7 +23,7 @@ class CaptchaVerifierTest extends TestCase
     /**
      * @param array<string, mixed> $configValues
      */
-    private function createVerifier(array $configValues, ?MockHttpClient $httpClient = null, string $clientIp = '203.0.113.7'): CaptchaVerifier
+    private function createVerifier(array $configValues, ?MockHttpClient $httpClient = null, string $clientIp = '203.0.113.7', string $environment = 'prod'): CaptchaVerifier
     {
         $configService = $this->createStub(ConfigServiceInterface::class);
         $configService->method('hasParameter')->willReturnCallback(static fn (string $key) => array_key_exists($key, $configValues));
@@ -31,7 +31,7 @@ class CaptchaVerifierTest extends TestCase
 
         $requestStack = new RequestStack([new Request(server: ['REMOTE_ADDR' => $clientIp])]);
 
-        return new CaptchaVerifier($httpClient ?? new MockHttpClient(), $configService, $requestStack);
+        return new CaptchaVerifier($httpClient ?? new MockHttpClient(), $configService, $requestStack, $environment);
     }
 
     /**
@@ -53,6 +53,20 @@ class CaptchaVerifierTest extends TestCase
         $this->assertFalse($this->createVerifier(['recaptcha3-site-key' => 'site-key'])->isEnabled());
         $this->assertFalse($this->createVerifier(['recaptcha3-secret-key' => 'secret-key'])->isEnabled());
         $this->assertFalse($this->createVerifier([])->isEnabled());
+    }
+
+    // Off in "dev", whose database copied from production carries keys that refuse localhost
+    public function testIsDisabledInDev(): void
+    {
+        $this->assertFalse($this->createVerifier(self::KEYS, environment: 'dev')->isEnabled());
+        $this->assertTrue($this->createVerifier(self::KEYS, environment: 'test')->isEnabled());
+    }
+
+    // Configured whatever the environment, what the privacy policy reads - its text must not change with where it is previewed
+    public function testIsConfiguredEvenInDev(): void
+    {
+        $this->assertTrue($this->createVerifier(self::KEYS, environment: 'dev')->isConfigured());
+        $this->assertFalse($this->createVerifier(['recaptcha3-site-key' => 'site-key'], environment: 'prod')->isConfigured());
     }
 
     // An emptied config field comes back as '', which is no more a key than an unseeded one

@@ -380,6 +380,32 @@ class FormSubmissionTypeTest extends TestCase
         $this->assertSame('Cgu (<a href="https://example.com/cgu" target="_blank" rel="noopener">read</a>)', $added['cgu']['options']['label']);
     }
 
+    // The words in brackets are the link, the "(read)" then left out
+    public function testBracketedWordsAreTheLink(): void
+    {
+        $linked = $this->buildField('cgu', FormField::TYPE_CHECKBOX, true, url: 'https://example.com/cgu')->setLabel('I accept the [terms of use] & more');
+        $added = $this->buildAddedFields([$linked]);
+
+        $this->assertSame('I accept the <a href="https://example.com/cgu" target="_blank" rel="noopener">terms of use</a> &amp; more', $added['cgu']['options']['label']);
+    }
+
+    // Brackets without a url are the admin's own text, a unit for instance
+    public function testBracketsWithoutUrlAreLeftAsTyped(): void
+    {
+        $added = $this->buildAddedFields([$this->buildField('width', FormField::TYPE_TEXT, true)->setLabel('Width [cm]')]);
+
+        $this->assertSame('Width [cm]', $added['width']['options']['label']);
+    }
+
+    // With two pairs, the last one is the link, where a sentence's link naturally sits
+    public function testTheLastBracketedPairIsTheLink(): void
+    {
+        $field = $this->buildField('size', FormField::TYPE_TEXT, true, url: 'https://example.com/guide')->setLabel('Size [cm] - see [the guide]');
+        $added = $this->buildAddedFields([$field]);
+
+        $this->assertSame('Size [cm] - see <a href="https://example.com/guide" target="_blank" rel="noopener">the guide</a>', $added['size']['options']['label']);
+    }
+
     // The label text itself is escaped before being embedded as raw HTML, so an admin-typed "<" in a label can't break out of it
     public function testFieldWithUrlEscapesLabelAndUrl(): void
     {

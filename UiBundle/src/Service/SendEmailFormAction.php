@@ -13,6 +13,7 @@ namespace c975L\UiBundle\Service;
 use c975L\UiBundle\Contract\FormActionInterface;
 use c975L\UiBundle\Entity\Form;
 use c975L\UiBundle\Entity\FormField;
+use c975L\UiBundle\Form\FormSubmissionType;
 use c975L\UiBundle\Model\EmailSendRequest;
 use c975L\UiBundle\Repository\EmailTemplateRepository;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -101,8 +102,8 @@ class SendEmailFormAction implements FormActionInterface
     {
         $pairs = [];
         foreach ($form->getFields() as $field) {
-            // Labelled as the page showed it, price included
-            $label = $this->priceFormatter->label($field, (string) $field->getLabel(), $this->translator->getLocale());
+            // Labelled as the page showed it, price included and a link's brackets dropped
+            $label = FormSubmissionType::plainLabel($this->priceFormatter->label($field, (string) $field->getLabel(), $this->translator->getLocale()), $field->getUrl());
             $pairs[] = [$label, $this->readableValue($field, $submittedData[$field->getName()] ?? null)];
         }
 

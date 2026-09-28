@@ -217,7 +217,7 @@ class FormSubmissionType extends AbstractType
         };
     }
 
-    // Plain admin-typed text by default; with a "url" set, the label text stays exactly as typed but gains a translated, escaped "(label.field_url_link)" <a> - the surrounding label itself never becomes a link so clicking the rest of it still toggles a checkbox field as expected
+    // Plain admin-typed text by default; with a "url" set, the words the admin put in brackets become the link ("I accept the [terms of use]"), else a translated "(label.field_url_link)" <a> is appended - all escaped, the rest of the label never a link so clicking it still toggles a checkbox field as expected
     private function buildLabel(FormField $field): string
     {
         // Followed by the field's price when it has one, which then also sits inside the escaped text of a label carrying a link
@@ -227,12 +227,32 @@ class FormSubmissionType extends AbstractType
             return $label;
         }
 
-        return sprintf(
-            '%s (<a href="%s" target="_blank" rel="noopener">%s</a>)',
-            htmlspecialchars($label, ENT_QUOTES),
-            htmlspecialchars($field->getUrl(), ENT_QUOTES),
-            htmlspecialchars($this->translator->trans('label.field_url_link', domain: 'ui'), ENT_QUOTES),
-        );
+        $link = static fn (string $text): string => sprintf('<a href="%s" target="_blank" rel="noopener">%s</a>', htmlspecialchars((string) $field->getUrl(), ENT_QUOTES), htmlspecialchars($text, ENT_QUOTES));
+        $parts = self::splitLinkedLabel($label, $field->getUrl());
+
+        if (null !== $parts) {
+            return htmlspecialchars($parts[0], ENT_QUOTES) . $link($parts[1]) . htmlspecialchars($parts[2], ENT_QUOTES);
+        }
+
+        return sprintf('%s (%s)', htmlspecialchars($label, ENT_QUOTES), $link($this->translator->trans('label.field_url_link', domain: 'ui')));
+    }
+
+    // A label's [before, linked words, after], read only when the field has a url - brackets alone are an admin's text ("Width [cm]") - and on the last pair, where a sentence's link naturally sits
+    public static function splitLinkedLabel(string $label, ?string $url): ?array
+    {
+        if (null === $url || 1 !== preg_match('/^(.*)\[([^\]]+)\](.*)$/s', $label, $parts)) {
+            return null;
+        }
+
+        return [$parts[1], $parts[2], $parts[3]];
+    }
+
+    // The label as read where no link can be drawn, an email for instance: the linked words kept, their brackets dropped
+    public static function plainLabel(string $label, ?string $url): string
+    {
+        $parts = self::splitLinkedLabel($label, $url);
+
+        return null === $parts ? $label : implode('', $parts);
     }
 
     private function resolveFieldType(string $type): string

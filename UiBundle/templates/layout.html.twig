@@ -108,6 +108,8 @@
                     {% for hreflang, alternateUrl in alternates %}
                         <link rel="alternate" hreflang="{{ hreflang }}" href="{{ alternateUrl }}">
                     {% endfor %}
+{# Where a search engine sends a reader matching none of these languages: the site's default one #}
+                    <link rel="alternate" hreflang="x-default" href="{{ alternates[app.request.defaultLocale] ?? alternates|first }}">
                 {% endif %}
 
                 {% if favicon is defined %}

@@ -83,7 +83,7 @@ class FormField implements \Stringable
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $placeholder = null;
 
-    // Optional link shown next to the label (e.g. a checkbox field's "J'accepte les [CGU]" pointing at the real terms-of-use page) - see FormSubmissionType, which appends it to the label as a real <a> when set
+    // Optional link for the label: its words in brackets become the link (e.g. a checkbox field's "I accept the [terms of use]"), else a "(read)" one follows it - see FormSubmissionType
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $url = null;
 

@@ -1,5 +1,35 @@
 [
     {
+        "date": "2026-09-28",
+        "description": [
+            {
+                "en": "A form label can link just the words you put in brackets, like \"I accept the [terms of use]\".",
+                "fr": "Le libellé d'un champ peut lier seulement les mots mis entre crochets, comme « J'accepte les [conditions d'utilisation] ».",
+                "es": "La etiqueta de un campo puede enlazar solo las palabras entre corchetes, como «Acepto las [condiciones de uso]»."
+            },
+            {
+                "en": "The sign-up form now offers the \"Continue with Google\" buttons too, when they are set up.",
+                "fr": "Le formulaire d'inscription propose aussi les boutons « Continuer avec Google », quand ils sont configurés.",
+                "es": "El formulario de registro también ofrece los botones «Continuar con Google», cuando están configurados."
+            },
+            {
+                "en": "The privacy policy, terms of use and terms of sales models now name the third-party services your site uses, and can include your own additions.",
+                "fr": "Les modèles de politique de confidentialité, de conditions d'utilisation et de conditions de vente citent maintenant les services tiers utilisés par votre site, et peuvent inclure vos propres ajouts.",
+                "es": "Los modelos de política de privacidad, condiciones de uso y condiciones de venta citan ahora los servicios de terceros que usa su sitio, y pueden incluir sus propios añadidos."
+            },
+            {
+                "en": "Your videos and FAQs are now described to search engines, so they can show up richer in Google's results.",
+                "fr": "Vos vidéos et vos FAQ sont maintenant décrites aux moteurs de recherche, pour apparaître de façon plus riche dans les résultats de Google.",
+                "es": "Sus vídeos y preguntas frecuentes se describen ahora a los motores de búsqueda, para aparecer de forma más completa en los resultados de Google."
+            },
+            {
+                "en": "An embedded video gets a publication date field, filled in automatically from YouTube, Vimeo or Dailymotion.",
+                "fr": "Une vidéo intégrée reçoit un champ date de publication, rempli automatiquement depuis YouTube, Vimeo ou Dailymotion.",
+                "es": "Un vídeo integrado recibe un campo de fecha de publicación, rellenado automáticamente desde YouTube, Vimeo o Dailymotion."
+            }
+        ]
+    },
+    {
         "date": "2026-09-27",
         "description": [
             {

@@ -46,6 +46,9 @@
 		</div>
 	</section>
 
+	{# The credits a site sells, when PurchaseCreditsBundle is installed: nothing otherwise #}
+	{% include '@c975LPurchaseCredits/legal/terms-of-sales.en.html.twig' ignore missing %}
+
 	<section data-legal-id="delivery">
 		<h2>Delivery</h2>
 		<div>
@@ -80,7 +83,7 @@
 		<ol>
 			<li>Notify us of the withdrawal decision by an unambiguous statement, by contacting us or using the form below</li>
 			<li>Validation of the request by our services</li>
-			<li>Return of the goods, where applicable, under the conditions described in the Returns section</li>
+			<li>Return of the goods, where applicable</li>
 			<li>Acceptance and refund to the payment method used for the defined amount
 				<strong>OR</strong>
 				rejection of the request with explanations</li>

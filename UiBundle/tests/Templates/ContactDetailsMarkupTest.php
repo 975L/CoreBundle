@@ -13,6 +13,7 @@ namespace c975L\UiBundle\Tests\Templates;
 use c975L\UiBundle\Registry\SameAsRegistry;
 use c975L\UiBundle\Service\ContactSnippetBuilder;
 use c975L\UiBundle\Service\GoogleMapsLinkBuilder;
+use c975L\UiBundle\Service\JsonLdBuilder;
 use c975L\UiBundle\Twig\BoolExtension;
 use c975L\UiBundle\Twig\ContactExtension;
 use PHPUnit\Framework\TestCase;
@@ -159,7 +160,7 @@ class ContactDetailsMarkupTest extends TestCase
         // The "Directions" button reads a checkbox through it (see the component), and a missing filter is a syntax error on the whole template
         $twig->addExtension(new AttributeExtension(BoolExtension::class));
         $twig->addRuntimeLoader(new FactoryRuntimeLoader([
-            ContactExtension::class => static fn (): ContactExtension => new ContactExtension(new ContactSnippetBuilder(new SameAsRegistry()), new GoogleMapsLinkBuilder()),
+            ContactExtension::class => static fn (): ContactExtension => new ContactExtension(new ContactSnippetBuilder(new SameAsRegistry(), new JsonLdBuilder()), new GoogleMapsLinkBuilder()),
             BoolExtension::class => static fn (): BoolExtension => new BoolExtension(),
         ]));
 

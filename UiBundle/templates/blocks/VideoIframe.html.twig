@@ -3,3 +3,16 @@
 {% set posterMedia = block.media|first|default(null) %}
 {# "h2": a block's title is a section's title, the same rank as Card's - and what the page's <h1> is directly followed by when the block opens it #}
 <twig:c975LUi:Video:Iframe src="{{ src }}" title="{{ title|default('') }}" description="{{ description|default('') }}" poster="{{ posterMedia and posterMedia.filename ? vich_uploader_asset(posterMedia) : '' }}" width="{{ width }}" height="{{ height }}" class="{{ class }}" level="h2"/>
+{# A VideoObject only with the three things Google requires - a name, a thumbnail and the day the video went online on its platform (see VideoUploadDatesCommand) - never a date made up from the block's own #}
+{% if title|default('') and posterMedia and posterMedia.filename and uploadDate|default('') %}
+    {% set videoJsonLd = {
+        '@context': 'https://schema.org',
+        '@type': 'VideoObject',
+        'name': title,
+        'description': description|default('')|json_ld_text,
+        'thumbnailUrl': absolute_url(vich_uploader_asset(posterMedia)),
+        'uploadDate': uploadDate,
+        'embedUrl': src|privacy_embed_url,
+    }|filter(value => value is not empty) %}
+    <script type="application/ld+json">{{ json_ld(videoJsonLd) }}</script>
+{% endif %}

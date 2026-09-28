@@ -4326,6 +4326,14 @@
                 <source>label.video_poster</source>
                 <target>Cover image</target>
             </trans-unit>
+            <trans-unit id="J3JiqWF">
+                <source>label.video_upload_date</source>
+                <target>Upload date</target>
+            </trans-unit>
+            <trans-unit id="J7ebOQF">
+                <source>label.video_upload_date_help</source>
+                <target>Day the video went online on its platform, filled by the c975l:ui:video-upload-dates command; without it, Google gets no data about the video</target>
+            </trans-unit>
             <trans-unit id="4aBckcp">
                 <source>label.video_url</source>
                 <target>Video URL (YouTube, Vimeo...)</target>
@@ -4421,6 +4429,10 @@
             <trans-unit id="DLmgP2d">
                 <source>text.expression_unopened_parenthesis</source>
                 <target>%missing% closing bracket(s) too many.</target>
+            </trans-unit>
+            <trans-unit id="V_DHWtY">
+                <source>text.field_url_help</source>
+                <target><![CDATA[The label's words in brackets become the link, for example "I accept the [terms of use]"; without brackets, a "(read)" link follows the label.]]></target>
             </trans-unit>
             <trans-unit id="UAH_ycC">
                 <source>text.form_required_note</source>

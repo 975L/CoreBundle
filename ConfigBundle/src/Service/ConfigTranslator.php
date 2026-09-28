@@ -12,11 +12,12 @@ namespace c975L\ConfigBundle\Service;
 
 use c975L\ConfigBundle\Entity\Config;
 use c975L\ConfigBundle\Repository\ConfigRepository;
+use c975L\UiBundle\Contract\TranslatableTextProviderInterface;
 use c975L\UiBundle\Service\ContentTranslator;
 
 // What a setting says in a language other than the one it was typed in - the same layer a page's title is translated through (see ECOSYSTEM.md §26), applied to the one text a site writes once for the whole of it
 // The typed value is never moved: it stays in Config::$value and plays the part of the msgid, exactly as Page::$title does. A site declaring a single language never reaches any of this
-class ConfigTranslator
+class ConfigTranslator implements TranslatableTextProviderInterface
 {
     // The name this bundle stores its translations under, as SiteBundle names its pages "site_page": Ui holds the table and knows nothing of a Config
     public const string OWNER = 'site_config';
@@ -79,6 +80,24 @@ class ConfigTranslator
         }
 
         return $this->contentTranslator->translate(self::OWNER, $id, [self::FIELD => $value], [self::FIELD], $locale)[self::FIELD];
+    }
+
+    // The settings written in words, handed to "c975l:translate:content" like a page's texts
+    public function getTranslatableTexts(): iterable
+    {
+        $rows = [];
+
+        foreach (self::TRANSLATABLE as $slug) {
+            $config = $this->configRepository->findOneBySlug($slug);
+            $id = $config?->getId();
+            $value = $config?->getValue();
+
+            if (null !== $id && $this->translates($config) && \is_string($value) && '' !== trim($value)) {
+                $rows[] = ['owner' => self::OWNER, 'ownerId' => $id, 'field' => self::FIELD, 'source' => $value, 'label' => 'Config ' . $slug];
+            }
+        }
+
+        return $rows;
     }
 
     // What the language screen offers: what that language already says, or the typed text between brackets where it says nothing yet

@@ -27,17 +27,17 @@ class UserFormSeeder implements EmailTemplateProviderInterface
         'fr' => [
             'email' => [FormField::TYPE_EMAIL, 'Email', null],
             'plainPassword' => [FormField::TYPE_PASSWORD_REPEATED, 'Mot de passe', null],
-            'cgu' => [FormField::TYPE_CHECKBOX, 'J\'accepte les conditions générales d\'utilisation', '/pages/conditions-generales-d-utilisation'],
+            'cgu' => [FormField::TYPE_CHECKBOX, 'J\'accepte les [conditions générales d\'utilisation]', '/pages/conditions-generales-d-utilisation'],
         ],
         'en' => [
             'email' => [FormField::TYPE_EMAIL, 'Email', null],
             'plainPassword' => [FormField::TYPE_PASSWORD_REPEATED, 'Password', null],
-            'cgu' => [FormField::TYPE_CHECKBOX, 'I accept the terms of use', '/pages/terms-of-use'],
+            'cgu' => [FormField::TYPE_CHECKBOX, 'I accept the [terms of use]', '/pages/terms-of-use'],
         ],
         'es' => [
             'email' => [FormField::TYPE_EMAIL, 'Email', null],
             'plainPassword' => [FormField::TYPE_PASSWORD_REPEATED, 'Contraseña', null],
-            'cgu' => [FormField::TYPE_CHECKBOX, 'Acepto las condiciones de uso', '/pages/condiciones-de-uso'],
+            'cgu' => [FormField::TYPE_CHECKBOX, 'Acepto las [condiciones de uso]', '/pages/condiciones-de-uso'],
         ],
     ];
 

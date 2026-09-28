@@ -67,6 +67,43 @@
 	</section>
 	{% endif %}
 
+	{# The providers some features hand data to, each named only when this site uses it - the payment one and the site's own coming from PaymentBundle and from the app's templates/legal/, when they exist. No section at all when none is used #}
+	{% set captchaUsed = captcha_configured() %}
+	{% set oauthNames = oauth_login_providers()|map(provider => provider.name)|join(' ou ') %}
+	{% set mapSettings = ui_map_settings() %}
+	{% set googleMapsUsed = 'google' == mapSettings.provider and mapSettings.usable %}
+	{% set otherProviders %}
+		{% include '@c975LPayment/legal/privacy-policy.fr.html.twig' ignore missing %}
+		{% include 'legal/privacy-policy.fr.html.twig' ignore missing %}
+	{% endset %}
+	{% if captchaUsed or oauthNames or googleMapsUsed or otherProviders|trim is not empty %}
+	<section data-legal-id="third-parties">
+		<h2>Services tiers</h2>
+		<div>
+			Certaines fonctions de <strong>{{ legal_var('site-name') }}</strong> s'appuient sur des prestataires, qui reçoivent alors les seules données nécessaires à leur service. Certains peuvent les traiter hors de l'Union européenne, dans le cadre des garanties prévues par le RGPD (décision d'adéquation ou clauses contractuelles types).
+		</div>
+		{% if captchaUsed %}
+		<h3 data-legal-id="third-parties.recaptcha">Protection des formulaires (Google reCAPTCHA)</h3>
+		<div>
+			Les formulaires sont protégés contre les robots par Google reCAPTCHA. À l'envoi d'un formulaire, Google reçoit votre adresse IP et des informations sur votre navigateur et votre navigation, afin d'estimer si l'envoi vient d'un humain. Ces données sont traitées selon la <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">politique de confidentialité de Google</a>.
+		</div>
+		{% endif %}
+		{% if oauthNames %}
+		<h3 data-legal-id="third-parties.oauth">Connexion avec {{ oauthNames }}</h3>
+		<div>
+			Si vous choisissez de vous connecter avec {{ oauthNames }}, le service choisi nous transmet votre adresse e-mail, qu'il a vérifiée ; nous ne conservons rien d'autre. Ce service sait alors que vous utilisez <strong>{{ legal_var('site-name') }}</strong>.
+		</div>
+		{% endif %}
+		{% if googleMapsUsed %}
+		<h3 data-legal-id="third-parties.google-maps">Cartes (Google Maps)</h3>
+		<div>
+			Les cartes sont affichées par Google Maps, uniquement après votre accord pour les contenus tiers. Google reçoit alors votre adresse IP et peut déposer ses propres cookies.
+		</div>
+		{% endif %}
+		{{ otherProviders }}
+	</section>
+	{% endif %}
+
 	<section data-legal-id="your-rights">
 		<h2>Vos droits</h2>
 		<div>
@@ -106,7 +143,7 @@
 		<div>
 			Les informations mises en ligne sur
 			<strong>{{ legal_var('site-name') }}</strong>
-			sont accessibles au public. Nos serveurs et nos prestataires de services se trouvent dans l'espace Européen. Ainsi, si vous souhaitez nous fournir des informations personnelles, vous acceptez que celles-ci soit transférées, traitées et stockées dans l'espace Européen.
+			sont accessibles au public. Nos serveurs se trouvent dans l'espace européen, où vos informations personnelles sont stockées et traitées ; seuls les prestataires éventuellement cités dans « Services tiers » peuvent en recevoir une partie, dans les conditions qui y sont décrites.
 		</div>
 		<div>
 			Nous collectons et stockons les données personnelles suivantes :

@@ -10,9 +10,14 @@
 
 namespace c975L\UiBundle\Tests\Templates;
 
+use c975L\UiBundle\Service\JsonLdBuilder;
+use c975L\UiBundle\Twig\JsonLdExtension;
 use PHPUnit\Framework\TestCase;
 use Twig\Environment;
+use Twig\Extension\AttributeExtension;
 use Twig\Loader\FilesystemLoader;
+use Twig\RuntimeLoader\FactoryRuntimeLoader;
+use Twig\TwigFunction;
 
 // The questions block draws an accordion and, on one column only, the FAQPage payload a search engine reads off it
 class FaqMarkupTest extends TestCase
@@ -94,6 +99,27 @@ class FaqMarkupTest extends TestCase
         $this->assertStringNotContainsString('application/ld+json', $html);
     }
 
+    // Shown on the page, but an Answer with no text is what a validator refuses
+    public function testAnUnansweredQuestionIsLeftOutOfThePayload(): void
+    {
+        $payload = $this->payloadOf($this->render(['items' => [...self::ITEMS, ['question' => 'Et le dimanche ?', 'answer' => '<p>&nbsp;</p>']]]));
+
+        $this->assertCount(2, $payload['mainEntity']);
+    }
+
+    public function testNoAnswerAtAllPublishesNoPayload(): void
+    {
+        $this->assertStringNotContainsString('application/ld+json', $this->render(['items' => [['question' => 'Et le dimanche ?', 'answer' => '']]]));
+    }
+
+    // Two blocks on one page name the same FAQPage, which a search engine merges into one holding every question
+    public function testEveryBlockOfAPageNamesTheSameFaqPage(): void
+    {
+        $payload = $this->payloadOf($this->render(['items' => self::ITEMS, 'app' => ['request' => ['pathinfo' => '/pages/faq']]]));
+
+        $this->assertSame('https://example.test/pages/faq#faq', $payload['@id']);
+    }
+
     private function payloadOf(string $html): array
     {
         $this->assertSame(1, preg_match('#<script type="application/ld\+json">(.+?)</script>#s', $html, $matches), 'No FAQPage payload was published.');
@@ -107,6 +133,9 @@ class FaqMarkupTest extends TestCase
         $loader = new FilesystemLoader(\dirname(__DIR__, 2) . '/templates');
         $loader->addPath(\dirname(__DIR__, 2) . '/templates', 'c975LUi');
         $twig = new Environment($loader);
+        $twig->addExtension(new AttributeExtension(JsonLdExtension::class));
+        $twig->addRuntimeLoader(new FactoryRuntimeLoader([JsonLdExtension::class => static fn (): JsonLdExtension => new JsonLdExtension(new JsonLdBuilder())]));
+        $twig->addFunction(new TwigFunction('absolute_url', static fn (string $path): string => 'https://example.test' . $path));
 
         return $twig->render('blocks/Faq.html.twig', $context);
     }

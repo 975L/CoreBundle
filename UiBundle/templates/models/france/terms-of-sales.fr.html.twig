@@ -46,6 +46,9 @@
 		</div>
 	</section>
 
+	{# The credits a site sells, when PurchaseCreditsBundle is installed: nothing otherwise #}
+	{% include '@c975LPurchaseCredits/legal/terms-of-sales.fr.html.twig' ignore missing %}
+
 	<section data-legal-id="delivery">
 		<h2>Livraison</h2>
 		<div>
@@ -80,7 +83,7 @@
 		<ol>
 			<li>Nous notifier la décision de rétractation par une déclaration dénuée d'ambiguïté, en nous contactant ou au moyen du formulaire ci-dessous</li>
 			<li>Vérification par nos services de la validité de la demande</li>
-			<li>Renvoi du bien, le cas échéant, dans les conditions décrites à la section Retours</li>
+			<li>Renvoi du bien, le cas échéant</li>
 			<li>Acceptation et re-créditation sur le moyen de paiement utilisé du montant défini
 				<strong>OU</strong>
 				rejet de la demande avec explications</li>

@@ -151,6 +151,9 @@
 		</div>
 	</section>
 
+	{# The site's own rules, when it ships templates/legal/terms-of-use.fr.html.twig: nothing otherwise #}
+	{% include 'legal/terms-of-use.fr.html.twig' ignore missing %}
+
 	<section data-legal-id="personal-data">
 		<h2>Données personnelles</h2>
 		<div>

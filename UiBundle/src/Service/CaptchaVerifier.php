@@ -11,6 +11,7 @@
 namespace c975L\UiBundle\Service;
 
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Contracts\HttpClient\Exception\ExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
@@ -28,11 +29,19 @@ class CaptchaVerifier
         private readonly HttpClientInterface $httpClient,
         private readonly ConfigServiceInterface $configService,
         private readonly RequestStack $requestStack,
+        #[Autowire(param: 'kernel.environment')]
+        private readonly string $environment = 'prod',
     ) {
     }
 
-    // True only when both keys are set: a site key alone would render a widget no one can verify, a secret key alone a check with no token to check
+    // True only when both keys are set: a site key alone would render a widget no one can verify, a secret key alone a check with no token to check. Never in "dev", whose database is a copy of production's: its keys only accept the site's own domain, not localhost
     public function isEnabled(): bool
+    {
+        return 'dev' !== $this->environment && $this->isConfigured();
+    }
+
+    // Both keys set, whatever the environment: what the privacy policy reads, the production site's own text not depending on where it is previewed
+    public function isConfigured(): bool
     {
         return null !== $this->getSiteKey() && null !== $this->getSecretKey();
     }
