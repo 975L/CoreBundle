@@ -86,7 +86,7 @@ class ScaffoldInstallCommand extends Command
             array_keys($obsolete),
             $obsolete
         ));
-        $io->text('See that bundle\'s UPGRADE.md for what replaces them, then delete them yourself, or re-run with --force (narrowed by --path=…) to have them deleted and find yours back in existingFiles/.');
+        $io->text('See that bundle\'s UPGRADE.md for what replaces them, then delete them yourself, keep them with "c975l:scaffold:diff --acknowledge" (they are not reported again), or re-run with --force (narrowed by --path=…) to have them deleted and find yours back in existingFiles/.');
         $io->newLine();
     }
 

@@ -36,7 +36,7 @@ class ScaffoldDiffCommand extends Command
         $this
             ->addOption('path', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'Restrict the run to these relative paths (--path=templates/security, repeatable)')
             ->addOption('bundle-sources', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'Directories holding git clones of the c975L bundles (a clone, or a directory of them), searched for a base the site\'s own history cannot give back - vendor/ is a Composer download, with no history of its own')
-            ->addOption('acknowledge', null, InputOption::VALUE_NONE, 'Record that what the scaffold gained has been seen and turned down, so it stops being reported - no file is touched, only the recorded base moves forward, and only what the bundle changes after this is raised again. Narrow it with --path')
+            ->addOption('acknowledge', null, InputOption::VALUE_NONE, 'Record that what the scaffold gained has been seen and turned down, so it stops being reported - no file is touched, only the recorded base moves forward, and only what the bundle changes after this is raised again. A customized file the scaffold withdrew is kept for good. Narrow it with --path')
         ;
     }
 

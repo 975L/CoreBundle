@@ -173,7 +173,7 @@ That answer rests on the version this site was delivered, and `.c975l-scaffold.j
 }
 ```
 
-Matching one of them (or the manifest entry) means the site never touched the file: it is deleted and named in the output. Anything else is the site's own work, is left exactly where it is, and is reported with the bundle that withdrew it so its `UPGRADE.md` says what replaced it — `--force` deletes those too, the file going to `existingFiles/<same path>.old` first. `--dry-run` shows the list before anything happens, and a path some installed bundle still ships is never deleted: it moved between bundles rather than being withdrawn.
+Matching one of them (or the manifest entry) means the site never touched the file: it is deleted and named in the output. Anything else is the site's own work, is left exactly where it is, and is reported with the bundle that withdrew it so its `UPGRADE.md` says what replaced it — `--force` deletes those too, the file going to `existingFiles/<same path>.old` first. Keeping one for good is said once with `c975l:scaffold:diff --acknowledge` (narrowed by `--path`): marked as kept in the manifest, it is no longer reported, and only `--force` still deletes it. `--dry-run` shows the list before anything happens, and a path some installed bundle still ships is never deleted: it moved between bundles rather than being withdrawn.
 
 Declaring it rather than deducing it from the manifest is what keeps `composer remove c975l/shop-bundle` from taking that bundle's scaffolded files with it — and what reaches a file withdrawn before the manifest existed, which no site has an entry for.
 

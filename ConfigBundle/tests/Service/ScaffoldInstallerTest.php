@@ -654,6 +654,50 @@ class ScaffoldInstallerTest extends TestCase
         $this->assertSame('my-own-verifier', file_get_contents($this->projectDir . '/existingFiles/src/Security/EmailVerifier.php.old'));
     }
 
+    // A customized withdrawn file the site chose to keep is acknowledged like a divergence: named once, then neither reported nor deleted by the runs after
+    public function testAcknowledgeKeepsACustomizedWithdrawnFileQuietAndInPlace(): void
+    {
+        $this->addRemovedDeclaration('site-bundle', ['translations/messages.fr.xlf' => ['as-delivered']]);
+        $this->addProjectFile('translations/messages.fr.xlf', 'my-own-messages');
+        $installer = new ScaffoldInstaller($this->bundleLocator(), $this->projectDir);
+
+        $result = $installer->acknowledge();
+
+        $this->assertSame(['translations/messages.fr.xlf'], $result['files']);
+        $this->assertSame([], $result['unmatched']);
+        $install = $installer->install();
+        $this->assertSame([], $install['obsolete']);
+        $this->assertSame([], $install['deleted']);
+        $this->assertSame('my-own-messages', file_get_contents($this->projectDir . '/translations/messages.fr.xlf'));
+    }
+
+    // Kept is not locked: --force still takes it away, into the backup directory like any other customized withdrawn file
+    public function testForceStillDeletesAnAcknowledgedWithdrawnFile(): void
+    {
+        $this->addRemovedDeclaration('site-bundle', ['translations/messages.fr.xlf' => ['as-delivered']]);
+        $this->addProjectFile('translations/messages.fr.xlf', 'my-own-messages');
+        $installer = new ScaffoldInstaller($this->bundleLocator(), $this->projectDir);
+        $installer->acknowledge();
+
+        $result = $installer->install([], false, true);
+
+        $this->assertSame(['translations/messages.fr.xlf'], $result['deleted']);
+        $this->assertSame('my-own-messages', file_get_contents($this->projectDir . '/existingFiles/translations/messages.fr.xlf.old'));
+    }
+
+    // acknowledge() looks for withdrawn files in dry run, which forgets the manifest entry of one it would delete: that entry is what still gets it deleted next time, so it must survive
+    public function testAcknowledgeLeavesTheEntryOfAnUntouchedWithdrawnFileAlone(): void
+    {
+        $this->addRemovedDeclaration('site-bundle', ['src/Security/EmailVerifier.php' => ['some-other-version']]);
+        $this->addProjectFile('src/Security/EmailVerifier.php', 'what-this-site-got');
+        $this->recordAsDelivered('src/Security/EmailVerifier.php', 'what-this-site-got');
+        $installer = new ScaffoldInstaller($this->bundleLocator(), $this->projectDir);
+
+        $this->assertSame([], $installer->acknowledge()['files']);
+
+        $this->assertSame(['src/Security/EmailVerifier.php'], $installer->install()['deleted']);
+    }
+
     // A path one bundle withdrew while another still ships it was moved between bundles, not withdrawn - deleting it would take the file the same run has just delivered
     public function testInstallKeepsAWithdrawnPathAnotherBundleStillShips(): void
     {

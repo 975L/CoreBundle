@@ -30,6 +30,9 @@ class ScaffoldInstaller
     // The scaffold files a bundle has withdrawn, mapped to the hashes of every version it ever delivered ({"src/Security/EmailVerifier.php": ["<sha256>", …]}). Read from the bundle rather than deduced from what the manifest holds and the scaffold no longer ships: an uninstalled bundle takes its whole scaffold directory with it, and its files are then no more "withdrawn" than the site's own work is. It also reaches the sites whose file predates the manifest, which is every site for anything withdrawn before it existed. Sits beside scaffold/{src,templates,…} rather than inside one of them, where the Finder would copy it into the project
     private const string REMOVED_FILE = 'scaffold/removed.json';
 
+    // Manifest value of a withdrawn file the site made its own and chose to keep (see acknowledge()): no hash, since a hash there reads as "last delivered here", which is what gets a withdrawn file deleted
+    private const string KEPT = 'kept';
+
     public function __construct(
         private readonly BundleLocator $bundleLocator,
         #[Autowire(param: 'kernel.project_dir')]
@@ -210,6 +213,11 @@ class ScaffoldInstaller
             return;
         }
 
+        // Kept on purpose after a report, nothing more to say about it - only --force still takes it away
+        if (self::KEPT === ($manifest[$relativePath] ?? null) && !$force) {
+            return;
+        }
+
         // Either witness will do: the manifest says what was last delivered here, the declared hashes say what was ever delivered anywhere - and only the second one reaches a file withdrawn before the manifest existed, which the site would otherwise carry forever
         $targetHash = hash_file('sha256', $target);
         $pristine = \in_array($targetHash, (array) $hashes, true) || $targetHash === ($manifest[$relativePath] ?? null);
@@ -258,14 +266,8 @@ class ScaffoldInstaller
         return is_array($removed) ? $removed : [];
     }
 
-    /**
-     * Takes note that this site has seen what the scaffold gained and keeps its own version anyway - the current
-     * source becomes the recorded base, so the same report stops coming back and only what the bundle changes from
-     * now on is raised again. Nothing is copied and no file is touched: a decision is being recorded, not applied.
-     * The manifest is committed like symfony.lock, so an acknowledgement made too fast comes back with git checkout.
-     *
-     * @return array{files: list<string>, unmatched: list<string>} the files whose base was moved forward, and the given paths no scaffold file answered to
-     */
+    // Records that the site keeps its own version: the current source becomes the recorded base, a customized withdrawn file is marked as kept, and no file is touched
+    /** @return array{files: list<string>, unmatched: list<string>} */
     public function acknowledge(array $paths = []): array
     {
         $manifest = $this->readManifest();
@@ -276,11 +278,18 @@ class ScaffoldInstaller
             $manifest[$relativePath] = (string) hash_file('sha256', $this->absolutePath($source));
         }
 
+        // Probed on a copy: the dry run still forgets the entries of the files it would delete, and those must keep theirs
+        $probe = $manifest;
+        $withdrawal = $this->removeWithdrawn($paths, true, false, $probe, $delivery['delivered']);
+        foreach (array_keys($withdrawal['obsolete']) as $relativePath) {
+            $manifest[$relativePath] = self::KEPT;
+        }
+
         $this->writeManifest($manifest);
 
         return [
-            'files' => array_keys($diverged),
-            'unmatched' => array_values(array_diff($paths, $delivery['matchedPaths'])),
+            'files' => [...array_keys($diverged), ...array_keys($withdrawal['obsolete'])],
+            'unmatched' => array_values(array_diff($paths, [...$delivery['matchedPaths'], ...$withdrawal['matchedPaths']])),
         ];
     }
 

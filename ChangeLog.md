@@ -1,5 +1,14 @@
 # ChangeLog
 
+## v1.48.6
+
+A customized scaffold file the bundle withdrew can be kept for good
+
+### ConfigBundle
+
+- `c975l:scaffold:diff --acknowledge` marks a customized withdrawn file as kept (29/09/2026)
+- `c975l:scaffold:install` no longer reports a kept withdrawn file, only `--force` deletes it (29/09/2026)
+
 ## v1.48.5
 
 Config values changed at runtime reach the Messenger workers
