@@ -1,5 +1,13 @@
 # ChangeLog
 
+## v1.47.1
+
+The scaffolded account test checks every fixed section of the page
+
+### ConfigBundle
+
+- Scaffolded `AccountControllerTest` asserts the email, sessions and actions sections too (29/09/2026)
+
 ## v1.47.0
 
 Shared JSON-LD builder, video and faq structured data, and the whole site translated in one command

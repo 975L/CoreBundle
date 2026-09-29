@@ -23,7 +23,7 @@ class AccountControllerTest extends FunctionalTestCase
         $this->assertResponseRedirects('/login');
     }
 
-    // The profile and the password first, then one page section per section the installed bundles and the site contribute for this member
+    // The profile, the email, the password and the sessions of a password login, one page section per section the installed bundles and the site contribute for this member, and the actions last
     public function testShowsTheProfileAndEverySection(): void
     {
         $client = $this->authenticatedClient();
@@ -34,8 +34,13 @@ class AccountControllerTest extends FunctionalTestCase
         $this->assertSelectorTextContains('#account-profile', 'functional-tests@example.test');
         $this->assertCount(1, $crawler->filter('form[name="account_password"]'));
 
+        $fixed = ['#account-profile', '#account-email', '#account-password', '#account-sessions', '#account-actions'];
+        foreach ($fixed as $selector) {
+            $this->assertSelectorExists($selector);
+        }
+
         $sections = static::getContainer()->get(AccountSectionBuilder::class)->getSections($this->authenticatedUser);
-        $this->assertCount(2 + \count($sections), $crawler->filter('.account > *'));
+        $this->assertCount(\count($fixed) + \count($sections), $crawler->filter('.account > *'));
     }
 
     // A wrong current password is refused, and the password stays as it was
