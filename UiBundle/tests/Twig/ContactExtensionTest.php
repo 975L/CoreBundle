@@ -32,7 +32,7 @@ class ContactExtensionTest extends TestCase
         $names = array_map(static fn ($function) => $function->getName(), new AttributeExtension(ContactExtension::class)->getFunctions());
         sort($names);
 
-        $this->assertSame(['contact_day_runs', 'contact_json_ld', 'google_maps_url'], $names);
+        $this->assertSame(['contact_json_ld', 'contact_week', 'google_maps_url'], $names);
     }
 
     // The payload is escaped by the builder, so it is printed as-is rather than re-escaped by Twig
@@ -53,26 +53,39 @@ class ContactExtensionTest extends TestCase
         $this->assertSame('', $this->extension()->jsonLd([]));
     }
 
-    // So "Monday…Friday 9:00-12:00" reads as one line instead of five
-    public function testConsecutiveDaysCollapseIntoOneRun(): void
+    // One line per day, the whole week: a range lands on every day it names, and a day none names stays empty - closed
+    public function testEveryDayOfTheWeekGetsItsOwnRanges(): void
     {
-        $this->assertSame(
-            [['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']],
-            $this->extension()->dayRuns(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'])
-        );
+        $week = $this->extension()->week([
+            ['days' => ['Monday', 'Tuesday'], 'opens' => '14:00', 'closes' => '18:00'],
+            ['days' => ['Tuesday'], 'opens' => '08:00', 'closes' => '12:00'],
+        ]);
+
+        $this->assertSame(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'], array_keys($week));
+        $this->assertSame([['opens' => '14:00', 'closes' => '18:00']], $week['Monday']);
+        $this->assertSame([], $week['Sunday']);
     }
 
-    public function testAGapStartsANewRunAndTheWeekOrderIsRestored(): void
+    // Earliest first whatever the entry order, a hand-typed "9:00" included
+    public function testRangesOfADayAreSortedByOpeningTime(): void
     {
-        $this->assertSame(
-            [['Monday', 'Tuesday'], ['Thursday'], ['Saturday', 'Sunday']],
-            $this->extension()->dayRuns(['Saturday', 'Thursday', 'Monday', 'Sunday', 'Tuesday'])
-        );
+        $week = $this->extension()->week([
+            ['days' => ['Monday'], 'opens' => '14:00', 'closes' => '18:00'],
+            ['days' => ['Monday'], 'opens' => '9:00', 'closes' => '12:00'],
+        ]);
+
+        $this->assertSame(['9:00', '14:00'], array_column($week['Monday'], 'opens'));
     }
 
-    public function testUnknownDaysAreIgnored(): void
+    public function testUnknownDaysAndRowsWithoutTimesAreIgnored(): void
     {
-        $this->assertSame([['Monday']], $this->extension()->dayRuns(['Monday', 'Caturday']));
-        $this->assertSame([], $this->extension()->dayRuns([]));
+        $week = $this->extension()->week([
+            ['days' => ['Monday', 'Caturday'], 'opens' => '09:00', 'closes' => '12:00'],
+            ['days' => ['Tuesday'], 'opens' => '', 'closes' => '12:00'],
+        ]);
+
+        $this->assertCount(7, $week);
+        $this->assertCount(1, $week['Monday']);
+        $this->assertSame([], $week['Tuesday']);
     }
 }

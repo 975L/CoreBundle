@@ -22,28 +22,31 @@ class ContactExtension
     ) {
     }
 
-    // Splits the days of one opening range into runs of consecutive days, so a template can print "Monday - Friday" rather than the five of them; a lone day comes back as a one-entry run, and the week order is the stored one
-    #[AsTwigFunction('contact_day_runs')]
-    public function dayRuns(array $days): array
+    // Lays the opening ranges out day by day, the whole week in order: each day gets every range naming it, earliest first, and a day no range names comes back empty - closed. A visitor looks up one day, and finds it on its own line rather than spread over the rows it was entered as
+    #[AsTwigFunction('contact_week')]
+    public function week(array $hours): array
     {
-        $ordered = array_values(array_intersect(ContactSnippetBuilder::DAYS, $days));
-        $runs = [];
+        $week = array_fill_keys(ContactSnippetBuilder::DAYS, []);
 
-        foreach ($ordered as $day) {
-            $previous = end($runs) ?: null;
-            $isNext = null !== $previous
-                && array_search($day, ContactSnippetBuilder::DAYS, true) === array_search(end($previous), ContactSnippetBuilder::DAYS, true) + 1;
-
-            if ($isNext) {
-                $runs[\count($runs) - 1][] = $day;
-
+        foreach ($hours as $row) {
+            $opens = $row['opens'] ?? '';
+            $closes = $row['closes'] ?? '';
+            if ('' === $opens || '' === $closes) {
                 continue;
             }
 
-            $runs[] = [$day];
+            foreach (array_intersect($row['days'] ?? [], ContactSnippetBuilder::DAYS) as $day) {
+                $week[$day][] = ['opens' => $opens, 'closes' => $closes];
+            }
         }
 
-        return $runs;
+        // Padded for the comparison only, so a hand-entered "9:00" still sorts before "14:00"
+        foreach ($week as &$ranges) {
+            usort($ranges, static fn (array $a, array $b) => strcmp(str_pad($a['opens'], 5, '0', STR_PAD_LEFT), str_pad($b['opens'], 5, '0', STR_PAD_LEFT)));
+        }
+        unset($ranges);
+
+        return $week;
     }
 
     // The place's address on Google Maps, built from the block's own coordinates or postal address - empty when it holds neither. A plain link anyone opens, which costs nothing and loads no script: the Maps JavaScript API the "map" block draws with is the other, billed half of Google Maps

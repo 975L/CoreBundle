@@ -1,5 +1,15 @@
 # ChangeLog
 
+## v1.48.0
+
+Opening hours shown day by day
+
+### UiBundle
+
+- The `contact_details` block lists its opening hours one line per day, every range of the day side by side, and the days without any as "Closed" (29/09/2026)
+- Replaced the `contact_day_runs()` Twig function with `contact_week()`, an override calling the former has to move to the latter (29/09/2026)
+- Added the `label.closed` translation (29/09/2026)
+
 ## v1.47.1
 
 The scaffolded account test checks every fixed section of the page

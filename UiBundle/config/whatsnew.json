@@ -1,5 +1,15 @@
 [
     {
+        "date": "2026-09-29",
+        "description": [
+            {
+                "en": "The \"Contact details\" block now shows its opening hours one line per day, with every range of the day side by side and \"Closed\" on the days you don't open.",
+                "fr": "Le block « Coordonnées » affiche maintenant ses horaires jour par jour, toutes les plages d'un jour sur la même ligne et « Fermé » les jours sans ouverture.",
+                "es": "El bloque «Datos de contacto» muestra ahora su horario día por día, con todas las franjas del día en la misma línea y «Cerrado» los días sin apertura."
+            }
+        ]
+    },
+    {
         "date": "2026-09-28",
         "description": [
             {

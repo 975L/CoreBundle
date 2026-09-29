@@ -81,17 +81,14 @@
         <div class="contact-details__hours">
             <p class="contact-details__hours-title">{{ 'label.opening_hours'|trans }}</p>
             <dl class="contact-details__list contact-details__list--hours">
-                {% for row in openRanges %}
+                {% for day, ranges in contact_week(openRanges) %}
                     <div class="contact-details__item contact-details__item--hours">
-                        {# Consecutive days collapse into a range, so "Mo-Fr" reads as one line instead of five #}
-                        <dt>
-                            {%- for run in contact_day_runs(row.days) -%}
-                                {{- ('label.' ~ run|first|lower)|trans -}}
-                                {%- if run|length > 1 %} - {{ ('label.' ~ run|last|lower)|trans }}{% endif -%}
-                                {%- if not loop.last %}, {% endif -%}
-                            {%- endfor -%}
-                        </dt>
-                        <dd>{{ row.opens }} - {{ row.closes }}</dd>
+                        <dt>{{ ('label.' ~ day|lower)|trans }}</dt>
+                        {% if ranges is empty %}
+                            <dd class="contact-details__closed">{{ 'label.closed'|trans }}</dd>
+                        {% else %}
+                            <dd>{{ ranges|map(range => range.opens ~ ' - ' ~ range.closes)|join(', ') }}</dd>
+                        {% endif %}
                     </div>
                 {% endfor %}
             </dl>

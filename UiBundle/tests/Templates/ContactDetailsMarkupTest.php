@@ -64,8 +64,9 @@ class ContactDetailsMarkupTest extends TestCase
             'hours' => [['days' => ['Monday'], 'opens' => '9:00', 'closes' => '12:00']],
         ]);
 
-        $this->assertSame(3, substr_count($html, '<dt>'));
-        $this->assertSame(3, substr_count($html, 'class="contact-details__item'));
+        // Two fields, plus the seven days of the week
+        $this->assertSame(9, substr_count($html, '<dt>'));
+        $this->assertSame(9, substr_count($html, 'class="contact-details__item'));
     }
 
     public function testFilledInFieldsArePublishedAsAJsonLdGraph(): void
@@ -82,19 +83,20 @@ class ContactDetailsMarkupTest extends TestCase
         $this->assertSame('Scientrier', $this->graph($html)['address']['addressLocality']);
     }
 
-    // Consecutive days collapse, so the two ranges of a business closing for lunch read as two lines, not ten
-    public function testConsecutiveOpeningDaysRenderAsARange(): void
+    // One line per day, its ranges side by side, and the days nobody opens on said to be closed rather than left out
+    public function testOpeningHoursRenderOneLinePerDay(): void
     {
         $html = $this->render([
             'hours' => [
                 ['days' => ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'], 'opens' => '9:00', 'closes' => '12:00'],
-                ['days' => ['Saturday'], 'opens' => '9:00', 'closes' => '12:00'],
+                ['days' => ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'], 'opens' => '14:00', 'closes' => '18:00'],
             ],
         ]);
 
-        $this->assertStringContainsString('<dt>label.monday - label.friday</dt>', $html);
-        $this->assertStringContainsString('<dt>label.saturday</dt>', $html);
-        $this->assertStringContainsString('<dd>9:00 - 12:00</dd>', $html);
+        $this->assertSame(7, substr_count($html, 'contact-details__item--hours'));
+        $this->assertStringContainsString('<dt>label.monday</dt>', $html);
+        $this->assertStringContainsString('<dd>9:00 - 12:00, 14:00 - 18:00</dd>', $html);
+        $this->assertSame(2, substr_count($html, 'label.closed'));
     }
 
     // Both times being optional, a row saved with days only must take the whole section with it, heading included

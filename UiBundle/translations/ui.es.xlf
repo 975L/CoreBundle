@@ -1510,6 +1510,10 @@
                 <source>label.close</source>
                 <target>Cerrar</target>
             </trans-unit>
+            <trans-unit id="X4ZcYRi">
+                <source>label.closed</source>
+                <target>Cerrado</target>
+            </trans-unit>
             <trans-unit id="m0L.u3G">
                 <source>label.closes</source>
                 <target>Cierre</target>
