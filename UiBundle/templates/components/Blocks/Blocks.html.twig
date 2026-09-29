@@ -6,6 +6,8 @@
 {# Editor-only: resolving edit URLs runs a query nobody else would see the result of #}
 {% set canEditBlocks = is_granted(config('site-role-editor')) %}
 {% set editUrls = canEditBlocks ? block_edit_urls(blocks) : [] %}
+{# Announced rather than read: the first block missing the cache reads the translations of the whole run, none is read while they are all cached #}
+{% do defer_block_translations(blocks) %}
 {# Connects the animateScroll controller once per page; display:contents keeps it out of the layout #}
 <div class="blocks" data-controller="animateScroll{{ canEditBlocks ? ' blockEditOverlay' : '' }}"{% if canEditBlocks %} data-edit-label="{{ 'label.edit'|trans({}, 'ui') }}"{% endif %}>
     {% for block in blocks %}

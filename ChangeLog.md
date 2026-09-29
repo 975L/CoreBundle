@@ -1,5 +1,13 @@
 # ChangeLog
 
+## v1.48.3
+
+The footer's and the navbar's blocks read their translations in one query
+
+### UiBundle
+
+- `Blocks:Blocks` defers its run's translations, read in one query by the first block missing the cache (29/09/2026)
+
 ## v1.48.2
 
 A page's blocks read their translations in one query

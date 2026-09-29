@@ -149,6 +149,21 @@ class ContentTranslatorTest extends TestCase
         $this->assertSame('Rien non plus', $translator->translate('ui_block', 9, ['title' => 'Rien non plus'], ['title'])['title']);
     }
 
+    // Owners announced ahead cost nothing while nothing is read, then ride along the first query of their type: a run of blocks all cached asks nothing, one missing the cache reads the whole run
+    public function testDeferredOwnersRideAlongTheFirstQuery(): void
+    {
+        $repository = $this->createCountingRepository([8 => ['title' => 'Footer']]);
+        $repository->expects($this->once())->method('findValues')->with('ui_block', [7, 8, 9], 'en');
+
+        $translator = $this->createTranslator($repository, ['fr', 'en']);
+        $translator->defer('ui_block', [8, 9]);
+        $translator->defer('ui_media', [8]);
+        $translator->preload('ui_block', [7]);
+
+        $this->assertSame('Footer', $translator->translate('ui_block', 8, ['title' => 'Pied'], ['title'])['title']);
+        $this->assertSame('Rien', $translator->translate('ui_block', 9, ['title' => 'Rien'], ['title'])['title']);
+    }
+
     // A language screen reads block by block: a container's slots help themselves to what its root has already read
     public function testALanguageScreenReadsTheWholeTreeInOneQuery(): void
     {

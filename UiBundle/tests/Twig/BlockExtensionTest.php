@@ -12,6 +12,7 @@ namespace c975L\UiBundle\Tests\Twig;
 
 use c975L\UiBundle\Contract\InternalLinkLocalizerInterface;
 use c975L\UiBundle\Entity\Block;
+use c975L\UiBundle\Entity\Translation;
 use c975L\UiBundle\Registry\BlockCacheTagRegistry;
 use c975L\UiBundle\Registry\BlockEditUrlRegistry;
 use c975L\UiBundle\Registry\BlockRegistry;
@@ -154,6 +155,21 @@ class BlockExtensionTest extends TestCase
         $extension = new BlockExtension($registry, $this->createStub(Environment::class), $cache, new RequestStack([Request::create('/')]), $this->createStub(BlockCacheTagResolver::class), new BlockEditUrlRegistry(), $this->createStub(CspNonceProvider::class), new BlockRenderContext(), $translator, $this->createMediaTranslator());
 
         $this->assertSame('<div>from the cache</div>', $extension->renderBlock($block));
+    }
+
+    // A run of blocks is announced to the translations, ids only and never walking a slot, nothing being read until a block misses the cache
+    public function testDeferBlockTranslationsAnnouncesTheRunWithoutReading(): void
+    {
+        $blocks = [$this->createBlock('contact', 7), $this->createBlock('text', 8), $this->createBlock('text', null)];
+
+        $translator = $this->createMock(ContentTranslator::class);
+        $translator->expects($this->once())->method('defer')->with(Translation::OWNER_BLOCK, [7, 8]);
+        $translator->expects($this->never())->method('preload');
+        $translator->expects($this->never())->method('preloadBlocks');
+
+        $extension = new BlockExtension($this->createStub(BlockRegistry::class), $this->createStub(Environment::class), $this->createStub(TagAwareCacheInterface::class), new RequestStack([Request::create('/')]), $this->createStub(BlockCacheTagResolver::class), new BlockEditUrlRegistry(), $this->createStub(CspNonceProvider::class), new BlockRenderContext(), $translator, $this->createMediaTranslator());
+
+        $extension->deferBlockTranslations($blocks);
     }
 
     // And read on a miss, for the block being rendered and everything it holds: one query for the subtree, where each slot asking for itself would run one apiece
@@ -573,7 +589,7 @@ class BlockExtensionTest extends TestCase
         // Indexed by name rather than read in order: the attributes are collected in the methods' declaration order, which is no part of the contract
         $names = array_keys($functions);
         sort($names);
-        $this->assertSame(['block_edit_urls', 'render_block'], $names);
+        $this->assertSame(['block_edit_urls', 'defer_block_translations', 'render_block'], $names);
         $this->assertSame(['html'], $functions['render_block']->getSafe(new \Twig\Node\TextNode('', 0)));
     }
 

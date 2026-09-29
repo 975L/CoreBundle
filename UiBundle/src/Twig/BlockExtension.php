@@ -57,6 +57,20 @@ class BlockExtension
         return $this->blockEditUrlRegistry->getEditUrls(is_array($blocks) ? $blocks : iterator_to_array($blocks));
     }
 
+    // A run of blocks announced to the translations without a query: all of them read at once by the first one missing the cache, none while they are all cached - the footer and the navbar render their runs with no entry around them (see OwnedBlocksExtension)
+    #[AsTwigFunction('defer_block_translations')]
+    public function deferBlockTranslations(iterable $blocks): void
+    {
+        $ids = [];
+        foreach ($blocks as $block) {
+            if (null !== $block->getId()) {
+                $ids[] = $block->getId();
+            }
+        }
+
+        $this->contentTranslator->defer(Translation::OWNER_BLOCK, $ids);
+    }
+
     // Every path goes through applyNonce, the early returns below included: a block rendered without being cached (no id, a kind the registry declares uncacheable, a render outside any request) ships the same marker and would otherwise leak it raw into the page
     // $cacheKey/$cacheTags are for the never-persisted blocks a caller builds itself and can identify better than an id could (see CollectionRuntime, whose items are transient by design but named by their source's own slug) - left out by every Twig caller, "render_block" only ever taking the block
     #[AsTwigFunction('render_block', isSafe: ['html'])]

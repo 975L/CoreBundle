@@ -27,6 +27,9 @@ class ContentTranslator
     // What a form has handed over and no flush has written yet (see stage())
     private array $pending = [];
 
+    // Ids announced ahead per owner type, read along with the first query this request runs for that type (see defer())
+    private array $deferred = [];
+
     public function __construct(
         private readonly TranslationRepository $repository,
         private readonly EntityManagerInterface $manager,
@@ -51,6 +54,15 @@ class ContentTranslator
         return $this->siteLocales->translatable();
     }
 
+    // Announces owners about to be rendered without reading anything: none is read while all come from the cache, the first one missing it reads them all
+    /** @param list<int> $ownerIds */
+    public function defer(string $ownerType, array $ownerIds): void
+    {
+        foreach ($ownerIds as $ownerId) {
+            $this->deferred[$ownerType][$ownerId] = $ownerId;
+        }
+    }
+
     /**
      * Reads ahead the translations of a whole set of owners, so a page costs one query rather than one per block.
      *
@@ -68,6 +80,9 @@ class ContentTranslator
         if ([] === $missing) {
             return;
         }
+
+        // The owners announced ahead ride along, the query being paid anyway
+        $missing = array_values(array_unique(array_merge($missing, array_diff(array_values($this->deferred[$ownerType] ?? []), array_keys($known)))));
 
         // Ids holding no translation are remembered empty, or each would be asked of the database again for every block rendered
         $found = $this->repository->findValues($ownerType, $missing, $locale);
