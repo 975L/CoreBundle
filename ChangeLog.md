@@ -1,5 +1,17 @@
 # ChangeLog
 
+## v1.48.7
+
+Sign-out links carry rel="nofollow"
+
+### ConfigBundle
+
+- Sign-out links of the login, login code and account pages carry `rel="nofollow"` (29/09/2026)
+
+### UiBundle
+
+- `FormAlreadyAuthenticated` sign-out link carries `rel="nofollow"` (29/09/2026)
+
 ## v1.48.6
 
 A customized scaffold file the bundle withdrew can be kept for good

@@ -20,6 +20,6 @@
     <form method="post" action="{{ path('config_login_code_resend') }}">
         <input type="hidden" name="_token" value="{{ csrf_token('login_code_resend') }}">
         <button class="btn btn-secondary btn-small" type="submit">{{ 'label.login_code_resend'|trans }}</button>
-        <a class="btn btn-secondary btn-small" href="{{ logout_path() }}">{{ 'label.signout'|trans }}</a>
+        <a class="btn btn-secondary btn-small" href="{{ logout_path() }}" rel="nofollow">{{ 'label.signout'|trans }}</a>
     </form>
 {% endblock %}

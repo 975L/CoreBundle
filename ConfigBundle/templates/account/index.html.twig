@@ -99,7 +99,7 @@
                 <div class="section-wrap">
                     <div class="flex-center">
                         <a href="{{ path('config_account_export') }}" class="btn btn-secondary">{{ 'label.account_export'|trans }}</a>
-                        <a href="{{ logout_path() }}" class="btn btn-secondary">{{ 'label.signout'|trans }}</a>
+                        <a href="{{ logout_path() }}" rel="nofollow" class="btn btn-secondary">{{ 'label.signout'|trans }}</a>
                         {% if deleteForm %}
                             <button type="button" class="btn btn-danger" commandfor="account-delete-dialog" command="show-modal" aria-describedby="account-delete-note">{{ 'label.account_delete'|trans }}</button>
                         {% elseif is_granted('ROLE_SUPER_ADMIN') %}

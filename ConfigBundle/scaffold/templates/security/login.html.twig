@@ -8,7 +8,7 @@
 {% block content %}
     {% if app.user %}
         <div class="alert alert-info text text-center">
-            {{ 'text.logged_in_as'|trans({'%user%': app.user.userIdentifier}, 'config') }} <a href="{{ logout_path() }}">{{ 'label.signout'|trans({}, 'config') }}</a>
+            {{ 'text.logged_in_as'|trans({'%user%': app.user.userIdentifier}, 'config') }} <a href="{{ logout_path() }}" rel="nofollow">{{ 'label.signout'|trans({}, 'config') }}</a>
         </div>
     {% else %}
         <form method="post">
