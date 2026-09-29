@@ -317,6 +317,16 @@ class DevProfileCollectorTest extends TestCase
         $this->assertSame('GET', $handled->getMethod());
     }
 
+    // A multilingual site would otherwise send every bare url to its "/en/..." one, Request::create() announcing an English browser
+    public function testCollectAnnouncesNoLanguageSoABareUrlIsReadInTheWritingLanguage(): void
+    {
+        $handled = null;
+        $this->createCollector($this->createProfiler(null), null, $handled)->collect('/pages/contact');
+
+        $this->assertFalse($handled->headers->has('Accept-Language'));
+        $this->assertSame('fr', $handled->getPreferredLanguage(['fr', 'en', 'es']));
+    }
+
     // The profile is only written to storage on terminate, which is what loadProfileFromResponse() reads it back from
     public function testCollectTerminatesTheKernel(): void
     {

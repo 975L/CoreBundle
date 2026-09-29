@@ -1,5 +1,13 @@
 # ChangeLog
 
+## v1.48.4
+
+The dev profile reads a page in the language it is written in
+
+### ConfigBundle
+
+- `DevProfileCollector` announces no `Accept-Language`, so a bare url is no longer sent to its `/en/...` one (29/09/2026)
+
 ## v1.48.3
 
 The footer's and the navbar's blocks read their translations in one query

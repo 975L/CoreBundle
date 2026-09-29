@@ -29,9 +29,10 @@ class IconService implements IconServiceInterface
             $icons[$name] = 'bundles/' . basename(dirname($file, 2)) . '/icons/' . basename($file);
         }
 
-        foreach (glob($publicDir . '/icons/*.svg') ?: [] as $file) {
+        // Not "public/icons/": Apache's default configuration aliases "/icons/" to its own directory, hiding every file a site puts there
+        foreach (glob($publicDir . '/images/icons/*.svg') ?: [] as $file) {
             $name = pathinfo($file, PATHINFO_FILENAME);
-            $icons[$name] = 'icons/' . basename($file);
+            $icons[$name] = 'images/icons/' . basename($file);
         }
 
         ksort($icons);

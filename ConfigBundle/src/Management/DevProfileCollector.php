@@ -80,7 +80,9 @@ class DevProfileCollector
             return $metrics;
         }
 
+        // Request::create() announces an English browser, which a multilingual site sends from every bare url to its "/en/..." one: announcing none, the page is read in the language it is written in
         $request = Request::create(self::BASE_URL . $path);
+        $request->headers->remove('Accept-Language');
         $this->profiler->enable();
 
         try {

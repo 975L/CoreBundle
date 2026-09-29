@@ -75,10 +75,19 @@ class IconServiceTest extends TestCase
 
     public function testGetIconsFindsIconsAtProjectRoot(): void
     {
+        $this->createIcon('images/icons/home.svg');
+        $service = $this->createService();
+
+        $this->assertSame(['home' => 'images/icons/home.svg'], $service->getIcons());
+    }
+
+    // Apache aliases "/icons/" to its own directory, so a site's icons left there would never be served
+    public function testGetIconsIgnoresTheIconsDirectoryApacheHides(): void
+    {
         $this->createIcon('icons/home.svg');
         $service = $this->createService();
 
-        $this->assertSame(['home' => 'icons/home.svg'], $service->getIcons());
+        $this->assertSame([], $service->getIcons());
     }
 
     public function testGetIconsFindsIconsContributedByBundles(): void
@@ -95,8 +104,8 @@ class IconServiceTest extends TestCase
     // The icons array must be sorted by name, regardless of the order in which files were discovered on disk
     public function testGetIconsSortsResultsAlphabeticallyByName(): void
     {
-        $this->createIcon('icons/zebra.svg');
-        $this->createIcon('icons/apple.svg');
+        $this->createIcon('images/icons/zebra.svg');
+        $this->createIcon('images/icons/apple.svg');
         $this->createIcon('bundles/somebundle/icons/mango.svg');
         $service = $this->createService();
 
@@ -107,9 +116,9 @@ class IconServiceTest extends TestCase
     public function testGetIconsLetsProjectRootIconOverrideBundleIconOfSameName(): void
     {
         $this->createIcon('bundles/somebundle/icons/shared.svg');
-        $this->createIcon('icons/shared.svg');
+        $this->createIcon('images/icons/shared.svg');
         $service = $this->createService();
 
-        $this->assertSame(['shared' => 'icons/shared.svg'], $service->getIcons());
+        $this->assertSame(['shared' => 'images/icons/shared.svg'], $service->getIcons());
     }
 }
