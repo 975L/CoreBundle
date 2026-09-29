@@ -22,6 +22,8 @@ abstract class FunctionalTestCase extends WebTestCase
         $client = static::createClient();
 
         $container = static::getContainer();
+        // With no header BrowserKit calls itself an English browser, and a multilingual site would send every page to its "/en/..." url: the client reads the site in the language it is written in
+        $client->setServerParameter('HTTP_ACCEPT_LANGUAGE', (string) $container->getParameter('kernel.default_locale'));
         // Cast because ConfigServiceInterface::get() returns mixed, which would leave the roles array untyped
         $adminRole = (string) $container->get(ConfigServiceInterface::class)->get('site-role-admin');
 

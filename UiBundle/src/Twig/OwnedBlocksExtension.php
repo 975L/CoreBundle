@@ -16,6 +16,7 @@ use c975L\UiBundle\Repository\BlockRepository;
 use c975L\UiBundle\Service\BlockCacheInvalidator;
 use c975L\UiBundle\Service\BlockCacheTagResolver;
 use c975L\UiBundle\Service\BlockRenderContext;
+use c975L\UiBundle\Service\ContentTranslator;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Contracts\Cache\ItemInterface;
@@ -30,6 +31,7 @@ class OwnedBlocksExtension
         private readonly BlockExtension $blockExtension,
         private readonly BlockCacheTagResolver $cacheTagResolver,
         private readonly BlockRepository $blockRepository,
+        private readonly ContentTranslator $contentTranslator,
         private readonly BlockRenderContext $renderContext,
         private readonly TagAwareCacheInterface $cache,
         private readonly RequestStack $requestStack,
@@ -61,6 +63,9 @@ class OwnedBlocksExtension
             $ownerTag . '_' . $request->getLocale(),
             function (ItemInterface $item, bool &$save) use ($owner, $ownerTag): string {
                 $this->blockRepository->preloadTree($owner->getBlocks());
+
+                // The translations of the whole tree just hydrated, slots and medias included, in two queries rather than one per block rendered - here and not in the run's template, which the footer and the navbar render with no entry around it: a page read from this one then pays nothing
+                $this->contentTranslator->preloadBlocks($owner->getBlocks());
 
                 $tags = $this->tags($owner, $ownerTag);
                 if (null === $tags) {

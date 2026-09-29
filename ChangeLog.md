@@ -1,5 +1,17 @@
 # ChangeLog
 
+## v1.48.2
+
+A page's blocks read their translations in one query
+
+### ConfigBundle
+
+- The scaffolded `FunctionalTestCase` client reads the site in its default language (29/09/2026)
+
+### UiBundle
+
+- `render_owned_blocks()` reads the whole run's translations, slots and medias included, ahead on a miss (29/09/2026)
+
 ## v1.48.1
 
 A front page drops "?_locale=" once the language is kept in session

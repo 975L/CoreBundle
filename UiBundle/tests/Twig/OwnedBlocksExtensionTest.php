@@ -16,6 +16,7 @@ use c975L\UiBundle\Entity\Block;
 use c975L\UiBundle\Repository\BlockRepository;
 use c975L\UiBundle\Service\BlockCacheTagResolver;
 use c975L\UiBundle\Service\BlockRenderContext;
+use c975L\UiBundle\Service\ContentTranslator;
 use c975L\UiBundle\Twig\BlockExtension;
 use c975L\UiBundle\Twig\OwnedBlocksExtension;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -46,7 +47,7 @@ class OwnedBlocksExtensionTest extends TestCase
     }
 
     /** @param array<int, string[]|null> $tagsById */
-    private function extension(Environment $twig, TagAwareAdapter $cache, array $tagsById = [], bool $editor = false, ?BlockRenderContext $context = null): OwnedBlocksExtension
+    private function extension(Environment $twig, TagAwareAdapter $cache, array $tagsById = [], bool $editor = false, ?BlockRenderContext $context = null, ?ContentTranslator $translator = null): OwnedBlocksExtension
     {
         $blockExtension = $this->createStub(BlockExtension::class);
         $blockExtension->method('renderNested')->willReturnCallback(static fn (callable $render): string => $render());
@@ -60,7 +61,7 @@ class OwnedBlocksExtensionTest extends TestCase
         $security = $this->createStub(Security::class);
         $security->method('isGranted')->willReturn($editor);
 
-        return new OwnedBlocksExtension($blockExtension, $resolver, $this->createStub(BlockRepository::class), $context ?? new BlockRenderContext(), $cache, new RequestStack([new Request()]), $config, $twig, $security);
+        return new OwnedBlocksExtension($blockExtension, $resolver, $this->createStub(BlockRepository::class), $translator ?? $this->createStub(ContentTranslator::class), $context ?? new BlockRenderContext(), $cache, new RequestStack([new Request()]), $config, $twig, $security);
     }
 
     // A hit reads nothing: the whole run is served from the one entry, until a block of it or the owner's own tag is emptied
@@ -77,6 +78,21 @@ class OwnedBlocksExtensionTest extends TestCase
         $extension->renderOwnedBlocks($owner);
 
         $cache->invalidateTags(['collection_x']);
+        $extension->renderOwnedBlocks($owner);
+    }
+
+    // The translations are read ahead on a miss only, for the whole run at once: a hit serves them already rendered
+    public function testTheTranslationsAreReadAheadOnAMissOnly(): void
+    {
+        $twig = $this->createStub(Environment::class);
+        $twig->method('render')->willReturn('');
+        $owner = $this->owner($this->block(7), $this->block(8));
+
+        $translator = $this->createMock(ContentTranslator::class);
+        $translator->expects($this->once())->method('preloadBlocks')->with($owner->getBlocks());
+
+        $extension = $this->extension($twig, new TagAwareAdapter(new ArrayAdapter()), translator: $translator);
+        $extension->renderOwnedBlocks($owner);
         $extension->renderOwnedBlocks($owner);
     }
 
