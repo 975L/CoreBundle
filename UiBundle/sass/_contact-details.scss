@@ -110,6 +110,7 @@
 // Same treatment as a field label, the hours being one more group inside the very same panel
 .contact-details__hours-title {
     margin: 0 0 0.9em;
+    text-align: center;
     font-family: var(--font-family-accent);
     font-size: calc(12.5px * var(--font-size-eyebrow-scale, 1));
     letter-spacing: .12em;
@@ -117,10 +118,12 @@
     color: var(--section-text-soft, var(--label-color));
 }
 
-// Wider tracks than a field: a day range and its times read as one line and must not be split over two
+// One column, the week read top to bottom like a posted timetable: laid out as tiles it zig-zagged across rows. Capped width so "space-between" keeps the times next to their day rather than at the far edge of the panel, and centered so the capped list does not leave the right half of the panel empty
 .contact-details__list--hours {
-    --contact-details-col-min: 260px;
-    gap: 0 clamp(24px, 4vw, 48px);
+    grid-template-columns: 1fr;
+    max-width: 28em;
+    margin-inline: auto;
+    gap: 0;
 }
 
 // wrap so the times drop under the days on a phone rather than push the row past the panel: the times are held on one line by "white-space: nowrap" below, which leaves the row nothing else to give

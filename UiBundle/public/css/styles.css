@@ -5952,6 +5952,7 @@ span {
 
 .contact-details__hours-title {
   margin: 0 0 0.9em;
+  text-align: center;
   font-family: var(--font-family-accent);
   font-size: calc(12.5px * var(--font-size-eyebrow-scale, 1));
   letter-spacing: 0.12em;
@@ -5960,8 +5961,10 @@ span {
 }
 
 .contact-details__list--hours {
-  --contact-details-col-min: 260px;
-  gap: 0 clamp(24px, 4vw, 48px);
+  grid-template-columns: 1fr;
+  max-width: 28em;
+  margin-inline: auto;
+  gap: 0;
 }
 
 .contact-details__item--hours {

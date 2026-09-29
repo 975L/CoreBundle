@@ -1,5 +1,17 @@
 # ChangeLog
 
+## v1.48.1
+
+A front page drops "?_locale=" once the language is kept in session
+
+### ConfigBundle
+
+- `LocaleListener` drops `?_locale=xx` from a front page url once the choice is in session (29/09/2026)
+
+### UiBundle
+
+- `contact_details` opening hours laid out as one centered column (29/09/2026)
+
 ## v1.48.0
 
 Opening hours shown day by day

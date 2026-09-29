@@ -17,10 +17,12 @@ use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
+use Symfony\Component\HttpKernel\Event\ResponseEvent;
 
 // The language a request is answered in when the site declares more than one (see SiteLocales): the visitor's choice kept in session, then what their browser asks for
 // Priority 20, above Symfony's LocaleAwareListener (15) which hands the locale to the translator, and below RouterListener (32) so the route guard below still sees its attribute
 #[AsEventListener(event: 'kernel.request', priority: 20)]
+#[AsEventListener(event: 'kernel.response', method: 'dropAskedLanguage')]
 class LocaleListener
 {
     // Where the chosen language is kept, and where Symfony looks for it on its own
@@ -74,6 +76,29 @@ class LocaleListener
         $request->setLocale(\is_string($chosen) && \in_array($chosen, $locales, true)
             ? $chosen
             : $request->getPreferredLanguage($locales));
+    }
+
+    // A front page answered after a language was picked from the menu moves to its own url without "?_locale=xx", the choice being kept in session by now: a controller already sending the visitor on to "/xx/..." is left alone, as is the back office whose EasyAdmin urls are none of the visitor's business, and a visitor with no session keeps the query rather than lose the choice
+    public function dropAskedLanguage(ResponseEvent $event): void
+    {
+        $request = $event->getRequest();
+        if (
+            !$event->isMainRequest()
+            || !$this->siteLocales->isMultilingual()
+            || !$request->isMethodSafe()
+            || !$request->hasSession()
+            || !\in_array($request->query->get('_locale'), $this->siteLocales->all(), true)
+            || !$event->getResponse()->isSuccessful()
+            || DashboardController::isManagementPath($request->getPathInfo())
+        ) {
+            return;
+        }
+
+        $query = $request->query->all();
+        unset($query['_locale']);
+        $queryString = Request::normalizeQueryString(http_build_query($query));
+
+        $event->setResponse(new RedirectResponse($request->getBaseUrl() . $request->getPathInfo() . ('' === $queryString ? '' : '?' . $queryString)));
     }
 
     // The same route in the language picked from the menu ("?_locale=xx"), for a route whose own path says its language - "/fr/preview/abc" - which the menu's single form cannot link to one by one. The language already read moves too, to the url without the query, so the choice is kept whichever entry the form was sent to. A localised twin is left out, its menu linking to the bare url that LocalizedRouteNegotiator moves on, and a language the route does not accept leaves the visitor where they are

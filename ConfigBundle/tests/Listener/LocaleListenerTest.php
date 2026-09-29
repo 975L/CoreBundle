@@ -17,9 +17,11 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
+use Symfony\Component\HttpKernel\Event\ResponseEvent;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\Routing\Exception\InvalidParameterException;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -294,6 +296,68 @@ class LocaleListenerTest extends TestCase
         $request->setSession(new Session(new MockArraySessionStorage()));
 
         return $event;
+    }
+
+    // The language picked from the menu is kept in session by now, so the page moves to its own url without the query, the other parameters along
+    public function testAPagePickedInALanguageDropsTheQuery(): void
+    {
+        $event = $this->responseEvent('/pages/contact?_locale=fr&utm_source=x');
+
+        new LocaleListener($this->siteLocales(['fr', 'en']), $this->urls())->dropAskedLanguage($event);
+
+        $this->assertInstanceOf(RedirectResponse::class, $event->getResponse());
+        $this->assertSame('/pages/contact?utm_source=x', $event->getResponse()->getTargetUrl());
+    }
+
+    // A controller already sending the visitor on to "/en/..." is left to do it, rather than a second redirect in a row
+    public function testARedirectAlreadyAnsweredIsLeftAlone(): void
+    {
+        $event = $this->responseEvent('/?_locale=en', new RedirectResponse('/en/'));
+
+        new LocaleListener($this->siteLocales(['fr', 'en']), $this->urls())->dropAskedLanguage($event);
+
+        $this->assertSame('/en/', $event->getResponse()->getTargetUrl());
+    }
+
+    // Without a session the choice lives in the query alone, and dropping it would lose it
+    public function testAVisitorWithoutASessionKeepsTheQuery(): void
+    {
+        $event = $this->responseEvent('/?_locale=fr', session: false);
+
+        new LocaleListener($this->siteLocales(['fr', 'en']), $this->urls())->dropAskedLanguage($event);
+
+        $this->assertNotInstanceOf(RedirectResponse::class, $event->getResponse());
+    }
+
+    // EasyAdmin's urls are its own: the back office keeps its query untouched
+    public function testTheBackOfficeKeepsTheQuery(): void
+    {
+        $event = $this->responseEvent('/management?_locale=en');
+
+        new LocaleListener($this->siteLocales(['fr', 'en']), $this->urls())->dropAskedLanguage($event);
+
+        $this->assertNotInstanceOf(RedirectResponse::class, $event->getResponse());
+    }
+
+    // A language the site does not declare was never read, so there is nothing to drop
+    public function testALanguageNotDeclaredIsLeftInTheQuery(): void
+    {
+        $event = $this->responseEvent('/?_locale=de');
+
+        new LocaleListener($this->siteLocales(['fr', 'en']), $this->urls())->dropAskedLanguage($event);
+
+        $this->assertNotInstanceOf(RedirectResponse::class, $event->getResponse());
+    }
+
+    // A response event for a request carrying "?_locale=", answered with a plain page unless said otherwise
+    private function responseEvent(string $uri, ?Response $response = null, bool $session = true): ResponseEvent
+    {
+        $request = Request::create($uri);
+        if ($session) {
+            $request->setSession(new Session(new MockArraySessionStorage()));
+        }
+
+        return new ResponseEvent($this->createStub(HttpKernelInterface::class), $request, HttpKernelInterface::MAIN_REQUEST, $response ?? new Response());
     }
 
     // "preview" says its language in its own path and accepts "fr" and "en" only, "legal" is declared per language by Symfony, and "about" only has "fr" as a default
