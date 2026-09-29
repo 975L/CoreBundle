@@ -313,6 +313,28 @@ class ConfigServiceTest extends TestCase
         $this->assertCount(2, $callLog);
     }
 
+    public function testResetForcesTheConfigsToBeReadAgainWithoutClearingTheSharedCache(): void
+    {
+        $callLog = [];
+        $repository = $this->createConfigRepository(
+            [$this->createConfig('site-name', 'My Site')],
+            $callLog,
+        );
+        $item = $this->createStub(ItemInterface::class);
+        $cache = $this->createMock(CacheInterface::class);
+        $cache->method('get')->willReturnCallback(
+            static fn (string $key, callable $callback) => $callback($item),
+        );
+        $cache->expects($this->never())->method('delete');
+        $service = $this->createService($repository, $cache);
+
+        $service->loadAll();
+        $service->reset();
+        $service->loadAll();
+
+        $this->assertCount(2, $callLog);
+    }
+
     // findOneBySlug() is a magic EntityRepository method, hence a hand-written double rather than a PHPUnit stub
     private function createRepositoryIndexedBySlug(Config $config): ConfigRepository
     {

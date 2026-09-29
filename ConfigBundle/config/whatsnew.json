@@ -1,5 +1,15 @@
 [
     {
+        "date": "2026-09-29",
+        "description": [
+            {
+                "en": "A setting changed from the back office now applies right away to the emails and tasks run in the background, without waiting for a restart.",
+                "fr": "Un réglage modifié depuis le back-office s'applique désormais tout de suite aux emails et tâches exécutés en arrière-plan, sans attendre un redémarrage.",
+                "es": "Un ajuste modificado desde el back-office se aplica ahora de inmediato a los correos y tareas ejecutados en segundo plano, sin esperar un reinicio."
+            }
+        ]
+    },
+    {
         "date": "2026-09-27",
         "description": [
             {

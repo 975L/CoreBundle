@@ -1,5 +1,13 @@
 # ChangeLog
 
+## v1.48.5
+
+Config values changed at runtime reach the Messenger workers
+
+### ConfigBundle
+
+- `ConfigService` implements `ResetInterface`, so a worker reads a changed config between messages (29/09/2026)
+
 ## v1.48.4
 
 The dev profile reads a page in the language it is written in

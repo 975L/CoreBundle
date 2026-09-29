@@ -127,7 +127,8 @@ $env = $this->configService->getContainerParameter('kernel.environment');
 ```
 
 **Inject the interface, never the concrete class.** There is already a one-hour cache, invalidated
-automatically on every save: **do not add a cache layer on top.**
+automatically on every save: **do not add a cache layer on top.** The service is reset between
+messages, so a Messenger or scheduler worker reads a changed value without being restarted.
 
 From the command line:
 

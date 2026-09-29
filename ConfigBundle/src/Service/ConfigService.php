@@ -20,8 +20,10 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Cache\ItemInterface;
+use Symfony\Contracts\Service\ResetInterface;
 
-class ConfigService implements ConfigServiceInterface
+// ResetInterface: a long-running process (the Messenger and scheduler workers) resets it between messages, so a value changed from the back-office or by c975l:config:set is read there too instead of the one memoized at the worker's first message
+class ConfigService implements ConfigServiceInterface, ResetInterface
 {
     private const string CACHE_KEY = 'site_configs_all';
 
@@ -86,6 +88,12 @@ class ConfigService implements ConfigServiceInterface
         } catch (InvalidArgumentException) {
             // Quiet - cache will be simply recalculated on next access
         }
+    }
+
+    // Forgets the memoized configs without touching the shared cache, which config:set and the back-office already invalidate: the next loadAll() reads it again
+    public function reset(): void
+    {
+        $this->configs = null;
     }
 
     // Loads all configs in cache and returns them as an associative array (slug => value)
