@@ -1,5 +1,13 @@
 # ChangeLog
 
+## v1.49.1
+
+Scaffold User implements Stringable
+
+### ConfigBundle
+
+- Scaffold `User` entity implements `\Stringable`, casting to its email (30/09/2026)
+
 ## v1.49.0
 
 Admins anonymize an account from the Users screen

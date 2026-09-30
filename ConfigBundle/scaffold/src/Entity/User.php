@@ -14,7 +14,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
 #[UniqueEntity(fields: ['email'], message: 'text.email_taken')]
-class User implements InactivityAwareInterface, PasswordAuthenticatedUserInterface
+class User implements InactivityAwareInterface, PasswordAuthenticatedUserInterface, \Stringable
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -78,6 +78,12 @@ class User implements InactivityAwareInterface, PasswordAuthenticatedUserInterfa
     public function getUserIdentifier(): string
     {
         return (string) $this->email;
+    }
+
+    // The email is what an admin recognises a user by, in an EasyAdmin association field or a log line
+    public function __toString(): string
+    {
+        return $this->getUserIdentifier();
     }
 
     public function getRoles(): array
