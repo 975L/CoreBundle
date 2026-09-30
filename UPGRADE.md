@@ -1,5 +1,9 @@
 # UPGRADE
 
+## v1.49.0
+
+**`UserCrudController` takes three more constructor arguments**, `EventDispatcherInterface`, `AdminUrlGeneratorInterface` and `CsrfTokenManagerInterface`, for its new "Anonymize" action. Nothing to do with autowiring; a class extending it and calling `parent::__construct()` passes them on.
+
 ## v1.40
 
 **`public/maintenance.html` is now generated** by ConfigBundle at every `cache:warmup`, from its maintenance template: stop versioning your own copy, which the next warmup overwrites anyway.

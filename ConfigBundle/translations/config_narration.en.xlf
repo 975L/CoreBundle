@@ -262,6 +262,18 @@
                 <source>narration.guided_step_config_url_metadata_title</source>
                 <target>Write the title in the first field. This is the line a search engine shows above the address, and the one a browser tab carries.</target>
             </trans-unit>
+            <trans-unit id="C6u64no">
+                <source>narration.guided_step_config_user_anonymize_button</source>
+                <target>Click the anonymize button of the account concerned, then confirm. It shows neither on a super administrator account nor on your own.</target>
+            </trans-unit>
+            <trans-unit id="W0.Y6vN">
+                <source>narration.guided_step_config_user_anonymize_done</source>
+                <target>The account is anonymized. It can no longer sign in, its address and password are erased, and what it published stays on the site.</target>
+            </trans-unit>
+            <trans-unit id="AUfIwcR">
+                <source>narration.guided_step_config_user_anonymize_open</source>
+                <target>The panel takes you to the list of accounts: every account registered on the site, members included.</target>
+            </trans-unit>
             <trans-unit id="qS8mZ.2">
                 <source>narration.guided_step_config_user_role_done</source>
                 <target>The account now has its roles. To check what it sees, use View as, from your own menu.</target>

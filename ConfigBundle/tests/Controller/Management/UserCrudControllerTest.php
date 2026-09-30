@@ -11,12 +11,16 @@
 namespace c975L\ConfigBundle\Tests\Controller\Management;
 
 use App\Entity\User;
+use c975L\ConfigBundle\Contract\InactivityAwareInterface;
 use c975L\ConfigBundle\Controller\Management\UserCrudController;
+use c975L\ConfigBundle\Event\UserAnonymizedEvent;
 use c975L\ConfigBundle\Security\Voter\UserManagementVoter;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\ConfigBundle\Service\Export\TableExporter;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
 use EasyCorp\Bundle\EasyAdminBundle\Context\CrudContext;
@@ -25,11 +29,18 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
 use EasyCorp\Bundle\EasyAdminBundle\Provider\AdminContextProvider;
 use EasyCorp\Bundle\EasyAdminBundle\Provider\FieldProvider;
+use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
 use PHPUnit\Framework\TestCase;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\DependencyInjection\Container;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
+use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class UserCrudControllerTest extends TestCase
@@ -73,7 +84,7 @@ class UserCrudControllerTest extends TestCase
         return new AdminContextProvider($requestStack);
     }
 
-    private function createController(bool $actingUserIsSuperAdmin, ?User $editedUser = null, ?array $availableRoles = null, array $defaultFields = []): UserCrudController
+    private function createController(bool $actingUserIsSuperAdmin, ?User $editedUser = null, ?array $availableRoles = null, array $defaultFields = [], ?EventDispatcherInterface $eventDispatcher = null, ?User $actingUser = null): UserCrudController
     {
         $availableRoles ??= self::AVAILABLE_ROLES;
 
@@ -86,6 +97,22 @@ class UserCrudControllerTest extends TestCase
         $security->method('isGranted')->willReturnCallback(
             static fn (mixed $attribute): bool => 'ROLE_SUPER_ADMIN' === $attribute ? $actingUserIsSuperAdmin : true,
         );
+        $security->method('getUser')->willReturn($actingUser);
+
+        // Like the real one, the generator carries the current query string over unless a parameter is unset
+        $adminUrlGenerator = $this->createStub(AdminUrlGeneratorInterface::class);
+        foreach (['setController', 'setAction', 'setEntityId', 'set'] as $method) {
+            $adminUrlGenerator->method($method)->willReturnSelf();
+        }
+        $tokenUnset = false;
+        $adminUrlGenerator->method('unset')->willReturnCallback(static function (string $name) use (&$tokenUnset, $adminUrlGenerator): AdminUrlGeneratorInterface {
+            $tokenUnset = $tokenUnset || 'token' === $name;
+
+            return $adminUrlGenerator;
+        });
+        $adminUrlGenerator->method('generateUrl')->willReturnCallback(static function () use (&$tokenUnset): string {
+            return '/management/user' . ($tokenUnset ? '' : '?token=token');
+        });
 
         $controller = new UserCrudController(
             $configService,
@@ -94,17 +121,21 @@ class UserCrudControllerTest extends TestCase
             $security,
             $this->createStub(TranslatorInterface::class),
             $this->createAdminContextProvider($editedUser),
+            $eventDispatcher ?? $this->createStub(EventDispatcherInterface::class),
+            $adminUrlGenerator,
+            $this->createStub(CsrfTokenManagerInterface::class),
         );
         $controller->setContainer($this->createContainer($defaultFields));
 
         return $controller;
     }
 
-    private function createUser(array $roles, bool $isVerified = true): User
+    private function createUser(array $roles, bool $isVerified = true, string $email = 'jane@example.com'): User
     {
         $user = new User();
         $user->setRoles($roles);
         $user->setIsVerified($isVerified);
+        $user->setEmail($email);
 
         return $user;
     }
@@ -247,5 +278,94 @@ class UserCrudControllerTest extends TestCase
         $crud = $this->createController(false)->configureCrud(Crud::new());
 
         $this->assertSame(UserManagementVoter::MANAGE, $crud->getAsDto()->getEntityPermission());
+    }
+
+    // --- anonymize ----------------------------------------------------------------------------------------
+
+    // The row button is only drawn where the action would run, the same rule the action checks again
+    public function testTheAnonymizeActionIsOfferedOnAPlainAccountOnly(): void
+    {
+        $action = $this->anonymizeAction($this->createController(false, actingUser: $this->createUser(['ROLE_ADMIN'], email: 'admin@example.com')));
+        $display = static fn (User $user): bool => $action->isDisplayed(new EntityDto(User::class, new ClassMetadata(User::class), null, $user));
+
+        $this->assertTrue($display($this->createUser([])));
+        $this->assertFalse($display($this->createUser([], email: 'anonymized-7@' . InactivityAwareInterface::ANONYMIZED_DOMAIN)));
+        $this->assertFalse($display($this->createUser(['ROLE_SUPER_ADMIN'])));
+        $this->assertFalse($display($this->createUser(['ROLE_ADMIN'], email: 'admin@example.com')));
+    }
+
+    // Same sequence as AccountDeleteController: the event carries the address the account held, dispatched before the flush
+    public function testAnonymizeErasesTheAccountAndTellsTheSite(): void
+    {
+        $user = $this->createUser([]);
+        $eventDispatcher = $this->createMock(EventDispatcherInterface::class);
+        $eventDispatcher->expects($this->once())->method('dispatch')->with($this->callback(
+            static fn (UserAnonymizedEvent $event): bool => $event->user === $user && 'jane@example.com' === $event->email,
+        ));
+
+        [$response, $session] = $this->runAnonymize($user, true, $eventDispatcher);
+
+        $this->assertInstanceOf(RedirectResponse::class, $response);
+        $this->assertSame('/management/user', $response->getTargetUrl());
+        $this->assertStringEndsWith('@' . InactivityAwareInterface::ANONYMIZED_DOMAIN, (string) $user->getEmail());
+        $this->assertFalse($user->isEnabled());
+        $this->assertNotEmpty($session->getFlashBag()->get('success'));
+    }
+
+    // The token travels in the url of a GET, so a forged link fired from another page is refused
+    public function testAnonymizeLeavesTheAccountAloneWithoutAValidToken(): void
+    {
+        $user = $this->createUser([]);
+
+        $this->runAnonymize($user, false);
+
+        $this->assertSame('jane@example.com', $user->getEmail());
+    }
+
+    // The owner's account is out of reach even through a crafted url, the button being hidden on its row
+    public function testAnonymizeRefusesTheSuperAdminAccount(): void
+    {
+        $user = $this->createUser(['ROLE_SUPER_ADMIN']);
+
+        $this->runAnonymize($user, true);
+
+        $this->assertSame('jane@example.com', $user->getEmail());
+    }
+
+    private function anonymizeAction(UserCrudController $controller): mixed
+    {
+        $actions = $controller->configureActions(Actions::new()
+            ->add(Crud::PAGE_INDEX, Action::EDIT)
+            ->add(Crud::PAGE_INDEX, Action::DELETE));
+
+        return $actions->getAsDto(Crud::PAGE_INDEX)->getAction(Crud::PAGE_INDEX, 'anonymize');
+    }
+
+    // Runs the action on this account, the acting admin being granted everything but ROLE_SUPER_ADMIN; returns [Response, Session] for the flash
+    private function runAnonymize(User $user, bool $validToken, ?EventDispatcherInterface $eventDispatcher = null): array
+    {
+        $controller = $this->createController(false, eventDispatcher: $eventDispatcher, actingUser: $this->createUser(['ROLE_ADMIN'], email: 'admin@example.com'));
+
+        $session = new Session(new MockArraySessionStorage());
+        $request = new Request(['token' => 'token']);
+        $request->setSession($session);
+        $requestStack = new RequestStack([$request]);
+
+        $authorizationChecker = $this->createStub(AuthorizationCheckerInterface::class);
+        $authorizationChecker->method('isGranted')->willReturn(true);
+        $csrfTokenManager = $this->createStub(CsrfTokenManagerInterface::class);
+        $csrfTokenManager->method('isTokenValid')->willReturn($validToken);
+
+        $container = $this->createContainer();
+        $container->set('security.authorization_checker', $authorizationChecker);
+        $container->set('security.csrf.token_manager', $csrfTokenManager);
+        $container->set('request_stack', $requestStack);
+        $controller->setContainer($container);
+
+        $context = AdminContext::forTesting(crudContext: CrudContext::forTesting(
+            entityDto: new EntityDto(User::class, new ClassMetadata(User::class), null, $user),
+        ));
+
+        return [$controller->anonymize($context, $request), $session];
     }
 }

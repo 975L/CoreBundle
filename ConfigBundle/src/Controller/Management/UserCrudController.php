@@ -11,6 +11,8 @@
 namespace c975L\ConfigBundle\Controller\Management;
 
 use App\Entity\User;
+use c975L\ConfigBundle\Contract\InactivityAwareInterface;
+use c975L\ConfigBundle\Event\UserAnonymizedEvent;
 use c975L\ConfigBundle\Management\EasyAdminActionHelper;
 use c975L\ConfigBundle\Security\Voter\UserManagementVoter;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
@@ -27,14 +29,20 @@ use EasyCorp\Bundle\EasyAdminBundle\Contracts\Field\FieldInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
 use EasyCorp\Bundle\EasyAdminBundle\Provider\AdminContextProvider;
+use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 use function Symfony\Component\Translation\t;
 
 class UserCrudController extends AbstractCrudController
 {
+    private const string ANONYMIZE_CSRF_TOKEN = 'user_anonymize';
+
     public function __construct(
         private readonly ConfigServiceInterface $configService,
         private readonly EntityManagerInterface $entityManager,
@@ -42,6 +50,9 @@ class UserCrudController extends AbstractCrudController
         private readonly Security $security,
         private readonly TranslatorInterface $translator,
         private readonly AdminContextProvider $adminContextProvider,
+        private readonly EventDispatcherInterface $eventDispatcher,
+        private readonly AdminUrlGeneratorInterface $adminUrlGenerator,
+        private readonly CsrfTokenManagerInterface $csrfTokenManager,
     ) {
     }
 
@@ -171,10 +182,20 @@ class UserCrudController extends AbstractCrudController
             ->linkToCrudAction(Action::INDEX)
             ->addCssClass('btn btn-secondary');
 
+        // Erases an account by hand (a bounced address, an erasure asked by email), exactly as its owner or c975l:config:users-cleanup would - built as a url rather than linked to the crud action, so the csrf token the action checks travels with it
+        $anonymizeAction = Action::new('anonymize', t('action.anonymize', [], 'config'), 'fa fa-user-slash')
+            ->linkToUrl(fn (object $user): string => $this->anonymizeUrl($user))
+            ->displayIf(fn (object $user): bool => $this->isAnonymizable($user))
+            ->askConfirmation(t('confirm.anonymize', [], 'config'))
+            ->asDangerAction()
+            ->addCssClass('btn btn-danger');
+
         return $actions
             ->disable(Action::NEW)
             ->disable(Action::DETAIL)
             ->add(Crud::PAGE_INDEX, $exportGroup)
+            ->add(Crud::PAGE_INDEX, $anonymizeAction)
+            ->add(Crud::PAGE_EDIT, $anonymizeAction)
             ->add(Crud::PAGE_EDIT, $cancelAction)
             ->update(Crud::PAGE_INDEX, Action::EDIT, fn (Action $action) => EasyAdminActionHelper::toIconOnly(
                 $action,
@@ -184,9 +205,14 @@ class UserCrudController extends AbstractCrudController
                 $action,
                 $this->translator->trans('action.delete', [], 'EasyAdminBundle'),
             ))
+            ->update(Crud::PAGE_INDEX, 'anonymize', fn (Action $action) => EasyAdminActionHelper::toIconOnly(
+                $action,
+                $this->translator->trans('action.anonymize', [], 'config'),
+            ))
             ->setPermission(Action::INDEX, $this->configService->get('site-role-admin'))
             ->setPermission(Action::EDIT, $this->configService->get('site-role-admin'))
             ->setPermission(Action::DELETE, $this->configService->get('site-role-admin'))
+            ->setPermission('anonymize', $this->configService->get('site-role-admin'))
             ->setPermission('exportSql', 'ROLE_SUPER_ADMIN')
             ->setPermission('exportCsv', 'ROLE_SUPER_ADMIN')
             ->setPermission('exportJson', 'ROLE_SUPER_ADMIN')
@@ -203,6 +229,59 @@ class UserCrudController extends AbstractCrudController
             ->overrideTemplate('crud/index', '@c975LConfig/management/user_crud_index.html.twig')
             ->overrideTemplate('crud/edit', '@c975LConfig/management/user_crud_edit.html.twig')
         ;
+    }
+
+    // Anonymizes the account with the very sequence of AccountDeleteController, so a listener detaching what it owns runs before the flush. The entity permission only hides the row button, the voter is asked again here
+    #[AdminRoute('/{entityId}/anonymize')]
+    public function anonymize(AdminContext $context, Request $request): Response
+    {
+        $this->denyAccessUnlessGranted($this->configService->get('site-role-admin'));
+
+        $user = $context->getEntity()->getInstance();
+        $this->denyAccessUnlessGranted(UserManagementVoter::MANAGE, $user);
+
+        if (!$this->isCsrfTokenValid(self::ANONYMIZE_CSRF_TOKEN, $request->query->getString('token')) || !$this->isAnonymizable($user)) {
+            return $this->redirect($this->indexUrl());
+        }
+
+        $email = $user->getEmail();
+        $user->anonymize();
+        $this->eventDispatcher->dispatch(new UserAnonymizedEvent($user, $email));
+        $this->entityManager->flush();
+
+        $this->addFlash('success', $this->translator->trans('flash.user_anonymized', [], 'config'));
+
+        return $this->redirect($this->indexUrl());
+    }
+
+    // Offered on an account the site can anonymize and that isn't already: never the owner's (nobody left could hand ROLE_SUPER_ADMIN back, as in AccountDeleteController), nor the acting admin's own, which goes through the account page
+    private function isAnonymizable(mixed $user): bool
+    {
+        return $user instanceof InactivityAwareInterface
+            && !str_ends_with((string) $user->getEmail(), '@' . InactivityAwareInterface::ANONYMIZED_DOMAIN)
+            && !in_array('ROLE_SUPER_ADMIN', $user->getRoles(), true)
+            && $user->getUserIdentifier() !== $this->security->getUser()?->getUserIdentifier();
+    }
+
+    // The url of the row button, its csrf token in the query string - the action is a GET, which an <img> on a third-party page would otherwise fire on a logged-in admin
+    private function anonymizeUrl(object $user): string
+    {
+        return $this->adminUrlGenerator
+            ->setController(self::class)
+            ->setAction('anonymize')
+            ->setEntityId($user->getId())
+            ->set('token', $this->csrfTokenManager->getToken(self::ANONYMIZE_CSRF_TOKEN)->getValue())
+            ->generateUrl();
+    }
+
+    // The users listing the action comes back to, whether it ran or was refused
+    private function indexUrl(): string
+    {
+        return $this->adminUrlGenerator
+            ->setController(self::class)
+            ->setAction(Action::INDEX)
+            ->unset('token')
+            ->generateUrl();
     }
 
     #[AdminRoute]

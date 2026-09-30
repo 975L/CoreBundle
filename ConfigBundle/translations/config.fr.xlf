@@ -2,6 +2,10 @@
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
     <file source-language="en" target-language="fr" datatype="plaintext" original="config.en.xlf">
         <body>
+            <trans-unit id="KUyLG3K">
+                <source>action.anonymize</source>
+                <target>Anonymiser</target>
+            </trans-unit>
             <trans-unit id="svdf7gF">
                 <source>action.config_prune_delete</source>
                 <target>Supprimer les entrées sélectionnées</target>
@@ -37,6 +41,10 @@
             <trans-unit id="VOwL1H0">
                 <source>action.translate</source>
                 <target>Traduire</target>
+            </trans-unit>
+            <trans-unit id="bngVOLL">
+                <source>confirm.anonymize</source>
+                <target>Anonymiser ce compte ? Son adresse e-mail et son mot de passe sont remplacés définitivement, ce qu’il possède en est détaché et il ne peut plus se connecter. Cette action est irréversible.</target>
             </trans-unit>
             <trans-unit id="1RI0n59">
                 <source>confirm.apply_preset</source>
@@ -129,6 +137,10 @@
             <trans-unit id="SvaL.3Z">
                 <source>description.guided_project_config_url_metadata</source>
                 <target>Donner un titre, un résumé et une image de partage aux pages qu'aucun de vos contenus ne porte.</target>
+            </trans-unit>
+            <trans-unit id="dO1ZAjz">
+                <source>description.guided_project_config_user_anonymize</source>
+                <target>Effacer l'identité d'un compte à la demande de son titulaire, sans perdre ce qu'il a publié sur le site.</target>
             </trans-unit>
             <trans-unit id="xi28kgp">
                 <source>description.guided_project_config_user_role</source>
@@ -361,6 +373,14 @@
             <trans-unit id="GFKzUI0">
                 <source>description.guided_step_config_url_metadata_title</source>
                 <target>C'est la ligne qu'un moteur de recherche affiche au-dessus de l'url, et celle que porte l'onglet du navigateur.</target>
+            </trans-unit>
+            <trans-unit id="VoQObcO">
+                <source>description.guided_step_config_user_anonymize_done</source>
+                <target>Il ne peut plus se connecter : son adresse et son mot de passe sont effacés, ce qu'il a publié reste sur le site.</target>
+            </trans-unit>
+            <trans-unit id="aiE2lbA">
+                <source>description.guided_step_config_user_anonymize_open</source>
+                <target>Tous les comptes inscrits sur le site, membres compris.</target>
             </trans-unit>
             <trans-unit id="zZfuwmE">
                 <source>description.guided_step_config_user_role_done</source>
@@ -601,6 +621,10 @@
             <trans-unit id="wdBHr4o">
                 <source>flash.sessions_closed</source>
                 <target>Vos autres appareils ont été déconnectés.</target>
+            </trans-unit>
+            <trans-unit id="GW_a8jw">
+                <source>flash.user_anonymized</source>
+                <target>Le compte a été anonymisé.</target>
             </trans-unit>
             <trans-unit id="ZD8H9hY">
                 <source>flash.user_registration_disabled</source>
@@ -1098,6 +1122,10 @@
                 <source>label.guided_project_config_url_metadata</source>
                 <target>Faire parler une page de liste</target>
             </trans-unit>
+            <trans-unit id="Ov_NUHO">
+                <source>label.guided_project_config_user_anonymize</source>
+                <target>Anonymiser un compte</target>
+            </trans-unit>
             <trans-unit id="Qg9lboT">
                 <source>label.guided_project_config_user_role</source>
                 <target>Donner ses rôles à un compte</target>
@@ -1389,6 +1417,18 @@
             <trans-unit id="2BqVoTR">
                 <source>label.guided_step_config_url_metadata_title</source>
                 <target>Écrire le titre</target>
+            </trans-unit>
+            <trans-unit id="1yQlfI2">
+                <source>label.guided_step_config_user_anonymize_button</source>
+                <target>Anonymiser le compte</target>
+            </trans-unit>
+            <trans-unit id="svO6PmC">
+                <source>label.guided_step_config_user_anonymize_done</source>
+                <target>Le compte est anonymisé</target>
+            </trans-unit>
+            <trans-unit id="M3zXXj4">
+                <source>label.guided_step_config_user_anonymize_open</source>
+                <target>Ouvrir les comptes</target>
             </trans-unit>
             <trans-unit id="vxKkoqU">
                 <source>label.guided_step_config_user_role_done</source>
@@ -2052,7 +2092,7 @@
             </trans-unit>
             <trans-unit id="14MwZnc">
                 <source>label.info_user</source>
-                <target>Liste des utilisateurs du site. Vous pouvez modifier les rôles d'un utilisateur ou le supprimer ; soyez prudent, changer les rôles modifie immédiatement ses droits d'accès au back-office.</target>
+                <target>Liste des utilisateurs du site. Vous pouvez modifier les rôles d'un utilisateur, anonymiser son compte (adresse et mot de passe effacés, ce qu'il a publié reste sur le site) ou le supprimer ; soyez prudent, changer les rôles modifie immédiatement ses droits d'accès au back-office.</target>
             </trans-unit>
             <trans-unit id="cxSqi5b">
                 <source>label.info_user_registration</source>

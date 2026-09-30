@@ -2,6 +2,10 @@
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
     <file source-language="en" target-language="en" datatype="plaintext" original="config.en.xlf">
         <body>
+            <trans-unit id="KUyLG3K">
+                <source>action.anonymize</source>
+                <target>Anonymize</target>
+            </trans-unit>
             <trans-unit id="svdf7gF">
                 <source>action.config_prune_delete</source>
                 <target>Delete the selected entries</target>
@@ -37,6 +41,10 @@
             <trans-unit id="VOwL1H0">
                 <source>action.translate</source>
                 <target>Translate</target>
+            </trans-unit>
+            <trans-unit id="bngVOLL">
+                <source>confirm.anonymize</source>
+                <target>Anonymize this account? Its email address and password are replaced for good, what it owns is detached, and it can no longer log in. This cannot be undone.</target>
             </trans-unit>
             <trans-unit id="1RI0n59">
                 <source>confirm.apply_preset</source>
@@ -129,6 +137,10 @@
             <trans-unit id="SvaL.3Z">
                 <source>description.guided_project_config_url_metadata</source>
                 <target>Give a title, a summary and a share image to the pages no content of yours carries.</target>
+            </trans-unit>
+            <trans-unit id="dO1ZAjz">
+                <source>description.guided_project_config_user_anonymize</source>
+                <target>Erase an account's identity at its holder's request, without losing what they published on the site.</target>
             </trans-unit>
             <trans-unit id="xi28kgp">
                 <source>description.guided_project_config_user_role</source>
@@ -361,6 +373,14 @@
             <trans-unit id="GFKzUI0">
                 <source>description.guided_step_config_url_metadata_title</source>
                 <target>This is the line a search engine shows above the url, and the one a browser tab carries.</target>
+            </trans-unit>
+            <trans-unit id="VoQObcO">
+                <source>description.guided_step_config_user_anonymize_done</source>
+                <target>It can no longer sign in: its address and password are erased, what it published stays on the site.</target>
+            </trans-unit>
+            <trans-unit id="aiE2lbA">
+                <source>description.guided_step_config_user_anonymize_open</source>
+                <target>Every account registered on the site, members included.</target>
             </trans-unit>
             <trans-unit id="zZfuwmE">
                 <source>description.guided_step_config_user_role_done</source>
@@ -601,6 +621,10 @@
             <trans-unit id="wdBHr4o">
                 <source>flash.sessions_closed</source>
                 <target>Your other devices have been signed out.</target>
+            </trans-unit>
+            <trans-unit id="GW_a8jw">
+                <source>flash.user_anonymized</source>
+                <target>The account has been anonymized.</target>
             </trans-unit>
             <trans-unit id="ZD8H9hY">
                 <source>flash.user_registration_disabled</source>
@@ -1098,6 +1122,10 @@
                 <source>label.guided_project_config_url_metadata</source>
                 <target>Make a listing speak for itself</target>
             </trans-unit>
+            <trans-unit id="Ov_NUHO">
+                <source>label.guided_project_config_user_anonymize</source>
+                <target>Anonymize an account</target>
+            </trans-unit>
             <trans-unit id="Qg9lboT">
                 <source>label.guided_project_config_user_role</source>
                 <target>Give an account its roles</target>
@@ -1389,6 +1417,18 @@
             <trans-unit id="2BqVoTR">
                 <source>label.guided_step_config_url_metadata_title</source>
                 <target>Write the title</target>
+            </trans-unit>
+            <trans-unit id="1yQlfI2">
+                <source>label.guided_step_config_user_anonymize_button</source>
+                <target>Anonymize the account</target>
+            </trans-unit>
+            <trans-unit id="svO6PmC">
+                <source>label.guided_step_config_user_anonymize_done</source>
+                <target>The account is anonymized</target>
+            </trans-unit>
+            <trans-unit id="M3zXXj4">
+                <source>label.guided_step_config_user_anonymize_open</source>
+                <target>Open the accounts</target>
             </trans-unit>
             <trans-unit id="vxKkoqU">
                 <source>label.guided_step_config_user_role_done</source>
@@ -2052,7 +2092,7 @@
             </trans-unit>
             <trans-unit id="14MwZnc">
                 <source>label.info_user</source>
-                <target>List of the site's users. You can edit a user's roles or delete them; be careful, changing roles immediately changes their back-office access rights.</target>
+                <target>List of the site's users. You can edit a user's roles, anonymize their account (their address and password are erased, what they own stays on the site) or delete them; be careful, changing roles immediately changes their back-office access rights.</target>
             </trans-unit>
             <trans-unit id="cxSqi5b">
                 <source>label.info_user_registration</source>

@@ -58,6 +58,7 @@ See it in action at [bundles.975l.com/pages/config-bundle](https://bundles.975l.
 - `c975l:config:users-cleanup`, warning then anonymizing the accounts nobody logged in to for three years, as the GDPR's storage limitation asks
 - `/account`, the member's own page: their profile and the site's own fields, an email change confirmed from the new address, a password change, and the sections other bundles and the site add to it (`AccountSectionProviderInterface`)
 - `/account/delete`, where a signed-in user deletes their own account (GDPR right to erasure), anonymized the same way
+- An "Anonymize" action on the back office's Users screen, for an erasure asked by email or an address that bounces, anonymized the same way
 - The languages a site offers, declared once in `framework.enabled_locales`: a language selector in the back office, the front office following the one a visitor picks, and the block content translated per language (see `c975l/ui-bundle`)
 - Maintenance mode closing the site to its visitors, answering the search-engine-friendly 503 they expect from a temporary outage, with a dashboard alert turning to danger once it has lasted long enough to cost indexing
 - Sitemap generation (one sub-sitemap per bundle plus the sitemap index), extensible via `SitemapProviderInterface`
@@ -2232,6 +2233,8 @@ Declared by `ConfigMaintenanceTaskProvider`, so it runs nightly with nothing to 
 It acts on a `User` implementing `InactivityAwareInterface`, which the scaffolded one does; an older one is left alone until it does (see `UPGRADE.md`). Declared by `ConfigMaintenanceTaskProvider`, weekly.
 
 **Deleting one's own account** (GDPR right to erasure): `/account/delete` (route `config_account_delete`, `IS_AUTHENTICATED_FULLY`) explains what happens, then asks the user to type their own email address again, which an account signed in with Google can do as well. Confirmed, the account is anonymized exactly as above - `anonymize()`, `UserAnonymizedEvent`, flush - then logged out through the firewall, which sends them to its `logout.target` with the cookies it clears. A `User` not implementing `InactivityAwareInterface` gets a 404, and a `ROLE_SUPER_ADMIN` a 403: the site's owner goes through another super admin or the CLI, since nobody left could hand that role back from the back office. No menu carries it: the site links to it where it sees fit, e.g. `<a href="{{ path('config_account_delete') }}">`, and detaches what its users own in a `UserAnonymizedEvent` listener, which covers the cleanup command at the same time. PaymentBundle deletes the account's unpaid baskets there, ShopBundle the stock alerts of its former address; paid orders, invoices and credits stay, nominative, for the accounting retention, which is what the page tells the member.
+
+**Anonymizing an account from the back office**: the Users screen carries an "Anonymize" row action (`site-role-admin`), for an erasure asked by email or an address that bounces. Confirmed, it runs the same sequence - `anonymize()`, `UserAnonymizedEvent`, flush - behind a CSRF token, and is offered neither on a `ROLE_SUPER_ADMIN` account, nor on the acting admin's own, nor on one already anonymized. The `config-user-anonymize` guided project walks it.
 
 ---
 

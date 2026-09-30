@@ -1,5 +1,20 @@
 [
     {
+        "date": "2026-09-30",
+        "description": [
+            {
+                "en": "Admins can now anonymize a user's account from the Users screen, for instance when someone asks by email to be erased: their address and password are erased, what they published stays on the site.",
+                "fr": "Les admins peuvent désormais anonymiser le compte d'un utilisateur depuis l'écran Utilisateurs, par exemple quand quelqu'un demande par email à être effacé : son adresse et son mot de passe sont effacés, ce qu'il a publié reste sur le site.",
+                "es": "Los administradores pueden ahora anonimizar la cuenta de un usuario desde la pantalla Usuarios, por ejemplo cuando alguien pide por correo ser borrado: se borran su dirección y su contraseña, lo que publicó permanece en el sitio."
+            },
+            {
+                "en": "A new guided project shows how to anonymize an account.",
+                "fr": "Un nouveau projet guidé montre comment anonymiser un compte.",
+                "es": "Un nuevo proyecto guiado muestra cómo anonimizar una cuenta."
+            }
+        ]
+    },
+    {
         "date": "2026-09-29",
         "description": [
             {

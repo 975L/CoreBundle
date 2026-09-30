@@ -262,6 +262,18 @@
                 <source>narration.guided_step_config_url_metadata_title</source>
                 <target>Écrivez le titre dans le premier champ. C'est la ligne qu'un moteur de recherche affiche au-dessus de l'adresse, et celle que porte l'onglet du navigateur.</target>
             </trans-unit>
+            <trans-unit id="C6u64no">
+                <source>narration.guided_step_config_user_anonymize_button</source>
+                <target>Cliquez sur le bouton d'anonymisation du compte concerné, puis confirmez. Il n'apparaît ni sur un compte super administrateur, ni sur le vôtre.</target>
+            </trans-unit>
+            <trans-unit id="W0.Y6vN">
+                <source>narration.guided_step_config_user_anonymize_done</source>
+                <target>Le compte est anonymisé. Il ne peut plus se connecter, son adresse et son mot de passe sont effacés, et ce qu'il a publié reste sur le site.</target>
+            </trans-unit>
+            <trans-unit id="AUfIwcR">
+                <source>narration.guided_step_config_user_anonymize_open</source>
+                <target>Le panneau vous emmène sur la liste des comptes : tous les comptes inscrits sur le site, membres compris.</target>
+            </trans-unit>
             <trans-unit id="qS8mZ.2">
                 <source>narration.guided_step_config_user_role_done</source>
                 <target>Le compte a maintenant ses rôles. Pour vérifier ce qu'il voit, utilisez Voir en tant que, depuis votre propre menu.</target>

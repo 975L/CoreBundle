@@ -1,5 +1,16 @@
 # ChangeLog
 
+## v1.49.0
+
+Admins anonymize an account from the Users screen
+
+### ConfigBundle
+
+- `UserCrudController` gains an "Anonymize" row action, dispatching `UserAnonymizedEvent` (30/09/2026)
+- `UserCrudController` takes `EventDispatcherInterface`, `AdminUrlGeneratorInterface` and `CsrfTokenManagerInterface` (30/09/2026) [BC-Break]
+- `config-user-anonymize` guided project walks the anonymize action (30/09/2026)
+- Users screen help text explains anonymizing versus deleting (30/09/2026)
+
 ## v1.48.7
 
 Sign-out links carry rel="nofollow"

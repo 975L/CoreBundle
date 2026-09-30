@@ -2,6 +2,10 @@
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
     <file source-language="en" target-language="es" datatype="plaintext" original="config.en.xlf">
         <body>
+            <trans-unit id="KUyLG3K">
+                <source>action.anonymize</source>
+                <target>Anonimizar</target>
+            </trans-unit>
             <trans-unit id="svdf7gF">
                 <source>action.config_prune_delete</source>
                 <target>Eliminar las entradas seleccionadas</target>
@@ -37,6 +41,10 @@
             <trans-unit id="VOwL1H0">
                 <source>action.translate</source>
                 <target>Traducir</target>
+            </trans-unit>
+            <trans-unit id="bngVOLL">
+                <source>confirm.anonymize</source>
+                <target>¿Anonimizar esta cuenta? Su dirección de correo electrónico y su contraseña se sustituyen definitivamente, lo que posee se desvincula y ya no podrá iniciar sesión. Esta acción es irreversible.</target>
             </trans-unit>
             <trans-unit id="1RI0n59">
                 <source>confirm.apply_preset</source>
@@ -129,6 +137,10 @@
             <trans-unit id="SvaL.3Z">
                 <source>description.guided_project_config_url_metadata</source>
                 <target>Dar un título, un resumen y una imagen para compartir a las páginas que ninguno de sus contenidos lleva.</target>
+            </trans-unit>
+            <trans-unit id="dO1ZAjz">
+                <source>description.guided_project_config_user_anonymize</source>
+                <target>Borrar la identidad de una cuenta a petición de su titular, sin perder lo que publicó en el sitio.</target>
             </trans-unit>
             <trans-unit id="xi28kgp">
                 <source>description.guided_project_config_user_role</source>
@@ -361,6 +373,14 @@
             <trans-unit id="GFKzUI0">
                 <source>description.guided_step_config_url_metadata_title</source>
                 <target>Es la línea que un buscador muestra encima de la url, y la que lleva la pestaña del navegador.</target>
+            </trans-unit>
+            <trans-unit id="VoQObcO">
+                <source>description.guided_step_config_user_anonymize_done</source>
+                <target>Ya no puede iniciar sesión: se borran su dirección y su contraseña, lo que publicó permanece en el sitio.</target>
+            </trans-unit>
+            <trans-unit id="aiE2lbA">
+                <source>description.guided_step_config_user_anonymize_open</source>
+                <target>Todas las cuentas registradas en el sitio, miembros incluidos.</target>
             </trans-unit>
             <trans-unit id="zZfuwmE">
                 <source>description.guided_step_config_user_role_done</source>
@@ -601,6 +621,10 @@
             <trans-unit id="wdBHr4o">
                 <source>flash.sessions_closed</source>
                 <target>Sus otros dispositivos han sido desconectados.</target>
+            </trans-unit>
+            <trans-unit id="GW_a8jw">
+                <source>flash.user_anonymized</source>
+                <target>La cuenta ha sido anonimizada.</target>
             </trans-unit>
             <trans-unit id="ZD8H9hY">
                 <source>flash.user_registration_disabled</source>
@@ -1098,6 +1122,10 @@
                 <source>label.guided_project_config_url_metadata</source>
                 <target>Hacer que una página de listado hable por sí misma</target>
             </trans-unit>
+            <trans-unit id="Ov_NUHO">
+                <source>label.guided_project_config_user_anonymize</source>
+                <target>Anonimizar una cuenta</target>
+            </trans-unit>
             <trans-unit id="Qg9lboT">
                 <source>label.guided_project_config_user_role</source>
                 <target>Asignar sus roles a una cuenta</target>
@@ -1389,6 +1417,18 @@
             <trans-unit id="2BqVoTR">
                 <source>label.guided_step_config_url_metadata_title</source>
                 <target>Escribir el título</target>
+            </trans-unit>
+            <trans-unit id="1yQlfI2">
+                <source>label.guided_step_config_user_anonymize_button</source>
+                <target>Anonimizar la cuenta</target>
+            </trans-unit>
+            <trans-unit id="svO6PmC">
+                <source>label.guided_step_config_user_anonymize_done</source>
+                <target>La cuenta está anonimizada</target>
+            </trans-unit>
+            <trans-unit id="M3zXXj4">
+                <source>label.guided_step_config_user_anonymize_open</source>
+                <target>Abrir las cuentas</target>
             </trans-unit>
             <trans-unit id="vxKkoqU">
                 <source>label.guided_step_config_user_role_done</source>
@@ -2052,7 +2092,7 @@
             </trans-unit>
             <trans-unit id="14MwZnc">
                 <source>label.info_user</source>
-                <target>Lista de los usuarios del sitio. Puede modificar los roles de un usuario o eliminarlo; tenga cuidado, cambiar los roles modifica de inmediato sus derechos de acceso al back-office.</target>
+                <target>Lista de los usuarios del sitio. Puede modificar los roles de un usuario, anonimizar su cuenta (se borran su dirección y su contraseña, lo que publicó permanece en el sitio) o eliminarlo; tenga cuidado, cambiar los roles modifica de inmediato sus derechos de acceso al back-office.</target>
             </trans-unit>
             <trans-unit id="cxSqi5b">
                 <source>label.info_user_registration</source>

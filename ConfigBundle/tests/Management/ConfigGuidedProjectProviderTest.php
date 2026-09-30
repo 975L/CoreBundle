@@ -148,11 +148,11 @@ class ConfigGuidedProjectProviderTest extends TestCase
         $projects = $this->createProvider()->getGuidedProjects();
 
         $this->assertSame(
-            ['config-settings', 'config-health-check', 'config-maintenance', 'config-login-code', 'config-not-found', 'config-redirect', 'config-url-metadata', 'config-user-role', 'config-role-preview', 'config-messenger-failed', 'config-content-export', 'config-content-import', 'config-prune'],
+            ['config-settings', 'config-health-check', 'config-maintenance', 'config-login-code', 'config-not-found', 'config-redirect', 'config-url-metadata', 'config-user-role', 'config-user-anonymize', 'config-role-preview', 'config-messenger-failed', 'config-content-export', 'config-content-import', 'config-prune'],
             array_column($projects, 'slug')
         );
         // 1040 rather than a value after 1050: the missing pages are walked to the redirects, the screen the url metadata has nothing to do with. 1035 keeps the login code beside the maintenance, both dashboard toggles
-        $this->assertSame([1010, 1020, 1030, 1035, 1040, 1045, 1050, 1060, 1070, 1080, 1085, 1090, 1100], array_column($projects, 'order'));
+        $this->assertSame([1010, 1020, 1030, 1035, 1040, 1045, 1050, 1060, 1065, 1070, 1080, 1085, 1090, 1100], array_column($projects, 'order'));
     }
 
     // A project is offered on a dashboard a contributor now reaches, so one walking an admin screen has to say so or its very first step answers a 403
@@ -174,6 +174,7 @@ class ConfigGuidedProjectProviderTest extends TestCase
                 'config-redirect' => 'site-role-editor',
                 'config-url-metadata' => 'site-role-editor',
                 'config-user-role' => 'site-role-admin',
+                'config-user-anonymize' => 'site-role-admin',
                 // Every account on the back-office floor has a level below its own to look through
                 'config-role-preview' => null,
                 // The screen opens to an admin, its buttons to a super admin alone (see MessengerFailedController)

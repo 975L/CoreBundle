@@ -262,6 +262,18 @@
                 <source>narration.guided_step_config_url_metadata_title</source>
                 <target>Escriba el título en el primer campo. Es la línea que un buscador muestra encima de la dirección, y la que lleva la pestaña del navegador.</target>
             </trans-unit>
+            <trans-unit id="C6u64no">
+                <source>narration.guided_step_config_user_anonymize_button</source>
+                <target>Haga clic en el botón de anonimización de la cuenta en cuestión y confirme. No aparece ni en una cuenta de superadministrador ni en la suya.</target>
+            </trans-unit>
+            <trans-unit id="W0.Y6vN">
+                <source>narration.guided_step_config_user_anonymize_done</source>
+                <target>La cuenta está anonimizada. Ya no puede iniciar sesión, se borran su dirección y su contraseña, y lo que publicó permanece en el sitio.</target>
+            </trans-unit>
+            <trans-unit id="AUfIwcR">
+                <source>narration.guided_step_config_user_anonymize_open</source>
+                <target>El panel le lleva a la lista de cuentas: todas las cuentas registradas en el sitio, miembros incluidos.</target>
+            </trans-unit>
             <trans-unit id="qS8mZ.2">
                 <source>narration.guided_step_config_user_role_done</source>
                 <target>La cuenta tiene ahora sus roles. Para comprobar lo que ve, use Ver como, desde su propio menú.</target>
