@@ -3390,6 +3390,8 @@ One is a contract rather than a helper: **`Contract\SocialContentSourceInterface
 
 Each content is a **`Model\SocialContent`**: `sourceId`, `title`, `url`, the image both ways because the networks differ — `imagePath` read from disk for Bluesky, which wants the bytes uploaded, and `imageUrl` for Meta, which downloads a public url itself — its `imageAlt`, and `variables`, the other `{name}` placeholders the site's post template may carry (`category`, `description`…).
 
+A source whose contents fall into groups — a gallery's categories — may also implement **`Contract\ScopedSocialContentSourceInterface`**, so a SocialBundle publication slot can be narrowed to some of them: `getScopes()` lists the groups (labels keyed by id), `getNextScopedContent(array $excludedIds, array $scopeIds)` picks only among those given, an empty list meaning every group. It extends the base interface rather than adding to it, so a source without groups has nothing to change.
+
 ### Exporting and importing blocks
 
 **`Management\BlockDataExporter`**/**`Management\BlockDataImporter`** are the shared Block/Media serialization behind every content export carrying a block collection (SiteBundle's `Page`, its `Menu`…), so the recursive walk through a container kind's slots is written once rather than per entity. A block nested in a `flex_columns` round-trips like a top-level one, medias and files included.

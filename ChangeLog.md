@@ -1,5 +1,13 @@
 # ChangeLog
 
+## v1.49.2
+
+Social content sources may be narrowed to some of their groups
+
+### UiBundle
+
+- New `ScopedSocialContentSourceInterface`, narrowing a social content source to some of its groups (30/09/2026)
+
 ## v1.49.1
 
 Scaffold User implements Stringable
