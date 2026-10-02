@@ -67,9 +67,6 @@
         {% if not enabled %}
             <p>{{ 'label.ai_assistant_setup_intro'|trans({}, 'ui') }}</p>
             <ul>
-                {% if 'ui-ai-assistant-dashboard-enabled' in missingSlugs %}
-                    <li><a href="{{ configLinks['ui-ai-assistant-dashboard-enabled'] }}">{{ 'label.ai_assistant_setup_step_enabled'|trans({}, 'ui') }}</a></li>
-                {% endif %}
                 {% if 'ui-ai-assistant-dashboard-endpoint' in missingSlugs %}
                     <li><a href="{{ configLinks['ui-ai-assistant-dashboard-endpoint'] }}">{{ 'label.ai_assistant_setup_step_endpoint'|trans({}, 'ui') }}</a></li>
                 {% endif %}

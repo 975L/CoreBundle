@@ -14,7 +14,6 @@ use c975L\ConfigBundle\Entity\Config;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\UiBundle\Management\ReviewAlertProvider;
 use c975L\UiBundle\Repository\ReviewRepository;
-use c975L\UiBundle\Service\ReviewService;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
 use PHPUnit\Framework\TestCase;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -39,25 +38,10 @@ class ReviewAlertProviderTest extends TestCase
         $this->assertSame([], $this->provider(pending: 0)->getAlerts());
     }
 
-    // Same switch as the screen it links to: a site collecting no reviews has none waiting, and the repository is not even asked
-    public function testNothingIsSaidNorCountedWhileTheFeatureIsOff(): void
+    private function provider(int $pending): ReviewAlertProvider
     {
-        $repository = $this->createMock(ReviewRepository::class);
-        $repository->expects($this->never())->method('countPending');
-
-        $this->assertSame([], $this->provider(pending: 0, enabled: false, repository: $repository)->getAlerts());
-    }
-
-    private function provider(int $pending, bool $enabled = true, ?ReviewRepository $repository = null): ReviewAlertProvider
-    {
-        // A caller passing its own repository is checking what is asked of it, and states that itself
-        if (null === $repository) {
-            $repository = $this->createStub(ReviewRepository::class);
-            $repository->method('countPending')->willReturn($pending);
-        }
-
-        $reviewService = $this->createStub(ReviewService::class);
-        $reviewService->method('isEnabled')->willReturn($enabled);
+        $repository = $this->createStub(ReviewRepository::class);
+        $repository->method('countPending')->willReturn($pending);
 
         $adminUrlGenerator = $this->createStub(AdminUrlGeneratorInterface::class);
         $adminUrlGenerator->method('unsetAll')->willReturnSelf();
@@ -70,6 +54,6 @@ class ReviewAlertProviderTest extends TestCase
         $translator = $this->createStub(TranslatorInterface::class);
         $translator->method('trans')->willReturnArgument(0);
 
-        return new ReviewAlertProvider($repository, $reviewService, $adminUrlGenerator, $configService, $translator);
+        return new ReviewAlertProvider($repository, $adminUrlGenerator, $configService, $translator);
     }
 }

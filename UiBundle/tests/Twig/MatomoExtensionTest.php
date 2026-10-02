@@ -28,30 +28,27 @@ class MatomoExtensionTest extends TestCase
         $this->assertSame('matomo_enabled', $attributes[0]->getArguments()[0]);
     }
 
-    // Enabled only with the switch on and both values a tracker url is built from filled
+    // No separate switch: both values a tracker url is built from filled is what turns tracking on
     #[DataProvider('provideConfigs')]
-    public function testItNeedsTheSwitchAndBothValues(mixed $enabled, ?string $url, ?string $id, bool $expected): void
+    public function testItIsEnabledByBothValuesAlone(?string $url, ?string $id, bool $expected): void
     {
         $values = [
-            'site-enable-matomo' => $enabled,
             'site-matomo-url' => $url,
             'site-matomo-id' => $id,
         ];
 
         $configService = $this->createStub(ConfigServiceInterface::class);
         $configService->method('get')->willReturnCallback(static fn (string $key): mixed => $values[$key] ?? null);
-        $configService->method('getBool')->willReturnCallback(static fn ($value): bool => filter_var($value, \FILTER_VALIDATE_BOOLEAN));
 
         $this->assertSame($expected, new MatomoExtension($configService)->isEnabled());
     }
 
     public static function provideConfigs(): iterable
     {
-        yield 'everything filled' => [true, 'https://stats.example.com', '3', true];
-        yield 'switch stored as a string' => ['true', 'https://stats.example.com', '3', true];
-        yield 'switch off' => [false, 'https://stats.example.com', '3', false];
-        yield 'no url' => [true, null, '3', false];
-        yield 'blank url' => [true, '  ', '3', false];
-        yield 'no id' => [true, 'https://stats.example.com', null, false];
+        yield 'both filled' => ['https://stats.example.com', '3', true];
+        yield 'no url' => [null, '3', false];
+        yield 'blank url' => ['  ', '3', false];
+        yield 'no id' => ['https://stats.example.com', null, false];
+        yield 'blank id' => ['https://stats.example.com', ' ', false];
     }
 }

@@ -1,5 +1,20 @@
 # ChangeLog
 
+## v1.51.0
+
+Config switches give way to filled settings, reviews moderated when off
+
+### UiBundle
+
+- `site-enable-matomo` removed, Matomo on once its url and id are filled (02/10/2026) **See [UPGRADE.md](UPGRADE.md)** [BC-Break]
+- `ui-ai-assistant-dashboard-enabled` removed, assistant on once endpoint and token are filled (02/10/2026) [BC-Break]
+- `ReviewCrudController`, `MenuProvider` and `UiGuidedProjectProvider` constructors changed (02/10/2026) [BC-Break]
+- `ui-enable-reviews` only governs the public side of reviews (02/10/2026)
+- Review menu entry, guided project and pending alert shown whatever `ui-enable-reviews` says (02/10/2026)
+- Review index warns when reviews are off, with the switch's edit link (02/10/2026)
+- Review back-office texts use formal address in fr and es (02/10/2026)
+- Legacy column help texts use formal address in fr and es (02/10/2026)
+
 ## v1.50.0
 
 Donovan opens from a panel on every admin page

@@ -10,11 +10,14 @@
 
 namespace c975L\UiBundle\Tests\Controller\Management;
 
+use c975L\ConfigBundle\Entity\Config;
+use c975L\ConfigBundle\Repository\ConfigRepository;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\UiBundle\Controller\Management\ReviewCrudController;
 use c975L\UiBundle\Entity\Review;
 use c975L\UiBundle\Enum\ReviewStatus;
 use c975L\UiBundle\Registry\FavoriteItemRegistry;
+use c975L\UiBundle\Service\ConfigEditUrlResolver;
 use c975L\UiBundle\Service\ReviewService;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -22,6 +25,7 @@ use Doctrine\ORM\UnitOfWork;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
+use EasyCorp\Bundle\EasyAdminBundle\Config\KeyValueStore;
 use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
 use EasyCorp\Bundle\EasyAdminBundle\Context\CrudContext;
 use EasyCorp\Bundle\EasyAdminBundle\Contracts\Provider\AdminContextProviderInterface;
@@ -48,7 +52,11 @@ class ReviewCrudControllerTest extends TestCase
     {
         $configService = $this->createStub(ConfigServiceInterface::class);
         $configService->method('get')->willReturnCallback(
-            static fn (string $key) => 'site-role-editor' === $key ? $role : null
+            static fn (string $key) => match ($key) {
+                'site-role-editor' => $role,
+                'site-role-admin' => 'ROLE_ADMIN',
+                default => null,
+            }
         );
 
         return $configService;
@@ -62,8 +70,11 @@ class ReviewCrudControllerTest extends TestCase
         return $reviewService;
     }
 
-    private function createController(string $role = 'ROLE_ADMIN', ?ReviewService $reviewService = null, ?FavoriteItemRegistry $favoriteItemRegistry = null, ?CsrfTokenManagerInterface $csrfTokenManager = null): ReviewCrudController
+    private function createController(string $role = 'ROLE_ADMIN', ?ReviewService $reviewService = null, ?FavoriteItemRegistry $favoriteItemRegistry = null, ?CsrfTokenManagerInterface $csrfTokenManager = null, ?ConfigRepository $configRepository = null): ReviewCrudController
     {
+        $configEditUrlResolver = $this->createStub(ConfigEditUrlResolver::class);
+        $configEditUrlResolver->method('resolve')->willReturn('/management/config/edit');
+
         return new ReviewCrudController(
             $this->createConfigService($role),
             $reviewService ?? $this->createReviewService(),
@@ -72,6 +83,8 @@ class ReviewCrudControllerTest extends TestCase
             $this->createStub(EntityManagerInterface::class),
             $csrfTokenManager ?? $this->createStub(CsrfTokenManagerInterface::class),
             $this->createTranslator(),
+            $configRepository ?? $this->createStub(ConfigRepository::class),
+            $configEditUrlResolver,
         );
     }
 
@@ -206,6 +219,54 @@ class ReviewCrudControllerTest extends TestCase
     private function entityDtoOf(Review $review): EntityDto
     {
         return new EntityDto(Review::class, new ClassMetadata(Review::class), null, $review);
+    }
+
+    // The index only reads the public switch to say so: the screen itself stays, imported or pending reviews needing a moderator whatever visitors see
+    private function responseParametersOf(bool $reviewsEnabled, bool $granted): KeyValueStore
+    {
+        $reviewService = $this->createStub(ReviewService::class);
+        $reviewService->method('isEnabled')->willReturn($reviewsEnabled);
+
+        $configRepository = $this->createStub(ConfigRepository::class);
+        $configRepository->method('findOneBySlug')->willReturn(new Config()->setSlug('ui-enable-reviews'));
+
+        $authorizationChecker = $this->createStub(AuthorizationCheckerInterface::class);
+        $authorizationChecker->method('isGranted')->willReturn($granted);
+
+        $container = $this->createStub(ContainerInterface::class);
+        $container->method('has')->willReturn(true);
+        $container->method('get')->willReturnCallback(static fn (string $id) => 'security.authorization_checker' === $id ? $authorizationChecker : null);
+
+        $controller = $this->createController('ROLE_ADMIN', $reviewService, configRepository: $configRepository);
+        $controller->setContainer($container);
+
+        return $controller->configureResponseParameters(KeyValueStore::new());
+    }
+
+    public function testTheIndexSaysNothingWhileReviewsAreShownOnTheSite(): void
+    {
+        $parameters = $this->responseParametersOf(true, true);
+
+        $this->assertTrue($parameters->get('reviews_enabled'));
+        $this->assertNull($parameters->get('reviews_switch_url'));
+    }
+
+    // An admin is handed the switch itself, ConfigCrudController denying anything below that role
+    public function testTheIndexWarnsAnAdminWithTheSwitchUrlWhileReviewsAreOff(): void
+    {
+        $parameters = $this->responseParametersOf(false, true);
+
+        $this->assertFalse($parameters->get('reviews_enabled'));
+        $this->assertSame('/management/config/edit', $parameters->get('reviews_switch_url'));
+    }
+
+    // A moderator below the admin bar is told, not linked to a screen that would 403
+    public function testTheIndexWarnsAModeratorWithoutTheSwitchUrlWhileReviewsAreOff(): void
+    {
+        $parameters = $this->responseParametersOf(false, false);
+
+        $this->assertFalse($parameters->get('reviews_enabled'));
+        $this->assertNull($parameters->get('reviews_switch_url'));
     }
 
     public function testGetEntityFqcnReturnsReviewClass(): void

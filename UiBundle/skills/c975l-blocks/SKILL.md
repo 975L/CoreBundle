@@ -491,8 +491,10 @@ every review written, imported or moderated, and answers an empty string while `
 off. Reach for `ui_reviews()` and the `Review/List` component directly only to lay the section out
 differently — the caching is then yours to do.
 
-- **`ui-enable-reviews`** (bool, `false` by default) gates the whole feature at once: the public form,
-  the management screen, the collection source. Off, `ui_reviews()` returns `[]` rather than failing.
+- **`ui-enable-reviews`** (bool, `false` by default) gates the public side at once: the form, the
+  published reviews, the collection source. Off, `ui_reviews()` returns `[]` rather than failing. The
+  moderation screen, its menu entry and its guided project stay, the index warning that nothing reaches
+  visitors (with the switch's edit link for `site-role-admin`).
   It is flipped from the dashboard's own toggle row as well as from the Config screen
   (`Controller\Management\ReviewShortcutController`, `site-role-admin`).
 - **A submission is born `pending` and unverified**, whatever the form sent — the two fields deciding
@@ -513,7 +515,7 @@ differently — the caching is then yours to do.
   and no `Set-Cookie`, and works with javascript off as a plain link.
 - **A submitted review is notified to the site.** `ReviewNotifier` sends the site's own `email-to`
   address a plain-text notice in the site's locale, its result ignored — a review is stored whatever
-  the mailer answers. `ReviewAlertProvider` says on the dashboard how many are waiting.
+  the mailer answers. `ReviewAlertProvider` says on the dashboard how many are waiting, `ui-enable-reviews` on or off.
 - **The score goes into the same average as the clicks.** Publishing a review carrying a rating calls
   `RatingService::record()` under a voter derived from the author's e-mail (a truncated sha-256, so
   `Rating` still holds no address of anyone); rejecting or deleting it calls `withdraw()`.

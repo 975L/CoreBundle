@@ -15,7 +15,6 @@ use c975L\ConfigBundle\Management\AlertProviderInterface;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\UiBundle\Controller\Management\ReviewCrudController;
 use c975L\UiBundle\Repository\ReviewRepository;
-use c975L\UiBundle\Service\ReviewService;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -24,7 +23,6 @@ class ReviewAlertProvider implements AlertProviderInterface
 {
     public function __construct(
         private readonly ReviewRepository $reviewRepository,
-        private readonly ReviewService $reviewService,
         private readonly AdminUrlGeneratorInterface $adminUrlGenerator,
         private readonly ConfigServiceInterface $configService,
         private readonly TranslatorInterface $translator,
@@ -33,11 +31,7 @@ class ReviewAlertProvider implements AlertProviderInterface
 
     public function getAlerts(): array
     {
-        // Same switch as the screen it links to (see MenuProvider): a site collecting no reviews has none waiting
-        if (!$this->reviewService->isEnabled()) {
-            return [];
-        }
-
+        // Not gated by the public switch: a review left pending before it was turned off still waits for a moderator
         $pending = $this->reviewRepository->countPending();
         if (0 === $pending) {
             return [];

@@ -53,7 +53,7 @@ class MatomoComponentTest extends TestCase
     }
 
     // The keys travelled with the component: declared where they are read, and in the group the cookie banner already sits in
-    public function testTheThreeKeysAreDeclaredHere(): void
+    public function testTheTwoKeysAreDeclaredHere(): void
     {
         $declared = [];
 
@@ -61,7 +61,7 @@ class MatomoComponentTest extends TestCase
             $declared[$entry['slug']] = $entry['group'];
         }
 
-        foreach (['site-matomo-url', 'site-matomo-id', 'site-enable-matomo'] as $slug) {
+        foreach (['site-matomo-url', 'site-matomo-id'] as $slug) {
             $this->assertArrayHasKey($slug, $declared, \sprintf('"%s" is no longer declared by the bundle reading it.', $slug));
             $this->assertSame('analytics', $declared[$slug], \sprintf('"%s" left the group holding the cookie banner.', $slug));
         }

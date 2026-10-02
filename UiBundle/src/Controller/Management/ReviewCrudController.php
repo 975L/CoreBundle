@@ -11,17 +11,20 @@
 namespace c975L\UiBundle\Controller\Management;
 
 use c975L\ConfigBundle\Management\EasyAdminActionHelper;
+use c975L\ConfigBundle\Repository\ConfigRepository;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\UiBundle\Entity\Review;
 use c975L\UiBundle\Enum\ReviewStatus;
 use c975L\UiBundle\Model\CollectionItem;
 use c975L\UiBundle\Registry\FavoriteItemRegistry;
+use c975L\UiBundle\Service\ConfigEditUrlResolver;
 use c975L\UiBundle\Service\ReviewService;
 use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminRoute;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
+use EasyCorp\Bundle\EasyAdminBundle\Config\KeyValueStore;
 use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
@@ -49,8 +52,13 @@ class ReviewCrudController extends AbstractCrudController
         private readonly EntityManagerInterface $entityManager,
         private readonly CsrfTokenManagerInterface $csrfTokenManager,
         private readonly TranslatorInterface $translator,
+        private readonly ConfigRepository $configRepository,
+        private readonly ConfigEditUrlResolver $configEditUrlResolver,
     ) {
     }
+
+    // The site-wide switch the public side of reviews is drawn under (see ReviewService::isEnabled()), never this screen: imported or pending reviews still need a moderator
+    private const string SWITCH_SLUG = 'ui-enable-reviews';
 
     // The one token both decisions are checked against: they are the same gesture, taken on the same screen
     private const string DECISION_CSRF_TOKEN = 'ui_review_decision';
@@ -76,6 +84,18 @@ class ReviewCrudController extends AbstractCrudController
             // Carries the screen's own explanatory text, the very key the sidebar entry reuses as its onboarding description (see MenuProvider)
             ->overrideTemplate('crud/index', '@c975LUi/management/review_crud_index.html.twig')
         ;
+    }
+
+    // The public side turned off, the index says so, with the switch's edit url for an admin - ConfigCrudController denying anything below that role
+    #[\Override]
+    public function configureResponseParameters(KeyValueStore $responseParameters): KeyValueStore
+    {
+        $enabled = $this->reviewService->isEnabled();
+
+        $responseParameters->set('reviews_enabled', $enabled);
+        $responseParameters->set('reviews_switch_url', $enabled || !$this->isGranted($this->configService->get('site-role-admin')) ? null : $this->configEditUrlResolver->resolve($this->configRepository->findOneBySlug(self::SWITCH_SLUG)));
+
+        return $responseParameters;
     }
 
     #[\Override]

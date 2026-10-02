@@ -101,7 +101,7 @@ one of them.
 - **Preconnects** merge the `site-preconnect` list with Matomo's origin, that one gated on
   `matomo_enabled()`: tracking off means no connection opened to a third party the site sends nothing to.
   The same function guards `<twig:c975LUi:Analytics:Matomo />`, and a bundle pushing a measure of its own
-  asks it too rather than re-reading `site-enable-matomo`.
+  asks it too rather than re-reading `site-matomo-url` and `site-matomo-id`.
 - **Flashes are read only behind `ui_can_hold_flash()`** - reading `app.flashes` is what starts a session. A
   label outside `success`/`info`/`warning`/`danger` is mapped onto its tint (`error`, `notice`) or falls back
   on `info`, rather than printing black ink on the dark page's own background.

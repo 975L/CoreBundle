@@ -19,7 +19,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-// Flips the "ui-enable-reviews" config from the dashboard rather than from the Config screen, the one key deciding at once whether visitors may write a review, whether the published ones show on a sheet, and whether the moderation screen exists at all (see ReviewService::isEnabled()) - a switch that central is looked for on the dashboard, not in a list of a hundred settings
+// Flips the "ui-enable-reviews" config from the dashboard rather than from the Config screen, the one key deciding at once whether visitors may write a review and whether the published ones show on a sheet (see ReviewService::isEnabled()) - the moderation screen stays, saying when the site shows none - a switch that central is looked for on the dashboard, not in a list of a hundred settings
 class ReviewShortcutController extends AbstractController
 {
     // EasyAdmin prefixes this with the Dashboard's own route name, giving management_ui_reviews_toggle

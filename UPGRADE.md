@@ -1,5 +1,17 @@
 # UPGRADE
 
+## v1.51.0
+
+**`site-enable-matomo` is gone: Matomo tracks as soon as `site-matomo-url` and `site-matomo-id` are both filled.** A site that had them filled while the switch read `false` **starts measuring the day it upgrades** - empty `site-matomo-id` to keep it off. The CNIL note it carried now sits in the description of `site-matomo-url`.
+
+**`ui-ai-assistant-dashboard-enabled` is gone too: the dashboard assistant is on as soon as `ui-ai-assistant-dashboard-endpoint` and `-token` are filled**, like the rephrasing and the site search already were. A site with both filled and the switch off sees the assistant appear - empty the token to keep it off.
+
+**`ui-enable-reviews` only governs the public side now** (the visitor form and the published reviews): the "Avis" moderation entry and its guided project are listed whatever its value, the screen saying when the reviews are hidden on the site.
+
+**Constructors:** `ReviewCrudController` takes two more arguments, `ConfigRepository` and `ConfigEditUrlResolver`; UiBundle's `MenuProvider` and `UiGuidedProjectProvider` no longer take a `ReviewService`. Nothing to do with autowiring; a class extending them or built by hand passes them on.
+
+The two stored rows are now undeclared: remove them with `c975l:config:prune` (or from ConfigBundle's prune screen).
+
 ## v1.49.0
 
 **`UserCrudController` takes three more constructor arguments**, `EventDispatcherInterface`, `AdminUrlGeneratorInterface` and `CsrfTokenManagerInterface`, for its new "Anonymize" action. Nothing to do with autowiring; a class extending it and calling `parent::__construct()` passes them on.

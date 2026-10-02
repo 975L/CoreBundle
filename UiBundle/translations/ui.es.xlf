@@ -706,10 +706,6 @@
                 <source>label.ai_assistant_setup_intro</source>
                 <target>Haga preguntas sobre el sistema de bloques. Aún no activado:</target>
             </trans-unit>
-            <trans-unit id="Ueq8Dbo">
-                <source>label.ai_assistant_setup_step_enabled</source>
-                <target>Active «Asistente IA del panel»</target>
-            </trans-unit>
             <trans-unit id="wA18Cg5">
                 <source>label.ai_assistant_setup_step_endpoint</source>
                 <target>Configure su endpoint</target>
@@ -1292,7 +1288,7 @@
             </trans-unit>
             <trans-unit id="CZn_467">
                 <source>label.block_kind_legacy_slot_help</source>
-                <target>&lt;span class="alert alert-warning d-block p-2"&gt;⚠ Este bloque está colocado directamente como columna, lo que ya no se ofrece: añade una Columna a la fila, arrastra este bloque dentro y entonces podrás ajustar su anchura.&lt;/span&gt;</target>
+                <target>&lt;span class="alert alert-warning d-block p-2"&gt;⚠ Este bloque está colocado directamente como columna, lo que ya no se ofrece: añada una Columna a la fila, arrastre este bloque dentro y entonces podrá ajustar su anchura.&lt;/span&gt;</target>
             </trans-unit>
             <trans-unit id="QhS4ZF8">
                 <source>label.block_legal_model</source>
@@ -2000,7 +1996,7 @@
             </trans-unit>
             <trans-unit id="UpgAJNA">
                 <source>label.favorite_error</source>
-                <target>No se ha podido actualizar tu lista</target>
+                <target>No se ha podido actualizar su lista</target>
             </trans-unit>
             <trans-unit id="eCbDbr_">
                 <source>label.favorite_link_label</source>
@@ -2028,7 +2024,7 @@
             </trans-unit>
             <trans-unit id="7UyXjEU">
                 <source>label.favorites_loading</source>
-                <target>Cargando tu lista…</target>
+                <target>Cargando su lista…</target>
             </trans-unit>
             <trans-unit id="M9eTlar">
                 <source>label.favorites_summary</source>
@@ -2336,11 +2332,11 @@
             </trans-unit>
             <trans-unit id="OD0CMev">
                 <source>label.form_submission_failed</source>
-                <target>Se produjo un error, tu envío no pudo ser procesado.</target>
+                <target>Se produjo un error, su envío no pudo ser procesado.</target>
             </trans-unit>
             <trans-unit id="0azLXwc">
                 <source>label.form_submitted</source>
-                <target>Gracias, tu envío ha sido recibido.</target>
+                <target>Gracias, su envío ha sido recibido.</target>
             </trans-unit>
             <trans-unit id="9KeSRak">
                 <source>label.form_translation_help</source>
@@ -3096,7 +3092,11 @@
             </trans-unit>
             <trans-unit id="zkQpL1I">
                 <source>label.info_reviews</source>
-                <target>Las opiniones dejadas en el sitio y las importadas de una plataforma. En las primeras, el estado es tuyo y la fila se puede eliminar; en las segundas, solo la respuesta pública.</target>
+                <target>Las opiniones dejadas en el sitio y las importadas de una plataforma. En las primeras, el estado es suyo y la fila se puede eliminar; en las segundas, solo la respuesta pública.</target>
+            </trans-unit>
+            <trans-unit id="d6JPFgR">
+                <source>label.info_reviews_disabled</source>
+                <target>Las opiniones están desactivadas en todo el sitio: no se muestra ninguna a los visitantes y el formulario está desactivado. Aun así, puede moderarlas y responderlas aquí.</target>
             </trans-unit>
             <trans-unit id="MwU6S3V">
                 <source>label.info_site_graphic</source>
@@ -4076,7 +4076,7 @@
             </trans-unit>
             <trans-unit id="EcQhzh6">
                 <source>label.slots_legacy_kinds_help</source>
-                <target>&lt;span class="alert alert-warning d-block p-2"&gt;⚠ Estos bloques están colocados directamente como columnas, lo que ya no se ofrece: %blocks%. Para cada uno, añade una Columna a la fila, arrastra el bloque dentro y entonces podrás ajustar su anchura.&lt;/span&gt;</target>
+                <target>&lt;span class="alert alert-warning d-block p-2"&gt;⚠ Estos bloques están colocados directamente como columnas, lo que ya no se ofrece: %blocks%. Para cada uno, añada una Columna a la fila, arrastre el bloque dentro y entonces podrá ajustar su anchura.&lt;/span&gt;</target>
             </trans-unit>
             <trans-unit id="0kGqgMZ">
                 <source>label.slug</source>

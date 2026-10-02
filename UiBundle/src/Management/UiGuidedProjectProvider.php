@@ -27,7 +27,6 @@ use c975L\UiBundle\Controller\Management\ReviewCrudController;
 use c975L\UiBundle\Controller\Management\SiteGraphicCrudController;
 use c975L\UiBundle\Service\AiRephraseClient;
 use c975L\UiBundle\Service\AiSiteSearchClient;
-use c975L\UiBundle\Service\ReviewService;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -41,7 +40,6 @@ class UiGuidedProjectProvider implements GuidedProjectProviderInterface
         private readonly ConfigServiceInterface $configService,
         // The legal documents screen is a plain controller carrying an #[AdminRoute], not a CRUD one, so its url comes from the router rather than from EasyAdmin's generator
         private readonly UrlGeneratorInterface $urlGenerator,
-        private readonly ReviewService $reviewService,
         private readonly SiteLocales $siteLocales,
         private readonly AiSiteSearchClient $aiSiteSearchClient,
         private readonly AiRephraseClient $aiRephraseClient,
@@ -61,14 +59,10 @@ class UiGuidedProjectProvider implements GuidedProjectProviderInterface
             $this->formFieldTemplateProject(),
             $this->emailTemplateProject(),
             $this->fontProject(),
+            // Offered whatever "ui-enable-reviews" says, like the screen it walks to (see MenuProvider): that switch governs the public side only
+            $this->reviewProject(),
+            $this->mediaAddProject(),
         ];
-
-        // Same gate as the screen it walks to (see MenuProvider): a walk-through of a feature the site neither collects nor shows is one more thing to explain
-        if ($this->reviewService->isEnabled()) {
-            $projects[] = $this->reviewProject();
-        }
-
-        $projects[] = $this->mediaAddProject();
 
         // Same gate as the screen it walks to (see MenuProvider): no question is recorded before the search is configured
         if ($this->aiSiteSearchClient->isEnabled()) {
@@ -243,7 +237,7 @@ class UiGuidedProjectProvider implements GuidedProjectProviderInterface
             'label' => 'label.guided_project_ui_review',
             'description' => 'description.guided_project_ui_review',
             'translation_domain' => 'ui',
-            // After the projects above, the walk-through being appended to them
+            // Right after the font project, at the step of 10 the interface states
             'order' => 3100,
             'role' => $this->configService->get('site-role-editor'),
             'steps' => [

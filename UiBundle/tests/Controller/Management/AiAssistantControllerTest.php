@@ -201,9 +201,9 @@ class AiAssistantControllerTest extends TestCase
         $configRepository->expects($this->once())
             ->method('findBy')
             ->with($this->callback(
-                static fn (array $criteria): bool => isset($criteria['slug']) && in_array('ui-ai-assistant-dashboard-enabled', $criteria['slug'], true)
+                static fn (array $criteria): bool => isset($criteria['slug']) && in_array('ui-ai-assistant-dashboard-endpoint', $criteria['slug'], true)
             ))
-            ->willReturn([$this->createConfig('ui-ai-assistant-dashboard-enabled', 42)]);
+            ->willReturn([$this->createConfig('ui-ai-assistant-dashboard-endpoint', 42)]);
 
         $urlGenerator = $this->createStub(AdminUrlGeneratorInterface::class);
         $urlGenerator->method('unsetAll')->willReturnSelf();
@@ -224,15 +224,14 @@ class AiAssistantControllerTest extends TestCase
 
         $links = $this->invokeConfigLinks($controller);
 
-        $this->assertCount(7, $links);
-        $this->assertSame('/management/config/edit', $links['ui-ai-assistant-dashboard-enabled']);
+        $this->assertCount(6, $links);
+        $this->assertSame('/management/config/edit', $links['ui-ai-assistant-dashboard-endpoint']);
     }
 
     public function testMissingSlugsOmitsAlreadyConfiguredValues(): void
     {
         $configService = $this->createStub(ConfigServiceInterface::class);
         $configService->method('get')->willReturnCallback(static fn (string $slug) => match ($slug) {
-            'ui-ai-assistant-dashboard-enabled' => true,
             'ui-ai-assistant-dashboard-endpoint' => 'https://example.test/ask',
             'ui-ai-assistant-dashboard-token' => 'token',
             'ui-ai-assistant-rephrase-provider' => 'anthropic',
@@ -261,7 +260,6 @@ class AiAssistantControllerTest extends TestCase
     {
         $configService = $this->createStub(ConfigServiceInterface::class);
         $configService->method('get')->willReturnCallback(static fn (string $slug) => match ($slug) {
-            'ui-ai-assistant-dashboard-enabled' => true,
             'ui-ai-assistant-dashboard-endpoint' => 'https://example.test/ask',
             'ui-ai-assistant-dashboard-token' => 'token',
             'ui-ai-assistant-rephrase-provider' => 'anthropic',

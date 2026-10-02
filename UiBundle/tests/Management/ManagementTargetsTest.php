@@ -20,7 +20,6 @@ use c975L\UiBundle\Management\UiGuidedProjectProvider;
 use c975L\UiBundle\Management\UiShortcutProvider;
 use c975L\UiBundle\Service\AiRephraseClient;
 use c975L\UiBundle\Service\AiSiteSearchClient;
-use c975L\UiBundle\Service\ReviewService;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 // Every CRUD controller and route this bundle's management providers name, checked against what its controllers actually declare - see ConfigBundle's ManagementTargetsTestCase
@@ -51,20 +50,12 @@ class ManagementTargetsTest extends ManagementTargetsTestCase
         return $client;
     }
 
-    private function createReviewService(bool $enabled = true): ReviewService
-    {
-        $reviewService = $this->createStub(ReviewService::class);
-        $reviewService->method('isEnabled')->willReturn($enabled);
-
-        return $reviewService;
-    }
-
     protected function managementProviders(): iterable
     {
         return [
-            new MenuProvider($this->createConfigService(), $this->createTranslator(), $this->createReviewService(), $this->createSiteSearchClient()),
+            new MenuProvider($this->createConfigService(), $this->createTranslator(), $this->createSiteSearchClient()),
             new UiShortcutProvider($this->createTranslator(), $this->createConfigService()),
-            new UiGuidedProjectProvider($this->adminUrlGenerator(), $this->createConfigService(), $this->urlGenerator(), $this->createReviewService(), new SiteLocales(['fr', 'en'], 'fr'), $this->createSiteSearchClient(), $this->createRephraseClient(), $this->createAssistantClient()),
+            new UiGuidedProjectProvider($this->adminUrlGenerator(), $this->createConfigService(), $this->urlGenerator(), new SiteLocales(['fr', 'en'], 'fr'), $this->createSiteSearchClient(), $this->createRephraseClient(), $this->createAssistantClient()),
             new LinkableRouteProvider(),
         ];
     }

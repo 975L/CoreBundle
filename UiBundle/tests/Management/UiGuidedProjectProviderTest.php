@@ -18,7 +18,6 @@ use c975L\UiBundle\Controller\Management\LegalModelController;
 use c975L\UiBundle\Management\UiGuidedProjectProvider;
 use c975L\UiBundle\Service\AiRephraseClient;
 use c975L\UiBundle\Service\AiSiteSearchClient;
-use c975L\UiBundle\Service\ReviewService;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
 use PHPUnit\Framework\TestCase;
@@ -26,14 +25,6 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class UiGuidedProjectProviderTest extends TestCase
 {
-    private function createReviewService(bool $enabled = true): ReviewService
-    {
-        $reviewService = $this->createStub(ReviewService::class);
-        $reviewService->method('isEnabled')->willReturn($enabled);
-
-        return $reviewService;
-    }
-
     private function createAdminUrlGenerator(array &$controllers = []): AdminUrlGeneratorInterface
     {
         $generator = $this->createStub(AdminUrlGeneratorInterface::class);
@@ -103,7 +94,7 @@ class UiGuidedProjectProviderTest extends TestCase
     // Multilingual and with the site search and the rephrasing configured unless told otherwise, so every step the provider can walk is there for the assertions below to read
     private function createProvider(array &$controllers = [], array &$routes = [], bool $multilingual = true, bool $siteSearch = true, bool $rephrase = true, bool $assistant = true): UiGuidedProjectProvider
     {
-        return new UiGuidedProjectProvider($this->createAdminUrlGenerator($controllers), $this->createConfigService(), $this->createUrlGenerator($routes), $this->createReviewService(), new SiteLocales($multilingual ? ['fr', 'en'] : [], 'fr'), $this->createSiteSearchClient($siteSearch), $this->createRephraseClient($rephrase), $this->createAssistantClient($assistant));
+        return new UiGuidedProjectProvider($this->createAdminUrlGenerator($controllers), $this->createConfigService(), $this->createUrlGenerator($routes), new SiteLocales($multilingual ? ['fr', 'en'] : [], 'fr'), $this->createSiteSearchClient($siteSearch), $this->createRephraseClient($rephrase), $this->createAssistantClient($assistant));
     }
 
     // The screen draws either the list of what is missing or the textarea, so the parcours walks the one it will find and never both

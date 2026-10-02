@@ -22,7 +22,6 @@ use c975L\UiBundle\Controller\Management\MediaCrudController;
 use c975L\UiBundle\Controller\Management\ReviewCrudController;
 use c975L\UiBundle\Controller\Management\SiteGraphicCrudController;
 use c975L\UiBundle\Service\AiSiteSearchClient;
-use c975L\UiBundle\Service\ReviewService;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class MenuProvider implements MenuProviderInterface
@@ -30,7 +29,6 @@ class MenuProvider implements MenuProviderInterface
     public function __construct(
         private readonly ConfigServiceInterface $configService,
         private readonly TranslatorInterface $translator,
-        private readonly ReviewService $reviewService,
         private readonly AiSiteSearchClient $aiSiteSearchClient,
     ) {
     }
@@ -102,11 +100,8 @@ class MenuProvider implements MenuProviderInterface
                 'role' => $this->configService->get('site-role-editor'),
                 'description' => 'label.info_site_graphic',
             ],
-        ];
-
-        // Only displayed if reviews are turned on site-wide: a screen for a feature the site neither collects nor shows is one more thing to explain in a sidebar
-        if ($this->reviewService->isEnabled()) {
-            $menus['review'] = [
+            // Listed whatever "ui-enable-reviews" says: that switch governs the public side only, and imported reviews or pending ones still need a moderator - the screen itself says when the site shows none (see ReviewCrudController::configureResponseParameters())
+            'review' => [
                 'controller' => ReviewCrudController::class,
                 // Lists what happened rather than what an admin makes: empty, it is no feature left unused (see UnusedFeatureBuilder)
                 'creatable' => false,
@@ -117,10 +112,10 @@ class MenuProvider implements MenuProviderInterface
                 // The bar ReviewCrudController states on its own rows
                 'role' => $this->configService->get('site-role-editor'),
                 'description' => 'label.info_reviews',
-            ];
-        }
+            ],
+        ];
 
-        // Same reading as the reviews: only once the site search is configured, the screen listing what it was asked
+        // Only once the site search is configured, the screen listing what it was asked
         if ($this->aiSiteSearchClient->isEnabled()) {
             $menus['ai_search_answer'] = [
                 'controller' => AiSearchAnswerCrudController::class,

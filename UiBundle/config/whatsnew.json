@@ -11,6 +11,16 @@
                 "en": "Donovan now answers from a panel on every back-office page: its answer stays in sight while you follow it through the menu, and a new guided tour shows you how to ask it.",
                 "fr": "Donovan répond maintenant depuis un panneau présent sur chaque page du back-office : sa réponse reste sous vos yeux pendant que vous la suivez dans le menu, et un nouveau projet guidé vous montre comment l'interroger.",
                 "es": "Donovan responde ahora desde un panel presente en cada página del back-office: su respuesta sigue a la vista mientras la sigue por el menú, y un nuevo proyecto guiado le muestra cómo preguntarle."
+            },
+            {
+                "en": "The Reviews screen stays in the menu even with reviews hidden on the site, so a review still waiting gets its answer, and the screen tells you when visitors see none.",
+                "fr": "L'écran Avis reste dans le menu même quand les avis sont masqués sur le site, pour qu'un avis en attente reçoive sa réponse, et l'écran vous prévient que les visiteurs n'en voient aucun.",
+                "es": "La pantalla Opiniones sigue en el menú aunque las opiniones estén ocultas en el sitio, para que una opinión pendiente reciba su respuesta, y la pantalla le avisa de que los visitantes no ven ninguna."
+            },
+            {
+                "en": "Audience measurement and the dashboard assistant now turn on as soon as their settings are filled in, with no separate switch to remember.",
+                "fr": "La mesure d'audience et l'assistant du tableau de bord s'activent désormais dès que leurs réglages sont remplis, sans interrupteur à part à ne pas oublier.",
+                "es": "La medición de audiencia y el asistente del panel se activan ahora en cuanto sus ajustes están completos, sin interruptor aparte que recordar."
             }
         ]
     },

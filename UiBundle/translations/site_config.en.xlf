@@ -2,10 +2,6 @@
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
     <file source-language="en" target-language="en" datatype="plaintext" original="site_config.en.xlf">
         <body>
-            <trans-unit id="GS_2sku">
-                <source>description.ai_assistant_dashboard_enabled</source>
-                <target>Enable (true) or disable (false) the dashboard AI assistant</target>
-            </trans-unit>
             <trans-unit id="f2Stp0E">
                 <source>description.ai_assistant_dashboard_endpoint</source>
                 <target>URL of the AI backend receiving dashboard questions. Empty = disabled (no default backend shipped).</target>
@@ -90,10 +86,6 @@
                 <source>description.site_enable_cookie_consent</source>
                 <target>Enable the use of cookie consent</target>
             </trans-unit>
-            <trans-unit id="imDzV_g">
-                <source>description.site_enable_matomo</source>
-                <target>Enables Matomo, deliberately outside the cookie banner - only for a CNIL-exempt setup (anonymized IP, no cross-site tracking, cookie ≤13 months, DNT respected)</target>
-            </trans-unit>
             <trans-unit id="nZli24w">
                 <source>description.site_form_delay</source>
                 <target>Minimum delay, in seconds, between showing and submitting a public form before treating it as a bot</target>
@@ -104,7 +96,7 @@
             </trans-unit>
             <trans-unit id="X8T2_9z">
                 <source>description.site_matomo_url</source>
-                <target>URL of the Matomo instance i.e. https://matomo.example.com</target>
+                <target>URL of the Matomo instance i.e. https://matomo.example.com. Filled along with the ID, it enables Matomo, deliberately outside the cookie banner - only for a CNIL-exempt setup (anonymized IP, no cross-site tracking, cookie ≤13 months, DNT respected)</target>
             </trans-unit>
             <trans-unit id="ooJKbLK">
                 <source>description.theme_color_background</source>
@@ -148,7 +140,7 @@
             </trans-unit>
             <trans-unit id="5gWmNrB">
                 <source>description.ui_enable_reviews</source>
-                <target>Lets visitors submit a review, displays the published ones and the menu moderating them. Leave to false until reviews are expected.</target>
+                <target>Lets visitors submit a review and displays the published ones. The moderation menu stays available either way. Leave to false until reviews are expected.</target>
             </trans-unit>
             <trans-unit id="HIIlbc1">
                 <source>description.ui_map_google_api_key</source>
@@ -230,10 +222,6 @@
                 <source>label.site_enable_cookie_consent</source>
                 <target>Enable Cookie Consent</target>
             </trans-unit>
-            <trans-unit id="xZcUaF_">
-                <source>label.site_enable_matomo</source>
-                <target>Enable Matomo Analytics</target>
-            </trans-unit>
             <trans-unit id="UdYcxIh">
                 <source>label.site_form_delay</source>
                 <target>Public forms anti-bot delay</target>
@@ -285,10 +273,6 @@
             <trans-unit id="LOI7_Sr">
                 <source>label.theme_mode</source>
                 <target>Light/dark mode</target>
-            </trans-unit>
-            <trans-unit id="ZkdMN2x">
-                <source>label.ui_ai_assistant_dashboard_enabled</source>
-                <target>Donovan (Q&amp;A) - Enabled</target>
             </trans-unit>
             <trans-unit id="umye009">
                 <source>label.ui_ai_assistant_dashboard_endpoint</source>

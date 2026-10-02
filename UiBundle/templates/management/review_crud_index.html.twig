@@ -3,5 +3,15 @@
 {% block main %}
     <p>{{ ('label.info_reviews'|trans({}, 'ui')) }}</p>
 
+    {# The public side off site-wide, nothing decided here reaches a visitor yet: said here rather than the entry going missing from the sidebar #}
+    {% if not reviews_enabled %}
+        <div class="alert alert-warning">
+            {{ ('label.info_reviews_disabled'|trans({}, 'ui')) }}
+            {% if reviews_switch_url %}
+                <a href="{{ reviews_switch_url }}" class="alert-link">{{ ('label.reviews_enable'|trans({}, 'ui')) }}</a>
+            {% endif %}
+        </div>
+    {% endif %}
+
     {{ parent() }}
 {% endblock main %}

@@ -28,10 +28,10 @@ class AiAssistantClient implements AiAssistantClientInterface
     ) {
     }
 
+    // Both credentials filled is the switch, like the rephrasing and the site search: an endpoint without its token answers nothing anyway
     public function isEnabled(): bool
     {
-        return true === $this->configService->get('ui-ai-assistant-dashboard-enabled')
-            && (bool) $this->configService->get('ui-ai-assistant-dashboard-endpoint')
+        return (bool) $this->configService->get('ui-ai-assistant-dashboard-endpoint')
             && (bool) $this->configService->get('ui-ai-assistant-dashboard-token');
     }
 

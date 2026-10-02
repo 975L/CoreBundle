@@ -21,12 +21,11 @@ class MatomoExtension
     ) {
     }
 
-    // The switch on, and both values a tracker url is built from filled - a half-filled configuration measures nothing
+    // Both values a tracker url is built from filled is the switch - a half-filled configuration measures nothing
     #[AsTwigFunction('matomo_enabled')]
     public function isEnabled(): bool
     {
-        return $this->configService->getBool($this->configService->get('site-enable-matomo'))
-            && '' !== trim((string) $this->configService->get('site-matomo-url'))
+        return '' !== trim((string) $this->configService->get('site-matomo-url'))
             && '' !== trim((string) $this->configService->get('site-matomo-id'));
     }
 }

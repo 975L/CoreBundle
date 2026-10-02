@@ -40,15 +40,32 @@ class AiAssistantClientTest extends TestCase
         return $guidedProjectBuilder;
     }
 
-    public function testReturnsNullWhenDisabled(): void
+    // No separate switch: both credentials filled is what turns the assistant on, like the rephrasing and the site search
+    public function testIsEnabledByTheEndpointAndTokenAlone(): void
     {
         $client = new AiAssistantClient(
             new MockHttpClient(),
-            $this->createConfigService(['ui-ai-assistant-dashboard-enabled' => false]),
+            $this->createConfigService([
+                'ui-ai-assistant-dashboard-endpoint' => 'https://ai.example.com/ask',
+                'ui-ai-assistant-dashboard-token' => 'some-token',
+            ]),
             $this->createStub(GuidedProjectBuilder::class),
             $this->createStub(LoggerInterface::class),
         );
 
+        $this->assertTrue($client->isEnabled());
+    }
+
+    public function testReturnsNullWhenNothingIsConfigured(): void
+    {
+        $client = new AiAssistantClient(
+            new MockHttpClient(),
+            $this->createConfigService([]),
+            $this->createStub(GuidedProjectBuilder::class),
+            $this->createStub(LoggerInterface::class),
+        );
+
+        $this->assertFalse($client->isEnabled());
         $this->assertNull($client->ask('Which block for a gallery?'));
     }
 
@@ -57,7 +74,6 @@ class AiAssistantClientTest extends TestCase
         $client = new AiAssistantClient(
             new MockHttpClient(),
             $this->createConfigService([
-                'ui-ai-assistant-dashboard-enabled' => true,
                 'ui-ai-assistant-dashboard-endpoint' => null,
                 'ui-ai-assistant-dashboard-token' => 'some-token',
             ]),
@@ -83,7 +99,6 @@ class AiAssistantClientTest extends TestCase
         $client = new AiAssistantClient(
             $httpClient,
             $this->createConfigService([
-                'ui-ai-assistant-dashboard-enabled' => true,
                 'ui-ai-assistant-dashboard-endpoint' => 'https://example.test/ai-assistant',
                 'ui-ai-assistant-dashboard-token' => 'some-token',
             ]),
@@ -113,7 +128,6 @@ class AiAssistantClientTest extends TestCase
         $client = new AiAssistantClient(
             $httpClient,
             $this->createConfigService([
-                'ui-ai-assistant-dashboard-enabled' => true,
                 'ui-ai-assistant-dashboard-endpoint' => 'https://example.test/ai-assistant',
                 'ui-ai-assistant-dashboard-token' => 'some-token',
             ]),
@@ -143,7 +157,6 @@ class AiAssistantClientTest extends TestCase
         $client = new AiAssistantClient(
             $httpClient,
             $this->createConfigService([
-                'ui-ai-assistant-dashboard-enabled' => true,
                 'ui-ai-assistant-dashboard-endpoint' => 'https://example.test/ai-assistant',
                 'ui-ai-assistant-dashboard-token' => 'some-token',
             ]),
@@ -171,7 +184,6 @@ class AiAssistantClientTest extends TestCase
         $client = new AiAssistantClient(
             $httpClient,
             $this->createConfigService([
-                'ui-ai-assistant-dashboard-enabled' => true,
                 'ui-ai-assistant-dashboard-endpoint' => 'https://example.test/ai-assistant',
                 'ui-ai-assistant-dashboard-token' => 'some-token',
             ]),
@@ -198,7 +210,6 @@ class AiAssistantClientTest extends TestCase
         $client = new AiAssistantClient(
             $httpClient,
             $this->createConfigService([
-                'ui-ai-assistant-dashboard-enabled' => true,
                 'ui-ai-assistant-dashboard-endpoint' => 'https://example.test/ai-assistant',
                 'ui-ai-assistant-dashboard-token' => 'some-token',
             ]),
@@ -218,7 +229,6 @@ class AiAssistantClientTest extends TestCase
         $client = new AiAssistantClient(
             $httpClient,
             $this->createConfigService([
-                'ui-ai-assistant-dashboard-enabled' => true,
                 'ui-ai-assistant-dashboard-endpoint' => 'https://example.test/ai-assistant',
                 'ui-ai-assistant-dashboard-token' => 'some-token',
             ]),
