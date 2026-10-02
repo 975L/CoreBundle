@@ -7,8 +7,42 @@
  */
 import { Controller } from "@hotwired/stimulus";
 
+// Where the panel keeps its conversation and whether it is open: sessionStorage, so it lives as long as the tab and no longer, suffixed with the per-account key so the next admin in the same tab starts blank
+const STORE = 'c975l-donovan';
+
+// Enough to scroll back through, short enough that the panel never carries a whole day of questions
+const MAX_ENTRIES = 20;
+
 // Plain dataset/querySelector rather than Stimulus targets/values, whose camelCase identifier would want the non-dasherized "data-aiassistant-*"
 export default class extends Controller {
+    // The panel drawn on every admin page reloads with each menu click: what it said and whether it was open come back with it
+    connect() {
+        if (!this.persist) return;
+
+        const stored = this.readStore();
+        for (const entry of stored.entries) this.appendEntry(entry.kind, entry.text, entry.sources);
+
+        this.panelEl = this.element.closest('[data-ai-assistant-panel]');
+        if (!this.panelEl) return;
+
+        this.boundPanelClick = this.onPanelClick.bind(this);
+        this.panelEl.addEventListener('click', this.boundPanelClick);
+        this.setOpen(stored.open);
+    }
+
+    disconnect() {
+        if (this.panelEl) this.panelEl.removeEventListener('click', this.boundPanelClick);
+    }
+
+    // The per-account key (see DonovanWidgetProvider), empty when nothing is to be kept
+    get persist() {
+        return this.element.dataset.aiAssistantPersistValue || '';
+    }
+
+    get storeKey() {
+        return `${STORE}.${this.persist}`;
+    }
+
     get askUrl() {
         return this.element.dataset.aiAssistantAskUrlValue || '';
     }
@@ -70,7 +104,7 @@ export default class extends Controller {
             // An error key ("unavailable", "invalid_csrf") is a diagnostic, not an answer: the reader gets the message the template carries, with its link, rather than that word
             // An answer with no text is one of those failures too, whatever the status code that carried it: rendering it would add an empty line and read as nothing having happened
             .then(({ ok, data }) => ok && 'string' === typeof data.answer && '' !== data.answer.trim()
-                ? this.appendEntry('answer', data.answer, data.sources)
+                ? this.showAnswer(question, data.answer, data.sources)
                 : this.showError())
             .catch(() => this.showError())
             .finally(() => {
@@ -81,6 +115,65 @@ export default class extends Controller {
                 }
                 if (submit) submit.disabled = false;
             });
+    }
+
+    // Kept as a pair, once answered: a question cut off by a menu click or failed never comes back alone
+    showAnswer(question, text, sources) {
+        this.appendEntry('answer', text, sources);
+        this.remember({ kind: 'question', text: question }, { kind: 'answer', text, sources });
+    }
+
+    // The toggle opens and closes, "clear" starts the conversation over - both outside this element, in the panel around it
+    onPanelClick(event) {
+        if (!(event.target instanceof Element)) return;
+
+        if (event.target.closest('[data-ai-assistant-panel-toggle]')) {
+            const body = this.panelEl.querySelector('.ai-assistant-panel__body');
+            this.setOpen(body ? body.hidden : false, true);
+        } else if (event.target.closest('[data-ai-assistant-panel-clear]')) {
+            if (this.logEl) this.logEl.replaceChildren();
+            this.writeStore({ ...this.readStore(), entries: [] });
+        }
+    }
+
+    // Focus only on a click: restored open after a page load, the panel must leave the cursor to the form the reader came to fill
+    setOpen(open, focus = false) {
+        const body = this.panelEl.querySelector('.ai-assistant-panel__body');
+        const toggle = this.panelEl.querySelector('[data-ai-assistant-panel-toggle]');
+        if (body) body.hidden = !open;
+        if (toggle) toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+        this.writeStore({ ...this.readStore(), open });
+
+        if (open) {
+            if (this.logEl) this.logEl.scrollTop = this.logEl.scrollHeight;
+            if (focus && this.inputEl) this.inputEl.focus();
+        }
+    }
+
+    remember(...entries) {
+        if (!this.persist) return;
+
+        const stored = this.readStore();
+        this.writeStore({ ...stored, entries: [...stored.entries, ...entries].slice(-MAX_ENTRIES) });
+    }
+
+    // Storage can be missing or refused (private window, blocked site data): the panel then simply forgets, it never breaks
+    readStore() {
+        try {
+            const stored = JSON.parse(window.sessionStorage.getItem(this.storeKey) || '{}');
+
+            return { open: true === stored.open, entries: Array.isArray(stored.entries) ? stored.entries : [] };
+        } catch {
+            return { open: false, entries: [] };
+        }
+    }
+
+    writeStore(stored) {
+        try {
+            window.sessionStorage.setItem(this.storeKey, JSON.stringify(stored));
+        } catch {
+            // Nothing kept, nothing broken
+        }
     }
 
     // Built via DOM APIs, not innerHTML: both text and sources come from the network
@@ -112,14 +205,22 @@ export default class extends Controller {
     }
 
     // A question the backend has never seen costs it a model call, so the wait is counted in seconds and needs to be visible: without this, a disabled field is the only sign anything is happening
+    // "Clear" waits too: the answer still on its way would otherwise land in the conversation just emptied
     showPending() {
         const pending = this.pendingEl;
         if (pending) pending.classList.remove('d-none');
+        this.setClearDisabled(true);
     }
 
     hidePending() {
         const pending = this.pendingEl;
         if (pending) pending.classList.add('d-none');
+        this.setClearDisabled(false);
+    }
+
+    setClearDisabled(disabled) {
+        const clear = this.panelEl?.querySelector('[data-ai-assistant-panel-clear]');
+        if (clear) clear.disabled = disabled;
     }
 
     // Server-rendered, message and link included: nothing here comes from the response

@@ -158,6 +158,22 @@
                 <source>narration.guided_step_ui_content_export_select</source>
                 <target>Marque los formularios que quiera llevarse. Esta casilla los marca todos, pero también puede marcarlos uno a uno. El botón de exportación solo aparece cuando hay una marcada.</target>
             </trans-unit>
+            <trans-unit id="qvrUfqr">
+                <source>narration.guided_step_ui_donovan_ask_open</source>
+                <target>El asistente le acompaña en todas las páginas del back-office. Empecemos por el panel de control.</target>
+            </trans-unit>
+            <trans-unit id="StpVDUi">
+                <source>narration.guided_step_ui_donovan_ask_question</source>
+                <target>Escriba su pregunta aquí, con sus palabras, y envíela.</target>
+            </trans-unit>
+            <trans-unit id="EqMERyI">
+                <source>narration.guided_step_ui_donovan_ask_sources</source>
+                <target>Bajo cada respuesta, las fuentes abren la página citada, o lanzan aquí mismo el recorrido que le guía.</target>
+            </trans-unit>
+            <trans-unit id="DBWgyke">
+                <source>narration.guided_step_ui_donovan_ask_toggle</source>
+                <target>Haga clic en este botón para abrir el panel. Permanecerá abierto cuando cambie de página.</target>
+            </trans-unit>
             <trans-unit id="xhapUqZ">
                 <source>narration.guided_step_ui_email_template_attachments</source>
                 <target>Adjunte los documentos que salen con él. Un documento legal se adjunta tal como lo publica el sitio, y su PDF se regenera en cuanto cambia el texto: así, un correo enviado meses después sigue llevando la versión vigente.</target>

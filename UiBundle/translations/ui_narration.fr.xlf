@@ -158,6 +158,22 @@
                 <source>narration.guided_step_ui_content_export_select</source>
                 <target>Cochez les formulaires à emporter. Cette case les coche toutes, mais vous pouvez aussi les prendre un par un. Le bouton d'export n'apparaît qu'une fois une case cochée.</target>
             </trans-unit>
+            <trans-unit id="qvrUfqr">
+                <source>narration.guided_step_ui_donovan_ask_open</source>
+                <target>L'assistant vous accompagne sur toutes les pages du back-office. Commençons par le tableau de bord.</target>
+            </trans-unit>
+            <trans-unit id="StpVDUi">
+                <source>narration.guided_step_ui_donovan_ask_question</source>
+                <target>Écrivez votre question ici, avec vos mots, puis envoyez-la.</target>
+            </trans-unit>
+            <trans-unit id="EqMERyI">
+                <source>narration.guided_step_ui_donovan_ask_sources</source>
+                <target>Sous chaque réponse, les sources ouvrent la page citée, ou lancent ici même le parcours qui vous guide.</target>
+            </trans-unit>
+            <trans-unit id="DBWgyke">
+                <source>narration.guided_step_ui_donovan_ask_toggle</source>
+                <target>Cliquez sur ce bouton pour ouvrir le panneau. Il restera ouvert quand vous changerez de page.</target>
+            </trans-unit>
             <trans-unit id="xhapUqZ">
                 <source>narration.guided_step_ui_email_template_attachments</source>
                 <target>Joignez les documents qui partent avec. Un document légal est joint tel que le site le publie, et son PDF est regénéré dès que le texte change : un e-mail envoyé des mois plus tard emporte donc toujours la version en vigueur.</target>

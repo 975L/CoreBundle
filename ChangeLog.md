@@ -1,5 +1,22 @@
 # ChangeLog
 
+## v1.50.0
+
+Donovan opens from a panel on every admin page
+
+### ConfigBundle
+
+- New `PageOverlayProviderInterface`, for templates drawn over every admin page (02/10/2026)
+- Account page lists the roles without `ROLE_USER` (02/10/2026)
+
+### UiBundle
+
+- Donovan panel on every admin page replaces its dashboard card (02/10/2026)
+- Donovan panel keeps its conversation across page loads, per account (02/10/2026)
+- Donovan panel stores a question only once answered (02/10/2026)
+- Donovan panel disables "clear" while an answer is pending (02/10/2026)
+- New `ui-donovan-ask` guided project (02/10/2026)
+
 ## v1.49.3
 
 Matomo is enabled through one shared Twig check

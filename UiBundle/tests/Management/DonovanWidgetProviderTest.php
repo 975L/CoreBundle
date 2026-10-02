@@ -10,6 +10,7 @@
 
 namespace c975L\UiBundle\Tests\Management;
 
+use c975L\ConfigBundle\Management\GuidedProjectKeyGenerator;
 use c975L\UiBundle\Contract\AiAssistantClientInterface;
 use c975L\UiBundle\Management\DonovanWidgetProvider;
 use PHPUnit\Framework\TestCase;
@@ -33,28 +34,36 @@ class DonovanWidgetProviderTest extends TestCase
         return $security;
     }
 
+    private function createProvider(bool $enabled, bool $isSuperAdmin): DonovanWidgetProvider
+    {
+        $keyGenerator = $this->createStub(GuidedProjectKeyGenerator::class);
+        $keyGenerator->method('getKey')->willReturn('0123456789abcdef');
+
+        return new DonovanWidgetProvider($this->createAssistantClient($enabled), $this->createSecurity($isSuperAdmin), $keyGenerator);
+    }
+
     public function testReturnsNoWidgetWhenNotEnabled(): void
     {
-        $provider = new DonovanWidgetProvider($this->createAssistantClient(false), $this->createSecurity(true));
+        $provider = $this->createProvider(false, true);
 
-        $this->assertSame([], $provider->getDashboardWidgets());
+        $this->assertSame([], $provider->getPageOverlays());
     }
 
     public function testReturnsNoWidgetWhenEnabledButNotSuperAdmin(): void
     {
-        $provider = new DonovanWidgetProvider($this->createAssistantClient(true), $this->createSecurity(false));
+        $provider = $this->createProvider(true, false);
 
-        $this->assertSame([], $provider->getDashboardWidgets());
+        $this->assertSame([], $provider->getPageOverlays());
     }
 
-    public function testReturnsTheDashboardCardWhenEnabledAndSuperAdmin(): void
+    public function testReturnsThePanelWhenEnabledAndSuperAdmin(): void
     {
-        $provider = new DonovanWidgetProvider($this->createAssistantClient(true), $this->createSecurity(true));
+        $provider = $this->createProvider(true, true);
 
-        $widgets = $provider->getDashboardWidgets();
+        $widgets = $provider->getPageOverlays();
 
         $this->assertCount(1, $widgets);
-        $this->assertSame('@c975LUi/management/_donovan_dashboard_widget.html.twig', $widgets[0]['template']);
-        $this->assertSame([], $widgets[0]['context']);
+        $this->assertSame('@c975LUi/management/_donovan_panel.html.twig', $widgets[0]['template']);
+        $this->assertSame(['key' => '0123456789abcdef'], $widgets[0]['context']);
     }
 }

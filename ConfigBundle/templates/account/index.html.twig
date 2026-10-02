@@ -17,8 +17,10 @@
                     {# Read with "??": creation and last login live on the site's own User (see the scaffold), which may not declare them #}
                     {% set creation = app.user.creation ?? null %}
                     {% set lastLogin = app.user.lastLogin ?? null %}
+                    {# Roles listed without ROLE_USER, which every member holds: an empty list leaves the line out #}
                     <twig:c975LUi:Facts:Facts facts="{{ [
                         {label: 'label.email'|trans, value: app.user.email ?? app.user.userIdentifier},
+                        {label: 'label.roles'|trans, value: app.user.roles|filter(role => role != 'ROLE_USER')|join(', ')},
                         {label: 'label.account_created'|trans, value: creation ? creation|format_datetime('long', 'none') : null},
                         {label: 'label.last_login'|trans, value: lastLogin ? lastLogin|format_datetime('long', 'short') : null},
                         {label: 'label.language'|trans, value: app.request.locale|language_name(app.request.locale)|capitalize},

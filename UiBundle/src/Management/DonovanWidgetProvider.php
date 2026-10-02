@@ -10,20 +10,23 @@
 
 namespace c975L\UiBundle\Management;
 
-use c975L\ConfigBundle\Management\DashboardWidgetProviderInterface;
+use c975L\ConfigBundle\Management\GuidedProjectKeyGenerator;
+use c975L\ConfigBundle\Management\PageOverlayProviderInterface;
 use c975L\UiBundle\Contract\AiAssistantClientInterface;
 use Symfony\Bundle\SecurityBundle\Security;
 
-// No "not enabled yet" placeholder: the widget stays absent, AiAlertProvider being the nudge in that case
-class DonovanWidgetProvider implements DashboardWidgetProviderInterface
+// A panel over every admin page rather than a dashboard card: a reader follows an answer through the menu, and the answer has to stay in sight while they do. No "not enabled yet" placeholder: the panel stays absent, AiAlertProvider being the nudge in that case
+class DonovanWidgetProvider implements PageOverlayProviderInterface
 {
     public function __construct(
         private readonly AiAssistantClientInterface $aiAssistantClient,
         private readonly Security $security,
+        private readonly GuidedProjectKeyGenerator $keyGenerator,
     ) {
     }
 
-    public function getDashboardWidgets(): array
+    // The key scopes the conversation kept in sessionStorage to the account, as GuidedProjectKeyGenerator already does for the guided-project panel
+    public function getPageOverlays(): array
     {
         if (!$this->aiAssistantClient->isEnabled() || !$this->security->isGranted('ROLE_SUPER_ADMIN')) {
             return [];
@@ -31,8 +34,8 @@ class DonovanWidgetProvider implements DashboardWidgetProviderInterface
 
         return [
             [
-                'template' => '@c975LUi/management/_donovan_dashboard_widget.html.twig',
-                'context' => [],
+                'template' => '@c975LUi/management/_donovan_panel.html.twig',
+                'context' => ['key' => $this->keyGenerator->getKey()],
             ],
         ];
     }

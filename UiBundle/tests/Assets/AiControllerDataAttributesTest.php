@@ -39,6 +39,23 @@ class AiControllerDataAttributesTest extends TestCase
         }
     }
 
+    // The panel's toggle and "clear" sit outside the controller's element, found by attribute from the panel around it: one renamed on either side and the panel never opens
+    public function testThePanelWritesEveryAttributeTheControllerLooksFor(): void
+    {
+        $script = $this->read('assets/js/ai-assistant.js');
+        $twig = $this->read('templates/management/_donovan_panel.html.twig');
+
+        preg_match_all('/\[(data-ai-assistant-panel[a-z-]*)\]/', $script, $matches);
+        $this->assertNotEmpty($matches[1]);
+
+        foreach (array_unique($matches[1]) as $attribute) {
+            $this->assertStringContainsString($attribute, $twig);
+        }
+
+        // The conversation only survives a menu click when the widget is given the account's key to keep it under
+        $this->assertStringContainsString('persist: key', $twig);
+    }
+
     // "this.element.dataset.aiAssistantAskUrlValue" -> "data-ai-assistant-ask-url-value"
     // An assignment is skipped: a controller also writes data-* on elements it builds itself, and those are read by another controller (see ConfigBundle's guided-project.js) rather than written by this template
     private function datasetAttributes(string $script): array

@@ -1,0 +1,21 @@
+{# Donovan over every admin page (see DonovanWidgetProvider), already gated there; ai-assistant.js reopens it with its conversation after each page load #}
+<div class="ai-assistant-panel" data-ai-assistant-panel>
+    <div class="ai-assistant-panel__body" id="ai-assistant-panel-body" hidden>
+        <div class="ai-assistant-panel__header">
+            <strong>{{ ai_assistant_name() }}</strong>
+            <button type="button" class="btn btn-sm btn-link" data-ai-assistant-panel-clear>
+                {{ 'label.ai_assistant_clear'|trans({}, 'ui') }}
+            </button>
+        </div>
+        {# A silent backend is looked into on the assistant's own page, which lists what it is configured with #}
+        {{ include('@c975LUi/management/_ai_assistant_widget.html.twig', {
+            persist: key,
+            help_url: path('management_ui_ai_assistant_index'),
+            help_label: 'label.ai_assistant_error_open_page'|trans({'%name%': ai_assistant_name()}, 'ui'),
+        }) }}
+    </div>
+    <button type="button" class="btn btn-primary ai-assistant-panel__toggle" data-ai-assistant-panel-toggle aria-expanded="false" aria-controls="ai-assistant-panel-body">
+        <i class="fas fa-comments" aria-hidden="true"></i>
+        {{ ai_assistant_name() }}
+    </button>
+</div>

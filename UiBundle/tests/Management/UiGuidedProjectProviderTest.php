@@ -12,6 +12,7 @@ namespace c975L\UiBundle\Tests\Management;
 
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\ConfigBundle\Service\SiteLocales;
+use c975L\UiBundle\Contract\AiAssistantClientInterface;
 use c975L\UiBundle\Controller\Management\AiAssistantController;
 use c975L\UiBundle\Controller\Management\LegalModelController;
 use c975L\UiBundle\Management\UiGuidedProjectProvider;
@@ -91,10 +92,18 @@ class UiGuidedProjectProviderTest extends TestCase
         return $client;
     }
 
-    // Multilingual and with the site search and the rephrasing configured unless told otherwise, so every step the provider can walk is there for the assertions below to read
-    private function createProvider(array &$controllers = [], array &$routes = [], bool $multilingual = true, bool $siteSearch = true, bool $rephrase = true): UiGuidedProjectProvider
+    private function createAssistantClient(bool $enabled): AiAssistantClientInterface
     {
-        return new UiGuidedProjectProvider($this->createAdminUrlGenerator($controllers), $this->createConfigService(), $this->createUrlGenerator($routes), $this->createReviewService(), new SiteLocales($multilingual ? ['fr', 'en'] : [], 'fr'), $this->createSiteSearchClient($siteSearch), $this->createRephraseClient($rephrase));
+        $client = $this->createStub(AiAssistantClientInterface::class);
+        $client->method('isEnabled')->willReturn($enabled);
+
+        return $client;
+    }
+
+    // Multilingual and with the site search and the rephrasing configured unless told otherwise, so every step the provider can walk is there for the assertions below to read
+    private function createProvider(array &$controllers = [], array &$routes = [], bool $multilingual = true, bool $siteSearch = true, bool $rephrase = true, bool $assistant = true): UiGuidedProjectProvider
+    {
+        return new UiGuidedProjectProvider($this->createAdminUrlGenerator($controllers), $this->createConfigService(), $this->createUrlGenerator($routes), $this->createReviewService(), new SiteLocales($multilingual ? ['fr', 'en'] : [], 'fr'), $this->createSiteSearchClient($siteSearch), $this->createRephraseClient($rephrase), $this->createAssistantClient($assistant));
     }
 
     // The screen draws either the list of what is missing or the textarea, so the parcours walks the one it will find and never both
@@ -143,6 +152,16 @@ class UiGuidedProjectProviderTest extends TestCase
 
         $this->assertContains('ui-ai-search-setup', $slugs);
         $this->assertNotContains('ui-ai-search-answers', $slugs);
+    }
+
+    // No panel is drawn before the assistant is configured, so the parcours opening it is not offered
+    public function testTheDonovanAskProjectWaitsForTheAssistantToBeConfigured(): void
+    {
+        $controllers = [];
+        $routes = [];
+        $slugs = array_column($this->createProvider($controllers, $routes, assistant: false)->getGuidedProjects(), 'slug');
+
+        $this->assertNotContains('ui-donovan-ask', $slugs);
     }
 
     // The tabs are on the edit screen and saving a new form returned to the index, so the parcours reopens the form before pointing at them - as the calculator's reopens it for its formulas
@@ -205,8 +224,8 @@ class UiGuidedProjectProviderTest extends TestCase
     {
         $projects = $this->createProvider()->getGuidedProjects();
 
-        $this->assertSame(['ui-media', 'ui-site-graphic', 'ui-legal-model', 'ui-ai-assistant', 'ui-form', 'ui-calculator', 'ui-form-field-template', 'ui-email-template', 'ui-font', 'ui-review', 'ui-media-add', 'ui-ai-search-answers', 'ui-content-export', 'ui-ai-search-setup'], array_column($projects, 'slug'));
-        $this->assertSame([3010, 3020, 3030, 3040, 3050, 3060, 3070, 3080, 3090, 3100, 3110, 3130, 3140, 3150], array_column($projects, 'order'));
+        $this->assertSame(['ui-media', 'ui-site-graphic', 'ui-legal-model', 'ui-ai-assistant', 'ui-form', 'ui-calculator', 'ui-form-field-template', 'ui-email-template', 'ui-font', 'ui-review', 'ui-media-add', 'ui-ai-search-answers', 'ui-content-export', 'ui-ai-search-setup', 'ui-donovan-ask'], array_column($projects, 'slug'));
+        $this->assertSame([3010, 3020, 3030, 3040, 3050, 3060, 3070, 3080, 3090, 3100, 3110, 3130, 3140, 3150, 3160], array_column($projects, 'order'));
     }
 
     // Orders are merged across every bundle contributing projects, and two equal ones leave their sequence to the order the providers happen to be registered in - this bundle's own block is the 3000 GuidedProjectProviderInterface reserves it
@@ -240,6 +259,7 @@ class UiGuidedProjectProviderTest extends TestCase
             'ui-ai-search-setup' => 'ROLE_ADMIN',
             'ui-ai-search-answers' => 'ROLE_EDITOR',
             'ui-content-export' => 'ROLE_ADMIN',
+            'ui-donovan-ask' => 'ROLE_SUPER_ADMIN',
         ];
 
         foreach ($this->createProvider()->getGuidedProjects() as $project) {
@@ -299,14 +319,14 @@ class UiGuidedProjectProviderTest extends TestCase
         );
     }
 
-    // The two screens of this bundle a project opens on that are not CRUD ones, so EasyAdmin's generator never sees them
+    // The screens a project opens on that are not CRUD ones, the dashboard included, so EasyAdmin's generator never sees them
     public function testTheRouteBasedProjectsOpenOnTheirOwnRoute(): void
     {
         $controllers = [];
         $routes = [];
         $this->createProvider($controllers, $routes)->getGuidedProjects();
 
-        $this->assertSame([LegalModelController::INDEX_ROUTE, AiAssistantController::INDEX_ROUTE], $routes);
+        $this->assertSame([LegalModelController::INDEX_ROUTE, AiAssistantController::INDEX_ROUTE, 'management'], $routes);
     }
 
     // EasyAdmin names a button `action-` . the action's own name, so a selector naming an action it does not declare highlights nothing

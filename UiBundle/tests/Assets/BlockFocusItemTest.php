@@ -29,7 +29,7 @@ class BlockFocusItemTest extends TestCase
     {
         $controller = $this->read(self::CONTROLLER_JS);
 
-        $this->assertStringContainsString("split('.').map(part => `[\${part}]`).join('') + '['", $controller);
+        $this->assertStringContainsString("split('.').map(part => `[\${part}]`).join('')}[`", $controller);
         $this->assertStringContainsString("closest('.field-collection-item')", $controller);
     }
 

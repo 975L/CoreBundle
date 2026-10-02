@@ -18,6 +18,8 @@ use c975L\ConfigBundle\Management\GuidedProjectBuilder;
 use c975L\ConfigBundle\Management\GuidedProjectMountBuilder;
 use c975L\ConfigBundle\Management\MenuBuilder;
 use c975L\ConfigBundle\Management\OnboardingStepBuilder;
+use c975L\ConfigBundle\Management\PageOverlayBuilder;
+use c975L\ConfigBundle\Management\PageOverlayProviderInterface;
 use c975L\ConfigBundle\Management\ShortcutBuilder;
 use c975L\ConfigBundle\Management\UnusedFeatureBuilder;
 use c975L\ConfigBundle\Management\WhatsNewBuilder;
@@ -56,7 +58,7 @@ class DashboardControllerTest extends TestCase
         }
     }
 
-    private function createController(bool $debug, array $managementStylesheets, array $configs = [], string $guidedProjectMount = '', ?PaginatorPageSize $paginatorPageSize = null, ?EssentialActionBuilder $essentialActionBuilder = null, array $enabledLocales = ['fr']): DashboardController
+    private function createController(bool $debug, array $managementStylesheets, array $configs = [], string $guidedProjectMount = '', PaginatorPageSize $paginatorPageSize = new PaginatorPageSize(new RequestStack()), ?EssentialActionBuilder $essentialActionBuilder = null, array $enabledLocales = ['fr'], PageOverlayBuilder $pageOverlayBuilder = new PageOverlayBuilder([])): DashboardController
     {
         $guidedProjectMountBuilder = $this->createStub(GuidedProjectMountBuilder::class);
         $guidedProjectMountBuilder->method('getHtml')->willReturn($guidedProjectMount);
@@ -92,13 +94,14 @@ class DashboardControllerTest extends TestCase
             $this->createStub(OnboardingStepBuilder::class),
             $this->createStub(GuidedProjectBuilder::class),
             $guidedProjectMountBuilder,
+            $pageOverlayBuilder,
             $this->createStub(UnusedFeatureBuilder::class),
             $configService,
             new CreditsExtension($configService),
             $this->createStub(ScriptAdminRegistry::class),
             $stylesheetManagementRegistry,
             $this->createStub(FormThemeRegistry::class),
-            $paginatorPageSize ?? new PaginatorPageSize(new RequestStack()),
+            $paginatorPageSize,
             $translator,
             $packages,
             $debug,
@@ -275,7 +278,7 @@ class DashboardControllerTest extends TestCase
         $essentialActionBuilder->method('getActions')->willReturn([['slug' => 'site-name']]);
         $essentialActionBuilder->method('getProgress')->willReturn(['done' => 1, 'total' => 3]);
 
-        $controller = $this->createController(false, [], [], '', null, $essentialActionBuilder);
+        $controller = $this->createController(false, [], essentialActionBuilder: $essentialActionBuilder);
 
         $checker = $this->createStub(AuthorizationCheckerInterface::class);
         $checker->method('isGranted')->willReturnCallback(
@@ -364,6 +367,21 @@ class DashboardControllerTest extends TestCase
         $controller = $this->createController(true, [], [], '<div data-controller="guided-project"></div>');
 
         $this->assertContains('<div data-controller="guided-project"></div>', $controller->configureAssets()->getAsDto()->getBodyContents());
+    }
+
+    // What another bundle draws over every page (Donovan's panel) is rendered into the body of each of them, so a menu click does not take it away
+    public function testConfigureAssetsRendersEveryPageOverlay(): void
+    {
+        $provider = $this->createStub(PageOverlayProviderInterface::class);
+        $provider->method('getPageOverlays')->willReturn([['template' => '@a/overlay.html.twig', 'context' => ['name' => 'Donovan']]]);
+
+        $controller = $this->createController(true, [], pageOverlayBuilder: new PageOverlayBuilder([$provider]));
+
+        $twig = $this->createStub(Environment::class);
+        $twig->method('render')->willReturnCallback(static fn (string $template, array $parameters = []): string => '<div>' . $template . ' ' . $parameters['name'] . '</div>');
+        $controller->setContainer($this->createContainer(['twig' => $twig]));
+
+        $this->assertContains('<div>@a/overlay.html.twig Donovan</div>', $controller->configureAssets()->getAsDto()->getBodyContents());
     }
 
     // The label is raw HTML, so a relative path must go through the asset packages, not /management/

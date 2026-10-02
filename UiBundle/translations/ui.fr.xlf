@@ -50,6 +50,10 @@
                 <source>description.guided_project_ui_content_export</source>
                 <target>Emporter des formulaires et des calculateurs dans un zip, formules comprises, pour les charger dans un autre site</target>
             </trans-unit>
+            <trans-unit id="lUxk8WS">
+                <source>description.guided_project_ui_donovan_ask</source>
+                <target>Un panneau sur chaque page du back-office répond à vos questions sur le site, et ses sources lancent les parcours qui y répondent.</target>
+            </trans-unit>
             <trans-unit id="QAAW6KH">
                 <source>description.guided_project_ui_email_template</source>
                 <target>Reprendre le contenu d'un e-mail que le site envoie, comme on reprend une page</target>
@@ -213,6 +217,22 @@
             <trans-unit id="Bbwzhtt">
                 <source>description.guided_step_ui_content_export_select</source>
                 <target>Cette case les coche toutes ; vous pouvez aussi les cocher une par une. Le bouton d'export n'apparaît qu'une fois une case cochée.</target>
+            </trans-unit>
+            <trans-unit id="aigNP3R">
+                <source>description.guided_step_ui_donovan_ask_open</source>
+                <target>L'assistant est présent sur toutes les pages du back-office : on part d'ici.</target>
+            </trans-unit>
+            <trans-unit id="7_LMUPK">
+                <source>description.guided_step_ui_donovan_ask_question</source>
+                <target>Écrivez votre question comme vous la poseriez, par exemple « comment ajouter une page ? ». La conversation vous suit quand vous naviguez dans le menu.</target>
+            </trans-unit>
+            <trans-unit id="lXiKwxT">
+                <source>description.guided_step_ui_donovan_ask_sources</source>
+                <target>Sous la réponse, un lien ouvre la page citée, et un parcours démarre ici même pour vous guider pas à pas.</target>
+            </trans-unit>
+            <trans-unit id="u_zERJh">
+                <source>description.guided_step_ui_donovan_ask_toggle</source>
+                <target>Ce bouton, en bas de chaque page, ouvre et ferme le panneau ; il reste ouvert d'une page à l'autre.</target>
             </trans-unit>
             <trans-unit id="Sz9PehJ">
                 <source>description.guided_step_ui_email_template_attachments</source>
@@ -641,6 +661,10 @@
             <trans-unit id="M0SU0On">
                 <source>label.ai_assistant_ask</source>
                 <target>Demander</target>
+            </trans-unit>
+            <trans-unit id="85gs59C">
+                <source>label.ai_assistant_clear</source>
+                <target>Effacer la conversation</target>
             </trans-unit>
             <trans-unit id="U3i0V7W">
                 <source>label.ai_assistant_dashboard_section_title</source>
@@ -2454,6 +2478,10 @@
                 <source>label.guided_project_ui_content_export</source>
                 <target>Exporter des formulaires vers un autre site</target>
             </trans-unit>
+            <trans-unit id="wN6Bp.c">
+                <source>label.guided_project_ui_donovan_ask</source>
+                <target>Poser une question à l'assistant</target>
+            </trans-unit>
             <trans-unit id="j0VRPpz">
                 <source>label.guided_project_ui_email_template</source>
                 <target>Personnaliser un e-mail</target>
@@ -2625,6 +2653,22 @@
             <trans-unit id="EL7K78H">
                 <source>label.guided_step_ui_content_export_select</source>
                 <target>Cocher les formulaires à emporter</target>
+            </trans-unit>
+            <trans-unit id="8kLgjTM">
+                <source>label.guided_step_ui_donovan_ask_open</source>
+                <target>Ouvrir le tableau de bord</target>
+            </trans-unit>
+            <trans-unit id="U5XVoN4">
+                <source>label.guided_step_ui_donovan_ask_question</source>
+                <target>Poser la question</target>
+            </trans-unit>
+            <trans-unit id="nFNUe5.">
+                <source>label.guided_step_ui_donovan_ask_sources</source>
+                <target>Suivre les sources</target>
+            </trans-unit>
+            <trans-unit id="2KTARPO">
+                <source>label.guided_step_ui_donovan_ask_toggle</source>
+                <target>Ouvrir le panneau</target>
             </trans-unit>
             <trans-unit id="I.z0lt6">
                 <source>label.guided_step_ui_email_template_attachments</source>

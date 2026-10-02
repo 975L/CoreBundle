@@ -13,6 +13,7 @@ namespace c975L\UiBundle\Tests\Management;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\ConfigBundle\Service\SiteLocales;
 use c975L\ConfigBundle\Test\ManagementTargetsTestCase;
+use c975L\UiBundle\Contract\AiAssistantClientInterface;
 use c975L\UiBundle\Management\LinkableRouteProvider;
 use c975L\UiBundle\Management\MenuProvider;
 use c975L\UiBundle\Management\UiGuidedProjectProvider;
@@ -42,6 +43,14 @@ class ManagementTargetsTest extends ManagementTargetsTestCase
         return $client;
     }
 
+    private function createAssistantClient(): AiAssistantClientInterface
+    {
+        $client = $this->createStub(AiAssistantClientInterface::class);
+        $client->method('isEnabled')->willReturn(true);
+
+        return $client;
+    }
+
     private function createReviewService(bool $enabled = true): ReviewService
     {
         $reviewService = $this->createStub(ReviewService::class);
@@ -55,7 +64,7 @@ class ManagementTargetsTest extends ManagementTargetsTestCase
         return [
             new MenuProvider($this->createConfigService(), $this->createTranslator(), $this->createReviewService(), $this->createSiteSearchClient()),
             new UiShortcutProvider($this->createTranslator(), $this->createConfigService()),
-            new UiGuidedProjectProvider($this->adminUrlGenerator(), $this->createConfigService(), $this->urlGenerator(), $this->createReviewService(), new SiteLocales(['fr', 'en'], 'fr'), $this->createSiteSearchClient(), $this->createRephraseClient()),
+            new UiGuidedProjectProvider($this->adminUrlGenerator(), $this->createConfigService(), $this->urlGenerator(), $this->createReviewService(), new SiteLocales(['fr', 'en'], 'fr'), $this->createSiteSearchClient(), $this->createRephraseClient(), $this->createAssistantClient()),
             new LinkableRouteProvider(),
         ];
     }

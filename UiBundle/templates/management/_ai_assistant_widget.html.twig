@@ -1,11 +1,13 @@
 {# The question/answer box; the caller owns the isEnabled()/ROLE_SUPER_ADMIN gating #}
-{# "help_url"/"help_label" are optional and belong to the caller: where a reader goes from here differs on the dashboard and on the assistant's own page #}
+{# "help_url"/"help_label" are optional and belong to the caller: where a reader goes from here differs on the panel and on the assistant's own page #}
+{# "persist" is the per-account key the conversation is kept under across page loads, for the panel drawn on every admin page (see _donovan_panel.html.twig) #}
 {# Plain data-* attributes, not Stimulus targets/values: ai-assistant.js reads them via querySelector #}
 <div class="ai-assistant"
      data-controller="aiAssistant"
      data-ai-assistant-ask-url-value="{{ path('management_ui_ai_assistant_ask') }}"
      data-ai-assistant-csrf-token-value="{{ csrf_token('management_ui_ai_assistant_ask') }}"
      data-ai-assistant-film-label-value="{{ 'label.ai_assistant_film'|trans({}, 'ui') }}"
+     {% if persist|default('') %}data-ai-assistant-persist-value="{{ persist }}"{% endif %}
 >
     <div class="ai-assistant__log" data-ai-assistant-target="log"></div>
 

@@ -158,6 +158,22 @@
                 <source>narration.guided_step_ui_content_export_select</source>
                 <target>Check the forms to take. This box checks them all, but you can also take them one by one. The export button only shows once a box is checked.</target>
             </trans-unit>
+            <trans-unit id="qvrUfqr">
+                <source>narration.guided_step_ui_donovan_ask_open</source>
+                <target>The assistant is with you on every back-office page. Let's start from the dashboard.</target>
+            </trans-unit>
+            <trans-unit id="StpVDUi">
+                <source>narration.guided_step_ui_donovan_ask_question</source>
+                <target>Write your question here, in your own words, then send it.</target>
+            </trans-unit>
+            <trans-unit id="EqMERyI">
+                <source>narration.guided_step_ui_donovan_ask_sources</source>
+                <target>Under each answer, the sources open the page cited, or start right here the parcours that guides you.</target>
+            </trans-unit>
+            <trans-unit id="DBWgyke">
+                <source>narration.guided_step_ui_donovan_ask_toggle</source>
+                <target>Click this button to open the panel. It will stay open when you change page.</target>
+            </trans-unit>
             <trans-unit id="xhapUqZ">
                 <source>narration.guided_step_ui_email_template_attachments</source>
                 <target>Attach the documents that travel with it. A legal document is attached as the site publishes it, and its PDF is redrawn as soon as the text changes: an e-mail sent months later still carries the version in force.</target>

@@ -14,6 +14,7 @@ use c975L\ConfigBundle\Controller\Management\ConfigCrudController;
 use c975L\ConfigBundle\Management\GuidedProjectProviderInterface;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\ConfigBundle\Service\SiteLocales;
+use c975L\UiBundle\Contract\AiAssistantClientInterface;
 use c975L\UiBundle\Controller\Management\AiAssistantController;
 use c975L\UiBundle\Controller\Management\AiSearchAnswerCrudController;
 use c975L\UiBundle\Controller\Management\EmailTemplateCrudController;
@@ -44,6 +45,7 @@ class UiGuidedProjectProvider implements GuidedProjectProviderInterface
         private readonly SiteLocales $siteLocales,
         private readonly AiSiteSearchClient $aiSiteSearchClient,
         private readonly AiRephraseClient $aiRephraseClient,
+        private readonly AiAssistantClientInterface $aiAssistantClient,
     ) {
     }
 
@@ -75,6 +77,11 @@ class UiGuidedProjectProvider implements GuidedProjectProviderInterface
 
         $projects[] = $this->contentExportProject();
         $projects[] = $this->aiSearchSetupProject();
+
+        // Same gate as the panel it walks (see DonovanWidgetProvider): no panel is drawn before the assistant is configured
+        if ($this->aiAssistantClient->isEnabled()) {
+            $projects[] = $this->donovanAskProject();
+        }
 
         return $projects;
     }
@@ -905,6 +912,46 @@ class UiGuidedProjectProvider implements GuidedProjectProviderInterface
                     'label' => 'label.guided_step_ui_content_export_import',
                     'description' => 'description.guided_step_ui_content_export_import',
                     'narration' => 'narration.guided_step_ui_content_export_import',
+                ],
+            ],
+        ];
+    }
+
+    // The question box rides over every admin page as a panel, so nothing in the menu says it is there - the parcours opens it once, and names what its sources do: a link opens a page, a parcours starts right here
+    private function donovanAskProject(): array
+    {
+        return [
+            'slug' => 'ui-donovan-ask',
+            'label' => 'label.guided_project_ui_donovan_ask',
+            'description' => 'description.guided_project_ui_donovan_ask',
+            'translation_domain' => 'ui',
+            'order' => 3160,
+            // The bar DonovanWidgetProvider sets on the panel
+            'role' => 'ROLE_SUPER_ADMIN',
+            'steps' => [
+                [
+                    'label' => 'label.guided_step_ui_donovan_ask_open',
+                    'description' => 'description.guided_step_ui_donovan_ask_open',
+                    'narration' => 'narration.guided_step_ui_donovan_ask_open',
+                    'url' => $this->urlGenerator->generate('management'),
+                ],
+                [
+                    'label' => 'label.guided_step_ui_donovan_ask_toggle',
+                    'description' => 'description.guided_step_ui_donovan_ask_toggle',
+                    'narration' => 'narration.guided_step_ui_donovan_ask_toggle',
+                    'highlight' => '[data-ai-assistant-panel-toggle]',
+                ],
+                [
+                    // Scoped to the panel: the assistant's own page draws the same box
+                    'label' => 'label.guided_step_ui_donovan_ask_question',
+                    'description' => 'description.guided_step_ui_donovan_ask_question',
+                    'narration' => 'narration.guided_step_ui_donovan_ask_question',
+                    'highlight' => '[data-ai-assistant-panel] [data-ai-assistant-target="input"]',
+                ],
+                [
+                    'label' => 'label.guided_step_ui_donovan_ask_sources',
+                    'description' => 'description.guided_step_ui_donovan_ask_sources',
+                    'narration' => 'narration.guided_step_ui_donovan_ask_sources',
                 ],
             ],
         ];

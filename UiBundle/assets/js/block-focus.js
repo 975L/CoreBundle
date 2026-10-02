@@ -44,7 +44,7 @@ export default class extends Controller {
     entry(item, path) {
         if (!path) return null;
 
-        const name = path.split('.').map(part => `[${part}]`).join('') + '[';
+        const name = `${path.split('.').map(part => `[${part}]`).join('')}[`;
 
         return item.querySelector(`[name*="${CSS.escape(name)}"]`)?.closest('.field-collection-item') ?? null;
     }

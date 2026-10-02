@@ -113,6 +113,10 @@ services:
         arguments:
             $dashboardWidgetProviders: !tagged_iterator c975l.dashboard_widget_provider
 
+    c975L\ConfigBundle\Management\PageOverlayBuilder:
+        arguments:
+            $pageOverlayProviders: !tagged_iterator c975l.page_overlay_provider
+
     c975L\ConfigBundle\Management\ContentOffenceLocatorRegistry:
         arguments:
             $locators: !tagged_iterator c975l.content_offence_locator

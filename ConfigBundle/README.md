@@ -1604,7 +1604,7 @@ An application contributes its own projects the same way, from one `src/Manageme
 
 ## Contributing dashboard widgets from other bundles
 
-Any bundle can render an arbitrary block on the `/management` dashboard (e.g. UiBundle's Donovan card) by implementing `DashboardWidgetProviderInterface` — no manual service tagging needed, `TaggedInterfacePass` auto-detects any class implementing it, same mechanism as `MenuProviderInterface` above:
+Any bundle can render an arbitrary block on the `/management` dashboard by implementing `DashboardWidgetProviderInterface` — no manual service tagging needed, `TaggedInterfacePass` auto-detects any class implementing it, same mechanism as `MenuProviderInterface` above:
 
 ```php
 namespace c975L\MyBundle\Management;
@@ -1629,6 +1629,26 @@ class MyDashboardWidgetProvider implements DashboardWidgetProviderInterface
 Make sure your bundle's `services.yaml` includes the `Management/` folder in its `src/` resource so the class is registered.
 
 The dashboard template only loops and includes each widget's own `template` with its own `context` — it never contains business logic about what a widget is. Return `[]` when there's nothing to show (e.g. an unconfigured feature) so it stays entirely absent rather than showing a disabled placeholder.
+
+## Contributing page overlays from other bundles
+
+What must stay on screen while the reader moves through the back office (e.g. UiBundle's Donovan panel) goes on every admin page rather than on the dashboard: implement `PageOverlayProviderInterface`, same shape and same auto-tagging as the dashboard widgets above. `DashboardController::configureAssets()` renders each `template` with its `context` into the body of every page through EasyAdmin's `addHtmlContentToBody()`, so no layout is overridden.
+
+```php
+namespace c975L\MyBundle\Management;
+
+use c975L\ConfigBundle\Management\PageOverlayProviderInterface;
+
+class MyPageOverlayProvider implements PageOverlayProviderInterface
+{
+    public function getPageOverlays(): array
+    {
+        return $this->isEnabled() ? [['template' => '@MyBundle/management/_my_panel.html.twig', 'context' => []]] : [];
+    }
+}
+```
+
+A page load wipes whatever the overlay showed: keep its state in the browser (e.g. `sessionStorage`) and restore it when the script connects.
 
 ## Testing your contributions to the management interface
 

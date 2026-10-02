@@ -18,6 +18,7 @@ use c975L\ConfigBundle\Management\GuidedProjectBuilder;
 use c975L\ConfigBundle\Management\GuidedProjectMountBuilder;
 use c975L\ConfigBundle\Management\MenuBuilder;
 use c975L\ConfigBundle\Management\OnboardingStepBuilder;
+use c975L\ConfigBundle\Management\PageOverlayBuilder;
 use c975L\ConfigBundle\Management\ShortcutBuilder;
 use c975L\ConfigBundle\Management\UnusedFeatureBuilder;
 use c975L\ConfigBundle\Management\WhatsNewBuilder;
@@ -68,6 +69,7 @@ class DashboardController extends AbstractDashboardController
         private readonly OnboardingStepBuilder $onboardingStepBuilder,
         private readonly GuidedProjectBuilder $guidedProjectBuilder,
         private readonly GuidedProjectMountBuilder $guidedProjectMountBuilder,
+        private readonly PageOverlayBuilder $pageOverlayBuilder,
         private readonly UnusedFeatureBuilder $unusedFeatureBuilder,
         private readonly ConfigServiceInterface $configService,
         private readonly CreditsExtension $creditsExtension,
@@ -189,6 +191,11 @@ class DashboardController extends AbstractDashboardController
 
         // The guided-project panel has to survive the page loads a project walks the user through, so its mount element goes on every admin page, not just the dashboard - EasyAdmin renders this on all of them (see its layout.html.twig), which spares an override of that layout
         $assets->addHtmlContentToBody($this->guidedProjectMountBuilder->getHtml());
+
+        // Same reason for what other bundles draw over every page (e.g. UiBundle's Donovan panel): a menu click reloads the page, and the overlay must come back with it
+        foreach ($this->pageOverlayBuilder->getOverlays() as $overlay) {
+            $assets->addHtmlContentToBody($this->renderView($overlay['template'], $overlay['context']));
+        }
 
         // The way back from a role preview, on every admin page the same way - the template checks the stored level against the account's roles itself
         if (null !== $this->rolePreview->storedLevel()) {
