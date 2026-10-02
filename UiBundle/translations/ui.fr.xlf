@@ -200,7 +200,7 @@
             </trans-unit>
             <trans-unit id="QhLAp.W">
                 <source>description.guided_step_ui_content_export_import</source>
-                <target>Sur l'autre site, l'écran « Import de contenu » des paramètres accepte ce zip : ce qui existe déjà est mis à jour, le reste est créé.</target>
+                <target>Sur l'autre site, l'écran « Import de contenu » des paramètres accepte ce zip : ce qui existe déjà est mis à jour, le reste est créé. Les polices s'exportent de la même façon depuis leur écran, et les éléments graphiques du site voyagent avec « Exporter la synchro (tout) » du tableau de bord.</target>
             </trans-unit>
             <trans-unit id="ENOwuSL">
                 <source>description.guided_step_ui_content_export_open</source>
@@ -388,7 +388,7 @@
             </trans-unit>
             <trans-unit id="aCD7FM2">
                 <source>description.guided_step_ui_review_decide</source>
-                <target>Les deux boutons qui font cet écran : un clic publie l'avis ou le refuse, depuis la liste comme depuis l'avis lui-même.</target>
+                <target>De retour dans la liste, l'icône ✓ de sa ligne publie l'avis, la croix le refuse.</target>
             </trans-unit>
             <trans-unit id="RbaTJVU">
                 <source>description.guided_step_ui_review_done</source>
@@ -2860,7 +2860,7 @@
             </trans-unit>
             <trans-unit id="3LYBAk0">
                 <source>label.guided_step_ui_review_status</source>
-                <target>Ou poser le statut à la main</target>
+                <target>Poser le statut à la main</target>
             </trans-unit>
             <trans-unit id="9vn1gPZ">
                 <source>label.guided_step_ui_site_graphic_done</source>

@@ -1,5 +1,18 @@
 # ChangeLog
 
+## v1.49.3
+
+Matomo is enabled through one shared Twig check
+
+### UiBundle
+
+- New `matomo_enabled()` Twig function, for bundles pushing a measure of their own (02/10/2026)
+- Matomo component and layout preconnect use `matomo_enabled()` and a trimmed instance url (02/10/2026)
+- `ui-review` guided project decides from the list, after replying and saving (02/10/2026)
+- `ui-media-add` and `ui-site-graphic` guided projects highlight `#Media_file_file` (02/10/2026)
+- `ui-content-export` guided project names the fonts and the sync export (02/10/2026)
+- Email templates screen no longer shows the forms' GDPR note (02/10/2026)
+
 ## v1.49.2
 
 Social content sources may be narrowed to some of their groups

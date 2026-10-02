@@ -121,9 +121,9 @@
                 {% endif %}
             {% endblock %}
 
-            {# Matomo's origin, since this shell renders its snippet below: its script is fetched from a third-party host, so the DNS lookup and the TLS handshake would otherwise only start once that JS runs. Origin only, a preconnect must carry no path - and none at all when the instance is served by this very host, where the connection is already open. Gated on "site-enable-matomo" as the component itself is: a site whose tracking is off while its instance url stays filled would otherwise open a connection to a third party it never sends a measure to, which is exactly what turning the tracking off is meant to avoid #}
+            {# Matomo's origin, since this shell renders its snippet below: its script is fetched from a third-party host, so the DNS lookup and the TLS handshake would otherwise only start once that JS runs. Origin only, a preconnect must carry no path - and none at all when the instance is served by this very host, where the connection is already open. Gated on the very check the component makes: a site whose tracking is off while its instance url stays filled would otherwise open a connection to a third party it never sends a measure to, which is exactly what turning the tracking off is meant to avoid #}
             {% block preconnect %}
-                {% set matomoOrigin = config('site-enable-matomo') and config('site-matomo-url') ? config('site-matomo-url')|split('/')|slice(0, 3)|join('/') : '' %}
+                {% set matomoOrigin = matomo_enabled() ? config('site-matomo-url')|trim|split('/')|slice(0, 3)|join('/') : '' %}
                 {% set preconnectUrls = config('site-preconnect')|default([]) %}
                 {% if matomoOrigin and matomoOrigin != app.request.getSchemeAndHttpHost() and matomoOrigin not in preconnectUrls %}
                     {% set preconnectUrls = preconnectUrls|merge([matomoOrigin]) %}

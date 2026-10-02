@@ -111,7 +111,7 @@ class MinimalLayoutTest extends TestCase
     {
         $this->assertStringContainsString('<twig:c975LUi:Analytics:Matomo />', $this->layout());
         // Read once and once only, by the preconnect below: the snippet's own guard belongs to the component, not to whoever renders it
-        $this->assertSame(1, substr_count($this->layout(), "config('site-enable-matomo')"), 'the guard belongs to the component, not here');
+        $this->assertSame(1, substr_count($this->layout(), 'matomo_enabled()'), 'the guard belongs to the component, not here');
     }
 
     // The snippet is fetched from a third-party host, so without this the DNS lookup and the TLS handshake only start once that JS runs. Never for an instance served by this very host, where the connection is already open, and never for a site that turned the tracking off with its instance url left filled - the connection would be opened to a host the page never sends a measure to
@@ -121,7 +121,7 @@ class MinimalLayoutTest extends TestCase
 
         $this->assertStringContainsString('<link rel="preconnect" href="{{ preconnectUrl }}">', $layout);
         $this->assertStringContainsString('matomoOrigin != app.request.getSchemeAndHttpHost()', $layout);
-        $this->assertStringContainsString("{% set matomoOrigin = config('site-enable-matomo') and config('site-matomo-url') ?", $layout, 'the preconnect must follow the very switch that decides whether the snippet is rendered');
+        $this->assertStringContainsString("{% set matomoOrigin = matomo_enabled() ? config('site-matomo-url')|trim|split('/')", $layout, 'the preconnect must follow the very switch that decides whether the snippet is rendered, on the url it trims');
         $this->assertLessThan(
             strpos($layout, 'bundle_stylesheets()'),
             strpos($layout, 'matomoOrigin'),

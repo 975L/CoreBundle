@@ -1,5 +1,15 @@
 [
     {
+        "date": "2026-10-02",
+        "description": [
+            {
+                "en": "The \"Moderate the reviews\" guided tour now walks you through replying first, then publishing or turning the review down from the list, without losing its way.",
+                "fr": "Le projet guidé « Modérer les avis » vous fait d'abord répondre, puis publier ou refuser l'avis depuis la liste, sans plus se perdre en route.",
+                "es": "El proyecto guiado «Moderar las opiniones» le hace responder primero y luego publicar o rechazar la opinión desde la lista, sin perderse por el camino."
+            }
+        ]
+    },
+    {
         "date": "2026-09-29",
         "description": [
             {

@@ -31,7 +31,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-// This bundle's guided projects, running the 3000 block GuidedProjectProviderInterface reserves them - the same docblock stating every other bundle's, so a range is read there rather than recopied here. They open on the media library first, the one screen of this bundle the sidebar keeps essential, then the three a site puts in place as it opens (its graphics, its legal documents, the key its rephrasing runs on) and the site search set beside it, the occasional ones after. Each carries the role its own screen is gated by, so a parcours is never offered to someone its very first step turns away. Only the opening step of each carries an url: from there the parcours walks the screen the user has been sent to, highlighting the button or the field they are meant to use next - one they click themselves, which brings the panel back on that very step (see ConfigBundle's assets/js/guided-project.js)
+// This bundle's guided projects, running the 3000 block GuidedProjectProviderInterface reserves them - the same docblock stating every other bundle's, so a range is read there rather than recopied here. They open on the media library first, the one screen of this bundle the sidebar keeps essential, then the three a site puts in place as it opens (its graphics, its legal documents, the key its rephrasing runs on), the occasional ones after, the site search's setup last. Each carries the role its own screen is gated by, so a parcours is never offered to someone its very first step turns away. Only the opening step of each carries an url: from there the parcours walks the screen the user has been sent to, highlighting the button or the field they are meant to use next - one they click themselves, which brings the panel back on that very step (see ConfigBundle's assets/js/guided-project.js)
 // No parcours teaches a block kind, however much one asks for beforehand (the "map" one wants its provider picked in Configuration first): a block is composed inside a page, and a page belongs to SiteBundle, which is where that parcours goes. What is walked here is this bundle's own screens.
 class UiGuidedProjectProvider implements GuidedProjectProviderInterface
 {
@@ -206,7 +206,7 @@ class UiGuidedProjectProvider implements GuidedProjectProviderInterface
                     'label' => 'label.guided_step_ui_media_add_file',
                     'description' => 'description.guided_step_ui_media_add_file',
                     'narration' => 'narration.guided_step_ui_media_add_file',
-                    'highlight' => 'input[type="file"]',
+                    'highlight' => '#Media_file_file',
                 ],
                 [
                     'label' => 'label.guided_step_ui_media_add_alt',
@@ -253,29 +253,29 @@ class UiGuidedProjectProvider implements GuidedProjectProviderInterface
                     'highlight' => '.action-edit',
                 ],
                 [
-                    // The two custom actions ReviewCrudController builds the screen around, added to the edit page as well as to the list - EasyAdmin names their buttons after the actions themselves, same as ".action-bulkImport"
-                    'label' => 'label.guided_step_ui_review_decide',
-                    'description' => 'description.guided_step_ui_review_decide',
-                    'narration' => 'narration.guided_step_ui_review_decide',
-                    'highlight' => '.action-publishReview',
-                ],
-                [
-                    // The status field is still there and still editable on a local review, for a decision the two buttons above don't cover - kept after them rather than before, the buttons being what the screen exists for
-                    'label' => 'label.guided_step_ui_review_status',
-                    'description' => 'description.guided_step_ui_review_status',
-                    'narration' => 'narration.guided_step_ui_review_status',
-                    'highlight' => '#Review_status',
-                ],
-                [
                     'label' => 'label.guided_step_ui_review_reply',
                     'description' => 'description.guided_step_ui_review_reply',
                     'narration' => 'narration.guided_step_ui_review_reply',
                     'highlight' => '#Review_replyComment',
                 ],
                 [
+                    // The status field is still there and still editable on a local review, for a decision the two buttons below don't cover
+                    'label' => 'label.guided_step_ui_review_status',
+                    'description' => 'description.guided_step_ui_review_status',
+                    'narration' => 'narration.guided_step_ui_review_status',
+                    'highlight' => '#Review_status',
+                ],
+                [
                     'label' => 'label.guided_step_ui_review_save',
                     'narration' => 'narration.guided_step_ui_review_save',
                     'highlight' => '.action-saveAndReturn',
+                ],
+                [
+                    // The two custom actions ReviewCrudController builds the screen around, taken last on the review's row: both of them redirect to the list, so nothing of the edit page would be left to highlight after them - EasyAdmin names their buttons after the actions themselves, same as ".action-bulkImport"
+                    'label' => 'label.guided_step_ui_review_decide',
+                    'description' => 'description.guided_step_ui_review_decide',
+                    'narration' => 'narration.guided_step_ui_review_decide',
+                    'highlight' => '.action-publishReview',
                 ],
                 [
                     'label' => 'label.guided_step_ui_review_done',
@@ -372,7 +372,7 @@ class UiGuidedProjectProvider implements GuidedProjectProviderInterface
                     'label' => 'label.guided_step_ui_site_graphic_file',
                     'description' => 'description.guided_step_ui_site_graphic_file',
                     'narration' => 'narration.guided_step_ui_site_graphic_file',
-                    'highlight' => 'input[type="file"]',
+                    'highlight' => '#Media_file_file',
                 ],
                 [
                     'label' => 'label.guided_step_ui_site_graphic_save',
@@ -901,7 +901,7 @@ class UiGuidedProjectProvider implements GuidedProjectProviderInterface
                     'highlight' => '.action-exportSelection',
                 ],
                 [
-                    // The zip is re-uploaded from ConfigBundle's own import screen, a stricter one this parcours does not walk into - the step names it rather than sending the user there
+                    // The zip is re-uploaded from ConfigBundle's own import screen, a stricter one this parcours does not walk into - the step names it rather than sending the user there, along with the other contents that leave the same way (FontCrudController's own exportSelection, the graphics SiteGraphicExportProvider hands to the dashboard's sync export)
                     'label' => 'label.guided_step_ui_content_export_import',
                     'description' => 'description.guided_step_ui_content_export_import',
                     'narration' => 'narration.guided_step_ui_content_export_import',

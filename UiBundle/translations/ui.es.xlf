@@ -200,7 +200,7 @@
             </trans-unit>
             <trans-unit id="QhLAp.W">
                 <source>description.guided_step_ui_content_export_import</source>
-                <target>En el otro sitio, la pantalla «Importación de contenido» de los ajustes acepta ese zip: lo que ya existe se actualiza, el resto se crea.</target>
+                <target>En el otro sitio, la pantalla «Importación de contenido» de los ajustes acepta ese zip: lo que ya existe se actualiza, el resto se crea. Las fuentes se exportan del mismo modo desde su pantalla, y los elementos gráficos del sitio viajan con «Exportar la sincronización (todo)» del panel.</target>
             </trans-unit>
             <trans-unit id="ENOwuSL">
                 <source>description.guided_step_ui_content_export_open</source>
@@ -388,7 +388,7 @@
             </trans-unit>
             <trans-unit id="aCD7FM2">
                 <source>description.guided_step_ui_review_decide</source>
-                <target>Los dos botones que justifican esta pantalla: un clic publica la opinión o la rechaza, tanto desde la lista como desde la propia opinión.</target>
+                <target>De vuelta en la lista, el icono ✓ de su fila publica la opinión, la cruz la rechaza.</target>
             </trans-unit>
             <trans-unit id="RbaTJVU">
                 <source>description.guided_step_ui_review_done</source>
@@ -2860,7 +2860,7 @@
             </trans-unit>
             <trans-unit id="3LYBAk0">
                 <source>label.guided_step_ui_review_status</source>
-                <target>O fijar el estado a mano</target>
+                <target>Fijar el estado a mano</target>
             </trans-unit>
             <trans-unit id="9vn1gPZ">
                 <source>label.guided_step_ui_site_graphic_done</source>

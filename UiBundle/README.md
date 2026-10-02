@@ -184,7 +184,7 @@ Any `/management` form can also be opened straight on one of its fields by addin
 
 `bodyClasses` and `bodyClass` land on `<body>` rather than on the content, so a screen laid on its own background - a photo gallery, a reader - paints the navbar and the footer with it too.
 
-**Preconnects** merge the `site-preconnect` list with Matomo's own origin, that one gated on `site-enable-matomo`: a site whose tracking is off never opens a connection to a third party it sends nothing to.
+**Preconnects** merge the `site-preconnect` list with Matomo's own origin, that one gated on `matomo_enabled()`: a site whose tracking is off never opens a connection to a third party it sends nothing to.
 
 **Flashes** are read only behind `ui_can_hold_flash()`, reading `app.flashes` being what starts a session. A label outside `success`/`info`/`warning`/`danger` is mapped onto its tint (`error` becomes `danger`, `notice` becomes `info`) or falls back on `info`, rather than printing black ink on the dark page's own background, and the message keeps the line breaks it was written with.
 
@@ -3006,7 +3006,7 @@ Deliberately binary — one non-essential category (`content`), two buttons (acc
 <twig:c975LUi:Analytics:Matomo />
 ```
 
-Renders the tracking snippet of a self-hosted [Matomo](https://matomo.org/) instance, from `site-matomo-url` and `site-matomo-id`. **The component carries its own guard**, like the banner above: nothing is rendered unless `site-enable-matomo` is on and both values are set, so a layout includes it unconditionally. Its Stimulus controller is registered lazily, so it only loads on a page actually rendering it, and this bundle's own layout preconnects the instance's origin — a third-party host whose DNS lookup and TLS handshake would otherwise only start once that JS runs.
+Renders the tracking snippet of a self-hosted [Matomo](https://matomo.org/) instance, from `site-matomo-url` and `site-matomo-id`. **The component carries its own guard**, like the banner above: nothing is rendered unless `site-enable-matomo` is on and both values are set, so a layout includes it unconditionally. That check is the `matomo_enabled()` Twig function (`Twig\MatomoExtension`), which a bundle pushing a measure of its own (an order, an event) asks too, so nothing is ever sent to a tracker that never loads. Its Stimulus controller is registered lazily, so it only loads on a page actually rendering it, and this bundle's own layout preconnects the instance's origin — a third-party host whose DNS lookup and TLS handshake would otherwise only start once that JS runs.
 
 **Deliberately outside the cookie banner.** It is meant for a CNIL-exempt setup — self-hosted, anonymized IP, no cross-site tracking, cookie under 13 months, Do Not Track honored — which is exactly what this bundle's own cookies model tells the visitor, offering Matomo's opt-out link from `site-matomo-url`. That legal text is why the three keys live here rather than in c975L/SiteBundle, which declared them until v8.4: a key belongs to the bundle reading it, and both bundles do. If your instance isn't configured that way, gate the component yourself before turning `site-enable-matomo` on.
 

@@ -184,6 +184,22 @@ class UiGuidedProjectProviderTest extends TestCase
         self::fail('The "ui-form" guided project was not found.');
     }
 
+    // Publishing or rejecting redirects to the list, so the edit page's fields come before that button and nothing of the edit page is highlighted after it
+    public function testTheReviewProjectDecidesFromTheListOnceTheReviewIsSaved(): void
+    {
+        $steps = [];
+        foreach ($this->createProvider()->getGuidedProjects() as $project) {
+            if ('ui-review' === $project['slug']) {
+                $steps = $project['steps'];
+            }
+        }
+
+        $this->assertSame(
+            [null, '.action-edit', '#Review_replyComment', '#Review_status', '.action-saveAndReturn', '.action-publishReview', null],
+            array_map(static fn (array $step): ?string => $step['highlight'] ?? null, $steps),
+        );
+    }
+
     // The 3000 block GuidedProjectProviderInterface reserves this bundle, at the step of 10 it states
     public function testGetGuidedProjectsContinuesTheOrderSequence(): void
     {

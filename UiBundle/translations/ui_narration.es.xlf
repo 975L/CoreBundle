@@ -144,7 +144,7 @@
             </trans-unit>
             <trans-unit id="upqcYyp">
                 <source>narration.guided_step_ui_content_export_import</source>
-                <target>En el otro sitio, la pantalla «Importación de contenido» de los ajustes acepta ese zip. Lo que ya existe se actualiza, el resto se crea.</target>
+                <target>En el otro sitio, la pantalla «Importación de contenido» de los ajustes acepta ese zip. Lo que ya existe se actualiza, el resto se crea. Las fuentes se exportan del mismo modo desde su pantalla, y los elementos gráficos del sitio viajan con «Exportar la sincronización (todo)» del panel.</target>
             </trans-unit>
             <trans-unit id="E_jF.f8">
                 <source>narration.guided_step_ui_content_export_open</source>
@@ -368,7 +368,7 @@
             </trans-unit>
             <trans-unit id="lv5yC9T">
                 <source>narration.guided_step_ui_review_decide</source>
-                <target>Estos son los dos botones por los que existe esta pantalla: un clic publica la opinión, otro la rechaza, tanto desde la lista como desde la propia opinión.</target>
+                <target>De vuelta en la lista, estos son los dos botones por los que existe esta pantalla: la marca de su fila publica la opinión, la cruz la rechaza.</target>
             </trans-unit>
             <trans-unit id="QQadmr1">
                 <source>narration.guided_step_ui_review_done</source>
@@ -380,7 +380,7 @@
             </trans-unit>
             <trans-unit id="CJRTQgn">
                 <source>narration.guided_step_ui_review_pick</source>
-                <target>Elija una opinión pendiente escrita en el sitio: sobre ella se decide el paso siguiente. El texto, la nota y el nombre son de su autor: esta pantalla no los reescribe. El lápiz solo aparece en una opinión a la que este sitio puede responder - una venida de una plataforma donde no republica se lee aquí y se modera allí.</target>
+                <target>Elija una opinión pendiente escrita en el sitio: sobre ella trata lo que sigue. El texto, la nota y el nombre son de su autor: esta pantalla no los reescribe. El lápiz solo aparece en una opinión a la que este sitio puede responder - una venida de una plataforma donde no republica se lee aquí y se modera allí.</target>
             </trans-unit>
             <trans-unit id="jrjzfDU">
                 <source>narration.guided_step_ui_review_reply</source>
@@ -392,7 +392,7 @@
             </trans-unit>
             <trans-unit id="utjJpCt">
                 <source>narration.guided_step_ui_review_status</source>
-                <target>También puede poner el estado a mano en el formulario. «Publicado» muestra la opinión en la página correspondiente y cuenta su valoración en la media, «Rechazado» la retira. Una opinión venida de una plataforma no se modifica aquí.</target>
+                <target>El estado también se fija a mano en el formulario. «Publicado» muestra la opinión en la página correspondiente y cuenta su valoración en la media, «Rechazado» la retira. Una opinión venida de una plataforma no se modifica aquí.</target>
             </trans-unit>
             <trans-unit id="5AgYdI2">
                 <source>narration.guided_step_ui_site_graphic_done</source>

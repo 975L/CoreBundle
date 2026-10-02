@@ -200,7 +200,7 @@
             </trans-unit>
             <trans-unit id="QhLAp.W">
                 <source>description.guided_step_ui_content_export_import</source>
-                <target>On the other site, the "Content import" screen of the settings takes that zip: what already exists is updated, the rest is created.</target>
+                <target>On the other site, the "Content import" screen of the settings takes that zip: what already exists is updated, the rest is created. Fonts export the same way from their own screen, and the site's graphics travel with the dashboard's "Export sync (everything)".</target>
             </trans-unit>
             <trans-unit id="ENOwuSL">
                 <source>description.guided_step_ui_content_export_open</source>
@@ -388,7 +388,7 @@
             </trans-unit>
             <trans-unit id="aCD7FM2">
                 <source>description.guided_step_ui_review_decide</source>
-                <target>The two buttons this screen exists for: one click publishes the review or turns it down, from the list as well as from the review itself.</target>
+                <target>Back in the list, the ✓ icon on its row publishes the review, the cross turns it down.</target>
             </trans-unit>
             <trans-unit id="RbaTJVU">
                 <source>description.guided_step_ui_review_done</source>
@@ -2860,7 +2860,7 @@
             </trans-unit>
             <trans-unit id="3LYBAk0">
                 <source>label.guided_step_ui_review_status</source>
-                <target>Or set the status by hand</target>
+                <target>Set the status by hand</target>
             </trans-unit>
             <trans-unit id="9vn1gPZ">
                 <source>label.guided_step_ui_site_graphic_done</source>

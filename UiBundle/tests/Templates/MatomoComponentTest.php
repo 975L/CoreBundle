@@ -20,16 +20,16 @@ class MatomoComponentTest extends TestCase
     private const string CONTROLLER_JS = 'assets/js/matomo.js';
     private const string BARREL = 'assets/controllers.js';
 
-    // The guard belongs here rather than in each layout calling it, or a caller forgetting it tracks a site that asked not to be
+    // The guard belongs here rather than in each layout calling it, or a caller forgetting it tracks a site that asked not to be - what it checks is MatomoExtension's (see MatomoExtensionTest)
     public function testTheComponentCarriesItsOwnGuard(): void
     {
-        $this->assertStringContainsString("{% if config('site-enable-matomo') %}", $this->read(self::COMPONENT));
+        $this->assertStringContainsString('{% if matomo_enabled() %}', $this->read(self::COMPONENT));
     }
 
-    // Both values are needed for a tracker url to be built at all, so a half-filled configuration renders nothing rather than a broken request
-    public function testNothingIsRenderedWithoutBothValues(): void
+    // The guard trims the url before finding it filled, so the url handed to the controller is trimmed the same way
+    public function testTheUrlIsTrimmedAsTheGuardReadsIt(): void
     {
-        $this->assertStringContainsString('{% if matomoUrl and matomoId %}', $this->read(self::COMPONENT));
+        $this->assertStringContainsString("data-matomo-url=\"{{ config('site-matomo-url')|trim }}\"", $this->read(self::COMPONENT));
     }
 
     // The dataset names are the contract with the controller, which reads them off the element rather than through Stimulus values

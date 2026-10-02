@@ -144,7 +144,7 @@
             </trans-unit>
             <trans-unit id="upqcYyp">
                 <source>narration.guided_step_ui_content_export_import</source>
-                <target>Sur l'autre site, l'écran « Import de contenu » des paramètres accepte ce zip. Ce qui existe déjà est mis à jour, le reste est créé.</target>
+                <target>Sur l'autre site, l'écran « Import de contenu » des paramètres accepte ce zip. Ce qui existe déjà est mis à jour, le reste est créé. Les polices s'exportent de la même façon depuis leur écran, et les éléments graphiques du site voyagent avec « Exporter la synchro (tout) » du tableau de bord.</target>
             </trans-unit>
             <trans-unit id="E_jF.f8">
                 <source>narration.guided_step_ui_content_export_open</source>
@@ -368,7 +368,7 @@
             </trans-unit>
             <trans-unit id="lv5yC9T">
                 <source>narration.guided_step_ui_review_decide</source>
-                <target>Voici les deux boutons pour lesquels cet écran existe : un clic publie l'avis, un autre le refuse, depuis la liste comme depuis l'avis lui-même.</target>
+                <target>De retour dans la liste, voici les deux boutons pour lesquels cet écran existe : la coche de sa ligne publie l'avis, la croix le refuse.</target>
             </trans-unit>
             <trans-unit id="QQadmr1">
                 <source>narration.guided_step_ui_review_done</source>
@@ -380,7 +380,7 @@
             </trans-unit>
             <trans-unit id="CJRTQgn">
                 <source>narration.guided_step_ui_review_pick</source>
-                <target>Choisissez un avis en attente, écrit sur le site : c'est sur lui que se décide l'étape suivante. Le texte, la note et le nom sont ceux de son auteur : cet écran ne les réécrit pas. Le crayon n'apparaît que sur un avis auquel ce site peut répondre - un avis venu d'une plateforme où il ne republie pas se lit ici et se modère là-bas.</target>
+                <target>Choisissez un avis en attente, écrit sur le site : c'est sur lui que porte la suite. Le texte, la note et le nom sont ceux de son auteur : cet écran ne les réécrit pas. Le crayon n'apparaît que sur un avis auquel ce site peut répondre - un avis venu d'une plateforme où il ne republie pas se lit ici et se modère là-bas.</target>
             </trans-unit>
             <trans-unit id="jrjzfDU">
                 <source>narration.guided_step_ui_review_reply</source>
@@ -392,7 +392,7 @@
             </trans-unit>
             <trans-unit id="utjJpCt">
                 <source>narration.guided_step_ui_review_status</source>
-                <target>Vous pouvez aussi poser le statut à la main dans le formulaire. « Publié » affiche l'avis sur la page concernée et compte sa note dans la moyenne, « Rejeté » l'en retire. Un avis venu d'une plateforme n'est pas modifiable ici.</target>
+                <target>Le statut se pose aussi à la main dans le formulaire. « Publié » affiche l'avis sur la page concernée et compte sa note dans la moyenne, « Rejeté » l'en retire. Un avis venu d'une plateforme n'est pas modifiable ici.</target>
             </trans-unit>
             <trans-unit id="5AgYdI2">
                 <source>narration.guided_step_ui_site_graphic_done</source>

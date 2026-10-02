@@ -144,7 +144,7 @@
             </trans-unit>
             <trans-unit id="upqcYyp">
                 <source>narration.guided_step_ui_content_export_import</source>
-                <target>On the other site, the "Content import" screen of the settings takes that zip. What already exists is updated, the rest is created.</target>
+                <target>On the other site, the "Content import" screen of the settings takes that zip. What already exists is updated, the rest is created. Fonts export the same way from their own screen, and the site's graphics travel with the dashboard's "Export sync (everything)".</target>
             </trans-unit>
             <trans-unit id="E_jF.f8">
                 <source>narration.guided_step_ui_content_export_open</source>
@@ -368,7 +368,7 @@
             </trans-unit>
             <trans-unit id="lv5yC9T">
                 <source>narration.guided_step_ui_review_decide</source>
-                <target>Here are the two buttons this screen exists for: one click publishes the review, another turns it down, from the list as well as from the review itself.</target>
+                <target>Back in the list, here are the two buttons this screen exists for: the tick on its row publishes the review, the cross turns it down.</target>
             </trans-unit>
             <trans-unit id="QQadmr1">
                 <source>narration.guided_step_ui_review_done</source>
@@ -380,7 +380,7 @@
             </trans-unit>
             <trans-unit id="CJRTQgn">
                 <source>narration.guided_step_ui_review_pick</source>
-                <target>Pick a pending review written on the site: it is the one the next step decides on. The text, the score and the name are its author's: this screen does not rewrite them. The pencil only shows on a review this site can answer - one from a platform it does not publish back to is read here and moderated over there.</target>
+                <target>Pick a pending review written on the site: it is the one the rest is about. The text, the score and the name are its author's: this screen does not rewrite them. The pencil only shows on a review this site can answer - one from a platform it does not publish back to is read here and moderated over there.</target>
             </trans-unit>
             <trans-unit id="jrjzfDU">
                 <source>narration.guided_step_ui_review_reply</source>
@@ -392,7 +392,7 @@
             </trans-unit>
             <trans-unit id="utjJpCt">
                 <source>narration.guided_step_ui_review_status</source>
-                <target>You can also set the status by hand in the form. "Published" shows the review on the page it is about and counts its score into the average, "Rejected" takes it back out. A review from a platform cannot be changed here.</target>
+                <target>The status can also be set by hand in the form. "Published" shows the review on the page it is about and counts its score into the average, "Rejected" takes it back out. A review from a platform cannot be changed here.</target>
             </trans-unit>
             <trans-unit id="5AgYdI2">
                 <source>narration.guided_step_ui_site_graphic_done</source>
