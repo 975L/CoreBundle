@@ -123,8 +123,8 @@ class AiAssistantController extends AbstractController
     )]
     public function rephrase(Request $request): JsonResponse
     {
-        // The site's own key and budget, so the lower bar is enough, still above a plain editor
-        $this->denyAccessUnlessGranted($this->configService->get('site-role-admin'));
+        // The site's own key and budget, and the bar sits under every text field an editor writes in
+        $this->denyAccessUnlessGranted($this->configService->get('site-role-editor'));
 
         if (!$this->isCsrfTokenValid(self::REPHRASE_ROUTE, $request->headers->get('X-CSRF-Token'))) {
             return new JsonResponse(['error' => 'invalid_csrf'], 419);

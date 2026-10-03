@@ -52,4 +52,13 @@ class AiRephraseThemeTest extends TestCase
             $this->theme()
         );
     }
+
+    // A disabled textarea is never submitted, so a suggestion written into it would be lost
+    public function testADisabledTextareaGetsNoToolbar(): void
+    {
+        $this->assertMatchesRegularExpression(
+            "/{% block textarea_widget %}.*?is defined and not disabled and ai_rephrase_enabled\(\).*?{% endblock/s",
+            $this->theme()
+        );
+    }
 }

@@ -1,11 +1,23 @@
-{# Donovan over every admin page (see DonovanWidgetProvider), already gated there; ai-assistant.js reopens it with its conversation after each page load #}
+{# Donovan over every admin page (see DonovanWidgetProvider), already gated there; ai-assistant.js reopens it with its conversation after each page load. A drawer rather than the site's modal (see components/AiSearch/Dialog.html.twig): the admin keeps working beside the answer #}
 <div class="ai-assistant-panel" data-ai-assistant-panel>
-    <div class="ai-assistant-panel__body" id="ai-assistant-panel-body" hidden>
+    {# Moved by ai-assistant.js into EasyAdmin's top bar, beside the user menu, which no bundle template reaches without overriding the whole layout #}
+    <button type="button" class="btn btn-sm btn-secondary ai-assistant-trigger" data-ai-assistant-panel-open aria-expanded="false" aria-controls="ai-assistant-panel-body">
+        <i class="fas fa-comments" aria-hidden="true"></i>
+        {{ ai_assistant_name() }}
+        <kbd class="ai-assistant-trigger__shortcut" aria-hidden="true">Ctrl K</kbd>
+    </button>
+    <aside class="ai-assistant-panel__body" id="ai-assistant-panel-body" aria-label="{{ ai_assistant_name() }}" hidden>
         <div class="ai-assistant-panel__header">
             <strong>{{ ai_assistant_name() }}</strong>
-            <button type="button" class="btn btn-sm btn-link" data-ai-assistant-panel-clear>
-                {{ 'label.ai_assistant_clear'|trans({}, 'ui') }}
-            </button>
+            <span>
+                <button type="button" class="btn btn-sm btn-link" data-ai-assistant-panel-clear>
+                    {{ 'label.ai_assistant_clear'|trans({}, 'ui') }}
+                </button>
+                <button type="button" class="btn btn-sm btn-link" data-ai-assistant-panel-fold title="{{ 'label.ai_assistant_fold'|trans({}, 'ui') }}">
+                    <i class="fas fa-angles-right" aria-hidden="true"></i>
+                    <span class="visually-hidden">{{ 'label.ai_assistant_fold'|trans({}, 'ui') }}</span>
+                </button>
+            </span>
         </div>
         {# A silent backend is looked into on the assistant's own page, which lists what it is configured with #}
         {{ include('@c975LUi/management/_ai_assistant_widget.html.twig', {
@@ -13,9 +25,5 @@
             help_url: path('management_ui_ai_assistant_index'),
             help_label: 'label.ai_assistant_error_open_page'|trans({'%name%': ai_assistant_name()}, 'ui'),
         }) }}
-    </div>
-    <button type="button" class="btn btn-primary ai-assistant-panel__toggle" data-ai-assistant-panel-toggle aria-expanded="false" aria-controls="ai-assistant-panel-body">
-        <i class="fas fa-comments" aria-hidden="true"></i>
-        {{ ai_assistant_name() }}
-    </button>
+    </aside>
 </div>

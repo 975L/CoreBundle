@@ -933,7 +933,7 @@ class UiGuidedProjectProvider implements GuidedProjectProviderInterface
                     'label' => 'label.guided_step_ui_donovan_ask_toggle',
                     'description' => 'description.guided_step_ui_donovan_ask_toggle',
                     'narration' => 'narration.guided_step_ui_donovan_ask_toggle',
-                    'highlight' => '[data-ai-assistant-panel-toggle]',
+                    'highlight' => '[data-ai-assistant-panel-open]',
                 ],
                 [
                     // Scoped to the panel: the assistant's own page draws the same box

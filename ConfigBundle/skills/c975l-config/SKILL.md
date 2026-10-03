@@ -224,7 +224,7 @@ would answer the same page again. A stored link is
 
 `Management\ContentLocaleScreen` holds what a row translated beside itself needs, so a CRUD controller
 declares what is translatable and nothing else: `locale()` reads the language being written off the
-`?contenu=xx` url, `addParameters()` feeds the tabs, `stageOnSubmit()` hands what was typed over on
+`?contenu=xx` url (and pins UiBundle's `TranslationFormContext` to it, so the AI toolbar translates into it), `addParameters()` feeds the tabs, `stageOnSubmit()` hands what was typed over on
 POST_SUBMIT so it is written on the flush that saves the row, and `action()` is the button opening the
 first language screen. The tabs themselves are the shared
 `@c975LConfig/management/_content_locale_tabs.html.twig` — included, never copied, its variables

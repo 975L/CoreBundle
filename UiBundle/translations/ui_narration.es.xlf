@@ -24,7 +24,7 @@
             </trans-unit>
             <trans-unit id="7pTq006">
                 <source>narration.guided_step_ui_ai_assistant_done</source>
-                <target>El mismo botón se encuentra bajo cada campo de texto del back-office: bloques, páginas, plantillas de correo. Los mismos tres controles en todas partes, y esta pantalla cuenta los tokens gastados en el mes.</target>
+                <target>El mismo botón se encuentra bajo cada campo de texto del back-office: bloques, páginas, correos, opiniones, etc. Los mismos tres controles en todas partes, y esta pantalla cuenta los tokens gastados en el mes.</target>
             </trans-unit>
             <trans-unit id="CJXjyKs">
                 <source>narration.guided_step_ui_ai_assistant_length</source>

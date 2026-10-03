@@ -30,13 +30,13 @@
     {% endif %}
 {% endblock ea_text_editor_widget %}
 
-{# Opt-in via attr['data-ai-rephrase']: a plain textarea also carries raw JSON/config values dashboard-wide #}
+{# Opt-in via attr['data-ai-rephrase']: a plain textarea also carries raw JSON/config values dashboard-wide. Not under a disabled one, whose value would never be submitted #}
 {% block textarea_widget %}
     {# EasyAdmin only styles "textarea.form-control"; without it the native default width applies #}
     {% set attr = attr|merge({class: (attr.class|default('') ~ ' form-control')|trim}) %}
     <textarea {{ block('widget_attributes') }}>{{ value }}</textarea>
 
-    {% if attr['data-ai-rephrase'] is defined and ai_rephrase_enabled() %}
+    {% if attr['data-ai-rephrase'] is defined and not disabled and ai_rephrase_enabled() %}
         {{ include('@c975LUi/form/_ai_rephrase.html.twig', {field_id: form.vars.id}) }}
     {% endif %}
 {% endblock %}

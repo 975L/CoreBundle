@@ -51,6 +51,8 @@ class ProgressTrackerType extends AbstractType
             ->add('note', TextareaType::class, [
                 'label' => 'label.note',
                 'required' => false,
+                // Opt-in marker read by the block form theme, which is what puts Donovan under a plain textarea
+                'attr' => ['data-ai-rephrase' => true],
             ]);
     }
 

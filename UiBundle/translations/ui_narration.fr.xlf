@@ -24,7 +24,7 @@
             </trans-unit>
             <trans-unit id="7pTq006">
                 <source>narration.guided_step_ui_ai_assistant_done</source>
-                <target>Le même bouton se trouve sous chaque champ de texte du back-office : blocks, pages, modèles d'e-mail. Les mêmes trois commandes partout, et cet écran compte les jetons dépensés dans le mois.</target>
+                <target>Le même bouton se trouve sous chaque champ de texte du back-office : blocks, pages, e-mails, avis, et ainsi de suite. Les mêmes trois commandes partout, et cet écran compte les jetons dépensés dans le mois.</target>
             </trans-unit>
             <trans-unit id="CJXjyKs">
                 <source>narration.guided_step_ui_ai_assistant_length</source>

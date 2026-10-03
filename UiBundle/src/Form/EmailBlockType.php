@@ -62,7 +62,8 @@ class EmailBlockType extends AbstractType
                 'label' => 'label.email_block_content',
                 'help' => 'label.email_block_content_help',
                 'required' => false,
-                'attr' => ['rows' => 4],
+                // Opt-in marker read by the block form theme, which is what puts Donovan under a plain textarea
+                'attr' => ['rows' => 4, 'data-ai-rephrase' => true],
             ])
             ->add('label', TextType::class, [
                 'label' => 'label.email_block_label',

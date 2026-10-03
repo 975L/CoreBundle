@@ -11,6 +11,7 @@
 namespace c975L\ConfigBundle\Management;
 
 use c975L\ConfigBundle\Service\SiteLocales;
+use c975L\UiBundle\Service\TranslationFormContext;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\KeyValueStore;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
@@ -30,6 +31,7 @@ class ContentLocaleScreen
         private readonly RequestStack $requestStack,
         private readonly AdminUrlGeneratorInterface $adminUrlGenerator,
         private readonly SiteLocales $siteLocales,
+        private readonly ?TranslationFormContext $translationFormContext = null,
     ) {
     }
 
@@ -38,8 +40,14 @@ class ContentLocaleScreen
     public function locale(array $translatableLocales): ?string
     {
         $asked = (string) $this->requestStack->getCurrentRequest()?->query->get(self::PARAM);
+        $locale = \in_array($asked, $translatableLocales, true) ? $asked : null;
 
-        return \in_array($asked, $translatableLocales, true) ? $asked : null;
+        // Said once for the whole screen, which turns Donovan's toolbar under each field into a single "translate into" button stripping the [source] brackets
+        if (null !== $locale) {
+            $this->translationFormContext?->set($locale);
+        }
+
+        return $locale;
     }
 
     // Hands what a language screen wrote over on POST_SUBMIT, so it is written on the flush that saves the row and never before it, a refused submission writing nothing (see UiBundle's ContentTranslator::stage). The fields are all unmapped: mapped back, they would overwrite the text the site itself was written in

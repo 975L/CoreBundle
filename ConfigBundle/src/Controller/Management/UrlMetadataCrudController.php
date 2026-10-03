@@ -62,7 +62,9 @@ class UrlMetadataCrudController extends AbstractCrudController
             TextareaField::new('summarySocialNetwork')
                 ->setLabel(t('label.summary_social_network', [], 'config'))
                 ->setHelp(t('label.url_metadata_summary_help', [], 'config'))
-                ->setRequired(false),
+                ->setRequired(false)
+                // Opt-in marker read by the block form theme, which is what puts Donovan under a plain textarea
+                ->setFormTypeOption('attr', ['data-ai-rephrase' => true]),
 
             // A field of its own (see c975L\UiBundle\Field\OgImageField), which carries the upload widget and the write-screens-only rule with it - the same call SiteBundle's PageCrudController makes for a Page's own share image
             OgImageField::new('ogImage')

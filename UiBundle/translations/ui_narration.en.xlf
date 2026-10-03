@@ -24,7 +24,7 @@
             </trans-unit>
             <trans-unit id="7pTq006">
                 <source>narration.guided_step_ui_ai_assistant_done</source>
-                <target>The same button sits under every text field of the back office: blocks, pages, e-mail templates. The same three controls everywhere, and this screen counts the tokens spent over the month.</target>
+                <target>The same button sits under every text field of the back office: blocks, pages, e-mails, reviews, and so on. The same three controls everywhere, and this screen counts the tokens spent over the month.</target>
             </trans-unit>
             <trans-unit id="CJXjyKs">
                 <source>narration.guided_step_ui_ai_assistant_length</source>

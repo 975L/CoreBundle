@@ -187,6 +187,8 @@ class MediaUploadType extends AbstractType
                     ->add('description', TextareaType::class, [
                         'label' => 'label.description',
                         'required' => false,
+                        // Opt-in marker read by the block form theme, which is what puts Donovan under a plain textarea
+                        'attr' => ['data-ai-rephrase' => true],
                     ])
                     // TextType and not UrlType, same as the block's own "linkUrl" (see PortfolioGridType): UrlType renders an <input type="url">, which the browser refuses to submit for anything but an absolute url - and a project card links to this very site as often as elsewhere ("/demo/", "/pages/blocks/Site"). The whole page form was then blocked client-side, with no message anywhere and the tab's error badge as the only sign
                     ->add('url', TextType::class, [

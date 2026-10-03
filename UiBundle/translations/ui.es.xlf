@@ -92,7 +92,7 @@
             </trans-unit>
             <trans-unit id="97DoPkG">
                 <source>description.guided_step_ui_ai_assistant_done</source>
-                <target>Blocks, páginas, plantillas de correo - los mismos tres controles en todas partes, y esta pantalla cuenta los tokens gastados en el mes</target>
+                <target>Dondequiera que se escriba un texto - bloques, páginas, correos, opiniones… - los mismos tres controles, y esta pantalla cuenta los tokens gastados en el mes</target>
             </trans-unit>
             <trans-unit id="15ku.KE">
                 <source>description.guided_step_ui_ai_assistant_length</source>
@@ -232,7 +232,7 @@
             </trans-unit>
             <trans-unit id="u_zERJh">
                 <source>description.guided_step_ui_donovan_ask_toggle</source>
-                <target>Este botón, al pie de cada página, abre y cierra el panel; permanece abierto de una página a otra.</target>
+                <target>Este botón, en la parte superior de cada página, abre y cierra el panel, igual que Ctrl K; permanece abierto de una página a otra.</target>
             </trans-unit>
             <trans-unit id="Sz9PehJ">
                 <source>description.guided_step_ui_email_template_attachments</source>
@@ -685,6 +685,10 @@
             <trans-unit id="J1u1I1C">
                 <source>label.ai_assistant_film</source>
                 <target>Ver el vídeo</target>
+            </trans-unit>
+            <trans-unit id="aUQKsni">
+                <source>label.ai_assistant_fold</source>
+                <target>Plegar</target>
             </trans-unit>
             <trans-unit id="yJ_8hXS">
                 <source>label.ai_assistant_menu_suffix</source>

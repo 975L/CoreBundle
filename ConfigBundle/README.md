@@ -1243,6 +1243,8 @@ $this->contentLocaleScreen->stageOnSubmit($builder, $locale, $fields, $stage);
 $this->contentLocaleScreen->action('translate', $label, 'fa fa-language', $this->siteLocales->translatable());
 ```
 
+On a language screen, `locale()` also pins UiBundle's `TranslationFormContext` to that language, so the AI toolbar under each field collapses into a single "translate into" button.
+
 The tabs themselves are drawn by `@c975LConfig/management/_content_locale_tabs.html.twig`, included by every edit template rather than copied into each:
 
 ```twig

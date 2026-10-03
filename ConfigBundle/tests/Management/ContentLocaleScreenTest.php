@@ -12,6 +12,7 @@ namespace c975L\ConfigBundle\Tests\Management;
 
 use c975L\ConfigBundle\Management\ContentLocaleScreen;
 use c975L\ConfigBundle\Service\SiteLocales;
+use c975L\UiBundle\Service\TranslationFormContext;
 use EasyCorp\Bundle\EasyAdminBundle\Config\KeyValueStore;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
 use PHPUnit\Framework\TestCase;
@@ -45,11 +46,11 @@ class ContentLocaleScreenTest extends TestCase
         return $generator;
     }
 
-    private function createScreen(?string $asked, array $locales = ['en', 'fr', 'es']): ContentLocaleScreen
+    private function createScreen(?string $asked, array $locales = ['en', 'fr', 'es'], ?TranslationFormContext $translationFormContext = null): ContentLocaleScreen
     {
         $requestStack = new RequestStack([Request::create('/management/edit' . (null === $asked ? '' : '?contenu=' . $asked))]);
 
-        return new ContentLocaleScreen($requestStack, $this->createAdminUrlGenerator(), new SiteLocales($locales, $locales[0]));
+        return new ContentLocaleScreen($requestStack, $this->createAdminUrlGenerator(), new SiteLocales($locales, $locales[0]), $translationFormContext);
     }
 
     public function testTheLanguageAskedForIsTheOneTheScreenIsWrittenIn(): void
@@ -62,6 +63,18 @@ class ContentLocaleScreenTest extends TestCase
     {
         $this->assertNull($this->createScreen('de')->locale(['fr', 'es']));
         $this->assertNull($this->createScreen(null)->locale(['fr', 'es']));
+    }
+
+    // The language screen pins Donovan's toolbar to the language it writes, the writing screen leaves it free
+    public function testTheLanguageScreenPinsDonovanToItsLanguage(): void
+    {
+        $context = new TranslationFormContext();
+        $this->createScreen('es', ['en', 'fr', 'es'], $context)->locale(['fr', 'es']);
+        $this->assertSame('es', $context->get());
+
+        $context = new TranslationFormContext();
+        $this->createScreen(null, ['en', 'fr', 'es'], $context)->locale(['fr', 'es']);
+        $this->assertNull($context->get());
     }
 
     // The tabs need one url per language, plus the writing language's own under the empty key

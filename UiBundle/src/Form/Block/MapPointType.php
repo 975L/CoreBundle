@@ -62,6 +62,8 @@ class MapPointType extends AbstractType
                 'label' => 'label.map_point_text',
                 'help' => 'label.map_point_text_help',
                 'required' => false,
+                // Opt-in marker read by the block form theme, which is what puts Donovan under a plain textarea
+                'attr' => ['data-ai-rephrase' => true],
             ])
             ->add('url', TextType::class, [
                 'label' => 'label.url',

@@ -1,5 +1,25 @@
 # ChangeLog
 
+## v1.51.1
+
+Donovan opens from the top bar and helps editors on more fields
+
+### ConfigBundle
+
+- Url metadata summary gets the AI toolbar (03/10/2026)
+- Language screen pins the AI toolbar to the language it writes (03/10/2026)
+
+### UiBundle
+
+- Donovan opens from EasyAdmin's top bar or Ctrl/Cmd+K, as a drawer (03/10/2026)
+- Donovan drawer folds from its header or with Escape (03/10/2026)
+- Rephrase route opened to `site-role-editor` (03/10/2026)
+- AI toolbar under review replies, media descriptions and e-mail block content (03/10/2026)
+- AI toolbar under map point text, progress tracker note and features intro (03/10/2026)
+- AI toolbar hidden under a disabled textarea (03/10/2026)
+- AI toolbar translates a `source` text when its field starts empty (03/10/2026)
+- Donovan guided step texts no longer list where the toolbar appears (03/10/2026)
+
 ## v1.51.0
 
 Config switches give way to filled settings, reviews moderated when off

@@ -44,6 +44,8 @@ class SectionFeaturesType extends AbstractType
             ->add('intro', TextareaType::class, [
                 'label' => 'label.intro',
                 'required' => false,
+                // Opt-in marker read by the block form theme, which is what puts Donovan under a plain textarea
+                'attr' => ['data-ai-rephrase' => true],
             ])
             // The card by default; "tiles" draws each entry as a centered tile, its icon in a disc over a bold title, all centered - a row of arguments rather than of panels
             ->add('variant', ChoiceType::class, [

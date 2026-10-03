@@ -92,7 +92,7 @@
             </trans-unit>
             <trans-unit id="97DoPkG">
                 <source>description.guided_step_ui_ai_assistant_done</source>
-                <target>Blocks, pages, modèles d'e-mail - les mêmes trois commandes partout, et cet écran compte les jetons dépensés dans le mois</target>
+                <target>Partout où un texte s'écrit - blocks, pages, e-mails, avis… - les mêmes trois commandes, et cet écran compte les jetons dépensés dans le mois</target>
             </trans-unit>
             <trans-unit id="15ku.KE">
                 <source>description.guided_step_ui_ai_assistant_length</source>
@@ -232,7 +232,7 @@
             </trans-unit>
             <trans-unit id="u_zERJh">
                 <source>description.guided_step_ui_donovan_ask_toggle</source>
-                <target>Ce bouton, en bas de chaque page, ouvre et ferme le panneau ; il reste ouvert d'une page à l'autre.</target>
+                <target>Ce bouton, en haut de chaque page, ouvre et ferme le panneau, tout comme Ctrl K ; il reste ouvert d'une page à l'autre.</target>
             </trans-unit>
             <trans-unit id="Sz9PehJ">
                 <source>description.guided_step_ui_email_template_attachments</source>
@@ -685,6 +685,10 @@
             <trans-unit id="J1u1I1C">
                 <source>label.ai_assistant_film</source>
                 <target>Voir le film</target>
+            </trans-unit>
+            <trans-unit id="aUQKsni">
+                <source>label.ai_assistant_fold</source>
+                <target>Replier</target>
             </trans-unit>
             <trans-unit id="yJ_8hXS">
                 <source>label.ai_assistant_menu_suffix</source>

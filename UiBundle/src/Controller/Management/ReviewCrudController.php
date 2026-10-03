@@ -186,6 +186,8 @@ class ReviewCrudController extends AbstractCrudController
         yield TextareaField::new('replyComment', t('label.review_reply', [], 'ui'))
             ->setHelp(t('label.review_reply_help', [], 'ui'))
             ->setDisabled($review instanceof Review && !$this->reviewService->canReply($review))
+            // Opt-in marker read by the block form theme, which is what puts Donovan under a plain textarea
+            ->setFormTypeOption('attr', ['data-ai-rephrase' => true])
             ->hideOnIndex()
         ;
     }

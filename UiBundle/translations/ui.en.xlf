@@ -92,7 +92,7 @@
             </trans-unit>
             <trans-unit id="97DoPkG">
                 <source>description.guided_step_ui_ai_assistant_done</source>
-                <target>Blocks, pages, e-mail templates - the same three controls everywhere, and this screen counts the tokens spent over the month</target>
+                <target>Wherever text gets written - blocks, pages, e-mails, reviews… - the same three controls, and this screen counts the tokens spent over the month</target>
             </trans-unit>
             <trans-unit id="15ku.KE">
                 <source>description.guided_step_ui_ai_assistant_length</source>
@@ -232,7 +232,7 @@
             </trans-unit>
             <trans-unit id="u_zERJh">
                 <source>description.guided_step_ui_donovan_ask_toggle</source>
-                <target>This button, at the bottom of every page, opens and closes the panel; it stays open from one page to the next.</target>
+                <target>This button, at the top of every page, opens and closes the panel, as does Ctrl K; it stays open from one page to the next.</target>
             </trans-unit>
             <trans-unit id="Sz9PehJ">
                 <source>description.guided_step_ui_email_template_attachments</source>
@@ -685,6 +685,10 @@
             <trans-unit id="J1u1I1C">
                 <source>label.ai_assistant_film</source>
                 <target>Watch the film</target>
+            </trans-unit>
+            <trans-unit id="aUQKsni">
+                <source>label.ai_assistant_fold</source>
+                <target>Fold</target>
             </trans-unit>
             <trans-unit id="yJ_8hXS">
                 <source>label.ai_assistant_menu_suffix</source>

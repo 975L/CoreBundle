@@ -25,13 +25,21 @@ export default class extends Controller {
         this.panelEl = this.element.closest('[data-ai-assistant-panel]');
         if (!this.panelEl) return;
 
+        // The trigger leaves the panel for EasyAdmin's top bar, so its clicks are listened to on the document rather than on the panel
+        this.triggerEl = this.panelEl.querySelector('[data-ai-assistant-panel-open]');
+        const topBar = document.querySelector('.content-top .navbar-custom-menu');
+        if (this.triggerEl && topBar) topBar.before(this.triggerEl);
+
         this.boundPanelClick = this.onPanelClick.bind(this);
-        this.panelEl.addEventListener('click', this.boundPanelClick);
+        this.boundKeydown = this.onKeydown.bind(this);
+        document.addEventListener('click', this.boundPanelClick);
+        window.addEventListener('keydown', this.boundKeydown);
         this.setOpen(stored.open);
     }
 
     disconnect() {
-        if (this.panelEl) this.panelEl.removeEventListener('click', this.boundPanelClick);
+        document.removeEventListener('click', this.boundPanelClick);
+        window.removeEventListener('keydown', this.boundKeydown);
     }
 
     // The per-account key (see DonovanWidgetProvider), empty when nothing is to be kept
@@ -123,25 +131,49 @@ export default class extends Controller {
         this.remember({ kind: 'question', text: question }, { kind: 'answer', text, sources });
     }
 
-    // The toggle opens and closes, "clear" starts the conversation over - both outside this element, in the panel around it
+    // The trigger opens and closes, "fold" closes, "clear" starts the conversation over - all outside this element
     onPanelClick(event) {
         if (!(event.target instanceof Element)) return;
 
-        if (event.target.closest('[data-ai-assistant-panel-toggle]')) {
-            const body = this.panelEl.querySelector('.ai-assistant-panel__body');
-            this.setOpen(body ? body.hidden : false, true);
+        if (event.target.closest('[data-ai-assistant-panel-open]')) {
+            this.toggle();
+        } else if (event.target.closest('[data-ai-assistant-panel-fold]')) {
+            this.setOpen(false);
         } else if (event.target.closest('[data-ai-assistant-panel-clear]')) {
             if (this.logEl) this.logEl.replaceChildren();
             this.writeStore({ ...this.readStore(), entries: [] });
         }
     }
 
+    // Ctrl/Cmd+K as on the site's own search, which the browser would otherwise take for its address bar; Escape folds the drawer only from inside it, a form's own Escape staying its own
+    onKeydown(event) {
+        if ((event.ctrlKey || event.metaKey) && 'k' === event.key.toLowerCase()) {
+            event.preventDefault();
+            this.toggle();
+        } else if ('Escape' === event.key && this.isOpen && this.bodyEl?.contains(document.activeElement)) {
+            this.setOpen(false);
+            this.triggerEl?.focus();
+        }
+    }
+
+    get bodyEl() {
+        return this.panelEl.querySelector('.ai-assistant-panel__body');
+    }
+
+    get isOpen() {
+        return this.bodyEl ? !this.bodyEl.hidden : false;
+    }
+
+    // From the top-bar trigger and the shortcut alike, focusing the question box on opening
+    toggle() {
+        this.setOpen(!this.isOpen, true);
+    }
+
     // Focus only on a click: restored open after a page load, the panel must leave the cursor to the form the reader came to fill
     setOpen(open, focus = false) {
-        const body = this.panelEl.querySelector('.ai-assistant-panel__body');
-        const toggle = this.panelEl.querySelector('[data-ai-assistant-panel-toggle]');
+        const body = this.bodyEl;
         if (body) body.hidden = !open;
-        if (toggle) toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+        if (this.triggerEl) this.triggerEl.setAttribute('aria-expanded', open ? 'true' : 'false');
         this.writeStore({ ...this.readStore(), open });
 
         if (open) {

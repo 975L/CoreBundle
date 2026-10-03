@@ -1,5 +1,20 @@
 [
     {
+        "date": "2026-10-03",
+        "description": [
+            {
+                "en": "Donovan now opens from a button in the back office's top bar, or with Ctrl+K, as a side panel you can fold away without losing the conversation.",
+                "fr": "Donovan s'ouvre désormais depuis un bouton dans la barre du haut du back-office, ou avec Ctrl+K, en panneau latéral que vous repliez sans perdre la conversation.",
+                "es": "Donovan se abre ahora desde un botón en la barra superior del back-office, o con Ctrl+K, como panel lateral que puede plegar sin perder la conversación."
+            },
+            {
+                "en": "Editors can now use the rephrasing tools too, and find them under review replies, media descriptions and more block texts.",
+                "fr": "Les éditeurs peuvent maintenant eux aussi reformuler un texte, et retrouvent l'outil sous les réponses aux avis, les descriptions de médias et davantage de textes de blocks.",
+                "es": "Los editores pueden ahora también reformular un texto, y encuentran la herramienta bajo las respuestas a opiniones, las descripciones de medios y más textos de bloques."
+            }
+        ]
+    },
+    {
         "date": "2026-10-02",
         "description": [
             {

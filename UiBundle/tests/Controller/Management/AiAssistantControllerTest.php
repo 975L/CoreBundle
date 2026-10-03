@@ -22,6 +22,7 @@ use c975L\UiBundle\Service\ContentTranslator;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 class AiAssistantControllerTest extends TestCase
@@ -36,7 +37,7 @@ class AiAssistantControllerTest extends TestCase
         array $translatableLocales = [],
     ): AiAssistantController {
         $configService = $this->createStub(ConfigServiceInterface::class);
-        $configService->method('get')->willReturn('ROLE_ADMIN');
+        $configService->method('get')->willReturnCallback(static fn (string $slug): string => 'site-role-editor' === $slug ? 'ROLE_EDITOR' : 'ROLE_ADMIN');
 
         $contentTranslator = $this->createStub(ContentTranslator::class);
         $contentTranslator->method('getTranslatableLocales')->willReturn($translatableLocales);
@@ -103,11 +104,24 @@ class AiAssistantControllerTest extends TestCase
         $this->assertSame(['answer' => 'Use hero.', 'sources' => []], json_decode((string) $response->getContent(), true));
     }
 
-    public function testRephraseDeniesAccessWhenBelowSiteRoleAdmin(): void
+    public function testRephraseDeniesAccessWhenBelowSiteRoleEditor(): void
     {
         $this->expectException(AccessDeniedException::class);
 
         $this->createController(granted: false)->rephrase(new Request());
+    }
+
+    public function testRephraseLetsAPlainEditorThrough(): void
+    {
+        $controller = $this->createController(csrfValid: false);
+        $checker = $this->createStub(AuthorizationCheckerInterface::class);
+        $checker->method('isGranted')->willReturnCallback(static fn (string $role): bool => 'ROLE_EDITOR' === $role);
+        $controller->setContainer($this->createContainer([
+            'security.authorization_checker' => $checker,
+            'security.csrf.token_manager' => $this->createCsrfTokenManager(false),
+        ]));
+
+        $this->assertSame(419, $controller->rephrase(new Request())->getStatusCode());
     }
 
     public function testRephraseReturnsInvalidCsrfWhenTokenIsInvalid(): void

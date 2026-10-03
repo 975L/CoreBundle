@@ -1,5 +1,4 @@
-{# Expects "field_id", the DOM id of the textarea it targets #}
-{# Plain data-* attributes, not Stimulus targets/values: ai-rephrase.js reads them via querySelector #}
+{# Expects "field_id", the DOM id of the textarea it targets, and optionally "source", the text to translate when that field starts empty (the menu translation screen). Plain data-* attributes, not Stimulus targets/values: ai-rephrase.js reads them via querySelector #}
 {% set translatableLocales = ai_translatable_locales() %}
 {# A translation screen writes one language: the choice below collapses into a single button saying which #}
 {% set target = ai_translation_target() %}
@@ -10,6 +9,7 @@
      data-ai-rephrase-textarea-id-value="{{ field_id }}"
      data-ai-rephrase-suggestion-label-value="{{ 'label.ai_rephrase_suggestion_label'|trans({}, 'ui') }}"
      {% if target %}data-ai-rephrase-locale-value="{{ target }}"{% endif %}
+     {% if source|default('') %}data-ai-rephrase-source-value="{{ source }}"{% endif %}
 >
     {% if target %}
         <button type="button"

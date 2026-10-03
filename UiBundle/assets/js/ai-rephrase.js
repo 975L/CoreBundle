@@ -26,6 +26,11 @@ export default class extends Controller {
         return this.element.dataset.aiRephraseSuggestionLabelValue || '';
     }
 
+    // The text to translate on a screen whose field starts empty, the original being shown beside it rather than inside
+    get source() {
+        return this.element.dataset.aiRephraseSourceValue || '';
+    }
+
     get actionEl() {
         return this.element.querySelector('[data-ai-rephrase-target="action"]');
     }
@@ -85,7 +90,7 @@ export default class extends Controller {
         }
 
         const pinned = '' !== this.pinnedLocale;
-        const text = this.sourceText(field.read().trim(), pinned);
+        const text = this.sourceText(field.read().trim(), pinned) || (pinned ? this.source.trim() : '');
         if (!text) return;
 
         const button = this.buttonEl;
