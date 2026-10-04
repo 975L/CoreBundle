@@ -1,5 +1,17 @@
 # ChangeLog
 
+## v1.51.2
+
+Stale sitemap index removed
+
+### The package
+
+- `phpunit.xml.dist` sets `COLUMNS=120`, so a suite run from a narrow terminal no longer fails on console output wrapped mid-sentence (04/10/2026)
+
+### ConfigBundle
+
+- `sitemap-index.xml` removed when no sitemap has any url left, instead of pointing at deleted files (04/10/2026)
+
 ## v1.51.1
 
 Donovan opens from the top bar and helps editors on more fields

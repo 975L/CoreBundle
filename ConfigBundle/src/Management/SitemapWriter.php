@@ -83,9 +83,16 @@ class SitemapWriter
     // Creates the index declaring the sub-sitemaps just written, each dated by the most recent url it holds. $lastmods is keyed by sitemap name and stays optional, an index without dates being valid on its own - it only costs the crawler the download it could have skipped
     public function writeIndex(array $names, array $lastmods = []): void
     {
-        // Nothing was written (a brand new site), so there's nothing to declare. A sitemap index only accepts absolute urls too, so there's nothing to write before "site-url" is configured either
+        // Nothing was written (a brand new site, or every page opted out of indexing), so there's nothing to declare - and a previous index has to go with the sitemaps write() just removed, or it keeps pointing search engines and SeoFilesWriter's robots.txt at files that no longer exist
+        if ([] === $names) {
+            $this->filesystem->remove($this->sitemapFolder . '/sitemap-index.xml');
+
+            return;
+        }
+
+        // A sitemap index only accepts absolute urls, so there's nothing to write before "site-url" is configured
         $urlRoot = rtrim((string) $this->configService->get('site-url'), '/');
-        if ([] === $names || '' === $urlRoot) {
+        if ('' === $urlRoot) {
             return;
         }
 

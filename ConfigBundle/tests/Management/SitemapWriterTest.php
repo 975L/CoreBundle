@@ -186,6 +186,17 @@ class SitemapWriterTest extends TestCase
         $this->assertFileDoesNotExist($staleFile);
     }
 
+    // Once every provider has emptied, the previous index must go too, or it keeps declaring the sitemaps just removed
+    public function testWriteRemovesTheIndexWhenNoProviderHasAnyUrl(): void
+    {
+        $staleIndex = $this->projectDir . '/public/sitemap-index.xml';
+        file_put_contents($staleIndex, 'previous run');
+
+        $this->createWriter([$this->createProvider('site', [])])->write();
+
+        $this->assertFileDoesNotExist($staleIndex);
+    }
+
     // Two providers sharing a name would overwrite each other's file and duplicate the url in the index, so it has to be reported instead of producing a half written sitemap
     public function testWriteRejectsTwoProvidersSharingTheSameName(): void
     {

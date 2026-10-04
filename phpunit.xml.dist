@@ -29,6 +29,8 @@
     <php>
         <!-- Doctrine emits its deprecations only when this is set: without it, failOnDeprecation never sees a single one -->
         <env name="DOCTRINE_DEPRECATIONS" value="trigger" force="true" />
+        <!-- SymfonyStyle wraps its blocks at the terminal's width: run from a narrow terminal, an asserted sentence is split across two lines and the suite fails there only -->
+        <env name="COLUMNS" value="120" force="true" />
     </php>
 
     <source ignoreSuppressionOfDeprecations="true">
