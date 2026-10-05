@@ -1,5 +1,15 @@
 [
     {
+        "date": "2026-10-05",
+        "description": [
+            {
+                "en": "The further pages of a listing are no longer reported by Google as duplicates of the first one.",
+                "fr": "Les pages suivantes d'une liste ne sont plus signalées par Google comme des doublons de la première.",
+                "es": "Las páginas siguientes de un listado ya no son señaladas por Google como duplicados de la primera."
+            }
+        ]
+    },
+    {
         "date": "2026-10-03",
         "description": [
             {

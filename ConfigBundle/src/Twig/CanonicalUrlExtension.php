@@ -11,6 +11,7 @@
 namespace c975L\ConfigBundle\Twig;
 
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
+use c975L\UiBundle\Service\Paginator;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Twig\Attribute\AsTwigFunction;
 
@@ -36,6 +37,10 @@ class CanonicalUrlExtension
         // getPathInfo() leaves the query string out. The site root keeps its slash, the form sitemap-site.xml has always declared for it (see PagePublicUrlResolver), while every other path loses its own - the slashless form the sitemap declares there too
         $path = rtrim($request->getPathInfo(), '/');
 
-        return rtrim((string) $siteUrl, '/') . ('' === $path ? '/' : $path);
+        // A further page of a listing (the one UiBundle's infinite scroll fetches through its "next" link) holds items the first one doesn't, so it is canonical to itself - pointed at page 1, Google overrides it and reports "duplicate, Google chose a different canonical"
+        $page = (int) $request->query->get(Paginator::PAGE_PARAMETER);
+        $query = $page > 1 ? '?' . Paginator::PAGE_PARAMETER . '=' . $page : '';
+
+        return rtrim((string) $siteUrl, '/') . ('' === $path ? '/' : $path) . $query;
     }
 }

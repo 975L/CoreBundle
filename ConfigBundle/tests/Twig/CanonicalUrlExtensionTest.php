@@ -47,6 +47,21 @@ class CanonicalUrlExtensionTest extends TestCase
         $this->assertSame('https://example.com/pages/blocks', $extension->getCanonicalUrl());
     }
 
+    // A further page of a listing is a page of its own, the infinite scroll's "next" link being what a crawler follows to it
+    public function testCanonicalUrlKeepsAFurtherPageNumber(): void
+    {
+        $extension = $this->createExtension('https://example.com/photos/vehicules?p=2&fbclid=abc');
+
+        $this->assertSame('https://example.com/photos/vehicules?p=2', $extension->getCanonicalUrl());
+    }
+
+    // Page 1, or anything that is not a page number, is the listing itself
+    public function testCanonicalUrlDropsAFirstOrInvalidPageNumber(): void
+    {
+        $this->assertSame('https://example.com/photos', $this->createExtension('https://example.com/photos?p=1')->getCanonicalUrl());
+        $this->assertSame('https://example.com/photos', $this->createExtension('https://example.com/photos?p=abc')->getCanonicalUrl());
+    }
+
     public function testCanonicalUrlDropsTheTrailingSlash(): void
     {
         $extension = $this->createExtension('https://example.com/pages/blocks/');

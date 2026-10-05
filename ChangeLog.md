@@ -1,5 +1,13 @@
 # ChangeLog
 
+## v1.52.1
+
+Further listing pages canonical to themselves
+
+### ConfigBundle
+
+- `canonical_url()` keeps the page number of a further listing page (05/10/2026)
+
 ## v1.52.0
 
 Offsite mirror left to the destination's snapshots
