@@ -14,22 +14,6 @@
                 <source>description.ai_assistant_dashboard_token</source>
                 <target>Bearer token sent to the dashboard AI assistant endpoint</target>
             </trans-unit>
-            <trans-unit id="et.XNnu">
-                <source>description.ai_assistant_rephrase_api_key</source>
-                <target>API key for the chosen provider, billed to its owner</target>
-            </trans-unit>
-            <trans-unit id="_bGjWVc">
-                <source>description.ai_assistant_rephrase_base_uri</source>
-                <target>Base URI of the API, required whatever the provider: the full messages endpoint for Anthropic, the product base for an OpenAI-compatible API (OpenAI, Euria)</target>
-            </trans-unit>
-            <trans-unit id="bWfhcXt">
-                <source>description.ai_assistant_rephrase_model</source>
-                <target>Rephrase model id, required whatever the provider: no model is hardcoded as a fallback, an empty entry leaves the feature off</target>
-            </trans-unit>
-            <trans-unit id="ArNa8qa">
-                <source>description.ai_assistant_rephrase_provider</source>
-                <target>AI provider for the rephrase button: anthropic, openai or euria</target>
-            </trans-unit>
             <trans-unit id="ChJQa4L">
                 <source>description.ai_assistant_site_api_key</source>
                 <target>LLM API key of the assistant answering about this site's own content, billed to its owner</target>
@@ -54,13 +38,29 @@
                 <source>description.ai_assistant_site_retention_days</source>
                 <target>Days after which a question nobody asked again is deleted (90 by default): a visitor may have typed personal data into it</target>
             </trans-unit>
+            <trans-unit id="Qu54Zbe">
+                <source>description.ai_assistant_writer_api_key</source>
+                <target>API key for the chosen provider, billed to its owner</target>
+            </trans-unit>
+            <trans-unit id="lzSm6Ci">
+                <source>description.ai_assistant_writer_base_uri</source>
+                <target>Base URI of the API, required whatever the provider: the full messages endpoint for Anthropic, the product base for an OpenAI-compatible API (OpenAI, Euria)</target>
+            </trans-unit>
+            <trans-unit id="716BbUn">
+                <source>description.ai_assistant_writer_model</source>
+                <target>Donovan (Writer) model id, required whatever the provider: no model is hardcoded as a fallback, an empty entry leaves the feature off</target>
+            </trans-unit>
+            <trans-unit id="Z8vTAHB">
+                <source>description.ai_assistant_writer_provider</source>
+                <target>AI provider of Donovan (Writer): anthropic, openai or euria</target>
+            </trans-unit>
             <trans-unit id="NF06pAx">
                 <source>description.ai_rephrase_failure_alert</source>
-                <target>Check the configured AI rephrase provider and API key</target>
+                <target>Check the configured Donovan (Writer) provider and API key</target>
             </trans-unit>
             <trans-unit id="BXljqwk">
                 <source>description.ai_rephrase_not_enabled</source>
-                <target>Set a provider and API key to enable rephrasing</target>
+                <target>Set a Donovan (Writer) provider and API key to enable rephrasing</target>
             </trans-unit>
             <trans-unit id="bQILUAx">
                 <source>description.ai_site_search_failure_alert</source>
@@ -192,11 +192,11 @@
             </trans-unit>
             <trans-unit id="RFJ8N8R">
                 <source>label.ai_rephrase_failure_alert</source>
-                <target>AI rephrase feature failed on its last attempt</target>
+                <target>Donovan (Writer) failed on its last attempt</target>
             </trans-unit>
             <trans-unit id="H21MUkk">
                 <source>label.ai_rephrase_not_enabled</source>
-                <target>AI rephrase feature not enabled</target>
+                <target>Donovan (Writer) not enabled</target>
             </trans-unit>
             <trans-unit id="ESErOms">
                 <source>label.ai_site_search_failure_alert</source>
@@ -282,45 +282,45 @@
                 <source>label.ui_ai_assistant_dashboard_token</source>
                 <target>Donovan (Q&amp;A) - Token</target>
             </trans-unit>
-            <trans-unit id="b01mpQ2">
-                <source>label.ui_ai_assistant_rephrase_api_key</source>
-                <target>Donovan (Rephrasing) - LLM API key</target>
-            </trans-unit>
-            <trans-unit id="ipeseMe">
-                <source>label.ui_ai_assistant_rephrase_base_uri</source>
-                <target>Donovan (Rephrasing) - Base URI</target>
-            </trans-unit>
-            <trans-unit id="tfKSd09">
-                <source>label.ui_ai_assistant_rephrase_model</source>
-                <target>Donovan (Rephrasing) - LLM model</target>
-            </trans-unit>
-            <trans-unit id="nUpavak">
-                <source>label.ui_ai_assistant_rephrase_provider</source>
-                <target>Donovan (Rephrasing) - LLM provider</target>
-            </trans-unit>
             <trans-unit id="HJCE_6x">
                 <source>label.ui_ai_assistant_site_api_key</source>
-                <target>Donovan (Assistant) - LLM API key</target>
+                <target>Donovan (Site Q&amp;A) - LLM API key</target>
             </trans-unit>
             <trans-unit id="RvptqLr">
                 <source>label.ui_ai_assistant_site_base_uri</source>
-                <target>Donovan (Assistant) - Base URI</target>
+                <target>Donovan (Site Q&amp;A) - Base URI</target>
             </trans-unit>
             <trans-unit id="1g.Z4Lg">
                 <source>label.ui_ai_assistant_site_label</source>
-                <target>Donovan (Assistant) - Displayed name</target>
+                <target>Donovan (Site Q&amp;A) - Displayed name</target>
             </trans-unit>
             <trans-unit id="8Yse6Db">
                 <source>label.ui_ai_assistant_site_model</source>
-                <target>Donovan (Assistant) - LLM model</target>
+                <target>Donovan (Site Q&amp;A) - LLM model</target>
             </trans-unit>
             <trans-unit id="xXR0vFh">
                 <source>label.ui_ai_assistant_site_provider</source>
-                <target>Donovan (Assistant) - LLM provider</target>
+                <target>Donovan (Site Q&amp;A) - LLM provider</target>
             </trans-unit>
             <trans-unit id="esZzarD">
                 <source>label.ui_ai_assistant_site_retention_days</source>
-                <target>Donovan (Assistant) - Question retention (days)</target>
+                <target>Donovan (Site Q&amp;A) - Question retention (days)</target>
+            </trans-unit>
+            <trans-unit id="Z85whHQ">
+                <source>label.ui_ai_assistant_writer_api_key</source>
+                <target>Donovan (Writer) - LLM API key</target>
+            </trans-unit>
+            <trans-unit id="4Qq3332">
+                <source>label.ui_ai_assistant_writer_base_uri</source>
+                <target>Donovan (Writer) - Base URI</target>
+            </trans-unit>
+            <trans-unit id="rPYtNL_">
+                <source>label.ui_ai_assistant_writer_model</source>
+                <target>Donovan (Writer) - LLM model</target>
+            </trans-unit>
+            <trans-unit id="71mpRDI">
+                <source>label.ui_ai_assistant_writer_provider</source>
+                <target>Donovan (Writer) - LLM provider</target>
             </trans-unit>
             <trans-unit id="xJvR5pw">
                 <source>label.ui_enable_reviews</source>

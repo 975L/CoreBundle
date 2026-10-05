@@ -9,23 +9,23 @@
         <p>{{ 'label.ai_rephrase_setup_intro'|trans({}, 'ui') }}</p>
         {# What is still missing, each entry a link straight to its own setting - the guided project points at the list, which is gone once nothing is left to fill in (see UiGuidedProjectProvider) #}
         <ul data-ai-rephrase-setup>
-            {% if 'ui-ai-assistant-rephrase-provider' in missingSlugs %}
-                <li><a href="{{ configLinks['ui-ai-assistant-rephrase-provider'] }}">{{ 'label.ai_rephrase_setup_step_provider'|trans({}, 'ui') }}</a></li>
+            {% if 'ui-ai-assistant-writer-provider' in missingSlugs %}
+                <li><a href="{{ configLinks['ui-ai-assistant-writer-provider'] }}">{{ 'label.ai_rephrase_setup_step_provider'|trans({}, 'ui') }}</a></li>
             {% endif %}
-            {% if 'ui-ai-assistant-rephrase-api-key' in missingSlugs %}
-                <li><a href="{{ configLinks['ui-ai-assistant-rephrase-api-key'] }}">{{ 'label.ai_rephrase_setup_step_key'|trans({}, 'ui') }}</a></li>
+            {% if 'ui-ai-assistant-writer-api-key' in missingSlugs %}
+                <li><a href="{{ configLinks['ui-ai-assistant-writer-api-key'] }}">{{ 'label.ai_rephrase_setup_step_key'|trans({}, 'ui') }}</a></li>
             {% endif %}
-            {% if 'ui-ai-assistant-rephrase-base-uri' in missingSlugs %}
-                <li><a href="{{ configLinks['ui-ai-assistant-rephrase-base-uri'] }}">{{ 'label.ai_rephrase_setup_step_base_uri'|trans({}, 'ui') }}</a></li>
+            {% if 'ui-ai-assistant-writer-base-uri' in missingSlugs %}
+                <li><a href="{{ configLinks['ui-ai-assistant-writer-base-uri'] }}">{{ 'label.ai_rephrase_setup_step_base_uri'|trans({}, 'ui') }}</a></li>
             {% endif %}
-            {% if 'ui-ai-assistant-rephrase-model' in missingSlugs %}
-                <li><a href="{{ configLinks['ui-ai-assistant-rephrase-model'] }}">{{ 'label.ai_rephrase_setup_step_model_required'|trans({}, 'ui') }}</a></li>
+            {% if 'ui-ai-assistant-writer-model' in missingSlugs %}
+                <li><a href="{{ configLinks['ui-ai-assistant-writer-model'] }}">{{ 'label.ai_rephrase_setup_step_model_required'|trans({}, 'ui') }}</a></li>
             {% endif %}
         </ul>
-        {% if 'ui-ai-assistant-rephrase-model' not in missingSlugs %}
+        {% if 'ui-ai-assistant-writer-model' not in missingSlugs %}
             <p class="text-muted small">
                 {{ 'label.ai_rephrase_setup_model_optional'|trans({}, 'ui') }}
-                <a href="{{ configLinks['ui-ai-assistant-rephrase-model'] }}">{{ 'label.ai_rephrase_setup_step_model'|trans({}, 'ui') }}</a>
+                <a href="{{ configLinks['ui-ai-assistant-writer-model'] }}">{{ 'label.ai_rephrase_setup_step_model'|trans({}, 'ui') }}</a>
             </p>
         {% endif %}
 

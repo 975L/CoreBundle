@@ -60,6 +60,18 @@ class ConfigDeclarationLocator
         return $this->slugsIn($this->findFiles(), static fn (array $config): bool => true === ($config['feature'] ?? false));
     }
 
+    // Returns the former slugs of the renamed entries ("former_slugs" in configs.json) - rows c975l:config:load-all renames or merges, never orphans for c975l:config:prune
+    public function findFormerSlugs(): array
+    {
+        $slugs = [];
+
+        foreach ($this->declarationsIn($this->findFiles()) as $config) {
+            $slugs = array_merge($slugs, $config['former_slugs'] ?? []);
+        }
+
+        return array_values(array_unique($slugs));
+    }
+
     /**
      * @param list<string>                 $files
      * @param (callable(array): bool)|null $filter
@@ -70,21 +82,30 @@ class ConfigDeclarationLocator
     {
         $slugs = [];
 
-        foreach ($files as $file) {
-            $configs = json_decode((string) file_get_contents($file), true);
-
-            if (!is_array($configs)) {
-                continue;
-            }
-
-            foreach ($configs as $config) {
-                if (isset($config['slug']) && (null === $filter || $filter($config))) {
-                    $slugs[] = $config['slug'];
-                }
+        foreach ($this->declarationsIn($files) as $config) {
+            if (isset($config['slug']) && (null === $filter || $filter($config))) {
+                $slugs[] = $config['slug'];
             }
         }
 
         return array_values(array_unique($slugs));
+    }
+
+    // Every entry declared across those files, a malformed file being skipped
+    /**
+     * @param list<string> $files
+     *
+     * @return iterable<array>
+     */
+    private function declarationsIn(array $files): iterable
+    {
+        foreach ($files as $file) {
+            $configs = json_decode((string) file_get_contents($file), true);
+
+            if (is_array($configs)) {
+                yield from $configs;
+            }
+        }
     }
 
     // Returns the declaration files that exist but can't be parsed - their slugs are missing from findDeclaredSlugs(), so any caller deleting undeclared entries (c975l:config:prune) must refuse to run rather than take them for orphans

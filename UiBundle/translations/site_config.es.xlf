@@ -14,22 +14,6 @@
                 <source>description.ai_assistant_dashboard_token</source>
                 <target>Token Bearer enviado al endpoint del asistente de IA del panel</target>
             </trans-unit>
-            <trans-unit id="et.XNnu">
-                <source>description.ai_assistant_rephrase_api_key</source>
-                <target>Clave API del proveedor elegido, facturada a su titular</target>
-            </trans-unit>
-            <trans-unit id="_bGjWVc">
-                <source>description.ai_assistant_rephrase_base_uri</source>
-                <target>URI base de la API, obligatoria sea cual sea el proveedor: la URL completa del endpoint messages para Anthropic, la base del producto para una API compatible con OpenAI (OpenAI, Euria)</target>
-            </trans-unit>
-            <trans-unit id="bWfhcXt">
-                <source>description.ai_assistant_rephrase_model</source>
-                <target>Modelo de reformulación, obligatorio sea cual sea el proveedor: ningún modelo está codificado como reserva, una entrada vacía deja la función apagada</target>
-            </trans-unit>
-            <trans-unit id="ArNa8qa">
-                <source>description.ai_assistant_rephrase_provider</source>
-                <target>Proveedor de IA del botón de reformulación: anthropic, openai o euria</target>
-            </trans-unit>
             <trans-unit id="ChJQa4L">
                 <source>description.ai_assistant_site_api_key</source>
                 <target>Clave API LLM del asistente que responde sobre el contenido de este sitio, facturada a su titular</target>
@@ -54,13 +38,29 @@
                 <source>description.ai_assistant_site_retention_days</source>
                 <target>Días tras los cuales se borra una pregunta que nadie ha vuelto a hacer (90 por defecto): un visitante puede haber escrito en ella un dato personal</target>
             </trans-unit>
+            <trans-unit id="Qu54Zbe">
+                <source>description.ai_assistant_writer_api_key</source>
+                <target>Clave API del proveedor elegido, facturada a su titular</target>
+            </trans-unit>
+            <trans-unit id="lzSm6Ci">
+                <source>description.ai_assistant_writer_base_uri</source>
+                <target>URI base de la API, obligatoria sea cual sea el proveedor: la URL completa del endpoint messages para Anthropic, la base del producto para una API compatible con OpenAI (OpenAI, Euria)</target>
+            </trans-unit>
+            <trans-unit id="716BbUn">
+                <source>description.ai_assistant_writer_model</source>
+                <target>Modelo LLM de Donovan (Writer), obligatorio sea cual sea el proveedor: ningún modelo está codificado como reserva, una entrada vacía deja la función apagada</target>
+            </trans-unit>
+            <trans-unit id="Z8vTAHB">
+                <source>description.ai_assistant_writer_provider</source>
+                <target>Proveedor de IA de Donovan (Writer): anthropic, openai o euria</target>
+            </trans-unit>
             <trans-unit id="NF06pAx">
                 <source>description.ai_rephrase_failure_alert</source>
-                <target>Compruebe el proveedor y la clave API de reformulación configurados</target>
+                <target>Compruebe el proveedor y la clave API de Donovan (Writer) configurados</target>
             </trans-unit>
             <trans-unit id="BXljqwk">
                 <source>description.ai_rephrase_not_enabled</source>
-                <target>Configure proveedor y clave API para activar la reformulación</target>
+                <target>Configure proveedor y clave API de Donovan (Writer) para activar la reformulación</target>
             </trans-unit>
             <trans-unit id="bQILUAx">
                 <source>description.ai_site_search_failure_alert</source>
@@ -192,11 +192,11 @@
             </trans-unit>
             <trans-unit id="RFJ8N8R">
                 <source>label.ai_rephrase_failure_alert</source>
-                <target>La reformulación IA falló en su último intento</target>
+                <target>Donovan (Writer) falló en su último intento</target>
             </trans-unit>
             <trans-unit id="H21MUkk">
                 <source>label.ai_rephrase_not_enabled</source>
-                <target>Función de reformulación IA no activada</target>
+                <target>Donovan (Writer) no activado</target>
             </trans-unit>
             <trans-unit id="ESErOms">
                 <source>label.ai_site_search_failure_alert</source>
@@ -282,45 +282,45 @@
                 <source>label.ui_ai_assistant_dashboard_token</source>
                 <target>Donovan (Q&amp;A) - Token</target>
             </trans-unit>
-            <trans-unit id="b01mpQ2">
-                <source>label.ui_ai_assistant_rephrase_api_key</source>
-                <target>Donovan (Reformulación) - Clave API LLM</target>
-            </trans-unit>
-            <trans-unit id="ipeseMe">
-                <source>label.ui_ai_assistant_rephrase_base_uri</source>
-                <target>Donovan (Reformulación) - URI base</target>
-            </trans-unit>
-            <trans-unit id="tfKSd09">
-                <source>label.ui_ai_assistant_rephrase_model</source>
-                <target>Donovan (Reformulación) - Modelo LLM</target>
-            </trans-unit>
-            <trans-unit id="nUpavak">
-                <source>label.ui_ai_assistant_rephrase_provider</source>
-                <target>Donovan (Reformulación) - Proveedor LLM</target>
-            </trans-unit>
             <trans-unit id="HJCE_6x">
                 <source>label.ui_ai_assistant_site_api_key</source>
-                <target>Donovan (Asistente) - Clave API LLM</target>
+                <target>Donovan (Site Q&amp;A) - Clave API LLM</target>
             </trans-unit>
             <trans-unit id="RvptqLr">
                 <source>label.ui_ai_assistant_site_base_uri</source>
-                <target>Donovan (Asistente) - URI base</target>
+                <target>Donovan (Site Q&amp;A) - URI base</target>
             </trans-unit>
             <trans-unit id="1g.Z4Lg">
                 <source>label.ui_ai_assistant_site_label</source>
-                <target>Donovan (Asistente) - Nombre mostrado</target>
+                <target>Donovan (Site Q&amp;A) - Nombre mostrado</target>
             </trans-unit>
             <trans-unit id="8Yse6Db">
                 <source>label.ui_ai_assistant_site_model</source>
-                <target>Donovan (Asistente) - Modelo LLM</target>
+                <target>Donovan (Site Q&amp;A) - Modelo LLM</target>
             </trans-unit>
             <trans-unit id="xXR0vFh">
                 <source>label.ui_ai_assistant_site_provider</source>
-                <target>Donovan (Asistente) - Proveedor LLM</target>
+                <target>Donovan (Site Q&amp;A) - Proveedor LLM</target>
             </trans-unit>
             <trans-unit id="esZzarD">
                 <source>label.ui_ai_assistant_site_retention_days</source>
-                <target>Donovan (Asistente) - Conservación de las preguntas (días)</target>
+                <target>Donovan (Site Q&amp;A) - Conservación de las preguntas (días)</target>
+            </trans-unit>
+            <trans-unit id="Z85whHQ">
+                <source>label.ui_ai_assistant_writer_api_key</source>
+                <target>Donovan (Writer) - Clave API LLM</target>
+            </trans-unit>
+            <trans-unit id="4Qq3332">
+                <source>label.ui_ai_assistant_writer_base_uri</source>
+                <target>Donovan (Writer) - URI base</target>
+            </trans-unit>
+            <trans-unit id="rPYtNL_">
+                <source>label.ui_ai_assistant_writer_model</source>
+                <target>Donovan (Writer) - Modelo LLM</target>
+            </trans-unit>
+            <trans-unit id="71mpRDI">
+                <source>label.ui_ai_assistant_writer_provider</source>
+                <target>Donovan (Writer) - Proveedor LLM</target>
             </trans-unit>
             <trans-unit id="xJvR5pw">
                 <source>label.ui_enable_reviews</source>

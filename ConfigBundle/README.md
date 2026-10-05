@@ -301,6 +301,18 @@ The screen reads in three bands rather than as one flat list (`ConfigGroupLabelR
 
 The bad reflex is inventing `book-legal` or `payment-email` to avoid sharing. What files two settings together is the editor's gesture, not the composer.json. Conversely a setting that has nothing to do with the drawer it landed in leaves it: PaymentBundle's six `shop-email-*` are the shop's own senders, not the site's, so they sit under `payment` and not under `email`.
 
+`former_slugs` renames an entry without losing what a site stored: list the slugs it used to have, the most recent first, and `c975l:config:load-all` (run at every deploy) gives the row found under one of them the new slug, keeping its value - nothing to do by hand on any site:
+
+```json
+{
+    "slug": "ui-ai-assistant-writer-model",
+    "former_slugs": ["ui-ai-assistant-rephrase-model"],
+    ...
+}
+```
+
+A row already under the new slug but still empty — an export from before the rename imported after `load-all` created it — takes the value of the former row instead, which is then dropped. One the admin already filled in wins, the former row left alone.
+
 `severity` is optional and flags an entry that needs an admin's attention as long as its `value` is empty — it never affects front-end rendering, `ConfigService::get()` still returns `null`/empty as before. It must be one of `Config::SEVERITIES`: `danger`, `warning`, `info`. Any entry with a severity and no value is listed on the `/management` dashboard as a colored alert with a direct link to fill it in; once a value is set, the alert disappears on its own (no flag to unset).
 
 ## Loading config entries into the database
@@ -313,7 +325,7 @@ php bin/console c975l:config:load-all
 
 The application file is loaded exactly like a bundle's one, so an app needing a setting no bundle declares (its own API keys, feature flags...) just drops a `config/configs.json` at its root and gets it in the dashboard, with no command of its own to write.
 
-New entries (new `slug`) are inserted with their `value` from the JSON. For entries that already exist, only the metadata fixed by the bundle author — `label`, `kind`, `choices`, `group`, `severity`, `description`, `restricted`, `sensitive` — is re-synced from the JSON on every run; the `value` carries production state and is never overwritten, so editing a `configs.json` file (e.g. moving a config to a new group, fixing a typo in a label) and re-running `load-all` is enough to propagate the change, without risking an admin-set value.
+New entries (new `slug`) are inserted with their `value` from the JSON, unless a row sits under one of its `former_slugs`: that row is renamed instead, its value kept (see above). For entries that already exist, only the metadata fixed by the bundle author — `label`, `kind`, `choices`, `group`, `severity`, `description`, `restricted`, `sensitive` — is re-synced from the JSON on every run; the `value` carries production state and is never overwritten, so editing a `configs.json` file (e.g. moving a config to a new group, fixing a typo in a label) and re-running `load-all` is enough to propagate the change, without risking an admin-set value.
 
 ### Seeded defaults
 
@@ -338,7 +350,7 @@ php bin/console c975l:config:prune            # lists them, deletes nothing
 php bin/console c975l:config:prune --force    # deletes them, after confirmation
 ```
 
-Both share the same safeguards, because "undeclared" is only meaningful when the declarations are all there: neither reports a single orphan when no `configs*.json` is found at all, an unfinished `composer install` otherwise making every entry look orphaned, nor when one exists but can't be parsed, a single misplaced comma otherwise turning everything that file declares into an orphan. A third case is reported apart rather than as an orphan: an entry declared by a c975L bundle Composer installed but `config/bundles.php` does not register — a bundle disabled for a while, registered for `dev` only, or pulled in as another bundle's dependency and never enabled. Only registered bundles are read (see the loading section above), so their entries would otherwise look abandoned while their bundle is one line away from declaring them again. They are listed, never offered for deletion. The command adds a confirmation prompt in interactive mode, the page its list of what is about to go. Deletion takes the stored value with it — export your configs first if a bundle is only temporarily uninstalled.
+Both share the same safeguards, because "undeclared" is only meaningful when the declarations are all there: neither reports a single orphan when no `configs*.json` is found at all, an unfinished `composer install` otherwise making every entry look orphaned, nor when one exists but can't be parsed, a single misplaced comma otherwise turning everything that file declares into an orphan. A third case is reported apart rather than as an orphan: an entry declared by a c975L bundle Composer installed but `config/bundles.php` does not register — a bundle disabled for a while, registered for `dev` only, or pulled in as another bundle's dependency and never enabled. Only registered bundles are read (see the loading section above), so their entries would otherwise look abandoned while their bundle is one line away from declaring them again. They are listed, never offered for deletion. The former slugs of a renamed entry are never listed either: they are what `load-all` renames. The command adds a confirmation prompt in interactive mode, the page its list of what is about to go. Deletion takes the stored value with it — export your configs first if a bundle is only temporarily uninstalled.
 
 ## Setting values from the command line
 
@@ -1551,7 +1563,7 @@ Make sure your bundle's `services.yaml` includes the `Management/` folder in its
 
 The `/management` dashboard shows a "Guided projects" button next to the guided tour. Where the tour *shows* the back office, a project puts the user to work in it: a real task to carry out — create a page, add a block to it, put it in a menu — with a panel following them from screen to screen.
 
-`ConfigGuidedProjectProvider` ships this bundle's own, in the 1000 block `GuidedProjectProviderInterface` reserves it: find and change a setting, run the health check, rehearse the maintenance switch, turn on the admins' login code (`config-login-code`, the dashboard tile), turn a missing page into a redirect, write a redirect by hand (`config-redirect`, a whole folder moved at once with a trailing `*`), describe an url no entity carries, give an account its roles, see the back office as another role, and replay or drop the messages that failed for good (`config-messenger-failed`, held at `ROLE_SUPER_ADMIN`: an admin opens that screen but is only shown the failure, the buttons it walks being a super admin's — they carry `data-messenger-retry`, `data-messenger-delete` and `data-messenger-delete-group` for its steps to point at), export the whole site in one zip (`config-content-export`, the "export sync all" dashboard tile), import content exported from another site (`config-content-import`), and prune the settings no bundle declares any more (`config-prune`).
+`ConfigGuidedProjectProvider` ships this bundle's own, in the 1000 block `GuidedProjectProviderInterface` reserves it: find and change a setting, run the health check, rehearse the maintenance switch, turn on the admins' login code (`config-login-code`, the dashboard tile), turn a missing page into a redirect, write a redirect by hand (`config-redirect`, a whole folder moved at once with a trailing `*`), describe an url no entity carries, give an account its roles, anonymize an account from the Users screen (`config-user-anonymize`), see the back office as another role, and replay or drop the messages that failed for good (`config-messenger-failed`, held at `ROLE_SUPER_ADMIN`: an admin opens that screen but is only shown the failure, the buttons it walks being a super admin's — they carry `data-messenger-retry`, `data-messenger-delete` and `data-messenger-delete-group` for its steps to point at), export the whole site in one zip (`config-content-export`, the "export sync all" dashboard tile), import content exported from another site (`config-content-import`), and prune the settings no bundle declares any more (`config-prune`).
 
 A project is a **replayable exercise**, not a wizard to get through once. Nothing is derived from the site's own data, so a project is still worth following on a site already full of pages, and still worth replaying once done. Consequently it carries no `isDone`: nothing is ever detected server-side, the user says when a step is done. Whatever they create along the way stays on the site — deleting the practice page is their call.
 

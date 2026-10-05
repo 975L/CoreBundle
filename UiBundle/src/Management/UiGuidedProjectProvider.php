@@ -475,15 +475,26 @@ class UiGuidedProjectProvider implements GuidedProjectProviderInterface
                 'narration' => 'narration.guided_step_ui_ai_assistant_setup_done',
             ];
         } else {
+            // The screen's own textarea, tied to no content of the site: a text can be tried out here before the button is ever pressed on a real page
+            $steps[] = [
+                'label' => 'label.guided_step_ui_ai_assistant_text',
+                'description' => 'description.guided_step_ui_ai_assistant_text',
+                'narration' => 'narration.guided_step_ui_ai_assistant_text',
+                'highlight' => '#ai-rephrase-freeform',
+            ];
+
+            // The rephrase/translate select is only drawn when the site has a language to translate into (see form/_ai_rephrase.html.twig)
+            if ([] !== $this->siteLocales->translatable()) {
+                $steps[] = [
+                    'label' => 'label.guided_step_ui_ai_assistant_action',
+                    'description' => 'description.guided_step_ui_ai_assistant_action',
+                    'narration' => 'narration.guided_step_ui_ai_assistant_action',
+                    'highlight' => '.ai-rephrase__action',
+                ];
+            }
+
             array_push(
                 $steps,
-                [
-                    // The screen's own textarea, tied to no content of the site: a text can be tried out here before the button is ever pressed on a real page
-                    'label' => 'label.guided_step_ui_ai_assistant_text',
-                    'description' => 'description.guided_step_ui_ai_assistant_text',
-                    'narration' => 'narration.guided_step_ui_ai_assistant_text',
-                    'highlight' => '#ai-rephrase-freeform',
-                ],
                 [
                     'label' => 'label.guided_step_ui_ai_assistant_style',
                     'description' => 'description.guided_step_ui_ai_assistant_style',

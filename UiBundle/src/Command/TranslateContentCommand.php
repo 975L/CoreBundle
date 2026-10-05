@@ -111,7 +111,7 @@ class TranslateContentCommand extends Command
 
         // Checked here rather than above: a dry run says what is left to do on a site whose key is not filled yet
         if (!$this->aiRephraseClient->isEnabled()) {
-            $io->error('The translation key is not configured: fill the "ui-ai-assistant-rephrase-*" entries in the back office.');
+            $io->error('The translation key is not configured: fill the "ui-ai-assistant-writer-*" entries in the back office.');
 
             return Command::FAILURE;
         }

@@ -198,6 +198,19 @@ class ConfigPruneCommandTest extends TestCase
         $this->assertStringContainsString('No orphan config entry', $tester->getDisplay());
     }
 
+    // A former slug is the row load-all renames or merges, holding a value the new entry still needs: never an orphan, even before load-all ran
+    public function testExecuteNeverListsTheFormerSlugOfARenamedEntry(): void
+    {
+        $this->filesystem->dumpFile($this->projectDir . '/vendor/c975l/ui-bundle/config/configs.json', json_encode([
+            ['slug' => 'ui-ai-assistant-writer-api-key', 'former_slugs' => ['ui-ai-assistant-rephrase-api-key']],
+        ]));
+
+        $tester = $this->createTester(['ui-ai-assistant-writer-api-key', 'ui-ai-assistant-rephrase-api-key']);
+        $tester->execute([]);
+
+        $this->assertStringContainsString('No orphan config entry', $tester->getDisplay());
+    }
+
     // An entry whose bundle is installed but absent from bundles.php is not an orphan: it is one line of configuration away from being declared again, and its stored value would go with it
     public function testAnEntryDeclaredByAnUnregisteredBundleIsReportedAndKept(): void
     {

@@ -22,6 +22,10 @@
                 <source>narration.forms</source>
                 <target>« Formulaires » tient les formulaires du site, contact, inscription ou calculateur, chacun avec ses champs et l'action qu'il déclenche à l'envoi.</target>
             </trans-unit>
+            <trans-unit id="WPAsuLp">
+                <source>narration.guided_step_ui_ai_assistant_action</source>
+                <target>Votre site parle plusieurs langues : cette liste choisit entre reformuler le texte et le traduire dans l'une d'elles. Laissez « Reformuler » pour ce premier essai, la traduction se lance de la même façon.</target>
+            </trans-unit>
             <trans-unit id="7pTq006">
                 <source>narration.guided_step_ui_ai_assistant_done</source>
                 <target>Le même bouton se trouve sous chaque champ de texte du back-office : blocks, pages, e-mails, avis, et ainsi de suite. Les mêmes trois commandes partout, et cet écran compte les jetons dépensés dans le mois.</target>
@@ -80,7 +84,7 @@
             </trans-unit>
             <trans-unit id="4HX8SSk">
                 <source>narration.guided_step_ui_ai_search_setup_open</source>
-                <target>Voici les réglages, ouverts sur le groupe IA : quatre entrées « Donovan (Assistant) », le fournisseur, la clé API, l'URI de base et le modèle, allument la recherche du site, et il les faut toutes les quatre.</target>
+                <target>Voici les réglages, ouverts sur le groupe IA : quatre entrées « Donovan (Site Q&amp;A) », le fournisseur, la clé API, l'URI de base et le modèle, allument la recherche du site, et il les faut toutes les quatre.</target>
             </trans-unit>
             <trans-unit id="TRy2chd">
                 <source>narration.guided_step_ui_ai_search_setup_place</source>

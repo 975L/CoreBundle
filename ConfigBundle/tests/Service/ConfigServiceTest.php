@@ -90,12 +90,13 @@ class ConfigServiceTest extends TestCase
         ?ParameterBagInterface $params = null,
         ?VaultEncryptor $vaultEncryptor = null,
         ?LoggerInterface $logger = null,
+        ?EntityManagerInterface $manager = null,
     ): ConfigService {
         return new ConfigService(
             $repository,
             $cache ?? $this->createCache(),
             $params ?? $this->createStub(ParameterBagInterface::class),
-            $this->createStub(EntityManagerInterface::class),
+            $manager ?? $this->createStub(EntityManagerInterface::class),
             $vaultEncryptor ?? new VaultEncryptor(null),
             $logger,
         );
@@ -335,22 +336,79 @@ class ConfigServiceTest extends TestCase
         $this->assertCount(2, $callLog);
     }
 
-    // findOneBySlug() is a magic EntityRepository method, hence a hand-written double rather than a PHPUnit stub
-    private function createRepositoryIndexedBySlug(Config $config): ConfigRepository
+    // An entry renamed by its bundle takes the row of its former slug, the value an admin set there kept, and its metadata synced
+    public function testLoadDefaultConfigRenamesTheRowOfAFormerSlug(): void
     {
-        return new class ($config) extends ConfigRepository {
-            public function __construct(private readonly Config $config)
+        $config = $this->createConfig('ui-ai-assistant-rephrase-model', 'claude-opus');
+        $service = $this->createService($this->createRepositoryIndexedBySlug($config));
+
+        $service->loadDefaultConfig($this->createDeclarationFile([
+            'slug' => 'ui-ai-assistant-writer-model', 'label' => 'label.ui_ai_assistant_writer_model', 'value' => null,
+            'former_slugs' => ['ui-ai-assistant-rephrase-model'],
+        ]));
+
+        $this->assertSame('ui-ai-assistant-writer-model', $config->getSlug());
+        $this->assertSame('label.ui_ai_assistant_writer_model', $config->getLabel());
+        $this->assertSame('claude-opus', $config->getValue());
+    }
+
+    // A former row recreated after the rename (an old export imported once load-all created the new row) gives its value to the still empty new row and is dropped
+    public function testLoadDefaultConfigMergesAFormerRowIntoAnEmptyNewRow(): void
+    {
+        $config = $this->createConfig('ui-ai-assistant-writer-api-key', null);
+        $former = $this->createConfig('ui-ai-assistant-rephrase-api-key', 'sk-secret');
+        $manager = $this->createMock(EntityManagerInterface::class);
+        $manager->expects($this->once())->method('remove')->with($former);
+        $service = $this->createService($this->createRepositoryIndexedBySlug($config, $former), manager: $manager);
+
+        $service->loadDefaultConfig($this->createDeclarationFile([
+            'slug' => 'ui-ai-assistant-writer-api-key', 'label' => 'label.ui_ai_assistant_writer_api_key', 'value' => null,
+            'former_slugs' => ['ui-ai-assistant-rephrase-api-key'],
+        ]));
+
+        $this->assertSame('sk-secret', $config->getValue());
+    }
+
+    // A new row an admin already filled in wins: the former row is left alone
+    public function testLoadDefaultConfigKeepsAFilledNewRowOverAFormerOne(): void
+    {
+        $config = $this->createConfig('ui-ai-assistant-writer-api-key', 'sk-current');
+        $former = $this->createConfig('ui-ai-assistant-rephrase-api-key', 'sk-old');
+        $manager = $this->createMock(EntityManagerInterface::class);
+        $manager->expects($this->never())->method('remove');
+        $service = $this->createService($this->createRepositoryIndexedBySlug($config, $former), manager: $manager);
+
+        $service->loadDefaultConfig($this->createDeclarationFile([
+            'slug' => 'ui-ai-assistant-writer-api-key', 'label' => 'label.ui_ai_assistant_writer_api_key', 'value' => null,
+            'former_slugs' => ['ui-ai-assistant-rephrase-api-key'],
+        ]));
+
+        $this->assertSame('sk-current', $config->getValue());
+        $this->assertSame('ui-ai-assistant-rephrase-api-key', $former->getSlug());
+    }
+
+    // findOneBySlug() is a magic EntityRepository method, hence a hand-written double rather than a PHPUnit stub
+    private function createRepositoryIndexedBySlug(Config ...$configs): ConfigRepository
+    {
+        return new class ($configs) extends ConfigRepository {
+            public function __construct(private readonly array $configs)
             {
             }
 
             public function findOneBySlug(string $slug): ?Config
             {
-                return $this->config->getSlug() === $slug ? $this->config : null;
+                foreach ($this->configs as $config) {
+                    if ($config->getSlug() === $slug) {
+                        return $config;
+                    }
+                }
+
+                return null;
             }
 
             public function findAll(): array
             {
-                return [$this->config];
+                return $this->configs;
             }
         };
     }

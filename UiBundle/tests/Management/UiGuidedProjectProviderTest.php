@@ -104,7 +104,13 @@ class UiGuidedProjectProviderTest extends TestCase
         $configured = array_column($this->aiAssistantSteps(true), 'highlight');
 
         $this->assertSame(['[data-ai-rephrase-setup]'], $unconfigured);
-        $this->assertSame(['#ai-rephrase-freeform', '.ai-rephrase__style', '.ai-rephrase__length', '.ai-rephrase__button'], $configured);
+        $this->assertSame(['#ai-rephrase-freeform', '.ai-rephrase__action', '.ai-rephrase__style', '.ai-rephrase__length', '.ai-rephrase__button'], $configured);
+    }
+
+    // The rephrase/translate select is only drawn on a site with a language to translate into, so a single-language site never points at it
+    public function testTheAiAssistantProjectShowsTheActionSelectOnAMultilingualSiteOnly(): void
+    {
+        $this->assertNotContains('.ai-rephrase__action', array_column($this->aiAssistantSteps(true, false), 'highlight'));
     }
 
     // The closing step speaks of the button under every field only once the button was shown, a site yet to be set up is asked to come back instead
@@ -121,11 +127,11 @@ class UiGuidedProjectProviderTest extends TestCase
     /**
      * @return list<array<string, mixed>>
      */
-    private function aiAssistantSteps(bool $rephrase): array
+    private function aiAssistantSteps(bool $rephrase, bool $multilingual = true): array
     {
         $controllers = [];
         $routes = [];
-        foreach ($this->createProvider($controllers, $routes, rephrase: $rephrase)->getGuidedProjects() as $project) {
+        foreach ($this->createProvider($controllers, $routes, multilingual: $multilingual, rephrase: $rephrase)->getGuidedProjects() as $project) {
             if ('ui-ai-assistant' === $project['slug']) {
                 return $project['steps'];
             }

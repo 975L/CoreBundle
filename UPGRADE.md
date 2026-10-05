@@ -1,5 +1,9 @@
 # UPGRADE
 
+## v1.53.0
+
+**`ui-ai-assistant-rephrase-*` is now `ui-ai-assistant-writer-*`** (provider, api-key, base-uri, model): the key rephrases, translates and writes the social posts. Nothing to do on a site: `c975l:config:load-all`, run at deploy, renames the four rows and keeps their values (`former_slugs`); a site rebuilt from an export older than v1.53.0 gets the imported `rephrase` rows merged into the new ones at the next `load-all`. Code reading the slugs itself (`$configService->get('ui-ai-assistant-rephrase-...')`, a `configPrefix()` returning `ui-ai-assistant-rephrase`) reads the new ones.
+
 ## v1.52.0
 
 **The offsite mirror is now an exact copy: `--backup-dir`, `--max-delete` and the `previous/` purge are gone.** A file deleted locally is deleted at the destination the same night, so **the destination must take its own snapshots** (automatic on a Hetzner Storage Box: check they are on before upgrading). `site-backup-offsite-keep-days` is read by nothing anymore - remove it from the "Obsolete configs" screen - and the `previous/` folders already at the destination are no longer purged: delete them by hand once the snapshots cover the same days (`rclone purge <target>/previous`).

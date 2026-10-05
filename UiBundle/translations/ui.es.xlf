@@ -32,7 +32,7 @@
             </trans-unit>
             <trans-unit id="FczgMxS">
                 <source>description.guided_project_ui_ai_assistant</source>
-                <target>Configurar la clave de reformulación, y luego probarla en el área de texto de la propia pantalla antes de pulsar ese botón bajo un campo real</target>
+                <target>Configurar la clave de Donovan (Writer), y luego probarla en el área de texto de la propia pantalla antes de pulsar ese botón bajo un campo real</target>
             </trans-unit>
             <trans-unit id="0iKWb5V">
                 <source>description.guided_project_ui_ai_search_answers</source>
@@ -89,6 +89,10 @@
             <trans-unit id="GHBZCNG">
                 <source>description.guided_project_ui_site_graphic</source>
                 <target>Favicon, logotipo, imagen para compartir: el puñado de archivos por los que se reconoce un sitio, subidos de una vez por todas.</target>
+            </trans-unit>
+            <trans-unit id="VoJ0CnM">
+                <source>description.guided_step_ui_ai_assistant_action</source>
+                <target>Un sitio en varios idiomas propone, antes del tono, traducir el texto a uno de ellos en lugar de reformularlo: la misma lista acompaña cada campo de texto del back-office</target>
             </trans-unit>
             <trans-unit id="97DoPkG">
                 <source>description.guided_step_ui_ai_assistant_done</source>
@@ -148,7 +152,7 @@
             </trans-unit>
             <trans-unit id="5CS4VPq">
                 <source>description.guided_step_ui_ai_search_setup_open</source>
-                <target>Cuatro entradas « Donovan (Asistente) » la encienden: proveedor, clave API, URI base y modelo. Las cuatro son necesarias: mientras falte una, la búsqueda sigue apagada.</target>
+                <target>Cuatro entradas « Donovan (Site Q&amp;A) » la encienden: proveedor, clave API, URI base y modelo. Las cuatro son necesarias: mientras falte una, la búsqueda sigue apagada.</target>
             </trans-unit>
             <trans-unit id="J7.qbf7">
                 <source>description.guided_step_ui_ai_search_setup_place</source>
@@ -2517,6 +2521,10 @@
             <trans-unit id="42UrnqR">
                 <source>label.guided_project_ui_site_graphic</source>
                 <target>Colocar los gráficos propios del sitio</target>
+            </trans-unit>
+            <trans-unit id="71qjK16">
+                <source>label.guided_step_ui_ai_assistant_action</source>
+                <target>Reformular o traducir</target>
             </trans-unit>
             <trans-unit id="goVER90">
                 <source>label.guided_step_ui_ai_assistant_done</source>

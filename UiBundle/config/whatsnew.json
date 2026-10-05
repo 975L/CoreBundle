@@ -6,6 +6,11 @@
                 "en": "Buttons in your emails now take your site's colors instead of a standard blue.",
                 "fr": "Les boutons de vos e-mails prennent désormais les couleurs de votre site au lieu d'un bleu standard.",
                 "es": "Los botones de sus correos toman ahora los colores de su sitio en lugar de un azul estándar."
+            },
+            {
+                "en": "On a site in several languages, the Donovan guided tour now also shows where to choose between rephrasing and translating a text.",
+                "fr": "Sur un site en plusieurs langues, le parcours guidé de Donovan montre aussi où choisir entre reformuler et traduire un texte.",
+                "es": "En un sitio en varios idiomas, el recorrido guiado de Donovan muestra también dónde elegir entre reformular y traducir un texto."
             }
         ]
     },

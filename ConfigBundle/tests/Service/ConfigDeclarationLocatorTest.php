@@ -107,6 +107,18 @@ class ConfigDeclarationLocatorTest extends TestCase
         $this->assertSame(['app-feature-key', 'ui-map-google-api-key'], $slugs);
     }
 
+    // The former slugs of every renamed entry, the app's own file included, without the current slugs
+    public function testFindFormerSlugsMergesEveryFile(): void
+    {
+        $this->dumpBundleFile('ui-bundle', [['slug' => 'ui-ai-assistant-writer-model', 'former_slugs' => ['ui-ai-assistant-rephrase-model']], ['slug' => 'ui-map-zoom']]);
+        $this->dumpAppFile([['slug' => 'app-new', 'former_slugs' => ['app-old', 'app-older']]]);
+
+        $slugs = $this->createLocator()->findFormerSlugs();
+
+        sort($slugs);
+        $this->assertSame(['app-old', 'app-older', 'ui-ai-assistant-rephrase-model'], $slugs);
+    }
+
     // A half-written or invalid file must not silently empty the declared list, which would turn every entry into an orphan
     public function testFindDeclaredSlugsIgnoresMalformedFile(): void
     {

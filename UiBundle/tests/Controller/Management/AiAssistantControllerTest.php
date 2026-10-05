@@ -248,10 +248,10 @@ class AiAssistantControllerTest extends TestCase
         $configService->method('get')->willReturnCallback(static fn (string $slug) => match ($slug) {
             'ui-ai-assistant-dashboard-endpoint' => 'https://example.test/ask',
             'ui-ai-assistant-dashboard-token' => 'token',
-            'ui-ai-assistant-rephrase-provider' => 'anthropic',
-            'ui-ai-assistant-rephrase-api-key' => 'key',
-            'ui-ai-assistant-rephrase-base-uri' => 'https://api.anthropic.com/v1/messages',
-            'ui-ai-assistant-rephrase-model' => 'a-model',
+            'ui-ai-assistant-writer-provider' => 'anthropic',
+            'ui-ai-assistant-writer-api-key' => 'key',
+            'ui-ai-assistant-writer-base-uri' => 'https://api.anthropic.com/v1/messages',
+            'ui-ai-assistant-writer-model' => 'a-model',
             default => null,
         });
 
@@ -276,8 +276,8 @@ class AiAssistantControllerTest extends TestCase
         $configService->method('get')->willReturnCallback(static fn (string $slug) => match ($slug) {
             'ui-ai-assistant-dashboard-endpoint' => 'https://example.test/ask',
             'ui-ai-assistant-dashboard-token' => 'token',
-            'ui-ai-assistant-rephrase-provider' => 'anthropic',
-            'ui-ai-assistant-rephrase-api-key' => 'key',
+            'ui-ai-assistant-writer-provider' => 'anthropic',
+            'ui-ai-assistant-writer-api-key' => 'key',
             default => null,
         });
 
@@ -292,7 +292,7 @@ class AiAssistantControllerTest extends TestCase
         );
 
         $this->assertSame(
-            ['ui-ai-assistant-rephrase-base-uri', 'ui-ai-assistant-rephrase-model'],
+            ['ui-ai-assistant-writer-base-uri', 'ui-ai-assistant-writer-model'],
             $this->invokeMissingSlugs($controller)
         );
     }

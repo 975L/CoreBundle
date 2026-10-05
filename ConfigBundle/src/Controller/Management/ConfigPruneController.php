@@ -111,6 +111,7 @@ class ConfigPruneController extends AbstractController
         $orphanSlugs = array_diff(
             $this->configRepository->findAllSlugs(),
             $this->declarationLocator->findDeclaredSlugs(),
+            $this->declarationLocator->findFormerSlugs(),
             $this->declarationLocator->findUnregisteredSlugs(),
         );
 

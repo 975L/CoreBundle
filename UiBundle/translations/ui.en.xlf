@@ -32,7 +32,7 @@
             </trans-unit>
             <trans-unit id="FczgMxS">
                 <source>description.guided_project_ui_ai_assistant</source>
-                <target>Set up the rephrasing key, then try it out on the screen's own textarea before ever pressing that button under a real field</target>
+                <target>Set up the Donovan (Writer) key, then try it out on the screen's own textarea before ever pressing that button under a real field</target>
             </trans-unit>
             <trans-unit id="0iKWb5V">
                 <source>description.guided_project_ui_ai_search_answers</source>
@@ -89,6 +89,10 @@
             <trans-unit id="GHBZCNG">
                 <source>description.guided_project_ui_site_graphic</source>
                 <target>Favicon, logo, share image: the handful of files a site is recognised by, uploaded once and for all.</target>
+            </trans-unit>
+            <trans-unit id="VoJ0CnM">
+                <source>description.guided_step_ui_ai_assistant_action</source>
+                <target>A site in several languages offers, before the tone, to translate the text into one of them rather than rephrase it: the same list follows every text field of the back office</target>
             </trans-unit>
             <trans-unit id="97DoPkG">
                 <source>description.guided_step_ui_ai_assistant_done</source>
@@ -148,7 +152,7 @@
             </trans-unit>
             <trans-unit id="5CS4VPq">
                 <source>description.guided_step_ui_ai_search_setup_open</source>
-                <target>Four "Donovan (Assistant)" entries switch it on: provider, API key, base URI and model. All four are needed: while one is missing, the search stays off.</target>
+                <target>Four "Donovan (Site Q&amp;A)" entries switch it on: provider, API key, base URI and model. All four are needed: while one is missing, the search stays off.</target>
             </trans-unit>
             <trans-unit id="J7.qbf7">
                 <source>description.guided_step_ui_ai_search_setup_place</source>
@@ -2517,6 +2521,10 @@
             <trans-unit id="42UrnqR">
                 <source>label.guided_project_ui_site_graphic</source>
                 <target>Put the site's own graphics in place</target>
+            </trans-unit>
+            <trans-unit id="71qjK16">
+                <source>label.guided_step_ui_ai_assistant_action</source>
+                <target>Rephrase or translate</target>
             </trans-unit>
             <trans-unit id="goVER90">
                 <source>label.guided_step_ui_ai_assistant_done</source>

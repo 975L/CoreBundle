@@ -82,6 +82,25 @@ class ConfigsJsonTest extends TestCase
         }
     }
 
+    // A former slug is a list of strings naming no entry still declared: load-all would otherwise hand the row of a live entry over to the renamed one (see ConfigService::currentConfig)
+    public function testFormerSlugsNameNoDeclaredEntry(): void
+    {
+        $configs = $this->loadConfigs();
+        $formerSlugs = [];
+
+        foreach ($configs as $config) {
+            if (!array_key_exists('former_slugs', $config)) {
+                continue;
+            }
+
+            $this->assertIsList($config['former_slugs'], sprintf('Config "%s" declares former_slugs that are not a list', $config['slug']));
+            $this->assertContainsOnlyString($config['former_slugs'], sprintf('Config "%s" declares a former slug that is not a string', $config['slug']));
+            $formerSlugs = array_merge($formerSlugs, $config['former_slugs']);
+        }
+
+        $this->assertSame([], array_values(array_intersect($formerSlugs, array_column($configs, 'slug'))));
+    }
+
     // A "choice" entry is only worth its kind if it says what it accepts, and if its own default is part of it - the select is built from that list alone (see ConfigCrudController::buildChoiceField)
     public function testChoiceEntriesDeclareTheValuesTheyAccept(): void
     {

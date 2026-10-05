@@ -75,7 +75,8 @@ class ConfigPruneCommand extends Command
 
         $undeclared = array_diff(
             $this->configRepository->findAllSlugs(),
-            $this->declarationLocator->findDeclaredSlugs()
+            $this->declarationLocator->findDeclaredSlugs(),
+            $this->declarationLocator->findFormerSlugs(),
         );
 
         // An entry whose bundle is installed but absent from bundles.php is not an orphan: it is one line of configuration away from being declared again, and deleting it would take a value the site typed in

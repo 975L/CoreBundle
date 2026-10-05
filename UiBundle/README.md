@@ -1640,10 +1640,10 @@ A third, field-independent spot: once enabled, the AI Assistant page itself show
 
 | Config slug | Purpose |
 | --- | --- |
-| `ui-ai-assistant-rephrase-provider` | `anthropic`, `openai` or `euria` |
-| `ui-ai-assistant-rephrase-api-key` (sensitive) | The editor's own key for that provider - billed to whoever owns it |
-| `ui-ai-assistant-rephrase-base-uri` | **Required**, whatever the provider: the full messages endpoint for `anthropic` (`https://api.anthropic.com/v1/messages`), the product base for an OpenAI-compatible API (`https://api.openai.com/v1`, or Euria's `https://api.infomaniak.com/2/ai/<product>/openai/v1`) |
-| `ui-ai-assistant-rephrase-model` | **Required**, whatever the provider - no model is hardcoded here, so `isEnabled()` stays `false` until this is filled in rather than calling one nobody chose. Recommended on Euria: `mistralai/Mistral-Small-4-119B-2603` |
+| `ui-ai-assistant-writer-provider` | `anthropic`, `openai` or `euria` |
+| `ui-ai-assistant-writer-api-key` (sensitive) | The editor's own key for that provider - billed to whoever owns it |
+| `ui-ai-assistant-writer-base-uri` | **Required**, whatever the provider: the full messages endpoint for `anthropic` (`https://api.anthropic.com/v1/messages`), the product base for an OpenAI-compatible API (`https://api.openai.com/v1`, or Euria's `https://api.infomaniak.com/2/ai/<product>/openai/v1`) |
+| `ui-ai-assistant-writer-model` | **Required**, whatever the provider - no model is hardcoded here, so `isEnabled()` stays `false` until this is filled in rather than calling one nobody chose. Recommended on Euria: `mistralai/Mistral-Small-4-119B-2603` |
 
 `anthropic` is called with its native API; any other value is treated as an OpenAI-compatible API, `/chat/completions` being appended to the base URI - this is how both OpenAI and Euria are supported without provider-specific code. Nothing is defaulted in PHP: an entry carries its value, and an empty entry means the feature is off, not that a hidden one takes over.
 
@@ -3391,7 +3391,9 @@ One is a contract rather than a helper: **`Contract\SocialContentSourceInterface
 
 Each content is a **`Model\SocialContent`**: `sourceId`, `title`, `url`, the image both ways because the networks differ — `imagePath` read from disk for Bluesky, which wants the bytes uploaded, and `imageUrl` for Meta, which downloads a public url itself — its `imageAlt`, and `variables`, the other `{name}` placeholders the site's post template may carry (`category`, `description`…).
 
-A source whose contents fall into groups — a gallery's categories — may also implement **`Contract\ScopedSocialContentSourceInterface`**, so a SocialBundle publication slot can be narrowed to some of them: `getScopes()` lists the groups (labels keyed by id), `getNextScopedContent(array $excludedIds, array $scopeIds)` picks only among those given, an empty list meaning every group. It extends the base interface rather than adding to it, so a source without groups has nothing to change.
+A source whose contents fall into groups — a gallery's categories — may also implement **`Contract\ScopedSocialContentSourceInterface`**, so a SocialBundle series can be narrowed to some of them: `getScopes()` lists the groups (labels keyed by id), `getNextScopedContent(array $excludedIds, array $scopeIds)` picks only among those given, an empty list meaning every group. It extends the base interface rather than adding to it, so a source without groups has nothing to change.
+
+A bundle may also offer its pictures and videos to be picked one by one — a gallery's photographs attached to a social post — by implementing **`Contract\PickableMediaProviderInterface`** (auto-discovered by interface, no tag needed): `getPickableMediaLabel()` names the library, `findPickableMedia(string $search, int $limit)` returns `Model\PickableMedia` (path from the site root, title, MIME type, optional thumbnail), the latest first.
 
 ### Exporting and importing blocks
 

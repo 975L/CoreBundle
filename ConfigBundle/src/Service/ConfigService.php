@@ -175,7 +175,7 @@ class ConfigService implements ConfigServiceInterface, ResetInterface
         }
 
         foreach ($configs as $configData) {
-            $existing = $this->configRepository->findOneBySlug($configData['slug']);
+            $existing = $this->currentConfig($configData);
 
             if ($existing) {
                 $this->syncMetadata($existing, $configData);
@@ -191,6 +191,53 @@ class ConfigService implements ConfigServiceInterface, ResetInterface
         $this->manager->flush();
 
         $this->invalidateCache();
+    }
+
+    // The row an entry is stored under: its own, or the row of a former slug ("former_slugs", oldest last) renamed to it - and an own row still empty takes the value of a former one, which an import of an export older than the rename recreates after load-all
+    private function currentConfig(array $configData): ?Config
+    {
+        $config = $this->configRepository->findOneBySlug($configData['slug']);
+        $former = $this->formerConfig($configData);
+
+        if (null === $former) {
+            return $config;
+        }
+
+        if (null === $config) {
+            $former->setSlug($configData['slug']);
+
+            return $former;
+        }
+
+        if (null === $config->getValue() || '' === $config->getValue()) {
+            $this->mergeFormerConfig($config, $former);
+        }
+
+        return $config;
+    }
+
+    // The first row still stored under a former slug of the entry, the most recent first
+    private function formerConfig(array $configData): ?Config
+    {
+        foreach ($configData['former_slugs'] ?? [] as $formerSlug) {
+            $former = $this->configRepository->findOneBySlug($formerSlug);
+            if (null !== $former) {
+                return $former;
+            }
+        }
+
+        return null;
+    }
+
+    // Moves the value of a former row into the entry's own, stored as it stands with its sensitive flag so syncMetadata() converts it if needed, then drops the former row
+    private function mergeFormerConfig(Config $config, Config $former): void
+    {
+        $config->setValue($former->getValue());
+        $config->setIsSensitive($former->getIsSensitive());
+        $config->setModification(new \DateTime());
+
+        $this->manager->persist($config);
+        $this->manager->remove($former);
     }
 
     // Fills a row that holds nothing with the value its bundle declares, so an entry reads in the back office as the value the site is actually served - a color, a delay, a retention - instead of as an empty field whose real answer lives in a fallback the admin cannot see. What a fresh install is created with, given to sites installed before the entry gained a default too

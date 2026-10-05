@@ -35,10 +35,10 @@ class AiAssistantController extends AbstractController
     private const array LINKED_SLUGS = [
         'ui-ai-assistant-dashboard-endpoint',
         'ui-ai-assistant-dashboard-token',
-        'ui-ai-assistant-rephrase-provider',
-        'ui-ai-assistant-rephrase-api-key',
-        'ui-ai-assistant-rephrase-base-uri',
-        'ui-ai-assistant-rephrase-model',
+        'ui-ai-assistant-writer-provider',
+        'ui-ai-assistant-writer-api-key',
+        'ui-ai-assistant-writer-base-uri',
+        'ui-ai-assistant-writer-model',
     ];
 
     public function __construct(

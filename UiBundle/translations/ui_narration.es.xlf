@@ -22,6 +22,10 @@
                 <source>narration.forms</source>
                 <target>«Formularios» lleva los formularios del sitio, contacto, registro o calculadora, cada uno con sus campos y la acción que dispara al enviarse.</target>
             </trans-unit>
+            <trans-unit id="WPAsuLp">
+                <source>narration.guided_step_ui_ai_assistant_action</source>
+                <target>Su sitio habla varios idiomas: esta lista elige entre reformular el texto y traducirlo a uno de ellos. Deje «Reformular» para esta primera prueba, una traducción se lanza de la misma manera.</target>
+            </trans-unit>
             <trans-unit id="7pTq006">
                 <source>narration.guided_step_ui_ai_assistant_done</source>
                 <target>El mismo botón se encuentra bajo cada campo de texto del back-office: bloques, páginas, correos, opiniones, etc. Los mismos tres controles en todas partes, y esta pantalla cuenta los tokens gastados en el mes.</target>
@@ -80,7 +84,7 @@
             </trans-unit>
             <trans-unit id="4HX8SSk">
                 <source>narration.guided_step_ui_ai_search_setup_open</source>
-                <target>Aquí están los ajustes, abiertos en el grupo IA: cuatro entradas « Donovan (Asistente) », el proveedor, la clave API, la URI base y el modelo, encienden la búsqueda del sitio, y hacen falta las cuatro.</target>
+                <target>Aquí están los ajustes, abiertos en el grupo IA: cuatro entradas « Donovan (Site Q&amp;A) », el proveedor, la clave API, la URI base y el modelo, encienden la búsqueda del sitio, y hacen falta las cuatro.</target>
             </trans-unit>
             <trans-unit id="TRy2chd">
                 <source>narration.guided_step_ui_ai_search_setup_place</source>

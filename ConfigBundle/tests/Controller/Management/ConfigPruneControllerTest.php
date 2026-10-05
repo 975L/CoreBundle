@@ -34,11 +34,12 @@ class ConfigPruneControllerTest extends TestCase
     }
 
     // Declaration files are located by globbing a real project dir, so the locator is stubbed rather than pointed at a fixture tree - ConfigDeclarationLocatorTest already covers the globbing itself
-    private function createDeclarationLocator(array $files, array $declaredSlugs, array $unreadableFiles = []): ConfigDeclarationLocator
+    private function createDeclarationLocator(array $files, array $declaredSlugs, array $unreadableFiles = [], array $formerSlugs = []): ConfigDeclarationLocator
     {
         $locator = $this->createStub(ConfigDeclarationLocator::class);
         $locator->method('findFiles')->willReturn($files);
         $locator->method('findDeclaredSlugs')->willReturn($declaredSlugs);
+        $locator->method('findFormerSlugs')->willReturn($formerSlugs);
         $locator->method('findUnreadableFiles')->willReturn($unreadableFiles);
         $locator->method('describe')->willReturnCallback(static fn (string $file) => basename($file));
 
@@ -88,6 +89,30 @@ class ConfigPruneControllerTest extends TestCase
         $controller = $this->createController(
             $configRepository,
             $this->createDeclarationLocator(['/app/config/configs.json'], ['site-name']),
+        );
+        $controller->setContainer($this->createContainer([
+            'security.authorization_checker' => $this->createAuthorizationChecker(true),
+            'twig' => $this->createTwigExpecting(['orphans' => [$orphan], 'hasDeclarations' => true, 'unreadableFiles' => [], 'unregistered' => []]),
+        ]));
+
+        $this->assertSame(200, $controller->index()->getStatusCode());
+    }
+
+    // The former slug of a renamed entry holds a value load-all still has to carry over: never offered, let alone checked, for deletion
+    public function testIndexNeverListsTheFormerSlugOfARenamedEntry(): void
+    {
+        $orphan = $this->createConfig('site-favicon');
+
+        $configRepository = $this->createMock(ConfigRepository::class);
+        $configRepository->method('findAllSlugs')->willReturn(['ui-ai-assistant-writer-api-key', 'ui-ai-assistant-rephrase-api-key', 'site-favicon']);
+        $configRepository->expects($this->once())
+            ->method('findBy')
+            ->with(['slug' => ['site-favicon']], ['slug' => 'ASC'])
+            ->willReturn([$orphan]);
+
+        $controller = $this->createController(
+            $configRepository,
+            $this->createDeclarationLocator(['/app/config/configs.json'], ['ui-ai-assistant-writer-api-key'], [], ['ui-ai-assistant-rephrase-api-key']),
         );
         $controller->setContainer($this->createContainer([
             'security.authorization_checker' => $this->createAuthorizationChecker(true),

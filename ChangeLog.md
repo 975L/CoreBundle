@@ -1,5 +1,22 @@
 # ChangeLog
 
+## v1.53.0
+
+Donovan's writer key, config entries renamed in place
+
+### ConfigBundle
+
+- `former_slugs` in `configs.json`: `c975l:config:load-all` renames the row of a former slug, its value kept (05/10/2026)
+- `c975l:config:load-all` merges a former slug's value into a still empty new row (05/10/2026)
+- `c975l:config:prune` never lists a former slug (05/10/2026)
+
+### UiBundle
+
+- `ui-ai-assistant-rephrase-*` renamed `ui-ai-assistant-writer-*`, the value carried over by `config:load-all` (05/10/2026) **See [UPGRADE.md](UPGRADE.md)** [BC-Break]
+- Labels "Donovan (Writer)" and "Donovan (Site Q&A)", writer descriptions and alerts aligned (05/10/2026)
+- `ui-ai-assistant` guided project points at the rephrase/translate select on a multilingual site (05/10/2026)
+- `PickableMediaProviderInterface`: a bundle offers its pictures and videos to be picked by another one (05/10/2026)
+
 ## v1.52.1
 
 Further listing pages canonical to themselves

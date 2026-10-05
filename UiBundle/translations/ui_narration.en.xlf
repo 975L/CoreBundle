@@ -22,6 +22,10 @@
                 <source>narration.forms</source>
                 <target>"Forms" holds the forms of the site, contact, sign-up or calculator, each with its fields and the action it triggers on submit.</target>
             </trans-unit>
+            <trans-unit id="WPAsuLp">
+                <source>narration.guided_step_ui_ai_assistant_action</source>
+                <target>Your site speaks several languages: this list picks between rephrasing the text and translating it into one of them. Leave "Rephrase" for this first try, a translation runs the same way.</target>
+            </trans-unit>
             <trans-unit id="7pTq006">
                 <source>narration.guided_step_ui_ai_assistant_done</source>
                 <target>The same button sits under every text field of the back office: blocks, pages, e-mails, reviews, and so on. The same three controls everywhere, and this screen counts the tokens spent over the month.</target>
@@ -80,7 +84,7 @@
             </trans-unit>
             <trans-unit id="4HX8SSk">
                 <source>narration.guided_step_ui_ai_search_setup_open</source>
-                <target>Here are the settings, opened on the AI group: four "Donovan (Assistant)" entries, the provider, the API key, the base URI and the model, switch the site search on, and all four are needed.</target>
+                <target>Here are the settings, opened on the AI group: four "Donovan (Site Q&amp;A)" entries, the provider, the API key, the base URI and the model, switch the site search on, and all four are needed.</target>
             </trans-unit>
             <trans-unit id="TRy2chd">
                 <source>narration.guided_step_ui_ai_search_setup_place</source>

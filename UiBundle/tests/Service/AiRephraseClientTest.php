@@ -24,8 +24,8 @@ class AiRephraseClientTest extends TestCase
     {
         // What every call needs, unless the test empties one itself to check the feature stays off
         $values += [
-            'ui-ai-assistant-rephrase-base-uri' => 'https://api.anthropic.com/v1/messages',
-            'ui-ai-assistant-rephrase-model' => 'a-model',
+            'ui-ai-assistant-writer-base-uri' => 'https://api.anthropic.com/v1/messages',
+            'ui-ai-assistant-writer-model' => 'a-model',
         ];
 
         $configService = $this->createStub(ConfigServiceInterface::class);
@@ -46,8 +46,8 @@ class AiRephraseClientTest extends TestCase
         $client = new AiRephraseClient(
             new MockHttpClient(),
             $this->createConfigService([
-                'ui-ai-assistant-rephrase-provider' => null,
-                'ui-ai-assistant-rephrase-api-key' => 'some-key',
+                'ui-ai-assistant-writer-provider' => null,
+                'ui-ai-assistant-writer-api-key' => 'some-key',
             ]),
             $this->createStub(LoggerInterface::class),
             $this->createUsageTracker(),
@@ -61,9 +61,9 @@ class AiRephraseClientTest extends TestCase
         $client = new AiRephraseClient(
             new MockHttpClient(),
             $this->createConfigService([
-                'ui-ai-assistant-rephrase-provider' => 'euria',
-                'ui-ai-assistant-rephrase-api-key' => 'euria-key',
-                'ui-ai-assistant-rephrase-base-uri' => null,
+                'ui-ai-assistant-writer-provider' => 'euria',
+                'ui-ai-assistant-writer-api-key' => 'euria-key',
+                'ui-ai-assistant-writer-base-uri' => null,
             ]),
             $this->createStub(LoggerInterface::class),
             $this->createUsageTracker(),
@@ -77,10 +77,10 @@ class AiRephraseClientTest extends TestCase
         $client = new AiRephraseClient(
             new MockHttpClient(),
             $this->createConfigService([
-                'ui-ai-assistant-rephrase-provider' => 'euria',
-                'ui-ai-assistant-rephrase-api-key' => 'euria-key',
-                'ui-ai-assistant-rephrase-base-uri' => 'https://api.infomaniak.com/ai/1',
-                'ui-ai-assistant-rephrase-model' => null,
+                'ui-ai-assistant-writer-provider' => 'euria',
+                'ui-ai-assistant-writer-api-key' => 'euria-key',
+                'ui-ai-assistant-writer-base-uri' => 'https://api.infomaniak.com/ai/1',
+                'ui-ai-assistant-writer-model' => null,
             ]),
             $this->createStub(LoggerInterface::class),
             $this->createUsageTracker(),
@@ -94,11 +94,11 @@ class AiRephraseClientTest extends TestCase
     {
         foreach (['anthropic', 'openai', 'euria'] as $provider) {
             $filled = [
-                'ui-ai-assistant-rephrase-provider' => $provider,
-                'ui-ai-assistant-rephrase-api-key' => 'a-key',
+                'ui-ai-assistant-writer-provider' => $provider,
+                'ui-ai-assistant-writer-api-key' => 'a-key',
             ];
 
-            foreach (['ui-ai-assistant-rephrase-base-uri', 'ui-ai-assistant-rephrase-model'] as $slug) {
+            foreach (['ui-ai-assistant-writer-base-uri', 'ui-ai-assistant-writer-model'] as $slug) {
                 $client = new AiRephraseClient(
                     new MockHttpClient(),
                     $this->createConfigService($filled + [$slug => null]),
@@ -125,8 +125,8 @@ class AiRephraseClientTest extends TestCase
         $client = new AiRephraseClient(
             new MockHttpClient(),
             $this->createConfigService([
-                'ui-ai-assistant-rephrase-provider' => null,
-                'ui-ai-assistant-rephrase-api-key' => null,
+                'ui-ai-assistant-writer-provider' => null,
+                'ui-ai-assistant-writer-api-key' => null,
             ]),
             $this->createStub(LoggerInterface::class),
             $this->createUsageTracker(),
@@ -158,8 +158,8 @@ class AiRephraseClientTest extends TestCase
         $client = new AiRephraseClient(
             $httpClient,
             $this->createConfigService([
-                'ui-ai-assistant-rephrase-provider' => 'anthropic',
-                'ui-ai-assistant-rephrase-api-key' => 'anthropic-key',
+                'ui-ai-assistant-writer-provider' => 'anthropic',
+                'ui-ai-assistant-writer-api-key' => 'anthropic-key',
             ]),
             $this->createStub(LoggerInterface::class),
             $usageTracker,
@@ -193,8 +193,8 @@ class AiRephraseClientTest extends TestCase
         $client = new AiRephraseClient(
             $httpClient,
             $this->createConfigService([
-                'ui-ai-assistant-rephrase-provider' => 'openai',
-                'ui-ai-assistant-rephrase-api-key' => 'openai-key',
+                'ui-ai-assistant-writer-provider' => 'openai',
+                'ui-ai-assistant-writer-api-key' => 'openai-key',
             ]),
             $this->createStub(LoggerInterface::class),
             $usageTracker,
@@ -224,10 +224,10 @@ class AiRephraseClientTest extends TestCase
         $client = new AiRephraseClient(
             $httpClient,
             $this->createConfigService([
-                'ui-ai-assistant-rephrase-provider' => 'euria',
-                'ui-ai-assistant-rephrase-api-key' => 'euria-key',
-                'ui-ai-assistant-rephrase-base-uri' => 'https://api.infomaniak.com/ai/1',
-                'ui-ai-assistant-rephrase-model' => 'mistralai/Mistral-Small-4-119B-2603',
+                'ui-ai-assistant-writer-provider' => 'euria',
+                'ui-ai-assistant-writer-api-key' => 'euria-key',
+                'ui-ai-assistant-writer-base-uri' => 'https://api.infomaniak.com/ai/1',
+                'ui-ai-assistant-writer-model' => 'mistralai/Mistral-Small-4-119B-2603',
             ]),
             $this->createStub(LoggerInterface::class),
             $this->createUsageTracker(),
@@ -242,8 +242,8 @@ class AiRephraseClientTest extends TestCase
         $client = new AiRephraseClient(
             new MockHttpClient(),
             $this->createConfigService([
-                'ui-ai-assistant-rephrase-provider' => 'mistral',
-                'ui-ai-assistant-rephrase-api-key' => 'some-key',
+                'ui-ai-assistant-writer-provider' => 'mistral',
+                'ui-ai-assistant-writer-api-key' => 'some-key',
             ]),
             $this->createStub(LoggerInterface::class),
             $this->createUsageTracker(),
@@ -284,8 +284,8 @@ class AiRephraseClientTest extends TestCase
         $client = new AiRephraseClient(
             $httpClient,
             $this->createConfigService([
-                'ui-ai-assistant-rephrase-provider' => 'anthropic',
-                'ui-ai-assistant-rephrase-api-key' => 'anthropic-key',
+                'ui-ai-assistant-writer-provider' => 'anthropic',
+                'ui-ai-assistant-writer-api-key' => 'anthropic-key',
             ]),
             $this->createStub(LoggerInterface::class),
             $this->createUsageTracker(),
@@ -314,8 +314,8 @@ class AiRephraseClientTest extends TestCase
         $client = new AiRephraseClient(
             $httpClient,
             $this->createConfigService([
-                'ui-ai-assistant-rephrase-provider' => 'anthropic',
-                'ui-ai-assistant-rephrase-api-key' => 'anthropic-key',
+                'ui-ai-assistant-writer-provider' => 'anthropic',
+                'ui-ai-assistant-writer-api-key' => 'anthropic-key',
             ]),
             $this->createStub(LoggerInterface::class),
             $this->createUsageTracker(),
@@ -337,8 +337,8 @@ class AiRephraseClientTest extends TestCase
         $client = new AiRephraseClient(
             $httpClient,
             $this->createConfigService([
-                'ui-ai-assistant-rephrase-provider' => 'anthropic',
-                'ui-ai-assistant-rephrase-api-key' => 'anthropic-key',
+                'ui-ai-assistant-writer-provider' => 'anthropic',
+                'ui-ai-assistant-writer-api-key' => 'anthropic-key',
             ]),
             $this->createStub(LoggerInterface::class),
             $this->createUsageTracker(),
@@ -379,8 +379,8 @@ class AiRephraseClientTest extends TestCase
         $client = new AiRephraseClient(
             $httpClient,
             $this->createConfigService([
-                'ui-ai-assistant-rephrase-provider' => 'anthropic',
-                'ui-ai-assistant-rephrase-api-key' => 'anthropic-key',
+                'ui-ai-assistant-writer-provider' => 'anthropic',
+                'ui-ai-assistant-writer-api-key' => 'anthropic-key',
             ]),
             $this->createStub(LoggerInterface::class),
             $this->createUsageTracker(),
@@ -409,8 +409,8 @@ class AiRephraseClientTest extends TestCase
         $client = new AiRephraseClient(
             $httpClient,
             $this->createConfigService([
-                'ui-ai-assistant-rephrase-provider' => 'anthropic',
-                'ui-ai-assistant-rephrase-api-key' => 'anthropic-key',
+                'ui-ai-assistant-writer-provider' => 'anthropic',
+                'ui-ai-assistant-writer-api-key' => 'anthropic-key',
             ]),
             $this->createStub(LoggerInterface::class),
             $this->createUsageTracker(),
@@ -439,8 +439,8 @@ class AiRephraseClientTest extends TestCase
         $client = new AiRephraseClient(
             $httpClient,
             $this->createConfigService([
-                'ui-ai-assistant-rephrase-provider' => 'anthropic',
-                'ui-ai-assistant-rephrase-api-key' => 'anthropic-key',
+                'ui-ai-assistant-writer-provider' => 'anthropic',
+                'ui-ai-assistant-writer-api-key' => 'anthropic-key',
             ]),
             $this->createStub(LoggerInterface::class),
             $this->createUsageTracker(),
@@ -468,8 +468,8 @@ class AiRephraseClientTest extends TestCase
         $client = new AiRephraseClient(
             $httpClient,
             $this->createConfigService([
-                'ui-ai-assistant-rephrase-provider' => 'anthropic',
-                'ui-ai-assistant-rephrase-api-key' => 'anthropic-key',
+                'ui-ai-assistant-writer-provider' => 'anthropic',
+                'ui-ai-assistant-writer-api-key' => 'anthropic-key',
             ]),
             $this->createStub(LoggerInterface::class),
             $this->createUsageTracker(),
@@ -493,8 +493,8 @@ class AiRephraseClientTest extends TestCase
         $client = new AiRephraseClient(
             $httpClient,
             $this->createConfigService([
-                'ui-ai-assistant-rephrase-provider' => 'openai',
-                'ui-ai-assistant-rephrase-api-key' => 'openai-key',
+                'ui-ai-assistant-writer-provider' => 'openai',
+                'ui-ai-assistant-writer-api-key' => 'openai-key',
             ]),
             $this->createStub(LoggerInterface::class),
             $usageTracker,

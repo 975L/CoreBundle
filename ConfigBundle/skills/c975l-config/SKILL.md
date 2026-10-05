@@ -1,6 +1,6 @@
 ---
 name: c975l-config
-description: "Use this skill for any configuration question in a Symfony application built on the c975L ecosystem — where a setting belongs, how to declare one, how to read it, and why .env and container parameters are the wrong answer here. Covers config/configs.json, ConfigServiceInterface, how a group drawer is named and labelled, sensitive and restricted values, severities, the vault key, the loading and pruning commands, and maintenance mode. Triggers on: configs.json, ConfigServiceInterface, ConfigService, config(), configParam(), c975l:config:load-all, c975l:config:set, c975l:config:get, c975l:config:prune, c975l:config:encrypt-sensitive, C975L_VAULT_KEY, sensitive, restricted, severity, feature, UnusedConfigFeatureReader, ConfigAlertProvider, findSensitiveWithValue, site-maintenance, MaintenancePageCacheWarmer, maintenance.html, cache:warmup, deployment, ConfigTranslator, ConfigTranslator::TRANSLATABLE, site_config owner, translate a setting, .env, parameters.yaml, TreeBuilder, ConfigGroupLabelResolver, label.group_, SiteLocales, enabled_locales, LocaleListener, default_locale, translation.yaml, multilingual, isMultilingual, setLocales, language selector, locales_pattern, LocalizedRouteNegotiator, isTranslated, redirectToAskedLanguage, dropAskedLanguage, vary, LocalizedUrlGenerator, sameRouteIn, _canonical_route, localized_path, screen_languages, ContentLocaleScreen, contenu, _content_locale_tabs, InternalLinkLocalizerInterface, SESSION_KEY_MANAGEMENT, isManagementPath, ROUTE_PATH, back office language, site-rate-limit."
+description: "Use this skill for any configuration question in a Symfony application built on the c975L ecosystem — where a setting belongs, how to declare one, how to read it, and why .env and container parameters are the wrong answer here. Covers config/configs.json, ConfigServiceInterface, how a group drawer is named and labelled, sensitive and restricted values, severities, the vault key, the loading and pruning commands, and maintenance mode. Triggers on: configs.json, ConfigServiceInterface, ConfigService, config(), configParam(), c975l:config:load-all, c975l:config:set, c975l:config:get, c975l:config:prune, c975l:config:encrypt-sensitive, former_slugs, rename a slug, C975L_VAULT_KEY, sensitive, restricted, severity, feature, UnusedConfigFeatureReader, ConfigAlertProvider, findSensitiveWithValue, site-maintenance, MaintenancePageCacheWarmer, maintenance.html, cache:warmup, deployment, ConfigTranslator, ConfigTranslator::TRANSLATABLE, site_config owner, translate a setting, .env, parameters.yaml, TreeBuilder, ConfigGroupLabelResolver, label.group_, SiteLocales, enabled_locales, LocaleListener, default_locale, translation.yaml, multilingual, isMultilingual, setLocales, language selector, locales_pattern, LocalizedRouteNegotiator, isTranslated, redirectToAskedLanguage, dropAskedLanguage, vary, LocalizedUrlGenerator, sameRouteIn, _canonical_route, localized_path, screen_languages, ContentLocaleScreen, contenu, _content_locale_tabs, InternalLinkLocalizerInterface, SESSION_KEY_MANAGEMENT, isManagementPath, ROUTE_PATH, back office language, site-rate-limit."
 ---
 
 # c975L ConfigBundle — configuration
@@ -106,6 +106,10 @@ production state and is never overwritten**, so fixing a label and re-running is
 One exception: **a row holding nothing takes the value its declaration carries.** An entry whose
 *emptiness* means something must therefore name that meaning with a value of its own (`0`, `none`)
 rather than by being empty.
+
+**Renaming a slug: declare `"former_slugs": ["old-slug"]`** (most recent first) on the new entry.
+`load-all` renames the old row, value kept, or merges its value into a still empty new row and drops
+it; `prune` never lists a former slug.
 
 ## Reading a value
 
@@ -264,6 +268,7 @@ generated and belongs in the site's `.gitignore`; overriding the template change
 - **Do not invent a `group` to avoid sharing one.** `book-legal` or `payment-email` splits what an editor fills in one sitting; file under the shared drawer instead. A drawer of your own is for what only your bundle answers, and it ships its `label.group_*` with it.
 - **Do not declare a slug in one bundle and read it from another.** The entry belongs to the bundle
   that reads it; if two read it, it moves to their common ancestor.
+- **Do not rename a slug without `former_slugs`** — the site would lose its stored value and `prune` offer the old row.
 - **Do not use emptiness as a meaningful state** on an entry carrying a seeded default.
 - **Do not serve `robots.txt` or a sitemap from a controller** — they must survive maintenance mode.
 - **Do not render a maintenance page with a 200 or a 404.**

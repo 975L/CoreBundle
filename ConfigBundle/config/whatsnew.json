@@ -6,6 +6,11 @@
                 "en": "The further pages of a listing are no longer reported by Google as duplicates of the first one.",
                 "fr": "Les pages suivantes d'une liste ne sont plus signalées par Google comme des doublons de la première.",
                 "es": "Las páginas siguientes de un listado ya no son señaladas por Google como duplicados de la primera."
+            },
+            {
+                "en": "A setting renamed by an update keeps its value, and is never offered for deletion on the \"Obsolete configs\" screen.",
+                "fr": "Un réglage renommé par une mise à jour garde sa valeur, et n'est jamais proposé à la suppression dans l'écran « Configs obsolètes ».",
+                "es": "Un ajuste renombrado por una actualización conserva su valor, y nunca se propone para eliminar en la pantalla «Configs obsoletas»."
             }
         ]
     },
