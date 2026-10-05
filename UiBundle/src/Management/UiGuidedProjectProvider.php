@@ -31,7 +31,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-// This bundle's guided projects, running the 3000 block GuidedProjectProviderInterface reserves them - the same docblock stating every other bundle's, so a range is read there rather than recopied here. They open on the media library first, the one screen of this bundle the sidebar keeps essential, then the three a site puts in place as it opens (its graphics, its legal documents, the key its rephrasing runs on), the occasional ones after, the site search's setup last. Each carries the role its own screen is gated by, so a parcours is never offered to someone its very first step turns away. Only the opening step of each carries an url: from there the parcours walks the screen the user has been sent to, highlighting the button or the field they are meant to use next - one they click themselves, which brings the panel back on that very step (see ConfigBundle's assets/js/guided-project.js)
+// This bundle's guided projects, running the 3000 block GuidedProjectProviderInterface reserves them - the same docblock stating every other bundle's, so a range is read there rather than recopied here. They open on the media library first, the one screen of this bundle the sidebar keeps essential, then the three a site puts in place as it opens (its graphics, its legal documents, the key its rephrasing runs on), the occasional ones after, the site search's setup and the installable app last. Each carries the role its own screen is gated by, so a parcours is never offered to someone its very first step turns away. Only the opening step of each carries an url: from there the parcours walks the screen the user has been sent to, highlighting the button or the field they are meant to use next - one they click themselves, which brings the panel back on that very step (see ConfigBundle's assets/js/guided-project.js)
 // No parcours teaches a block kind, however much one asks for beforehand (the "map" one wants its provider picked in Configuration first): a block is composed inside a page, and a page belongs to SiteBundle, which is where that parcours goes. What is walked here is this bundle's own screens.
 class UiGuidedProjectProvider implements GuidedProjectProviderInterface
 {
@@ -76,6 +76,8 @@ class UiGuidedProjectProvider implements GuidedProjectProviderInterface
         if ($this->aiAssistantClient->isEnabled()) {
             $projects[] = $this->donovanAskProject();
         }
+
+        $projects[] = $this->pwaSetupProject();
 
         return $projects;
     }
@@ -957,6 +959,55 @@ class UiGuidedProjectProvider implements GuidedProjectProviderInterface
                     'label' => 'label.guided_step_ui_donovan_ask_sources',
                     'description' => 'description.guided_step_ui_donovan_ask_sources',
                     'narration' => 'narration.guided_step_ui_donovan_ask_sources',
+                ],
+            ],
+        ];
+    }
+
+    // One setting makes the site installable, but Chrome offers no install before the 512px icon is there too - the closing step only names it, its own screen being the site graphics parcours
+    private function pwaSetupProject(): array
+    {
+        return [
+            'slug' => 'ui-pwa-setup',
+            'label' => 'label.guided_project_ui_pwa_setup',
+            'description' => 'description.guided_project_ui_pwa_setup',
+            'translation_domain' => 'ui',
+            'order' => 3170,
+            // "ui-pwa-enabled" is restricted: ConfigCrudController keeps it out of the list below this role
+            'role' => 'ROLE_SUPER_ADMIN',
+            'steps' => [
+                [
+                    'label' => 'label.guided_step_ui_pwa_setup_open',
+                    'description' => 'description.guided_step_ui_pwa_setup_open',
+                    'narration' => 'narration.guided_step_ui_pwa_setup_open',
+                    'url' => $this->adminUrlGenerator
+                        ->unsetAll()
+                        ->setController(ConfigCrudController::class)
+                        ->setAction(Action::INDEX)
+                        ->set('group', 'ui')
+                        ->generateUrl(),
+                ],
+                [
+                    'label' => 'label.guided_step_ui_pwa_setup_entry',
+                    'description' => 'description.guided_step_ui_pwa_setup_entry',
+                    'narration' => 'narration.guided_step_ui_pwa_setup_entry',
+                    'highlight' => '.action-edit',
+                ],
+                [
+                    'label' => 'label.guided_step_ui_pwa_setup_value',
+                    'description' => 'description.guided_step_ui_pwa_setup_value',
+                    'narration' => 'narration.guided_step_ui_pwa_setup_value',
+                    'highlight' => '#Config_value',
+                ],
+                [
+                    'label' => 'label.guided_step_ui_pwa_setup_save',
+                    'narration' => 'narration.guided_step_ui_pwa_setup_save',
+                    'highlight' => '.action-saveAndReturn',
+                ],
+                [
+                    'label' => 'label.guided_step_ui_pwa_setup_icon',
+                    'description' => 'description.guided_step_ui_pwa_setup_icon',
+                    'narration' => 'narration.guided_step_ui_pwa_setup_icon',
                 ],
             ],
         ];

@@ -35,6 +35,8 @@ class Media implements DrawableMediaInterface, VichImageResizableInterface, Vich
     // Site-wide graphics, not attached to a Block - fixed filename at the root of public/ (see getVichMediaPath), one row per role enforced at the application level (see isSingletonRole)
     public const ROLE_FAVICON = 'favicon';
     public const ROLE_APPLE_TOUCH_ICON = 'apple-touch-icon';
+    // The icon an installed web app shows on a phone's home screen (see PwaController): Android wants 512px, far above the apple-touch-icon
+    public const ROLE_APP_ICON = 'app-icon';
     public const ROLE_OG_IMAGE = 'og-image';
     public const ROLE_LOGO = 'logo';
     // The same logo drawn for a dark page, uploaded next to the one above the way the two watermarks are: a logo whose lettering is black disappears into a dark navbar, and no filter lightens it without flattening the colours around that lettering. Optional - a site whose logo reads on both grounds uploads none, and the one above is then used in both modes (see SiteBundle's Navbar)
@@ -50,6 +52,7 @@ class Media implements DrawableMediaInterface, VichImageResizableInterface, Vich
     private const array SINGLETON_ROLES = [
         self::ROLE_FAVICON,
         self::ROLE_APPLE_TOUCH_ICON,
+        self::ROLE_APP_ICON,
         self::ROLE_OG_IMAGE,
         self::ROLE_LOGO,
         self::ROLE_LOGO_ON_DARK,
@@ -61,6 +64,7 @@ class Media implements DrawableMediaInterface, VichImageResizableInterface, Vich
     private const array FIXED_ICON_SPECS = [
         self::ROLE_FAVICON => ['width' => 48, 'height' => 48, 'format' => 'ico'],
         self::ROLE_APPLE_TOUCH_ICON => ['width' => 114, 'height' => 114, 'format' => 'png'],
+        self::ROLE_APP_ICON => ['width' => 512, 'height' => 512, 'format' => 'png'],
     ];
 
     // Roles resized to a max width (no square canvas, unlike FIXED_ICON_SPECS) instead of the default IMAGE_WIDTH

@@ -386,6 +386,26 @@
                 <source>narration.guided_step_ui_media_save</source>
                 <target>Guarde el medio con el botón situado en la parte inferior del formulario.</target>
             </trans-unit>
+            <trans-unit id="5xBLCZs">
+                <source>narration.guided_step_ui_pwa_setup_entry</source>
+                <target>Haga clic en el lápiz de la entrada « Aplicación web instalable ».</target>
+            </trans-unit>
+            <trans-unit id="ObV0jRq">
+                <source>narration.guided_step_ui_pwa_setup_icon</source>
+                <target>Último paso: suba el icono de aplicación de 512 px en los gráficos del sitio, sin él el navegador no ofrece la instalación.</target>
+            </trans-unit>
+            <trans-unit id="19jCxNZ">
+                <source>narration.guided_step_ui_pwa_setup_open</source>
+                <target>Estos son los ajustes, abiertos en el grupo Interfaz: la entrada « Aplicación web instalable » hace el sitio instalable, el nombre corto y la página para compartir son opcionales.</target>
+            </trans-unit>
+            <trans-unit id="ucQIab6">
+                <source>narration.guided_step_ui_pwa_setup_save</source>
+                <target>Guarde.</target>
+            </trans-unit>
+            <trans-unit id="59a.Z2A">
+                <source>narration.guided_step_ui_pwa_setup_value</source>
+                <target>Marque esta casilla para activarla.</target>
+            </trans-unit>
             <trans-unit id="lv5yC9T">
                 <source>narration.guided_step_ui_review_decide</source>
                 <target>De vuelta en la lista, estos son los dos botones por los que existe esta pantalla: la marca de su fila publica la opinión, la cruz la rechaza.</target>
@@ -420,7 +440,7 @@
             </trans-unit>
             <trans-unit id="H8qip51">
                 <source>narration.guided_step_ui_site_graphic_file</source>
-                <target>Elija el archivo. Como el rol ya está fijado, solo queda la imagen: al guardar se renombra y se conserva en la dirección fija desde la que el sitio la sirve. Se acepta un SVG, convertido para el favicon, el icono Apple Touch y la imagen Open Graph.</target>
+                <target>Elija el archivo. Como el rol ya está fijado, solo queda la imagen: al guardar se renombra y se conserva en la dirección fija desde la que el sitio la sirve. Se acepta un SVG, convertido para los iconos y la imagen Open Graph.</target>
             </trans-unit>
             <trans-unit id="9dmAOkA">
                 <source>narration.guided_step_ui_site_graphic_open</source>

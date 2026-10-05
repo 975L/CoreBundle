@@ -1,0 +1,6 @@
+// Served in place of the site's service worker while "ui-pwa-enabled" is off (see PwaController): a browser keeps a worker whose update fails, so this one replaces it, drops its caches and unregisters itself
+self.addEventListener("install", () => self.skipWaiting());
+
+self.addEventListener("activate", (event) => {
+    event.waitUntil(caches.keys().then((keys) => Promise.all(keys.filter((key) => key.startsWith("c975l-pwa-")).map((key) => caches.delete(key)))).then(() => self.registration.unregister()));
+});

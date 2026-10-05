@@ -386,6 +386,26 @@
                 <source>narration.guided_step_ui_media_save</source>
                 <target>Enregistrez le média avec le bouton en bas du formulaire.</target>
             </trans-unit>
+            <trans-unit id="5xBLCZs">
+                <source>narration.guided_step_ui_pwa_setup_entry</source>
+                <target>Cliquez sur le crayon de l'entrée « Application web installable ».</target>
+            </trans-unit>
+            <trans-unit id="ObV0jRq">
+                <source>narration.guided_step_ui_pwa_setup_icon</source>
+                <target>Dernière étape : déposez l'icône d'application 512 px dans les graphismes du site, sans elle le navigateur ne propose pas l'installation.</target>
+            </trans-unit>
+            <trans-unit id="19jCxNZ">
+                <source>narration.guided_step_ui_pwa_setup_open</source>
+                <target>Voici les réglages, ouverts sur le groupe Interface : l'entrée « Application web installable » rend le site installable, le nom court et la page de partage sont facultatifs.</target>
+            </trans-unit>
+            <trans-unit id="ucQIab6">
+                <source>narration.guided_step_ui_pwa_setup_save</source>
+                <target>Enregistrez.</target>
+            </trans-unit>
+            <trans-unit id="59a.Z2A">
+                <source>narration.guided_step_ui_pwa_setup_value</source>
+                <target>Cochez cette case pour l'activer.</target>
+            </trans-unit>
             <trans-unit id="lv5yC9T">
                 <source>narration.guided_step_ui_review_decide</source>
                 <target>De retour dans la liste, voici les deux boutons pour lesquels cet écran existe : la coche de sa ligne publie l'avis, la croix le refuse.</target>
@@ -420,7 +440,7 @@
             </trans-unit>
             <trans-unit id="H8qip51">
                 <source>narration.guided_step_ui_site_graphic_file</source>
-                <target>Choisissez le fichier. Le rôle étant déjà fixé, il ne reste que l'image : elle est renommée à l'enregistrement et conservée à l'adresse fixe où le site la sert. Un SVG est accepté et converti pour le favicon, l'icône Apple Touch et l'image Open Graph.</target>
+                <target>Choisissez le fichier. Le rôle étant déjà fixé, il ne reste que l'image : elle est renommée à l'enregistrement et conservée à l'adresse fixe où le site la sert. Un SVG est accepté et converti pour les icônes et l'image Open Graph.</target>
             </trans-unit>
             <trans-unit id="9dmAOkA">
                 <source>narration.guided_step_ui_site_graphic_open</source>

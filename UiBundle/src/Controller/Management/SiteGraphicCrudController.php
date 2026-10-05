@@ -44,6 +44,7 @@ class SiteGraphicCrudController extends AbstractCrudController
     private const array ROLE_LABELS = [
         Media::ROLE_FAVICON => 'label.favicon',
         Media::ROLE_APPLE_TOUCH_ICON => 'label.apple_touch_icon',
+        Media::ROLE_APP_ICON => 'label.app_icon',
         Media::ROLE_OG_IMAGE => 'label.og_image',
         Media::ROLE_LOGO => 'label.logo',
         Media::ROLE_LOGO_ON_DARK => 'label.logo_on_dark',

@@ -179,6 +179,39 @@
         "description": "description.ui_showcase_demo_url"
     },
     {
+        "label": "label.ui_pwa_enabled",
+        "slug": "ui-pwa-enabled",
+        "sensitive": false,
+        "restricted": true,
+        "value": "false",
+        "kind": "bool",
+        "group": "ui",
+        "severity": null,
+        "description": "description.ui_pwa_enabled"
+    },
+    {
+        "label": "label.ui_pwa_short_name",
+        "slug": "ui-pwa-short-name",
+        "sensitive": false,
+        "restricted": true,
+        "value": null,
+        "kind": "text",
+        "group": "ui",
+        "severity": null,
+        "description": "description.ui_pwa_short_name"
+    },
+    {
+        "label": "label.ui_pwa_share_target",
+        "slug": "ui-pwa-share-target",
+        "sensitive": false,
+        "restricted": true,
+        "value": null,
+        "kind": "text",
+        "group": "ui",
+        "severity": null,
+        "description": "description.ui_pwa_share_target"
+    },
+    {
         "label": "label.recaptcha3_site_key",
         "slug": "recaptcha3-site-key",
         "sensitive": true,

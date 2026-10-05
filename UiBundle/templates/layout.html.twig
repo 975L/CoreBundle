@@ -119,6 +119,11 @@
                     <link rel="apple-touch-icon" href="{{ appleTouchIcon }}">
                     <link rel="apple-touch-icon-precomposed" href="{{ appleTouchIcon }}">
                 {% endif %}
+{# The installable web app, when the site turns it on (see PwaController) #}
+                {% if pwa_enabled() %}
+                    <link rel="manifest" href="{{ path('ui_pwa_manifest') }}">
+                    <meta name="theme-color" content="{{ config('theme-color-primary')|default('#ffffff') }}">
+                {% endif %}
             {% endblock %}
 
             {# Matomo's origin, since this shell renders its snippet below: its script is fetched from a third-party host, so the DNS lookup and the TLS handshake would otherwise only start once that JS runs. Origin only, a preconnect must carry no path - and none at all when the instance is served by this very host, where the connection is already open. Gated on the very check the component makes: a site whose tracking is off while its instance url stays filled would otherwise open a connection to a third party it never sends a measure to, which is exactly what turning the tracking off is meant to avoid #}
@@ -160,7 +165,7 @@
 {# "id=top" and the "span id=bottom" closing the body are what the scroll buttons below point at #}
 {# "bodyClasses" is what a child layout adds site-wide and "bodyClass" what a single page adds, where a class on the content would only cover the content: a screen laid on its own background (a photo gallery, a reader) paints the whole page with it, navbar and footer included #}
 {# "password" is declared here rather than on each form: the controller reads every input[type=password] of its own element, so the body scope is what makes one declaration cover a page carrying several forms. "bodyControllers" is what a child layout adds next to it #}
-    <body id="top" class="{{ bodyClasses|default('') }}{% block bodyClass %}{% endblock %}" data-controller="password{% if bodyControllers is defined and bodyControllers %} {{ bodyControllers }}{% endif %}">
+    <body id="top" class="{{ bodyClasses|default('') }}{% block bodyClass %}{% endblock %}" data-controller="password{% if pwa_enabled() %} pwa{% endif %}{% if bodyControllers is defined and bodyControllers %} {{ bodyControllers }}{% endif %}">
         {% block body %}
 {# The two buttons a long page is walked with, ordinary anchors working without javascript #}
             <twig:c975LUi:Scroll:Buttons />

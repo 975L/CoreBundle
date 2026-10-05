@@ -26,6 +26,7 @@ const LAZY_CONTROLLERS = {
     'legal-model-edit': () => import('./js/legal-model-edit.js'),
     matomo: () => import('./js/matomo.js'),
     password: () => import('./js/password.js'),
+    pwa: () => import('./js/pwa.js'),
     readmore: () => import('./js/readmore.js'),
     scrollButtons: () => import('./js/scroll-buttons.js'),
     slider: () => import('./js/slider.js'),

@@ -158,6 +158,18 @@
                 <source>description.ui_pdf_weasyprint_path</source>
                 <target>Leave empty if the “weasyprint” command is found as it stands. On shared or managed hosting it is commonly installed in a Python environment of its own: state its full path then, for instance /home/clients/xxx/venv/bin/weasyprint.</target>
             </trans-unit>
+            <trans-unit id="cJsJeMC">
+                <source>description.ui_pwa_enabled</source>
+                <target>Lets visitors install the site as an app on a phone or a computer, with a page shown when offline</target>
+            </trans-unit>
+            <trans-unit id="RqrSOkt">
+                <source>description.ui_pwa_share_target</source>
+                <target>Path of the page receiving a link shared from the phone's Share menu (title, text and url parameters); none when empty</target>
+            </trans-unit>
+            <trans-unit id="3QZWijd">
+                <source>description.ui_pwa_short_name</source>
+                <target>Name shown under the app icon, 12 characters at most; the site name when empty</target>
+            </trans-unit>
             <trans-unit id="RVA3kky">
                 <source>description.ui_rating_icon</source>
                 <target>The symbol visitors rate with: star, heart, thumb or smile</target>
@@ -341,6 +353,18 @@
             <trans-unit id="KQWPYr_">
                 <source>label.ui_pdf_weasyprint_path</source>
                 <target>WeasyPrint command path</target>
+            </trans-unit>
+            <trans-unit id="NsXpom2">
+                <source>label.ui_pwa_enabled</source>
+                <target>Installable web app</target>
+            </trans-unit>
+            <trans-unit id="yV1Ck_y">
+                <source>label.ui_pwa_share_target</source>
+                <target>Share target</target>
+            </trans-unit>
+            <trans-unit id="pzEauh9">
+                <source>label.ui_pwa_short_name</source>
+                <target>App short name</target>
             </trans-unit>
             <trans-unit id="H42R_Op">
                 <source>label.ui_rating_icon</source>

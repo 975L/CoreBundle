@@ -1,5 +1,20 @@
 # ChangeLog
 
+## v1.54.0
+
+Sites installable as a web app, off by default
+
+### UiBundle
+
+- `PwaController`: manifest, service worker and offline page, behind `ui-pwa-enabled` (05/10/2026)
+- `ui-pwa-short-name` and `ui-pwa-share-target` settings (05/10/2026)
+- `app-icon` media role, 512px png listed by the manifest (05/10/2026)
+- `pwa` Stimulus controller registering the worker, `pwa_enabled()` Twig function (05/10/2026)
+- Service worker cache named after the container build, capped at 100 files (05/10/2026)
+- Self-unregistering service worker served while `ui-pwa-enabled` is off (05/10/2026)
+- Dashboard alert for a missing `app-icon` while `ui-pwa-enabled` is on (05/10/2026)
+- `ui-pwa-setup` guided project (05/10/2026)
+
 ## v1.53.0
 
 Donovan's writer key, config entries renamed in place

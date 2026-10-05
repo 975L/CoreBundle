@@ -82,6 +82,10 @@
                 <source>description.guided_project_ui_media_add</source>
                 <target>Téléverser une image directement dans la bibliothèque de médias, prête à être choisie par n'importe quel block.</target>
             </trans-unit>
+            <trans-unit id="8_mk_Af">
+                <source>description.guided_project_ui_pwa_setup</source>
+                <target>Rendre le site installable sur un téléphone ou un ordinateur, sans passer par un store.</target>
+            </trans-unit>
             <trans-unit id="m0_DD2W">
                 <source>description.guided_project_ui_review</source>
                 <target>Publier, écarter ou répondre à ce que vos lecteurs ont écrit — et à ce que les plateformes vous ont renvoyé.</target>
@@ -410,6 +414,22 @@
                 <source>description.guided_step_ui_media_pick</source>
                 <target>La vignette ouvre sa propre fiche. Un graphique global du site (favicon, logo…) ouvre plutôt l'écran « Graphiques du site », où ceux-là se modifient.</target>
             </trans-unit>
+            <trans-unit id="j9kKdun">
+                <source>description.guided_step_ui_pwa_setup_entry</source>
+                <target>Commencez par « Application web installable ».</target>
+            </trans-unit>
+            <trans-unit id="JjVQ08Y">
+                <source>description.guided_step_ui_pwa_setup_icon</source>
+                <target>Le navigateur ne propose l'installation qu'avec l'icône d'application 512 px : déposez-la dans les graphismes du site. Tant qu'elle manque, le tableau de bord le signale.</target>
+            </trans-unit>
+            <trans-unit id="Wa.5cYm">
+                <source>description.guided_step_ui_pwa_setup_open</source>
+                <target>L'entrée « Application web installable » l'allume. Le nom court sous l'icône et la page qui reçoit les partages sont facultatifs.</target>
+            </trans-unit>
+            <trans-unit id=".P5FcW.">
+                <source>description.guided_step_ui_pwa_setup_value</source>
+                <target>Cochez-la pour l'activer.</target>
+            </trans-unit>
             <trans-unit id="aCD7FM2">
                 <source>description.guided_step_ui_review_decide</source>
                 <target>De retour dans la liste, l'icône ✓ de sa ligne publie l'avis, la croix le refuse.</target>
@@ -440,7 +460,7 @@
             </trans-unit>
             <trans-unit id="C0Xr_VY">
                 <source>description.guided_step_ui_site_graphic_file</source>
-                <target>Le rôle est déjà choisi, il ne reste que l'image : elle est renommée à l'enregistrement et conservée à l'adresse fixe où le site la sert. Un SVG est accepté et converti pour le favicon, l'icône Apple Touch et l'image Open Graph.</target>
+                <target>Le rôle est déjà choisi, il ne reste que l'image : elle est renommée à l'enregistrement et conservée à l'adresse fixe où le site la sert. Un SVG est accepté et converti pour les icônes et l'image Open Graph.</target>
             </trans-unit>
             <trans-unit id="KKAGjbc">
                 <source>description.guided_step_ui_site_graphic_open</source>
@@ -1021,6 +1041,10 @@
             <trans-unit id="nwlL2Yc">
                 <source>label.answer</source>
                 <target>Réponse</target>
+            </trans-unit>
+            <trans-unit id="pL5lpCj">
+                <source>label.app_icon</source>
+                <target>Icône d'application (512 px)</target>
             </trans-unit>
             <trans-unit id="gBMbs0d">
                 <source>label.apple_touch_icon</source>
@@ -2514,6 +2538,10 @@
                 <source>label.guided_project_ui_media_add</source>
                 <target>Ajouter une image à la bibliothèque</target>
             </trans-unit>
+            <trans-unit id="g8R4XN6">
+                <source>label.guided_project_ui_pwa_setup</source>
+                <target>Rendre le site installable</target>
+            </trans-unit>
             <trans-unit id="PyQTwnL">
                 <source>label.guided_project_ui_review</source>
                 <target>Modérer les avis</target>
@@ -2885,6 +2913,26 @@
             <trans-unit id="Sr6aDii">
                 <source>label.guided_step_ui_media_save</source>
                 <target>Enregistrer le média</target>
+            </trans-unit>
+            <trans-unit id="q9dT27u">
+                <source>label.guided_step_ui_pwa_setup_entry</source>
+                <target>Ouvrir l'entrée</target>
+            </trans-unit>
+            <trans-unit id="7mND_1e">
+                <source>label.guided_step_ui_pwa_setup_icon</source>
+                <target>L'icône d'application</target>
+            </trans-unit>
+            <trans-unit id="lUQVfR9">
+                <source>label.guided_step_ui_pwa_setup_open</source>
+                <target>Le groupe Interface des réglages</target>
+            </trans-unit>
+            <trans-unit id="uBmJdfV">
+                <source>label.guided_step_ui_pwa_setup_save</source>
+                <target>Enregistrer</target>
+            </trans-unit>
+            <trans-unit id="Y0KJiqQ">
+                <source>label.guided_step_ui_pwa_setup_value</source>
+                <target>Activer</target>
             </trans-unit>
             <trans-unit id="s83P7sF">
                 <source>label.guided_step_ui_review_decide</source>
@@ -3641,6 +3689,18 @@
             <trans-unit id="DKWkb19">
                 <source>label.progress_percent</source>
                 <target>Pourcentage (0-100)</target>
+            </trans-unit>
+            <trans-unit id="xeJW4Zp">
+                <source>label.pwa_offline</source>
+                <target>Hors connexion</target>
+            </trans-unit>
+            <trans-unit id="xztkvzc">
+                <source>label.pwa_offline_text</source>
+                <target>Cette page n'est pas disponible sans connexion. Vérifiez votre réseau puis réessayez.</target>
+            </trans-unit>
+            <trans-unit id="0NR3loq">
+                <source>label.pwa_retry</source>
+                <target>Réessayer</target>
             </trans-unit>
             <trans-unit id="kLuHeSA">
                 <source>label.question</source>

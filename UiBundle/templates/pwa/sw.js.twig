@@ -1,0 +1,54 @@
+// The site's service worker (see PwaController): pages from the network, the offline page when it fails, and the files a page draws with kept for that page
+
+// Named after the deploy, so each one installs this worker again and its activation drops the files the previous deploy kept
+const CACHE = "c975l-pwa-{{ version|e('js') }}";
+const OFFLINE_URL = "{{ offlineUrl|e('js') }}";
+const STATIC_DESTINATIONS = ["style", "script", "font", "image"];
+const MAX_ENTRIES = 100;
+
+// The offline page is kept as an anonymous visitor sees it, not with the session of whoever installed the app
+self.addEventListener("install", (event) => {
+    event.waitUntil(caches.open(CACHE).then((cache) => cache.add(new Request(OFFLINE_URL, { cache: "reload", credentials: "omit" }))).then(() => self.skipWaiting()));
+});
+
+// A cache left by an earlier version of this worker is dropped
+self.addEventListener("activate", (event) => {
+    event.waitUntil(caches.keys().then((keys) => Promise.all(keys.filter((key) => key !== CACHE).map((key) => caches.delete(key)))).then(() => self.clients.claim()));
+});
+
+self.addEventListener("fetch", (event) => {
+    const request = event.request;
+    const url = new URL(request.url);
+    if ("GET" !== request.method || url.origin !== self.location.origin) {
+        return;
+    }
+
+    // A page, loaded by the browser or by a Turbo visit, which asks for html without being a navigation - a frame or a prefetch is a fragment, never answered with a whole page
+    const isFragment = request.headers.has("Turbo-Frame") || (request.headers.get("Sec-Purpose") || request.headers.get("X-Sec-Purpose") || "").includes("prefetch");
+    if ("navigate" === request.mode || (!isFragment && (request.headers.get("Accept") || "").includes("text/html"))) {
+        event.respondWith(fetch(request).catch(() => caches.match(OFFLINE_URL)));
+        return;
+    }
+
+    // AssetMapper's files carry their hash in their name, so a cached copy never goes stale
+    if (url.pathname.startsWith("/assets/")) {
+        event.respondWith(caches.match(request).then((cached) => cached || fetchAndKeep(request)));
+        return;
+    }
+
+    if (STATIC_DESTINATIONS.includes(request.destination)) {
+        event.respondWith(fetchAndKeep(request).catch(() => caches.match(request)));
+    }
+});
+
+// The network's answer, a copy kept for when it is gone, the oldest copy dropped past MAX_ENTRIES
+function fetchAndKeep(request) {
+    return fetch(request).then((response) => {
+        if (response.ok) {
+            const copy = response.clone();
+            caches.open(CACHE).then((cache) => cache.put(request, copy).then(() => cache.keys()).then((keys) => keys.length > MAX_ENTRIES && cache.delete(keys[0])));
+        }
+
+        return response;
+    });
+}

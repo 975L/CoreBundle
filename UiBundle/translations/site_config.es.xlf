@@ -158,6 +158,18 @@
                 <source>description.ui_pdf_weasyprint_path</source>
                 <target>Déjelo vacío si el comando «weasyprint» se encuentra tal cual. En alojamientos compartidos o gestionados suele instalarse en un entorno Python propio: indique entonces su ruta completa, por ejemplo /home/clients/xxx/venv/bin/weasyprint.</target>
             </trans-unit>
+            <trans-unit id="cJsJeMC">
+                <source>description.ui_pwa_enabled</source>
+                <target>Permite instalar el sitio como una aplicación en un teléfono o un ordenador, con una página mostrada sin conexión</target>
+            </trans-unit>
+            <trans-unit id="RqrSOkt">
+                <source>description.ui_pwa_share_target</source>
+                <target>Ruta de la página que recibe un enlace compartido desde el menú Compartir del teléfono (parámetros title, text y url); ninguna si está vacío</target>
+            </trans-unit>
+            <trans-unit id="3QZWijd">
+                <source>description.ui_pwa_short_name</source>
+                <target>Nombre mostrado bajo el icono de la aplicación, 12 caracteres como máximo; el nombre del sitio si está vacío</target>
+            </trans-unit>
             <trans-unit id="RVA3kky">
                 <source>description.ui_rating_icon</source>
                 <target>El símbolo con el que los visitantes valoran: estrella, corazón, pulgar o sonrisa</target>
@@ -341,6 +353,18 @@
             <trans-unit id="KQWPYr_">
                 <source>label.ui_pdf_weasyprint_path</source>
                 <target>Ruta del comando WeasyPrint</target>
+            </trans-unit>
+            <trans-unit id="NsXpom2">
+                <source>label.ui_pwa_enabled</source>
+                <target>Aplicación web instalable</target>
+            </trans-unit>
+            <trans-unit id="yV1Ck_y">
+                <source>label.ui_pwa_share_target</source>
+                <target>Destino de compartir</target>
+            </trans-unit>
+            <trans-unit id="pzEauh9">
+                <source>label.ui_pwa_short_name</source>
+                <target>Nombre corto de la aplicación</target>
             </trans-unit>
             <trans-unit id="H42R_Op">
                 <source>label.ui_rating_icon</source>

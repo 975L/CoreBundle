@@ -3,6 +3,16 @@
         "date": "2026-10-05",
         "description": [
             {
+                "en": "A guided tour now walks you through making your site installable, and the dashboard reminds you of the app icon while it is missing.",
+                "fr": "Une visite guidée vous accompagne désormais pour rendre votre site installable, et le tableau de bord vous rappelle l'icône d'application tant qu'elle manque.",
+                "es": "Una visita guiada le acompaña ahora para hacer su sitio instalable, y el panel le recuerda el icono de aplicación mientras falte."
+            },
+            {
+                "en": "Your site can now be installed as an app on a phone or a computer, with a page shown when the connection is lost: turn it on in the settings and add a 512px app icon in the site graphics.",
+                "fr": "Votre site peut désormais s'installer comme une application sur un téléphone ou un ordinateur, avec une page affichée quand la connexion est perdue : activez-le dans les réglages et ajoutez une icône d'application de 512 px dans les graphismes du site.",
+                "es": "Su sitio puede instalarse ahora como una aplicación en un teléfono o un ordenador, con una página mostrada cuando se pierde la conexión: actívelo en los ajustes y añada un icono de aplicación de 512 px en los gráficos del sitio."
+            },
+            {
                 "en": "Buttons in your emails now take your site's colors instead of a standard blue.",
                 "fr": "Les boutons de vos e-mails prennent désormais les couleurs de votre site au lieu d'un bleu standard.",
                 "es": "Los botones de sus correos toman ahora los colores de su sitio en lugar de un azul estándar."

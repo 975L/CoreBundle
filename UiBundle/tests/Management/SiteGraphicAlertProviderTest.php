@@ -10,6 +10,7 @@
 
 namespace c975L\UiBundle\Tests\Management;
 
+use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\UiBundle\Controller\Management\SiteGraphicCrudController;
 use c975L\UiBundle\Entity\Media;
 use c975L\UiBundle\Management\SiteGraphicAlertProvider;
@@ -66,10 +67,19 @@ class SiteGraphicAlertProviderTest extends TestCase
         return $translator;
     }
 
+    private function createConfigService(bool $pwaEnabled = false): ConfigServiceInterface
+    {
+        $configService = $this->createStub(ConfigServiceInterface::class);
+        $configService->method('get')->willReturn($pwaEnabled);
+        $configService->method('getBool')->willReturnCallback(static fn (mixed $value): bool => (bool) $value);
+
+        return $configService;
+    }
+
     // With none of the 4 site-wide graphics uploaded yet, every role raises an alert
     public function testGetAlertsReturnsOneAlertPerMissingRole(): void
     {
-        $provider = new SiteGraphicAlertProvider($this->createMediaRepository(), $this->createAdminUrlGenerator(), $this->createTranslator());
+        $provider = new SiteGraphicAlertProvider($this->createMediaRepository(), $this->createAdminUrlGenerator(), $this->createTranslator(), $this->createConfigService());
 
         $alerts = $provider->getAlerts();
 
@@ -84,7 +94,8 @@ class SiteGraphicAlertProviderTest extends TestCase
         $provider = new SiteGraphicAlertProvider(
             $this->createMediaRepository([Media::ROLE_FAVICON, Media::ROLE_LOGO]),
             $this->createAdminUrlGenerator(),
-            $this->createTranslator()
+            $this->createTranslator(),
+            $this->createConfigService()
         );
 
         $alerts = $provider->getAlerts();
@@ -99,8 +110,21 @@ class SiteGraphicAlertProviderTest extends TestCase
     public function testGetAlertsReturnsEmptyArrayWhenEveryRoleIsUploaded(): void
     {
         $allRoles = [Media::ROLE_FAVICON, Media::ROLE_APPLE_TOUCH_ICON, Media::ROLE_OG_IMAGE, Media::ROLE_LOGO];
-        $provider = new SiteGraphicAlertProvider($this->createMediaRepository($allRoles), $this->createAdminUrlGenerator(), $this->createTranslator());
+        $provider = new SiteGraphicAlertProvider($this->createMediaRepository($allRoles), $this->createAdminUrlGenerator(), $this->createTranslator(), $this->createConfigService());
 
         $this->assertSame([], $provider->getAlerts());
+    }
+
+    // The app icon is only owed once the site is an installable app
+    public function testTheAppIconIsAlertedOnlyWhileTheAppIsOn(): void
+    {
+        $allRoles = [Media::ROLE_FAVICON, Media::ROLE_APPLE_TOUCH_ICON, Media::ROLE_OG_IMAGE, Media::ROLE_LOGO];
+        $repository = $this->createMediaRepository($allRoles);
+
+        $this->assertSame([], new SiteGraphicAlertProvider($repository, $this->createAdminUrlGenerator(), $this->createTranslator(), $this->createConfigService())->getAlerts());
+
+        $alerts = new SiteGraphicAlertProvider($repository, $this->createAdminUrlGenerator(), $this->createTranslator(), $this->createConfigService(true))->getAlerts();
+        $this->assertSame(['label.app_icon'], array_column($alerts, 'label'));
+        $this->assertSame('/admin/site-graphic/new?graphicRole=app-icon', $alerts[0]['url']);
     }
 }

@@ -1,0 +1,13 @@
+{% extends 'layout.html.twig' %}
+{% trans_default_domain 'ui' %}
+
+{# Defines specific variables #}
+{% set title = 'label.pwa_offline'|trans %}
+
+{# Kept by the service worker at its install and shown in place of any page the network could not bring #}
+{% block content %}
+    <div class="container text-center my-5">
+        <p>{{ 'label.pwa_offline_text'|trans }}</p>
+        <a class="btn btn-primary" href="/">{{ 'label.pwa_retry'|trans }}</a>
+    </div>
+{% endblock %}

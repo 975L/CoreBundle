@@ -12,6 +12,7 @@ namespace c975L\UiBundle\Management;
 
 use c975L\ConfigBundle\Entity\Config;
 use c975L\ConfigBundle\Management\AlertProviderInterface;
+use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\UiBundle\Controller\Management\SiteGraphicCrudController;
 use c975L\UiBundle\Entity\Media;
 use c975L\UiBundle\Repository\MediaRepository;
@@ -19,7 +20,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-// Alerts for the site-wide graphics (favicon, apple-touch-icon, og-image, logo) not yet uploaded
+// Alerts for the site-wide graphics (favicon, apple-touch-icon, og-image, logo, and app-icon once the site is an installable app) not yet uploaded
 class SiteGraphicAlertProvider implements AlertProviderInterface
 {
     // Only the graphics every site owes itself: the dark logo and the two watermarks are deliberately absent, being answers to a situation a given site may never be in - a dashboard warning about a file the design has no use for is a warning that gets ignored
@@ -34,6 +35,7 @@ class SiteGraphicAlertProvider implements AlertProviderInterface
         private readonly MediaRepository $mediaRepository,
         private readonly AdminUrlGeneratorInterface $adminUrlGenerator,
         private readonly TranslatorInterface $translator,
+        private readonly ConfigServiceInterface $configService,
     ) {
     }
 
@@ -41,7 +43,13 @@ class SiteGraphicAlertProvider implements AlertProviderInterface
     {
         $alerts = [];
 
-        foreach (self::ROLE_LABELS as $role => $labelKey) {
+        // The app icon is optional until the site turns the app on, Chrome offering no install without it
+        $roleLabels = self::ROLE_LABELS;
+        if ($this->configService->getBool($this->configService->get('ui-pwa-enabled'))) {
+            $roleLabels[Media::ROLE_APP_ICON] = 'label.app_icon';
+        }
+
+        foreach ($roleLabels as $role => $labelKey) {
             if (null !== $this->mediaRepository->findOneByRole($role)) {
                 continue;
             }
