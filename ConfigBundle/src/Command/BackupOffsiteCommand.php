@@ -13,10 +13,8 @@ namespace c975L\ConfigBundle\Command;
 use c975L\ConfigBundle\Management\BackupPath;
 use c975L\ConfigBundle\Management\BackupPathCollector;
 use c975L\ConfigBundle\Management\ByteFormatter;
-use c975L\ConfigBundle\Management\FileCounter;
 use c975L\ConfigBundle\Management\OffsiteState;
 use c975L\ConfigBundle\Management\OffsiteSynchronizer;
-use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -40,6 +38,9 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
  * worker for an hour. Every run after that carries only the files added since, which is the whole point of
  * mirroring content that never changes.
  *
+ * The mirror is exact, deletions included: the destination must take its own snapshots (a Hetzner Storage Box
+ * does, read-only and out of this server's reach), which are what bring back a file deleted or overwritten here.
+ *
  * --ack is for installs that don't push at all: an outside machine pulls the backups (the safer model, the
  * server then holding no credentials to its own backup) and calls this afterwards, so the dashboard knows the
  * files did leave. Without it, a site that pulls would be permanently reported as never backed up offsite.
@@ -53,23 +54,8 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 )]
 class BackupOffsiteCommand extends Command
 {
-    // Past this share of a folder's own files the sync aborts rather than carrying the deletions over. The failure this guards against is not the exotic one: it's a gallery emptied by mistake, or a hacked site, propagated to the backup within hours.
-    // Aborting is the right answer - it costs a night's mirroring and a look from a human, against a copy that faithfully reproduces the damage.
-    //
-    // A share rather than a fixed count, because no fixed count fits two folders: 100 deletions is a wipe for a gallery of 80 photos and an ordinary morning's work for 1500 derived images, whose whole family is regenerated under new names the day their format or their size changes. Calibrated on that regeneration - one family of derived files renamed at once has to pass, an emptied folder has to be stopped - and an emptied folder is stopped by the same rule: nothing left locally means a share of nothing, so the floor below is what it runs into
-    private const int MAX_DELETE_PERCENT = 25;
-
-    // Below a few dozen files a share means nothing - a quarter of 8 photos is 2, and any real change to such a folder would abort. What passes here is small enough in absolute terms to be looked at in a minute, and --backup-dir has it either way
-    private const int MIN_DELETE = 30;
-
-    private const int DEFAULT_KEEP_DAYS = 15;
-
-    // Where --backup-dir puts what a sync would otherwise have overwritten or lost, one folder per day. Named for what an operator comes looking for - the previous version of a file - rather than for the rclone mechanism that fills it: "deleted/" reads as a bin holding only what was removed, when a file merely overwritten is in there too, and this is the folder someone opens on the day a gallery got emptied
-    private const string PREVIOUS_FOLDER = 'previous';
-
     public function __construct(
         private readonly ParameterBagInterface $parameterBag,
-        private readonly ConfigServiceInterface $configService,
         private readonly BackupPathCollector $pathCollector,
         private readonly OffsiteSynchronizer $offsiteSynchronizer,
         private readonly OffsiteState $offsiteState,
@@ -111,18 +97,12 @@ class BackupOffsiteCommand extends Command
             return Command::SUCCESS;
         }
 
-        $dated = new \DateTimeImmutable()->format('Y-m-d');
         $failures = [];
 
         foreach ($paths as $path) {
             $io->text(sprintf('Mirroring %s', $path));
 
-            $result = $this->offsiteSynchronizer->sync(
-                $projectDir . '/' . $path,
-                'files/' . $path,
-                sprintf('%s/%s/%s', self::PREVIOUS_FOLDER, $dated, $path),
-                $this->maxDelete($projectDir . '/' . $path, 'files/' . $path)
-            );
+            $result = $this->offsiteSynchronizer->sync($projectDir . '/' . $path, 'files/' . $path);
 
             if (!$result['ok']) {
                 $failures[] = sprintf('%s: %s', $path, $result['error']);
@@ -139,7 +119,6 @@ class BackupOffsiteCommand extends Command
             return Command::FAILURE;
         }
 
-        $this->purgePreviousFolders($io);
         $this->offsiteState->recordSuccess($projectDir, array_merge(
             ['what' => 'mirror', 'target' => $this->offsiteSynchronizer->getTarget(), 'paths' => $paths],
             $this->verify($io)
@@ -148,20 +127,6 @@ class BackupOffsiteCommand extends Command
         $io->success('Offsite mirror completed.');
 
         return Command::SUCCESS;
-    }
-
-    // The deletion guard for one folder, counted locally so it tightens when the local side lost its files, and lifted to the destination's count when the local one stays within the same share of it: a regenerated family deletes as much as it adds, an emptied folder only deletes
-    private function maxDelete(string $localPath, string $remoteSubPath): int
-    {
-        $local = FileCounter::count($localPath);
-        $guard = max(self::MIN_DELETE, intdiv($local * self::MAX_DELETE_PERCENT, 100));
-
-        $remote = $this->offsiteSynchronizer->size($remoteSubPath)['count'] ?? null;
-        if (null !== $remote && $local * 100 >= $remote * (100 - self::MAX_DELETE_PERCENT)) {
-            return max($guard, $remote);
-        }
-
-        return $guard;
     }
 
     // Read back from the destination rather than counted here: an rclone run exiting 0 says the transfer was accepted, not that the files are there - the same reason this bundle reads its archives back with bzip2 --test instead of trusting tar's exit code
@@ -175,21 +140,5 @@ class BackupOffsiteCommand extends Command
         $io->text(sprintf('Offsite now holds %d files (%s)', $size['count'], ByteFormatter::format($size['bytes'])));
 
         return ['files' => $size['count'], 'bytes' => $size['bytes']];
-    }
-
-    // The dated folders --backup-dir fills with what was overwritten or deleted. Where the destination takes its own snapshots this is belt and braces - and the snapshots are the better half of it: on a Storage Box they sit in a read-only ZFS directory this server couldn't touch even if its credentials leaked, which no purge run from here can claim
-    private function purgePreviousFolders(SymfonyStyle $io): void
-    {
-        $configured = $this->configService->get('site-backup-offsite-keep-days');
-        $days = null === $configured ? self::DEFAULT_KEEP_DAYS : (int) $configured;
-
-        if ($days <= 0) {
-            return;
-        }
-
-        $result = $this->offsiteSynchronizer->purgeBackupDirs(self::PREVIOUS_FOLDER, $days);
-        if (!$result['ok']) {
-            $io->warning(sprintf('Purging the offsite %s/ folders failed: %s', self::PREVIOUS_FOLDER, $result['error']));
-        }
     }
 }

@@ -12,6 +12,14 @@
     font-family: var(--font-family-title);
 }
 
+// The variants also sit on the <td> of the bulletproof button, which carries the background: it has to be rounded like the link it wraps
+.btn-primary,
+.btn-secondary,
+.btn-success,
+.btn-danger {
+    border-radius: var(--radius-btn);
+}
+
 .btn-primary {
     background-color: var(--primary);
 }

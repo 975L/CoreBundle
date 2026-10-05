@@ -346,6 +346,13 @@ ul.inline li {
   font-family: var(--font-family-title);
 }
 
+.btn-primary,
+.btn-secondary,
+.btn-success,
+.btn-danger {
+  border-radius: var(--radius-btn);
+}
+
 .btn-primary {
   background-color: var(--primary);
 }

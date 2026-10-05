@@ -2111,9 +2111,8 @@ What the bundle never holds, in either model, is a **credential**. `site-backup-
 | --- | --- | --- |
 | `site-backup-offsite-target` | *(empty)* | The rclone remote. Empty means "an outside machine pulls" |
 | `site-backup-offsite-max-age-hours` | 30 | Past this without anything leaving, the run warns and the dashboard alerts |
-| `site-backup-offsite-keep-days` | 15 | How long the destination keeps the previous version of an overwritten or deleted file |
 
-**Not destructively.** The mirror runs `rclone sync`, so a destination that has drifted comes back in line — but `--backup-dir` moves what would be overwritten or deleted into a dated `previous/` folder instead of losing it, and `--max-delete` aborts the run outright past a quarter of what the folder holds, never fewer than 30 files. A share rather than a fixed count because no fixed count fits two folders: 100 deletions is a wipe for a gallery of 80 photos and an ordinary morning's work for 1500 derived images, whose whole family is regenerated under new names the day their format changes. The failure that actually happens is not exotic: a gallery emptied by mistake, or a hacked site, faithfully reproduced onto the backup within hours. Aborting costs a night's mirroring and a look from a human, which is the cheaper of the two.
+**An exact copy, deletions included.** The mirror runs a plain `rclone sync`: a file deleted or regenerated under a new name locally is deleted at the destination the same night. **The history is the destination's own snapshots**, which this bundle requires rather than imitates: on a Hetzner Storage Box they are automatic, daily, and sit in a read-only ZFS directory this server couldn't touch even if its credentials leaked. A gallery emptied by mistake or a hacked site is then reproduced onto the mirror, and brought back from the snapshot of the day before. A destination without snapshots is not a backup of the mirrored folders - only of their latest state.
 
 **What that leaves at the destination**, one folder per site and nothing to know beyond it:
 
@@ -2123,15 +2122,11 @@ What the bundle never holds, in either model, is a **credential**. `site-backup-
 │   ├── MYSQL_-_…_-_12-58_-_Tables.sql.tar.bz2
 │   ├── FILES_-_…_-_12-58.tar.bz2
 │   └── manifest.json
-├── files/                         the mirrored folders, as they are right now
-│   └── public/medias/…
-└── previous/2026-08-05/           what that day's mirror overwrote or removed
+└── files/                         the mirrored folders, as they are right now
     └── public/medias/…
 ```
 
-The database has one file per run and keeps its own history in their names, so the last four hours and last week are both there. The mirrored folders have no dated copies on purpose — a version history of nine gigabytes of JPEG costs nine gigabytes a day — and `previous/<date>/` holds what changed instead, which is the question actually asked on the day it matters: *where is the file that was there yesterday*.
-
-**Versioning is the destination's job, not this bundle's.** Where the destination takes its own snapshots, use them: on a Hetzner Storage Box they sit in a read-only ZFS directory that the server couldn't touch even if its credentials leaked — which no purge run from the server can claim. `site-backup-offsite-keep-days` is the portable fallback for destinations that offer nothing of the sort.
+The database has one file per run and keeps its own history in their names, so the last four hours and last week are both there. The mirrored folders have no dated copies on purpose — a version history of nine gigabytes of JPEG costs nine gigabytes a day — and the destination's snapshots answer the question actually asked on the day it matters: *where is the file that was there yesterday*.
 
 **The first run transfers everything.** On a media-heavy site that's hours, and the Symfony Scheduler has a single worker to block. Seed it once by hand from an SSH session; every run after that carries only the files added since, which is the whole point of mirroring content that never changes.
 

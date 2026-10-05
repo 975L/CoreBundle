@@ -43,7 +43,6 @@ class BackupOffsiteCommandTest extends TestCase
         string $target = '',
         array $paths = [],
         ?\ArrayObject $calls = null,
-        int $remoteCount = 1,
         bool $ok = true,
         ?LoggerInterface $logger = null,
     ): BackupOffsiteCommand {
@@ -68,11 +67,10 @@ class BackupOffsiteCommandTest extends TestCase
 
         return new BackupOffsiteCommand(
             $bag,
-            $configService,
             new BackupPathCollector([$provider], $bag),
             null === $calls
                 ? new OffsiteSynchronizer($configService, $bag)
-                : $this->createRecordingSynchronizer($configService, $bag, $calls, $remoteCount, $ok),
+                : $this->createRecordingSynchronizer($configService, $bag, $calls, $ok),
             new OffsiteState(),
             $logger,
         );
@@ -83,15 +81,13 @@ class BackupOffsiteCommandTest extends TestCase
         ConfigServiceInterface $configService,
         ParameterBagInterface $parameterBag,
         \ArrayObject $calls,
-        int $remoteCount,
         bool $ok,
     ): OffsiteSynchronizer {
-        return new class ($configService, $parameterBag, $calls, $remoteCount, $ok) extends OffsiteSynchronizer {
+        return new class ($configService, $parameterBag, $calls, $ok) extends OffsiteSynchronizer {
             public function __construct(
                 ConfigServiceInterface $configService,
                 ParameterBagInterface $parameterBag,
                 private readonly \ArrayObject $calls,
-                private readonly int $remoteCount,
                 private readonly bool $ok,
             ) {
                 parent::__construct($configService, $parameterBag);
@@ -102,10 +98,10 @@ class BackupOffsiteCommandTest extends TestCase
                 $this->calls->append(implode(' ', $arguments));
 
                 if ('sync' === $arguments[0] && !$this->ok) {
-                    return ['ok' => false, 'error' => '--max-delete threshold reached', 'output' => ''];
+                    return ['ok' => false, 'error' => 'connection refused', 'output' => ''];
                 }
 
-                return ['ok' => true, 'error' => null, 'output' => sprintf('{"count":%d,"bytes":2}', $this->remoteCount)];
+                return ['ok' => true, 'error' => null, 'output' => '{"count":1,"bytes":2}'];
             }
 
             // The binary is never run here, but the command refuses to send anything when it can't be found - so a host without rclone, CI being one, would see this test assert on a command that was never built
@@ -162,8 +158,8 @@ class BackupOffsiteCommandTest extends TestCase
         $this->assertNull(new OffsiteState()->read($this->projectDir));
     }
 
-    // The folder --backup-dir fills and the folder the purge empties have to be the same one. Renaming one and leaving the other aims the purge at a folder that doesn't exist: the previous versions then pile up offsite for good, while every run goes on reporting success - which is why the name is asserted here rather than read twice
-    public function testTheBackupDirAndThePurgeNameTheSameFolder(): void
+    // An exact mirror, deletions included: the history is the destination's own snapshots, so nothing here may keep or purge a dated folder of its own
+    public function testTheMirrorIsAPlainSync(): void
     {
         mkdir($this->projectDir . '/public/medias', 0775, true);
         $calls = new \ArrayObject();
@@ -176,84 +172,10 @@ class BackupOffsiteCommandTest extends TestCase
         $tester->execute([]);
 
         $this->assertSame(Command::SUCCESS, $tester->getStatusCode());
-        $this->assertContains(
-            sprintf(
-                'sync %s/public/medias storagebox:example.com/files/public/medias --backup-dir storagebox:example.com/previous/%s/public/medias --max-delete 30',
-                $this->projectDir,
-                new \DateTimeImmutable()->format('Y-m-d'),
-            ),
+        $this->assertSame(
+            [sprintf('sync %s/public/medias storagebox:example.com/files/public/medias', $this->projectDir), 'size --json storagebox:example.com/files'],
             (array) $calls,
         );
-        $this->assertContains('delete --min-age 15d storagebox:example.com/previous', (array) $calls);
-        $this->assertContains('rmdirs --leave-root storagebox:example.com/previous', (array) $calls);
-    }
-
-    // The guard is a share of what the folder holds, not a fixed count: a family of derived images regenerated under new names removes hundreds of files legitimately, and a count that let those through would let an emptied gallery through as well
-    public function testTheDeletionGuardIsAShareOfWhatTheFolderHolds(): void
-    {
-        mkdir($this->projectDir . '/public/medias', 0775, true);
-        for ($i = 0; $i < 200; ++$i) {
-            file_put_contents(sprintf('%s/public/medias/photo-%d.jpg', $this->projectDir, $i), 'photo');
-        }
-
-        $calls = new \ArrayObject();
-        new CommandTester($this->createCommand(
-            'storagebox:example.com',
-            [new BackupPath('public/medias', BackupPath::MODE_MIRROR)],
-            $calls
-        ))->execute([]);
-
-        $this->assertStringContainsString('--max-delete 50', implode("\n", (array) $calls));
-    }
-
-    // A folder whose files are gone locally counts zero, so the share is zero and only the floor stands - the sync then stopping instead of reproducing the loss at the destination, which is the whole point of the guard
-    public function testAnEmptiedFolderFallsBackToTheFloor(): void
-    {
-        mkdir($this->projectDir . '/public/medias', 0775, true);
-        $calls = new \ArrayObject();
-
-        new CommandTester($this->createCommand(
-            'storagebox:example.com',
-            [new BackupPath('public/medias', BackupPath::MODE_MIRROR)],
-            $calls
-        ))->execute([]);
-
-        $this->assertStringContainsString('--max-delete 30', implode("\n", (array) $calls));
-    }
-
-    // A family of derived images regenerated under new names deletes as many files as it adds: the local count holding against the destination's lifts the guard to what the destination holds, so the nightly run goes through on its own
-    public function testARegeneratedFolderLiftsTheGuard(): void
-    {
-        mkdir($this->projectDir . '/public/medias', 0775, true);
-        for ($i = 0; $i < 40; ++$i) {
-            file_put_contents(sprintf('%s/public/medias/photo-%d.webp', $this->projectDir, $i), 'photo');
-        }
-
-        $calls = new \ArrayObject();
-        new CommandTester($this->createCommand(
-            'storagebox:example.com',
-            [new BackupPath('public/medias', BackupPath::MODE_MIRROR)],
-            $calls,
-            45
-        ))->execute([]);
-
-        $this->assertStringContainsString('--max-delete 45', implode("\n", (array) $calls));
-    }
-
-    // A folder emptied locally while the destination still holds its files keeps the tight guard, the lift being only for a folder that kept its size
-    public function testAFolderEmptiedAgainstTheDestinationKeepsTheGuard(): void
-    {
-        mkdir($this->projectDir . '/public/medias', 0775, true);
-        $calls = new \ArrayObject();
-
-        new CommandTester($this->createCommand(
-            'storagebox:example.com',
-            [new BackupPath('public/medias', BackupPath::MODE_MIRROR)],
-            $calls,
-            200
-        ))->execute([]);
-
-        $this->assertStringContainsString('--max-delete 30', implode("\n", (array) $calls));
     }
 
     // The scheduler logs only the exit code, so the reason has to be logged by the command for the error mail to carry it
@@ -264,14 +186,13 @@ class BackupOffsiteCommandTest extends TestCase
         $logger = $this->createMock(LoggerInterface::class);
         $logger->expects($this->once())->method('error')->with(
             $this->anything(),
-            ['failures' => 'public/medias: --max-delete threshold reached']
+            ['failures' => 'public/medias: connection refused']
         );
 
         $tester = new CommandTester($this->createCommand(
             'storagebox:example.com',
             [new BackupPath('public/medias', BackupPath::MODE_MIRROR)],
             new \ArrayObject(),
-            1,
             false,
             $logger
         ));

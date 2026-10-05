@@ -1,5 +1,11 @@
 # UPGRADE
 
+## v1.52.0
+
+**The offsite mirror is now an exact copy: `--backup-dir`, `--max-delete` and the `previous/` purge are gone.** A file deleted locally is deleted at the destination the same night, so **the destination must take its own snapshots** (automatic on a Hetzner Storage Box: check they are on before upgrading). `site-backup-offsite-keep-days` is read by nothing anymore - remove it from the "Obsolete configs" screen - and the `previous/` folders already at the destination are no longer purged: delete them by hand once the snapshots cover the same days (`rclone purge <target>/previous`).
+
+**Constructors:** `BackupOffsiteCommand` no longer takes a `ConfigServiceInterface`; `OffsiteSynchronizer::sync()` takes the local and remote paths only, and `purgeBackupDirs()` is gone. Nothing to do with autowiring.
+
 ## v1.51.0
 
 **`site-enable-matomo` is gone: Matomo tracks as soon as `site-matomo-url` and `site-matomo-id` are both filled.** A site that had them filled while the switch read `false` **starts measuring the day it upgrades** - empty `site-matomo-id` to keep it off. The CNIL note it carried now sits in the description of `site-matomo-url`.

@@ -1,5 +1,15 @@
 [
     {
+        "date": "2026-10-05",
+        "description": [
+            {
+                "en": "Buttons in your emails now take your site's colors instead of a standard blue.",
+                "fr": "Les boutons de vos e-mails prennent désormais les couleurs de votre site au lieu d'un bleu standard.",
+                "es": "Los botones de sus correos toman ahora los colores de su sitio en lugar de un azul estándar."
+            }
+        ]
+    },
+    {
         "date": "2026-10-03",
         "description": [
             {

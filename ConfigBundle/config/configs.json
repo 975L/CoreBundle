@@ -199,17 +199,6 @@
         "description": "description.site_backup_offsite_max_age_hours"
     },
     {
-        "label": "label.site_backup_offsite_keep_days",
-        "slug": "site-backup-offsite-keep-days",
-        "sensitive": false,
-        "restricted": true,
-        "value": "15",
-        "kind": "int",
-        "group": "backup",
-        "severity": null,
-        "description": "description.site_backup_offsite_keep_days"
-    },
-    {
         "label": "label.site_backup_retention_days",
         "slug": "site-backup-retention-days",
         "sensitive": false,

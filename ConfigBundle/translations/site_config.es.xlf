@@ -122,10 +122,6 @@
                 <source>description.site_backup_max_age_hours</source>
                 <target>Pasado este plazo sin ninguna copia registrada, el panel muestra una alerta. Es la única señal que puede dar una copia que ha dejado de ejecutarse</target>
             </trans-unit>
-            <trans-unit id="UO9CA09">
-                <source>description.site_backup_offsite_keep_days</source>
-                <target>Número de días que la copia externa conserva los archivos sobrescritos o eliminados (carpetas deleted/). 0 no purga nada, que es lo que ya hacen los destinos con sus propias instantáneas</target>
-            </trans-unit>
             <trans-unit id="L8.ybZ0">
                 <source>description.site_backup_offsite_max_age_hours</source>
                 <target>Pasado este plazo sin que salga ninguna copia del servidor, el panel alerta. Una copia de seguridad que nunca salió de la máquina no protege de nada</target>
@@ -401,10 +397,6 @@
             <trans-unit id="FYYWZW9">
                 <source>label.site_backup_max_age_hours</source>
                 <target>Antigüedad máxima de la copia (horas)</target>
-            </trans-unit>
-            <trans-unit id="4kcZCM6">
-                <source>label.site_backup_offsite_keep_days</source>
-                <target>Retención externa de archivos eliminados (días)</target>
             </trans-unit>
             <trans-unit id="sHuVy7V">
                 <source>label.site_backup_offsite_max_age_hours</source>

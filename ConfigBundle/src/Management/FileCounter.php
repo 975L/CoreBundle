@@ -10,9 +10,7 @@
 
 namespace c975L\ConfigBundle\Management;
 
-// How many files a declared path holds, shared by the two commands that need the number for different reasons: BackupCommand reports it, BackupOffsiteCommand sizes its deletion guard on it. Static and stateless like ByteFormatter, the count depending on nothing but the path.
-//
-// Zero for a path that isn't there, rather than the exception a RecursiveDirectoryIterator raises: the callers read the number to decide something, and "no file" is the right answer for both of them - a folder that vanished is precisely when the guard has to be at its tightest.
+// How many files a declared path holds, for BackupCommand's report: static and stateless like ByteFormatter, and zero for a path that isn't there rather than the exception a RecursiveDirectoryIterator raises
 class FileCounter
 {
     public static function count(string $path): int

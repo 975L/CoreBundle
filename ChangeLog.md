@@ -1,5 +1,17 @@
 # ChangeLog
 
+## v1.52.0
+
+Offsite mirror left to the destination's snapshots
+
+### ConfigBundle
+
+- Offsite mirror is an exact copy, history left to the destination's snapshots: `--backup-dir`, `--max-delete`, the `previous/` purge and `site-backup-offsite-keep-days` removed (05/10/2026) **See [UPGRADE.md](UPGRADE.md)** [BC-Break]
+
+### UiBundle
+
+- Email button colors and radius left to the theme instead of a fixed inline blue (05/10/2026)
+
 ## v1.51.3
 
 Offsite mirror guard lifted for regenerated folders

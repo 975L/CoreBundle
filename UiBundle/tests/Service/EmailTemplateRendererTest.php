@@ -245,6 +245,22 @@ class EmailTemplateRendererTest extends TestCase
         $this->assertStringContainsString('href="/some/relative/path"', $html);
     }
 
+    // The layout's inliner keeps an inline value over the theme's .btn/.btn-primary, so a color written on the button itself would paint every site's buttons alike
+    public function testRenderLeavesTheButtonColorsToTheTheme(): void
+    {
+        $emailTemplate = new EmailTemplate();
+        $this->addBlock($emailTemplate, EmailBlock::TYPE_BUTTON)->setLabel('Go')->setUrl('/go');
+
+        $html = $this->createRenderer()->renderBody($emailTemplate);
+
+        preg_match_all('/<(?:td|a)\s[^>]*class="btn[^"]*"[^>]*>/', $html, $matches);
+
+        $this->assertCount(2, $matches[0], 'The button no longer carries its .btn/.btn-primary classes, the test itself is broken.');
+        foreach ($matches[0] as $tag) {
+            $this->assertDoesNotMatchRegularExpression('/(?:background|[;"]color|border-radius|font-family)\s*:/', $tag);
+        }
+    }
+
     public function testRenderThrowsForUnknownBlockType(): void
     {
         $emailTemplate = new EmailTemplate();

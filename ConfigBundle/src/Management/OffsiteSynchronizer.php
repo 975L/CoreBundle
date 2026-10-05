@@ -61,14 +61,10 @@ class OffsiteSynchronizer
         return $this->run(['copy', $localPath, $this->remote($remoteSubPath)], $timeout);
     }
 
-    // The mirrored folders: synced, so a destination that has diverged comes back in line - but never destructively. --backup-dir moves what would be overwritten or deleted into a dated folder instead of losing it, which is the protection against the failure that actually happens: a gallery emptied by mistake, propagated within hours. --max-delete aborts the run outright past that many deletions, so the mistake doesn't even reach the backup-dir
-    public function sync(string $localPath, string $remoteSubPath, string $backupDirSubPath, int $maxDelete, int $timeout = 3600): array
+    // The mirrored folders: synced, so the destination is an exact copy of the local side, deletions included. Versioning is the destination's job: its own snapshots keep the history, out of reach of this server even if its credentials leak
+    public function sync(string $localPath, string $remoteSubPath, int $timeout = 3600): array
     {
-        return $this->run([
-            'sync', $localPath, $this->remote($remoteSubPath),
-            '--backup-dir', $this->remote($backupDirSubPath),
-            '--max-delete', (string) $maxDelete,
-        ], $timeout);
+        return $this->run(['sync', $localPath, $this->remote($remoteSubPath)], $timeout);
     }
 
     // What is actually at the destination, read back from it rather than counted here: an rclone run that exits 0 says the transfer was accepted, not that the files are there, and this bundle already reads its archives back rather than trusting tar's exit code
@@ -84,22 +80,6 @@ class OffsiteSynchronizer
         return is_array($size) && isset($size['count'], $size['bytes'])
             ? ['count' => (int) $size['count'], 'bytes' => (int) $size['bytes']]
             : null;
-    }
-
-    // Deletes the dated backup-dir folders past the retention window, the destination's own snapshots being the better answer where it has them: on a Storage Box they live in a read-only ZFS directory this server could not touch even if its credentials leaked, which is not something a purge run from here can claim
-    public function purgeBackupDirs(string $remoteSubPath, int $keepDays, int $timeout = 600): array
-    {
-        $result = $this->run([
-            'delete', '--min-age', sprintf('%dd', $keepDays), $this->remote($remoteSubPath),
-        ], $timeout);
-
-        // A destination where nothing has ever been overwritten or deleted has no previous/ folder at all, which rclone reports as an error. There is nothing to purge, and it is not a failure: left as one it warns on the very first run, then every night for as long as the site's files don't change - a permanent warning being how a real one goes unnoticed
-        if (!$result['ok'] && str_contains((string) $result['error'], 'directory not found')) {
-            return ['ok' => true, 'error' => null, 'output' => ''];
-        }
-
-        // The folders emptied above, in a pass of their own: "delete --rmdirs" also tries every folder still inside the window and reports each one as "directory not empty", so the purge failed every night the window held anything - which is always. "rmdirs" only ever removes what is empty, and says nothing of the rest
-        return $result['ok'] ? $this->run(['rmdirs', '--leave-root', $this->remote($remoteSubPath)], $timeout) : $result;
     }
 
     private function remote(string $subPath): string

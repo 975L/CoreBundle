@@ -379,6 +379,8 @@ class InvoiceAttachmentProvider implements EmailAttachmentProviderInterface
 - **Do not translate a field's `name`** — an expression and the HTML input read it, and both break the day a language changes one.
 - **Do not write an email layout in a satellite bundle**, and do not `extends` a layout from an email
   template: send the body with `wrapLayout: true`.
+- **Do not write a color, radius or font inline on an email button** (`.btn`/`.btn-primary`): the layout's
+  inliner keeps an inline value over the theme's, and every site's buttons would come out the same blue.
 - **Do not turn structured content into an `EmailTemplate`** — the blocks have no loop, and the
   structure would be lost without becoming editable.
 - **Do not seed a bundle's e-mails from its own installer** — declare them through
