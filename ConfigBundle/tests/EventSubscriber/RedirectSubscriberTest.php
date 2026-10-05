@@ -269,6 +269,17 @@ class RedirectSubscriberTest extends TestCase
         $this->addToAssertionCount(1);
     }
 
+    // A framework endpoint below a gone prefix is left to the router: "/fr/*" covers an old site's tree, not the live components reloaded under "/{_locale}/_components"
+    public function testOnKernelRequestSkipsAFrameworkEndpointBelowAGonePrefix(): void
+    {
+        $subscriber = $this->createSubscriber(new Redirect()->setFromPath('/fr/*')->setGone(true));
+        $event = $this->createEvent('/fr/_components/BookSearch');
+
+        $subscriber->onKernelRequest($event);
+
+        $this->assertNull($event->getResponse());
+    }
+
     // A removed upload is a url someone did publish, so its row fires like any other: the guard covers the digest-named folders only
     public function testOnKernelRequestRedirectsARemovedUpload(): void
     {

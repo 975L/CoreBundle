@@ -530,6 +530,9 @@ export default class extends Controller {
 
         // Update state
         this.slideIndex = index;
+
+        // Whatever turned it (arrow, dot, tap, swipe, autoplay), told once to whoever follows the slider - "slider:changed", detail.page counted from 1
+        this.dispatch("changed", { detail: { page: index } });
     }
 
     // Freeflow layout: every slide stays visible side by side (no display none/block toggling), .slider-list scrolls natively (overflow-x: auto + scroll-snap, see _slider.scss) - this just drives that scroll and updates dots/video state, like the default slider's displaySlide
@@ -581,6 +584,7 @@ export default class extends Controller {
         }
 
         this.slideIndex = index;
+        this.dispatch("changed", { detail: { page: index } });
     }
 
     // Helper method to calculate valid index

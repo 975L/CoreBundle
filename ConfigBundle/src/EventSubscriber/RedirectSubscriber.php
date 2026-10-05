@@ -25,6 +25,9 @@ class RedirectSubscriber implements EventSubscriberInterface
     // The tag the rows are cached under, emptied by CacheTagListener when one is written or removed
     public const string CACHE_TAG = 'config_redirects';
 
+    // A path segment opening on "_" is a framework endpoint ("/fr/_components/...", "/_fragment", "/_wdt"), never a url anyone published. Checked on the requested path and not refused on the row, so a "/fr/*" row keeps covering an old site's tree without taking a localized endpoint below it down with it
+    private const string INTERNAL_PATH_PATTERN = '#/_[^/]#';
+
     public function __construct(
         private readonly RedirectRepository $redirectRepository,
         private readonly TagAwareCacheInterface $cache,
@@ -44,7 +47,7 @@ class RedirectSubscriber implements EventSubscriberInterface
         }
 
         $path = $event->getRequest()->getPathInfo();
-        if ('/' === $path || $this->isStaticAsset($path)) {
+        if ('/' === $path || $this->isStaticAsset($path) || 1 === preg_match(self::INTERNAL_PATH_PATTERN, $path)) {
             return;
         }
 

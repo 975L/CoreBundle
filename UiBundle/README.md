@@ -2068,7 +2068,7 @@ Block templates are thin adapters around a set of Symfony UX Twig components liv
 | `<twig:c975LUi:Search:Busy>` | The sign a live search gives while it is fetching, dropped inside the component whose field it watches |
 | `<twig:c975LUi:Section:Cards>` | Section title followed by a stack of full Card blocks (`.cards` row) |
 | `<twig:c975LUi:Section:Features>` | Section title followed by a grid of features (icon/title/text) |
-| `<twig:c975LUi:Slider:Slider>` | Image/media slider |
+| `<twig:c975LUi:Slider:Slider>` | Image/media slider, dispatching `slider:changed` (`detail.page` counted from 1) on every slide change |
 | `<twig:c975LUi:Text:Hook>` | Lead-in paragraph, set apart from the text it introduces |
 | `<twig:c975LUi:Text:Readmore>` | Collapsible "read more" text block |
 | `<twig:c975LUi:Text:Section>` | Text section with optional image |

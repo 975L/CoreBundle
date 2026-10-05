@@ -1,5 +1,17 @@
 # ChangeLog
 
+## v1.54.1
+
+Framework endpoints spared by redirects, slider tells its turns
+
+### ConfigBundle
+
+- `RedirectSubscriber` skips framework endpoints (`/fr/_components/...`) (05/10/2026)
+
+### UiBundle
+
+- `slider:changed` event on every slide change, `detail.page` counted from 1 (05/10/2026)
+
 ## v1.54.0
 
 Sites installable as a web app, off by default

@@ -64,6 +64,22 @@ class SliderBehaviourTest extends JsCase
         $this->assertSame('Item 3 of 3', $state['said']);
     }
 
+    // Whatever turns a slide tells it, so a script following the slider (BookBundle's reader, the voice of an album) need not listen to every gesture one by one
+    public function testEveryChangeIsToldWithTheSlideItLandedOn(): void
+    {
+        $told = $this->slider(
+            'const pages = [];
+             root.addEventListener("slider:changed", (e) => pages.push(e.detail.page));
+             await next();
+             root.querySelectorAll(".slider-dot")[2].click(); await tick();
+             await prev();
+
+             return pages;'
+        );
+
+        $this->assertSame([2, 3, 2], $told, 'A slide changed without the slider saying which one it landed on.');
+    }
+
     // A click on the slide advances it - unless it lands on a link, which is the slide's own address and not a request for the next one
     public function testClickingASlideAdvancesItUnlessTheClickWasOnALink(): void
     {
