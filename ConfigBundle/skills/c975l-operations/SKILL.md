@@ -241,7 +241,12 @@ Everything is configured in the `backup` config group, all of it `restricted`.
 on what each folder currently holds — a quarter of its files, never fewer than 30 (`FileCounter` counts
 them, locally on purpose: a local side that lost its files counts near zero, so the guard tightens
 exactly when it matters). A fixed count fits no two folders: 100 deletions is a wipe for a gallery of 80
-photos and an ordinary morning for 1500 derived images regenerated under new names.
+photos and an ordinary morning for 1500 derived images regenerated under new names. **The guard is
+lifted when the folder kept its size**: a local count within a quarter of the destination's (read back
+with `rclone size`) is a regeneration, deleting as much as it adds, so `--max-delete` rises to the
+destination's count and the nightly run goes through on its own; `--backup-dir` still keeps what it
+replaced. **A failed mirror is logged with rclone's reason**, the scheduler itself logging only the
+exit code — without it, the error mail said "exited with code 1" and nothing more.
 
 **A failed mirror reaches the backup row**, `c975l:config:backup` reading `OffsiteState` back and
 raising it as a warning and a line of its report. The mirror runs on its own night, and the archives

@@ -18,6 +18,7 @@ use c975L\ConfigBundle\Management\OffsiteState;
 use c975L\ConfigBundle\Management\OffsiteSynchronizer;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
@@ -38,8 +39,14 @@ class BackupOffsiteCommandTest extends TestCase
         new Filesystem()->remove($this->projectDir);
     }
 
-    private function createCommand(string $target = '', array $paths = [], ?\ArrayObject $calls = null): BackupOffsiteCommand
-    {
+    private function createCommand(
+        string $target = '',
+        array $paths = [],
+        ?\ArrayObject $calls = null,
+        int $remoteCount = 1,
+        bool $ok = true,
+        ?LoggerInterface $logger = null,
+    ): BackupOffsiteCommand {
         $bag = $this->createStub(ParameterBagInterface::class);
         $bag->method('get')->willReturn($this->projectDir);
 
@@ -65,8 +72,9 @@ class BackupOffsiteCommandTest extends TestCase
             new BackupPathCollector([$provider], $bag),
             null === $calls
                 ? new OffsiteSynchronizer($configService, $bag)
-                : $this->createRecordingSynchronizer($configService, $bag, $calls),
+                : $this->createRecordingSynchronizer($configService, $bag, $calls, $remoteCount, $ok),
             new OffsiteState(),
+            $logger,
         );
     }
 
@@ -75,12 +83,16 @@ class BackupOffsiteCommandTest extends TestCase
         ConfigServiceInterface $configService,
         ParameterBagInterface $parameterBag,
         \ArrayObject $calls,
+        int $remoteCount,
+        bool $ok,
     ): OffsiteSynchronizer {
-        return new class ($configService, $parameterBag, $calls) extends OffsiteSynchronizer {
+        return new class ($configService, $parameterBag, $calls, $remoteCount, $ok) extends OffsiteSynchronizer {
             public function __construct(
                 ConfigServiceInterface $configService,
                 ParameterBagInterface $parameterBag,
                 private readonly \ArrayObject $calls,
+                private readonly int $remoteCount,
+                private readonly bool $ok,
             ) {
                 parent::__construct($configService, $parameterBag);
             }
@@ -89,7 +101,11 @@ class BackupOffsiteCommandTest extends TestCase
             {
                 $this->calls->append(implode(' ', $arguments));
 
-                return ['ok' => true, 'error' => null, 'output' => '{"count":1,"bytes":2}'];
+                if ('sync' === $arguments[0] && !$this->ok) {
+                    return ['ok' => false, 'error' => '--max-delete threshold reached', 'output' => ''];
+                }
+
+                return ['ok' => true, 'error' => null, 'output' => sprintf('{"count":%d,"bytes":2}', $this->remoteCount)];
             }
 
             // The binary is never run here, but the command refuses to send anything when it can't be found - so a host without rclone, CI being one, would see this test assert on a command that was never built
@@ -203,5 +219,64 @@ class BackupOffsiteCommandTest extends TestCase
         ))->execute([]);
 
         $this->assertStringContainsString('--max-delete 30', implode("\n", (array) $calls));
+    }
+
+    // A family of derived images regenerated under new names deletes as many files as it adds: the local count holding against the destination's lifts the guard to what the destination holds, so the nightly run goes through on its own
+    public function testARegeneratedFolderLiftsTheGuard(): void
+    {
+        mkdir($this->projectDir . '/public/medias', 0775, true);
+        for ($i = 0; $i < 40; ++$i) {
+            file_put_contents(sprintf('%s/public/medias/photo-%d.webp', $this->projectDir, $i), 'photo');
+        }
+
+        $calls = new \ArrayObject();
+        new CommandTester($this->createCommand(
+            'storagebox:example.com',
+            [new BackupPath('public/medias', BackupPath::MODE_MIRROR)],
+            $calls,
+            45
+        ))->execute([]);
+
+        $this->assertStringContainsString('--max-delete 45', implode("\n", (array) $calls));
+    }
+
+    // A folder emptied locally while the destination still holds its files keeps the tight guard, the lift being only for a folder that kept its size
+    public function testAFolderEmptiedAgainstTheDestinationKeepsTheGuard(): void
+    {
+        mkdir($this->projectDir . '/public/medias', 0775, true);
+        $calls = new \ArrayObject();
+
+        new CommandTester($this->createCommand(
+            'storagebox:example.com',
+            [new BackupPath('public/medias', BackupPath::MODE_MIRROR)],
+            $calls,
+            200
+        ))->execute([]);
+
+        $this->assertStringContainsString('--max-delete 30', implode("\n", (array) $calls));
+    }
+
+    // The scheduler logs only the exit code, so the reason has to be logged by the command for the error mail to carry it
+    public function testAFailedMirrorLogsItsReason(): void
+    {
+        mkdir($this->projectDir . '/public/medias', 0775, true);
+
+        $logger = $this->createMock(LoggerInterface::class);
+        $logger->expects($this->once())->method('error')->with(
+            $this->anything(),
+            ['failures' => 'public/medias: --max-delete threshold reached']
+        );
+
+        $tester = new CommandTester($this->createCommand(
+            'storagebox:example.com',
+            [new BackupPath('public/medias', BackupPath::MODE_MIRROR)],
+            new \ArrayObject(),
+            1,
+            false,
+            $logger
+        ));
+        $tester->execute([]);
+
+        $this->assertSame(Command::FAILURE, $tester->getStatusCode());
     }
 }

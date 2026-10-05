@@ -17,6 +17,7 @@ use c975L\ConfigBundle\Management\FileCounter;
 use c975L\ConfigBundle\Management\OffsiteState;
 use c975L\ConfigBundle\Management\OffsiteSynchronizer;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -72,6 +73,7 @@ class BackupOffsiteCommand extends Command
         private readonly BackupPathCollector $pathCollector,
         private readonly OffsiteSynchronizer $offsiteSynchronizer,
         private readonly OffsiteState $offsiteState,
+        private readonly ?LoggerInterface $logger = null,
     ) {
         parent::__construct();
     }
@@ -119,7 +121,7 @@ class BackupOffsiteCommand extends Command
                 $projectDir . '/' . $path,
                 'files/' . $path,
                 sprintf('%s/%s/%s', self::PREVIOUS_FOLDER, $dated, $path),
-                $this->maxDelete($projectDir . '/' . $path)
+                $this->maxDelete($projectDir . '/' . $path, 'files/' . $path)
             );
 
             if (!$result['ok']) {
@@ -130,6 +132,9 @@ class BackupOffsiteCommand extends Command
 
         if (!empty($failures)) {
             $this->offsiteState->recordFailure($projectDir, implode(' | ', $failures), 'mirror');
+
+            // The scheduler only logs the exit code, so the reason has to be logged here to reach the error mail
+            $this->logger?->error('Offsite mirror failed: {failures}', ['failures' => implode(' | ', $failures)]);
 
             return Command::FAILURE;
         }
@@ -145,10 +150,18 @@ class BackupOffsiteCommand extends Command
         return Command::SUCCESS;
     }
 
-    // The deletion guard for one folder, sized on what that folder currently holds. Counted locally on purpose: the danger is the local side having lost its files, and a local side that lost them counts near zero - the guard tightening exactly when it matters instead of being loosened by the destination's own count
-    private function maxDelete(string $localPath): int
+    // The deletion guard for one folder, counted locally so it tightens when the local side lost its files, and lifted to the destination's count when the local one stays within the same share of it: a regenerated family deletes as much as it adds, an emptied folder only deletes
+    private function maxDelete(string $localPath, string $remoteSubPath): int
     {
-        return max(self::MIN_DELETE, intdiv(FileCounter::count($localPath) * self::MAX_DELETE_PERCENT, 100));
+        $local = FileCounter::count($localPath);
+        $guard = max(self::MIN_DELETE, intdiv($local * self::MAX_DELETE_PERCENT, 100));
+
+        $remote = $this->offsiteSynchronizer->size($remoteSubPath)['count'] ?? null;
+        if (null !== $remote && $local * 100 >= $remote * (100 - self::MAX_DELETE_PERCENT)) {
+            return max($guard, $remote);
+        }
+
+        return $guard;
     }
 
     // Read back from the destination rather than counted here: an rclone run exiting 0 says the transfer was accepted, not that the files are there - the same reason this bundle reads its archives back with bzip2 --test instead of trusting tar's exit code

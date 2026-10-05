@@ -1,5 +1,14 @@
 # ChangeLog
 
+## v1.51.3
+
+Offsite mirror guard lifted for regenerated folders
+
+### ConfigBundle
+
+- Offsite deletion guard lifted when a folder kept its size against the destination (05/10/2026)
+- Failed offsite mirror logged with rclone's reason (05/10/2026)
+
 ## v1.51.2
 
 Stale sitemap index removed
