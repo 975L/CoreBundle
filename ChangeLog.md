@@ -1,5 +1,13 @@
 # ChangeLog
 
+## v1.56.0
+
+A catalog's file says what it is, in every language
+
+### UiBundle
+
+- `CatalogProductItem` takes a `description` by locale, what the item's sheet says of the file (06/10/2026)
+
 ## v1.55.4
 
 No sitemap written or expected on a private site

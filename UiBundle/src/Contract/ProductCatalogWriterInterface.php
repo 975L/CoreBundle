@@ -16,7 +16,7 @@ use c975L\UiBundle\Model\CatalogProductItem;
 // Implemented by the shop, for another bundle's catalog to sell what it holds - BookBundle writes each book's files into it. Declared here so that neither knows the other: the catalog asks for this interface, optional, and the shop answers it when it is installed. The files are copied, never shared: each bundle keeps its own, as it would without the other
 interface ProductCatalogWriterInterface
 {
-    // Finds the product written under $product->key, or creates it when it has items - title, description and picture are only written then, the shop's editor owning them afterwards. Each item is found under its own key or created, its file replaced when it changed and its price set; an item written earlier under a key the product no longer lists is hidden, never deleted, orders pointing at it
+    // Finds the product written under $product->key, or creates it when it has items - title, description and picture are only written then, the shop's editor owning them afterwards. Each item is found under its own key or created, its title set, its description too in each language the catalog gives one, its file replaced when it changed and its price set; an item written earlier under a key the product no longer lists is hidden, never deleted, orders pointing at it
     public function write(CatalogProduct $product): void;
 
     // Every item holding a file, with its id, its slug and its product's - what a one-shot import into the catalog reads

@@ -13,6 +13,7 @@ namespace c975L\UiBundle\Model;
 // One item of a CatalogProduct - a file sold at a price - or, read back from the shop for a one-shot import, one of its items holding a file (see ProductCatalogWriterInterface::itemsWithFile(), which fills id and the product's slug and title)
 final class CatalogProductItem
 {
+    /** @param array<string, string> $description */
     public function __construct(
         public readonly ?string $key,
         public readonly string $title,
@@ -25,6 +26,8 @@ final class CatalogProductItem
         public readonly ?string $slug = null,
         public readonly ?string $productSlug = null,
         public readonly ?string $productTitle = null,
+        // What the item's sheet says of the file, locale => text: the shop's default locale written on the row, the others as its translations, its title for want of one
+        public readonly array $description = [],
     ) {
     }
 }
