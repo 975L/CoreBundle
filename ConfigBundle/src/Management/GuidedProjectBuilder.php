@@ -93,6 +93,14 @@ class GuidedProjectBuilder
         return null;
     }
 
+    // Whether the current user may follow a project, answered without building any of them - for a check run on every request, such as each Range request of a film (see SiteBundle's TutorialFilmController)
+    public function isGranted(string $slug): bool
+    {
+        $project = array_find($this->declaredProjects(), fn (array $project): bool => $slug === $project['slug']);
+
+        return null !== $project && $this->isGrantedRoles($project);
+    }
+
     private function buildProject(array $project): array
     {
         $domain = $project['translation_domain'];

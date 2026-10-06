@@ -231,6 +231,16 @@ class GuidedProjectBuilderTest extends TestCase
         $this->assertNull($builder->getProject('gerer-utilisateur'));
     }
 
+    // Same answer as getProject(), without building the projects
+    public function testIsGrantedFollowsTheProjectRole(): void
+    {
+        $provider = $this->createProvider([$this->project('gerer-utilisateur', 70, ['role' => 'ROLE_SUPER_ADMIN'])]);
+
+        $this->assertTrue($this->createBuilder([$provider])->isGranted('gerer-utilisateur'));
+        $this->assertFalse($this->createBuilder([$provider], false)->isGranted('gerer-utilisateur'));
+        $this->assertFalse($this->createBuilder([$provider])->isGranted('gone-with-its-bundle'));
+    }
+
     // A bundle's projects are titled with its name, read off its provider's namespace - the application's own, outside any c975L bundle, go under "" for the page to title with the site's name
     public function testGetProjectsByBundleGroupsEachProviderUnderItsBundle(): void
     {

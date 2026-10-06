@@ -1,5 +1,13 @@
 # ChangeLog
 
+## v1.55.1
+
+Guided project role checked without building projects
+
+### ConfigBundle
+
+- `GuidedProjectBuilder::isGranted()`, a project's role checked without building any (06/10/2026)
+
 ## v1.55.0
 
 Guided projects on a page of their own, health check errors mailed
