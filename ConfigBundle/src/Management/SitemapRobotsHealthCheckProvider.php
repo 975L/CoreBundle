@@ -11,6 +11,7 @@
 namespace c975L\ConfigBundle\Management;
 
 use c975L\ConfigBundle\Entity\HealthCheckResult;
+use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\ConfigBundle\Service\RobotsTxtMatcher;
 use c975L\ConfigBundle\Service\SeoFilesClient;
 use c975L\ConfigBundle\Service\SiteUrlResolver;
@@ -26,6 +27,7 @@ class SitemapRobotsHealthCheckProvider implements HealthCheckProviderInterface
         private readonly SiteUrlResolver $siteUrlResolver,
         private readonly SeoFilesClient $seoFilesClient,
         private readonly TranslatorInterface $translator,
+        private readonly ConfigServiceInterface $configService,
         // Every SitemapProviderInterface implementation, whatever the bundle it comes from - the same iterator SitemapWriter is given, so the urls tested here are exactly the ones written to the sitemaps (see services.yaml)
         private readonly iterable $sitemapProviders,
     ) {
@@ -40,6 +42,11 @@ class SitemapRobotsHealthCheckProvider implements HealthCheckProviderInterface
     {
         $siteUrl = $this->siteUrlResolver->siteUrl();
         if (null === $siteUrl) {
+            return [];
+        }
+
+        // A private site declares no url at all (see SitemapWriter) and closes robots.txt on purpose, so there is no contradiction to find - SeoFilesHealthCheckProvider already reports the closed file as the expected state
+        if ((bool) $this->configService->get('seo-robots-private')) {
             return [];
         }
 

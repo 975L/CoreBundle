@@ -1,5 +1,13 @@
 # ChangeLog
 
+## v1.57.1
+
+No robots contradiction reported on a private site
+
+### ConfigBundle
+
+- `SitemapRobotsHealthCheckProvider` skips its check when `seo-robots-private` is on (06/10/2026)
+
 ## v1.57.0
 
 Back-office films linked, no longer played in place

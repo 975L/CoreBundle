@@ -18,6 +18,11 @@
                 "es": "Un sitio oculto a los motores de búsqueda ya no publica un mapa del sitio, y la revisión de salud ya no lo señala como ausente."
             },
             {
+                "en": "On a site hidden from search engines, the health check no longer reports pages blocked by robots.txt.",
+                "fr": "Sur un site masqué aux moteurs de recherche, le bilan de santé ne signale plus les pages bloquées par robots.txt.",
+                "es": "En un sitio oculto a los motores de búsqueda, la revisión de salud ya no señala las páginas bloqueadas por robots.txt."
+            },
+            {
                 "en": "The guided tour now also shows you where to find the guided projects.",
                 "fr": "La visite guidée vous montre désormais aussi où trouver les projets guidés.",
                 "es": "La visita guiada ahora también le muestra dónde encontrar los proyectos guiados."

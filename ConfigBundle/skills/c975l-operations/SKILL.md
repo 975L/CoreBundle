@@ -36,7 +36,8 @@ server, they keep answering 200 during a maintenance, where a controller-rendere
 503 and stop the crawl of the whole site. `robots.txt` only declares the sitemap index once that file
 really exists, so the order of those two commands matters. A provider returning `[]` gets its file
 removed, and `sitemap-index.xml` goes too once no provider has any url left. With `seo-robots-private`
-on, every provider counts as empty: no sitemap is written, and the health check expects none.
+on, every provider counts as empty: no sitemap is written, the health check expects none, and
+`sitemap-robots` has nothing to compare against the closed `robots.txt`.
 
 A `SitemapProviderInterface` url is `loc` plus the optional `lastmod`, `changefreq` and `priority`
 (declared on the admin's 0-10 scale, converted to the protocol's 0.0-1.0 by `SitemapWriter`). A site

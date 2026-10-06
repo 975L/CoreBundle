@@ -61,12 +61,16 @@ class SitemapRobotsHealthCheckProviderTest extends TestCase
         return $provider;
     }
 
-    private function createProvider(?string $siteUrl, array $robots, array $sitemapProviders = []): SitemapRobotsHealthCheckProvider
+    private function createProvider(?string $siteUrl, array $robots, array $sitemapProviders = [], bool $isPrivate = false): SitemapRobotsHealthCheckProvider
     {
+        $configService = $this->createStub(ConfigServiceInterface::class);
+        $configService->method('get')->willReturn($isPrivate);
+
         return new SitemapRobotsHealthCheckProvider(
             $this->createSiteUrlResolver($siteUrl),
             $this->createSeoFilesClient($robots),
             $this->createTranslator(),
+            $configService,
             $sitemapProviders,
         );
     }
@@ -79,6 +83,16 @@ class SitemapRobotsHealthCheckProviderTest extends TestCase
     public function testRunChecksReturnsEmptyArrayWithoutASiteUrl(): void
     {
         $this->assertSame([], $this->createProvider(null, ['content' => self::OPEN_ROBOTS])->runChecks());
+    }
+
+    // A private site closes robots.txt on purpose and declares nothing, so there is no contradiction to report
+    public function testRunChecksReturnsNoRowOnAPrivateSite(): void
+    {
+        $provider = $this->createProvider('https://example.com', ['content' => "User-agent: *\nDisallow: /\n"], [
+            $this->createSitemapProvider('site', ['https://example.com/pages/contact']),
+        ], true);
+
+        $this->assertSame([], $provider->runChecks());
     }
 
     // A missing robots.txt is already the error SeoFilesHealthCheckProvider raises - repeating it would leave two rows for one defect
@@ -105,6 +119,7 @@ class SitemapRobotsHealthCheckProviderTest extends TestCase
             $this->createSiteUrlResolver('https://example.com'),
             $client,
             $this->createTranslator(),
+            $this->createStub(ConfigServiceInterface::class),
             [],
         );
         $results = $provider->runChecks();
