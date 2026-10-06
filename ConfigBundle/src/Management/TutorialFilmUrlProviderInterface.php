@@ -15,8 +15,4 @@ interface TutorialFilmUrlProviderInterface
 {
     // Where this site shows the film of the given project, null when it has none of its own
     public function getFilmUrl(string $slug): ?string;
-
-    // The urls of a film only the back office shows ("video", "subtitles", "poster"), its "locale" and whether it is "narrated", played right in the projects' page rather than linked - null for a film shown publicly, which keeps its link
-    /** @return ?array{video: string, subtitles: string, poster: string, locale: string, narrated: bool} */
-    public function getFilmPlayer(string $slug): ?array;
 }

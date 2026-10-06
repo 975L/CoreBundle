@@ -112,21 +112,7 @@ class GuidedProjectBuilder
             'description' => empty($project['description']) ? '' : $this->translator->trans($project['description'], [], $domain),
             'steps' => array_map(fn (array $step) => $this->buildStep($step, $domain), $project['steps']),
             'film' => $this->filmUrl($project['slug']),
-            'player' => $this->filmPlayer($project['slug']),
         ];
-    }
-
-    // The film only the back office shows, played in place on the projects' page - null for every film shown publicly (see TutorialFilmUrlProviderInterface::getFilmPlayer())
-    private function filmPlayer(string $slug): ?array
-    {
-        foreach ($this->tutorialFilmUrlProviders as $provider) {
-            $player = $provider->getFilmPlayer($slug);
-            if (null !== $player) {
-                return $player;
-            }
-        }
-
-        return null;
     }
 
     // Where the project's film is shown: the site's own when it publishes one (see TutorialFilmUrlProviderInterface), the ecosystem's otherwise - an address answering a project never shot too (bundles.975l.com sends it on to its films' index), so that link is written without knowing which films exist

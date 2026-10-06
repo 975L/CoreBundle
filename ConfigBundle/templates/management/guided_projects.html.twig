@@ -16,19 +16,7 @@
                         <strong>{{ project.label }}</strong>
                         <span class="badge text-bg-success" data-guided-project-badge="{{ project.slug }}" hidden>{{ 'label.guided_project_done'|trans({}, 'config') }}</span>
                         {%- if project.description %} — <span class="text-muted small">{{ project.description }}</span>{% endif %}
-                        {# A film only the back office shows plays in place, unfolded by <details> with no script of its own; one shown publicly keeps its link to the page showing it #}
-                        {% if project.player %}
-                            <details class="mt-1">
-                                <summary class="small">{{ 'label.guided_project_film'|trans({}, 'config') }}</summary>
-                                <video class="w-100 mt-2" controls preload="none" poster="{{ project.player.poster }}">
-                                    <source src="{{ project.player.video }}" type="video/webm">
-                                    {# Subtitles shown from the start only on a mute film, a narrated one offering them #}
-                                    <track kind="subtitles" src="{{ project.player.subtitles }}" srclang="{{ project.player.locale }}"{{ project.player.narrated ? '' : ' default' }}>
-                                </video>
-                            </details>
-                        {% else %}
-                            <a href="{{ project.film }}" target="_blank" rel="noopener" class="small ms-1">{{ 'label.guided_project_film'|trans({}, 'config') }}</a>
-                        {% endif %}
+                        <a href="{{ project.film }}" target="_blank" rel="noopener" class="small ms-1">{{ 'label.guided_project_film'|trans({}, 'config') }}</a>
                     </li>
                 {% endfor %}
             </ul>

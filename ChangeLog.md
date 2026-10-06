@@ -1,5 +1,14 @@
 # ChangeLog
 
+## v1.57.0
+
+Back-office films linked, no longer played in place
+
+### ConfigBundle
+
+- `TutorialFilmUrlProviderInterface::getFilmPlayer()` removed (06/10/2026) **See [UPGRADE.md](UPGRADE.md)** [BC-Break]
+- Guided projects lose their `player` key, every film linked (06/10/2026)
+
 ## v1.56.0
 
 A catalog's file says what it is, in every language

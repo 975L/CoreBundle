@@ -1,5 +1,9 @@
 # UPGRADE
 
+## v1.57.0
+
+**`TutorialFilmUrlProviderInterface` loses `getFilmPlayer()`**: a film only the back office shows is no longer played in place on the guided projects' page, `getFilmUrl()` linking it like any other - SiteBundle sends it to a back-office page of its own from v8.31.0. The projects lose their `player` key. A class of your own implementing the interface drops the method.
+
 ## v1.55.0
 
 **`TutorialFilmUrlProviderInterface` gains `getFilmPlayer(string $slug): ?array`**, the urls of a film only the back office shows, played in place on the new guided projects' page (`management_guided_projects_index`). SiteBundle implements it from v8.30.0: update both together. A class of your own implementing the interface returns null to keep its films linked.

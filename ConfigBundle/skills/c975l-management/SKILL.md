@@ -1,6 +1,6 @@
 ---
 name: c975l-management
-description: "Use this skill when a bundle or an application has to add anything to the /management dashboard of a c975L site — a menu entry, an alert, a shortcut, a widget, a page overlay, a guided project, a what's new note, an importmap entry, an admin procedure, an export or an import, a linkable route. Lists every contribution interface, the one wiring rule that makes them work, and the test that proves their targets still exist. Triggers on: MenuProviderInterface, getMenuSection, section icon, internal link, leavesTheAdmin, AlertProviderInterface, ShortcutProviderInterface, DashboardWidgetProviderInterface, PageOverlayProviderInterface, page overlay, GuidedProjectProviderInterface, WhatsNewProviderInterface, ImportmapProviderInterface, ProcedureProviderInterface, ExportProviderInterface, ImportProviderInterface, LinkableRouteProviderInterface, LinkableRouteCacheTagsInterface, getLinkableRouteCacheTags, LinkableRouteRegistry, cacheTags, EssentialActionProviderInterface, narration, highlight selector, creatable, UnusedFeatureBuilder, guided-project parameter, EcosystemUrls, guided project film, TutorialFilmUrlProviderInterface, getFilmUrl, getFilmPlayer, management_guided_projects_index, guided projects page, BackOfficeAccessVoter, TaggedInterfacePass, TableExporter, ManagementTargetsTestCase, EasyAdmin dashboard, AbstractDashboardController, configureMenuItems, DashboardController, whatsnew.json."
+description: "Use this skill when a bundle or an application has to add anything to the /management dashboard of a c975L site — a menu entry, an alert, a shortcut, a widget, a page overlay, a guided project, a what's new note, an importmap entry, an admin procedure, an export or an import, a linkable route. Lists every contribution interface, the one wiring rule that makes them work, and the test that proves their targets still exist. Triggers on: MenuProviderInterface, getMenuSection, section icon, internal link, leavesTheAdmin, AlertProviderInterface, ShortcutProviderInterface, DashboardWidgetProviderInterface, PageOverlayProviderInterface, page overlay, GuidedProjectProviderInterface, WhatsNewProviderInterface, ImportmapProviderInterface, ProcedureProviderInterface, ExportProviderInterface, ImportProviderInterface, LinkableRouteProviderInterface, LinkableRouteCacheTagsInterface, getLinkableRouteCacheTags, LinkableRouteRegistry, cacheTags, EssentialActionProviderInterface, narration, highlight selector, creatable, UnusedFeatureBuilder, guided-project parameter, EcosystemUrls, guided project film, TutorialFilmUrlProviderInterface, getFilmUrl, management_guided_projects_index, guided projects page, BackOfficeAccessVoter, TaggedInterfacePass, TableExporter, ManagementTargetsTestCase, EasyAdmin dashboard, AbstractDashboardController, configureMenuItems, DashboardController, whatsnew.json."
 ---
 
 # c975L ConfigBundle — contributing to /management
@@ -58,7 +58,7 @@ class MyUrlMetadataProvider implements UrlMetadataProviderInterface
 | `PageOverlayProviderInterface` | `getPageOverlays()` | a template drawn over every admin page, same shape as a widget — redrawn on each page load, so its state lives in the browser |
 | `EssentialActionProviderInterface` | `getEssentialActions()` | entries of the "essential actions" checklist |
 | `GuidedProjectProviderInterface` | `getGuidedProjects()` | replayable guided tours of your screens |
-| `TutorialFilmUrlProviderInterface` | `getFilmUrl()`, `getFilmPlayer()` | the site's own film of a guided project, in place of the ecosystem's, or played in place on the projects' page |
+| `TutorialFilmUrlProviderInterface` | `getFilmUrl()` | the site's own film of a guided project, in place of the ecosystem's |
 | `WhatsNewProviderInterface` | `getEntries()` | user-facing release notes, read from `config/whatsnew.json` |
 | `ProcedureProviderInterface` | `getProcedures()` | admin workflows for the dashboard AI assistant |
 | `ImportmapProviderInterface` | `getImportmapEntries()`, `getAdminImportmapEntries()` | AssetMapper importmap entries, written on `composer update` |
@@ -112,9 +112,8 @@ Two nuances that get lost:
 - Each guided project carries a `film` url, `EcosystemUrls::TUTORIAL_FILM` followed by its slug,
   linked as "Watch the film" in the projects' list and beside Donovan's citation; nothing checks
   that a film exists for the slug. A `TutorialFilmUrlProviderInterface` answering `getFilmUrl($slug)`
-  with a url sends the link to the site's own film instead, null leaving the ecosystem's; its
-  `getFilmPlayer($slug)` returns `video`/`subtitles`/`poster`/`locale`/`narrated` for a film only the
-  back office shows, played in place on the projects' page, null keeping the link.
+  with a url sends the link to the site's own film instead (a public page, or a page of the back
+  office for a film only it shows), null leaving the ecosystem's.
 - **An application's own guided projects** (a site walking its editors through its own screens: "add a
   resistant", "create a shortcut") come from one `src/Management/GuidedProjectProvider.php` in the app,
   autoconfigured like a bundle's. Its `order` runs from 20000 up, after every bundle's block; its slugs
