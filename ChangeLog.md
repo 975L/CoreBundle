@@ -1,5 +1,14 @@
 # ChangeLog
 
+## v1.57.2
+
+Neutral texts kept as they are by the content translation
+
+### UiBundle
+
+- `TranslateContentCommand` keeps texts without letters and domain names untranslated (06/10/2026)
+- `TranslateContentCommand` translates a table's cells one by one (06/10/2026)
+
 ## v1.57.1
 
 No robots contradiction reported on a private site

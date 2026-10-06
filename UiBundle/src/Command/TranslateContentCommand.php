@@ -165,8 +165,32 @@ class TranslateContentCommand extends Command
         return [] === $failed ? Command::SUCCESS : Command::FAILURE;
     }
 
-    // One text translated, asked a second time after the long wait when the first call comes back empty, since a null cannot tell a refusal from a rate limit ("--pause=0" waits nowhere, second try included)
+    // One text translated a cell at a time, a comparison table's "✓ | rare" coming back as "rare" once asked whole: the neutral cells are kept as they are, the others asked for, and the text fails as soon as one of them does
     private function translate(string $source, string $locale, int $pause): ?string
+    {
+        $parts = [];
+
+        foreach (explode(' | ', $source) as $part) {
+            $parts[] = self::isNeutral($part) ? $part : $this->translatePart($part, $locale, $pause);
+
+            if (null === end($parts)) {
+                return null;
+            }
+        }
+
+        return implode(' | ', $parts);
+    }
+
+    // What reads the same in every language and is never sent: no letter at all ("✓", "✗", "12 €"), or a domain name ("run.as" came back as "run.es", its title as "correr.com")
+    public static function isNeutral(string $text): bool
+    {
+        $text = trim($text);
+
+        return 1 !== preg_match('/\p{L}/u', $text) || 1 === preg_match('/^[\w-]+(\.[\w-]+)+$/u', $text);
+    }
+
+    // One text asked for, asked a second time after the long wait when the first call comes back empty, since a null cannot tell a refusal from a rate limit ("--pause=0" waits nowhere, second try included)
+    private function translatePart(string $source, string $locale, int $pause): ?string
     {
         $key = $locale . "\0" . $source;
 

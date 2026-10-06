@@ -79,6 +79,33 @@ class TranslateContentCommandTest extends TestCase
         $this->assertSame('Name', $this->translate($client, 'Nom', 'en'));
     }
 
+    // "✓ | ✗" came back as "Yes", "run.as" as "run.es": a text reading the same in every language is kept without a call
+    public function testANeutralTextIsKeptWithoutACall(): void
+    {
+        $client = $this->createMock(AiRephraseClient::class);
+        $client->expects($this->never())->method('translate');
+
+        $this->assertSame('✓ | ✗', $this->translate($client, '✓ | ✗', 'en'));
+        $this->assertSame('Run.as', $this->translate($client, 'Run.as', 'es'));
+    }
+
+    // "✓ | rare" came back as "rare": only the cell holding words is asked for, the others staying where they were
+    public function testOnlyTheCellsHoldingWordsAreAskedFor(): void
+    {
+        $client = $this->createMock(AiRephraseClient::class);
+        $client->expects($this->once())->method('translate')->with('rare', 'es')->willReturn('raro');
+
+        $this->assertSame('✓ | raro | ✗', $this->translate($client, '✓ | rare | ✗', 'es'));
+    }
+
+    // A sentence is still a sentence: neither its letters nor its dot make it neutral
+    public function testASentenceIsNotNeutral(): void
+    {
+        $this->assertFalse(TranslateContentCommand::isNeutral('Nom'));
+        $this->assertFalse(TranslateContentCommand::isNeutral('Créez votre lien sur run.as.'));
+        $this->assertTrue(TranslateContentCommand::isNeutral('12 €'));
+    }
+
     private function translate(AiRephraseClient $client, string $source, string $locale): ?string
     {
         return new \ReflectionMethod(TranslateContentCommand::class, 'translate')
