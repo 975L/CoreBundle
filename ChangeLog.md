@@ -1,5 +1,13 @@
 # ChangeLog
 
+## v1.55.2
+
+Scaffold smoke test reads guided projects from their own page
+
+### ConfigBundle
+
+- The scaffold's `ManagementSmokeTest` walks guided projects on `management_guided_projects_index` instead of the dashboard (06/10/2026)
+
 ## v1.55.1
 
 Guided project role checked without building projects

@@ -100,16 +100,17 @@ class ManagementSmokeTest extends FunctionalTestCase
         }
     }
 
-    // Each project's steps are fetched by the panel over HTTP, so a project listed on the dashboard whose endpoint fails only shows up on click
+    // Each project's steps are fetched by the panel over HTTP, so a project listed on its page whose endpoint fails only shows up on click
     public function testEveryGuidedProjectServesItsSteps(): void
     {
         $client = $this->createAuthenticatedClient(['ROLE_SUPER_ADMIN']);
-        $crawler = $client->request('GET', $this->dashboardPath());
+        $router = static::getContainer()->get('router');
+        $crawler = $client->request('GET', $router->generate('management_guided_projects_index'));
+        $this->assertResponseIsSuccessful();
 
         $slugs = $crawler->filter('[data-guided-project-slug]')->each(static fn ($node) => $node->attr('data-guided-project-slug'));
-        $this->assertNotEmpty($slugs, 'The dashboard lists no guided project at all, which means this test is walking an empty page');
+        $this->assertNotEmpty($slugs, 'The guided projects page lists no project at all, which means this test is walking an empty page');
 
-        $router = static::getContainer()->get('router');
         foreach ($slugs as $slug) {
             $client->request('GET', $router->generate('management_guided_project_steps', ['slug' => $slug]));
             $this->assertResponseIsSuccessful(sprintf('The "%s" guided project does not serve its steps', $slug));
