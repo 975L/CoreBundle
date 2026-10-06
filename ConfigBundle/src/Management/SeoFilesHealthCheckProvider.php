@@ -47,6 +47,11 @@ class SeoFilesHealthCheckProvider implements HealthCheckProviderInterface
             $this->checkHumans($siteUrl . '/humans.txt'),
         ];
 
+        // A site out of search engines has no sitemap to serve (SitemapWriter writes none), so a missing one is the state it asked for, not an error
+        if ((bool) $this->configService->get('seo-robots-private')) {
+            return array_merge($rows, $this->checkLlms($siteUrl . '/llms.txt'));
+        }
+
         return array_merge(
             $rows,
             $this->checkLlms($siteUrl . '/llms.txt'),

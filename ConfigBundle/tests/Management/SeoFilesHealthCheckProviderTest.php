@@ -199,6 +199,20 @@ class SeoFilesHealthCheckProviderTest extends TestCase
         $this->assertSame('label.health_check_robots_private_but_open', $robots['summary']);
     }
 
+    // SitemapWriter writes no sitemap for a private site, so neither file is checked - a back-office-only site would otherwise carry a permanent error
+    public function testRunChecksSkipsTheSitemapsOnAPrivateSite(): void
+    {
+        $client = $this->createClient([
+            ['https://example.com/robots.txt', ['statusCode' => 200, 'content' => self::BLOCKING_ROBOTS]],
+            ['https://example.com/sitemap-site.xml', ['statusCode' => 404, 'content' => '']],
+            ['https://example.com/sitemap-index.xml', ['statusCode' => 404, 'content' => '']],
+        ]);
+
+        $provider = $this->createProvider($this->createSiteUrlResolver('https://example.com'), $client, true);
+
+        $this->assertSame(['robots.txt', 'humans.txt'], array_column($provider->runChecks(), 'label'));
+    }
+
     public function testRunChecksDoesNotFlagAPartialDisallow(): void
     {
         $client = $this->createClient([

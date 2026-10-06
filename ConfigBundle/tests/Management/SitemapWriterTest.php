@@ -33,10 +33,12 @@ class SitemapWriterTest extends TestCase
         @rmdir($this->projectDir);
     }
 
-    private function createConfigService(string $urlRoot = 'https://example.com'): ConfigServiceInterface
+    private function createConfigService(string $urlRoot = 'https://example.com', bool $isPrivate = false): ConfigServiceInterface
     {
         $service = $this->createStub(ConfigServiceInterface::class);
-        $service->method('get')->willReturn($urlRoot);
+        $service->method('get')->willReturnCallback(
+            static fn (string $key): mixed => 'seo-robots-private' === $key ? $isPrivate : $urlRoot
+        );
 
         return $service;
     }
@@ -53,9 +55,9 @@ class SitemapWriterTest extends TestCase
     }
 
     /** @param SitemapProviderInterface[] $providers */
-    private function createWriter(array $providers, string $urlRoot = 'https://example.com'): SitemapWriter
+    private function createWriter(array $providers, string $urlRoot = 'https://example.com', bool $isPrivate = false): SitemapWriter
     {
-        return new SitemapWriter($this->createConfigService($urlRoot), $this->createEnvironment(), $providers, $this->projectDir);
+        return new SitemapWriter($this->createConfigService($urlRoot, $isPrivate), $this->createEnvironment(), $providers, $this->projectDir);
     }
 
     // A contributing bundle, reduced to what the contract asks of it: a name and a list of urls
@@ -112,6 +114,19 @@ class SitemapWriterTest extends TestCase
         $this->assertFileExists($this->projectDir . '/public/sitemap-book.xml');
         $this->assertStringContainsString('@c975LConfig/sitemaps/sitemap.xml.twig', file_get_contents($this->projectDir . '/public/sitemap-site.xml'));
         $this->assertStringContainsString('tome-1', file_get_contents($this->projectDir . '/public/sitemap-book.xml'));
+    }
+
+    // A private site declares nothing, and the files an earlier public run wrote are removed rather than left to be served
+    public function testWriteRemovesEverySitemapOnAPrivateSite(): void
+    {
+        $provider = $this->createProvider('site', ['https://example.com/pages/about']);
+        $this->createWriter([$provider])->write();
+
+        $names = $this->createWriter([$provider], 'https://example.com', true)->write();
+
+        $this->assertSame([], $names);
+        $this->assertFileDoesNotExist($this->projectDir . '/public/sitemap-site.xml');
+        $this->assertFileDoesNotExist($this->projectDir . '/public/sitemap-index.xml');
     }
 
     // The index declares every sub-sitemap just written, as absolute urls

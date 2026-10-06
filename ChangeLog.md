@@ -1,5 +1,14 @@
 # ChangeLog
 
+## v1.55.4
+
+No sitemap written or expected on a private site
+
+### ConfigBundle
+
+- `SitemapWriter` writes no sitemap and removes existing ones when `seo-robots-private` is on (06/10/2026)
+- `SeoFilesHealthCheckProvider` skips the sitemap checks on a private site (06/10/2026)
+
 ## v1.55.3
 
 Accessibility check skips hidden duplicate links

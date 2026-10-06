@@ -13,6 +13,11 @@
                 "es": "Un nuevo error detectado por la revisión de salud ahora se le envía por correo electrónico."
             },
             {
+                "en": "A site hidden from search engines no longer publishes a sitemap, and the health check no longer reports it missing.",
+                "fr": "Un site masqué aux moteurs de recherche ne publie plus de plan du site, et le bilan de santé ne le signale plus comme manquant.",
+                "es": "Un sitio oculto a los motores de búsqueda ya no publica un mapa del sitio, y la revisión de salud ya no lo señala como ausente."
+            },
+            {
                 "en": "The guided tour now also shows you where to find the guided projects.",
                 "fr": "La visite guidée vous montre désormais aussi où trouver les projets guidés.",
                 "es": "La visita guiada ahora también le muestra dónde encontrar los proyectos guiados."

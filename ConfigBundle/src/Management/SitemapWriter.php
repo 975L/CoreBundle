@@ -46,6 +46,9 @@ class SitemapWriter
         $names = [];
         $lastmods = [];
         $declaredNames = [];
+
+        // A site out of search engines (see SeoFilesWriter) declares no url at all, so every file a previous run left goes the way an empty provider's does
+        $isPrivate = (bool) $this->configService->get('seo-robots-private');
         foreach ($this->sitemapProviders as $provider) {
             /** @var SitemapProviderInterface $provider */
             $name = $provider->getSitemapName();
@@ -56,7 +59,7 @@ class SitemapWriter
             }
             $declaredNames[] = $name;
 
-            $urls = $provider->getUrls();
+            $urls = $isPrivate ? [] : $provider->getUrls();
             $sitemapFile = $this->sitemapFolder . '/sitemap-' . $name . '.xml';
 
             // A provider with nothing to declare (a bundle installed but not used yet) gets no file at all, rather than an empty urlset the index would point at, and any file left by a previous run is removed so nothing stale keeps being served
