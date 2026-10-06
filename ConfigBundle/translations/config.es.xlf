@@ -182,6 +182,10 @@
                 <source>description.guided_step_config_health_check_fix</source>
                 <target>Cada fila con error lleva el consejo del bundle que la produjo: ahí hay que empezar, no en la lista entera.</target>
             </trans-unit>
+            <trans-unit id="3f7SOlv">
+                <source>description.guided_step_config_health_check_mail</source>
+                <target>Cada nuevo error que encuentra el control programado se le envía por correo, a la dirección de las copias de seguridad.</target>
+            </trans-unit>
             <trans-unit id="tLFBlPG">
                 <source>description.guided_step_config_health_check_open</source>
                 <target>Páginas no encontradas, redirecciones, cabeceras de seguridad, certificado, sitemaps, validación W3C: el sitio se revisa desde fuera.</target>
@@ -1166,6 +1170,10 @@
                 <source>label.guided_projects</source>
                 <target>Proyectos guiados</target>
             </trans-unit>
+            <trans-unit id="3u_isbj">
+                <source>label.guided_projects_help</source>
+                <target>Tareas reales que realizar, con un panel que le guía de pantalla en pantalla</target>
+            </trans-unit>
             <trans-unit id="aOZmqdz">
                 <source>label.guided_projects_intro</source>
                 <target>Tu progreso se guarda en este navegador, no en el sitio: no te seguirá a otro ordenador.</target>
@@ -1205,6 +1213,10 @@
             <trans-unit id="5Mjqbt4">
                 <source>label.guided_step_config_health_check_fix</source>
                 <target>Tratar un error</target>
+            </trans-unit>
+            <trans-unit id="E2.YxFP">
+                <source>label.guided_step_config_health_check_mail</source>
+                <target>Recibir el aviso</target>
             </trans-unit>
             <trans-unit id="SS7Ap3H">
                 <source>label.guided_step_config_health_check_open</source>

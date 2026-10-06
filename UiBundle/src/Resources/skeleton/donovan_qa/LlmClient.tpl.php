@@ -52,7 +52,7 @@ class <?= $class_name ?>
 
     // "sourceKinds" holds what the model cited: a block kind, or a guided project prefixed "tour:" - the context builder tells them apart
     // @return array{answer: string, sourceKinds: string[], inputTokens: int, outputTokens: int}|null
-    public function ask(string $question, string $context): ?array
+    public function ask(string $question, string $context, string $locale = ''): ?array
     {
         if (!$this->isEnabled()) {
             return null;
@@ -63,8 +63,8 @@ class <?= $class_name ?>
 
         try {
             return match ($provider) {
-                'anthropic' => $this->callAnthropic($question, $context, $apiKey),
-                'euria' => $this->callEuria($question, $context, $apiKey),
+                'anthropic' => $this->callAnthropic($question, $this->systemPrompt($context, $locale), $apiKey),
+                'euria' => $this->callEuria($question, $this->systemPrompt($context, $locale), $apiKey),
                 default => null,
             };
         } catch (ExceptionInterface $e) {
@@ -74,7 +74,7 @@ class <?= $class_name ?>
         }
     }
 
-    private function callAnthropic(string $question, string $context, string $apiKey): array
+    private function callAnthropic(string $question, string $systemPrompt, string $apiKey): array
     {
         $uri = (string) $this->configService->get('donovan-qa-llm-base-uri');
         $model = (string) $this->configService->get('donovan-qa-llm-model');
@@ -87,7 +87,7 @@ class <?= $class_name ?>
             'json' => [
                 'model' => $model,
                 'max_tokens' => self::MAX_TOKENS,
-                'system' => $this->systemPrompt($context),
+                'system' => $systemPrompt,
                 'messages' => [
                     ['role' => 'user', 'content' => $question],
                 ],
@@ -107,7 +107,7 @@ class <?= $class_name ?>
     }
 
     // Euria (Infomaniak AI Tools) exposes an OpenAI-compatible chat completions API
-    private function callEuria(string $question, string $context, string $apiKey): array
+    private function callEuria(string $question, string $systemPrompt, string $apiKey): array
     {
         $uri = rtrim((string) $this->configService->get('donovan-qa-llm-base-uri'), '/') . '/chat/completions';
         $model = (string) $this->configService->get('donovan-qa-llm-model');
@@ -117,7 +117,7 @@ class <?= $class_name ?>
             'json' => [
                 'model' => $model,
                 'messages' => [
-                    ['role' => 'system', 'content' => $this->systemPrompt($context)],
+                    ['role' => 'system', 'content' => $systemPrompt],
                     ['role' => 'user', 'content' => $question],
                 ],
             ],
@@ -135,13 +135,15 @@ class <?= $class_name ?>
         ];
     }
 
-    private function systemPrompt(string $context): string
+    // The context is written in French: without a locale the model answers in it, with one in the reader's language
+    private function systemPrompt(string $context, string $locale): string
     {
         return "You are the admin dashboard assistant. Answer only from the following context, which documents the available blocks and the guided tours walking through a task in the back office. If the question is unrelated, say so plainly rather than inventing anything outside this context.\n\n"
             . "When a guided tour covers the task the question describes, say so and cite it: the reader is offered to start it right where they are reading your answer.\n\n"
             . "Always end your answer with a line exactly formatted as \"SOURCES: id1, id2\" listing the identifiers (the word after \"###\" in the context, a bare one for a block, a \"tour:\" one for a guided tour) you relied on, or \"SOURCES: none\" if none applies.\n\n"
             // Sent on its own, six tokens and nothing else, on a question the context did not cover: it is a footer under an answer, never the answer
             . "That line always comes under a written answer: answer in at least one sentence first, even to say the context does not cover the question, and never send that line on its own.\n\n"
+            . ('' !== $locale ? "Answer in the language of the locale \"{$locale}\", whatever the language of the context.\n\n" : '')
             . $context;
     }
 

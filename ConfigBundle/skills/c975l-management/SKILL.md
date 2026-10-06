@@ -1,6 +1,6 @@
 ---
 name: c975l-management
-description: "Use this skill when a bundle or an application has to add anything to the /management dashboard of a c975L site — a menu entry, an alert, a shortcut, a widget, a page overlay, a guided project, a what's new note, an importmap entry, an admin procedure, an export or an import, a linkable route. Lists every contribution interface, the one wiring rule that makes them work, and the test that proves their targets still exist. Triggers on: MenuProviderInterface, getMenuSection, section icon, internal link, leavesTheAdmin, AlertProviderInterface, ShortcutProviderInterface, DashboardWidgetProviderInterface, PageOverlayProviderInterface, page overlay, GuidedProjectProviderInterface, WhatsNewProviderInterface, ImportmapProviderInterface, ProcedureProviderInterface, ExportProviderInterface, ImportProviderInterface, LinkableRouteProviderInterface, LinkableRouteCacheTagsInterface, getLinkableRouteCacheTags, LinkableRouteRegistry, cacheTags, EssentialActionProviderInterface, narration, highlight selector, creatable, UnusedFeatureBuilder, guided-project parameter, EcosystemUrls, guided project film, TutorialFilmUrlProviderInterface, getFilmUrl, BackOfficeAccessVoter, TaggedInterfacePass, TableExporter, ManagementTargetsTestCase, EasyAdmin dashboard, AbstractDashboardController, configureMenuItems, DashboardController, whatsnew.json."
+description: "Use this skill when a bundle or an application has to add anything to the /management dashboard of a c975L site — a menu entry, an alert, a shortcut, a widget, a page overlay, a guided project, a what's new note, an importmap entry, an admin procedure, an export or an import, a linkable route. Lists every contribution interface, the one wiring rule that makes them work, and the test that proves their targets still exist. Triggers on: MenuProviderInterface, getMenuSection, section icon, internal link, leavesTheAdmin, AlertProviderInterface, ShortcutProviderInterface, DashboardWidgetProviderInterface, PageOverlayProviderInterface, page overlay, GuidedProjectProviderInterface, WhatsNewProviderInterface, ImportmapProviderInterface, ProcedureProviderInterface, ExportProviderInterface, ImportProviderInterface, LinkableRouteProviderInterface, LinkableRouteCacheTagsInterface, getLinkableRouteCacheTags, LinkableRouteRegistry, cacheTags, EssentialActionProviderInterface, narration, highlight selector, creatable, UnusedFeatureBuilder, guided-project parameter, EcosystemUrls, guided project film, TutorialFilmUrlProviderInterface, getFilmUrl, getFilmPlayer, management_guided_projects_index, guided projects page, BackOfficeAccessVoter, TaggedInterfacePass, TableExporter, ManagementTargetsTestCase, EasyAdmin dashboard, AbstractDashboardController, configureMenuItems, DashboardController, whatsnew.json."
 ---
 
 # c975L ConfigBundle — contributing to /management
@@ -58,7 +58,7 @@ class MyUrlMetadataProvider implements UrlMetadataProviderInterface
 | `PageOverlayProviderInterface` | `getPageOverlays()` | a template drawn over every admin page, same shape as a widget — redrawn on each page load, so its state lives in the browser |
 | `EssentialActionProviderInterface` | `getEssentialActions()` | entries of the "essential actions" checklist |
 | `GuidedProjectProviderInterface` | `getGuidedProjects()` | replayable guided tours of your screens |
-| `TutorialFilmUrlProviderInterface` | `getFilmUrl()` | the site's own film of a guided project, in place of the ecosystem's |
+| `TutorialFilmUrlProviderInterface` | `getFilmUrl()`, `getFilmPlayer()` | the site's own film of a guided project, in place of the ecosystem's, or played in place on the projects' page |
 | `WhatsNewProviderInterface` | `getEntries()` | user-facing release notes, read from `config/whatsnew.json` |
 | `ProcedureProviderInterface` | `getProcedures()` | admin workflows for the dashboard AI assistant |
 | `ImportmapProviderInterface` | `getImportmapEntries()`, `getAdminImportmapEntries()` | AssetMapper importmap entries, written on `composer update` |
@@ -103,13 +103,17 @@ Two nuances that get lost:
   an alert already covers, sets `'creatable' => false` on its menu entry to stay out of it.
 - A guided project starts from any `[data-guided-project-slug]` button on the page, wherever it sits:
   `guided-project.js` delegates the click on the document, so a button appended after the page loaded
-  works too (UiBundle's Donovan renders one when an answer cites a parcours). Only the buttons inside
-  the dashboard list are relabelled "Start"/"Resume"/"Replay". From outside the back office,
+  works too (UiBundle's Donovan renders one when an answer cites a parcours). The list has a page of its
+  own, `management_guided_projects_index` (`/management/guided-projects`), one section per bundle named
+  off the provider's namespace, the application's own under the site's name; only its buttons are
+  relabelled "Start"/"Resume"/"Replay". From outside the back office,
   `/management?guided-project=<slug>` starts it once the page has loaded.
 - Each guided project carries a `film` url, `EcosystemUrls::TUTORIAL_FILM` followed by its slug,
-  linked as "Watch the film" in the dashboard list and beside Donovan's citation; nothing checks
+  linked as "Watch the film" in the projects' list and beside Donovan's citation; nothing checks
   that a film exists for the slug. A `TutorialFilmUrlProviderInterface` answering `getFilmUrl($slug)`
-  with a url sends the link to the site's own film instead, null leaving the ecosystem's.
+  with a url sends the link to the site's own film instead, null leaving the ecosystem's; its
+  `getFilmPlayer($slug)` returns `video`/`subtitles`/`poster`/`locale`/`narrated` for a film only the
+  back office shows, played in place on the projects' page, null keeping the link.
 - **An application's own guided projects** (a site walking its editors through its own screens: "add a
   resistant", "create a shortcut") come from one `src/Management/GuidedProjectProvider.php` in the app,
   autoconfigured like a bundle's. Its `order` runs from 20000 up, after every bundle's block; its slugs

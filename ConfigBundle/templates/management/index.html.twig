@@ -4,13 +4,13 @@
     <section class="text-center">
         <h1>{{ ('label.management'|trans({}, 'config')) }}</h1>
         <p>{{ ('label.management_interface'|trans({}, 'config')) }}</p>
-        {# Guided tour and guided projects side by side: the first shows what the back-office holds, the second walks through a real task to carry out. The list itself sits below, hidden until this button opens it - toggled by assets/js/guided-project.js rather than a Bootstrap collapse, that controller being mounted on the page anyway. Then the ecosystem's films and block showcase, the same for every site (see EcosystemUrls) #}
+        {# Guided tour and guided projects side by side: the first shows what the back-office holds, the second walks through a real task to carry out, listed on a page of their own (see GuidedProjectController::index()). Then the ecosystem's films and block showcase, the same for every site (see EcosystemUrls) #}
         <div class="d-flex justify-content-center gap-2">
             {{ include('@c975LConfig/management/_onboarding_tour.html.twig', { steps: onboardingSteps }) }}
-            {% if guidedProjects|length > 0 %}
-                <button type="button" class="btn btn-secondary mb-3" data-guided-project-toggle>
+            {% if hasGuidedProjects %}
+                <a href="{{ path('management_guided_projects_index') }}" class="btn btn-secondary mb-3">
                     <i class="fa fa-list-check"></i> {{ 'label.guided_projects'|trans({}, 'config') }}
-                </button>
+                </a>
             {% endif %}
             <a href="{{ constant('c975L\\ConfigBundle\\Management\\EcosystemUrls::TUTORIALS') }}" target="_blank" rel="noopener" class="btn btn-secondary mb-3" title="{{ 'label.tutorials_help'|trans({}, 'config') }}">
                 <i class="fa fa-film"></i> {{ 'label.tutorials'|trans({}, 'config') }}
@@ -20,9 +20,6 @@
             </a>
         </div>
     </section>
-
-    {# Guided projects merged across every bundle's GuidedProjectProvider - replayable exercises, not a one-time wizard #}
-    {{ include('@c975LConfig/management/_guided_projects.html.twig', { projects: guidedProjects }) }}
 
     {# Dashboard widgets merged across every bundle's DashboardWidgetProvider (e.g. UiBundle's Donovan card) #}
     {% for widget in widgets %}

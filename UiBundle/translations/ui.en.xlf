@@ -724,7 +724,7 @@
             </trans-unit>
             <trans-unit id="Ohcg3dV">
                 <source>label.ai_assistant_question</source>
-                <target>Ask a question about the block system…</target>
+                <target>Ask a question about the back office…</target>
             </trans-unit>
             <trans-unit id="dUHWBt0">
                 <source>label.ai_assistant_setup_credentials_help</source>
@@ -732,7 +732,7 @@
             </trans-unit>
             <trans-unit id="M_RyUU0">
                 <source>label.ai_assistant_setup_intro</source>
-                <target>Ask questions about the block system. Not yet enabled:</target>
+                <target>Ask questions about the back office. Not yet enabled:</target>
             </trans-unit>
             <trans-unit id="wA18Cg5">
                 <source>label.ai_assistant_setup_step_endpoint</source>
@@ -744,7 +744,7 @@
             </trans-unit>
             <trans-unit id="ZQt.2mZ">
                 <source>label.ai_assistant_subtitle</source>
-                <target>Ask about the block system</target>
+                <target>Rephrase your texts, and ask about the back office</target>
             </trans-unit>
             <trans-unit id="wI5jL3X">
                 <source>label.ai_rephrase_action_rephrase</source>

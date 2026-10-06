@@ -1,5 +1,25 @@
 [
     {
+        "date": "2026-10-06",
+        "description": [
+            {
+                "en": "Guided projects now have their own page, grouped by feature, and some films play right there.",
+                "fr": "Les projets guidés ont désormais leur propre page, regroupés par fonctionnalité, et certains films s'y lisent directement.",
+                "es": "Los proyectos guiados tienen ahora su propia página, agrupados por funcionalidad, y algunas películas se reproducen allí mismo."
+            },
+            {
+                "en": "A new error found by the health check is now sent to you by e-mail.",
+                "fr": "Une nouvelle erreur détectée par le bilan de santé vous est désormais envoyée par e-mail.",
+                "es": "Un nuevo error detectado por la revisión de salud ahora se le envía por correo electrónico."
+            },
+            {
+                "en": "The guided tour now also shows you where to find the guided projects.",
+                "fr": "La visite guidée vous montre désormais aussi où trouver les projets guidés.",
+                "es": "La visita guiada ahora también le muestra dónde encontrar los proyectos guiados."
+            }
+        ]
+    },
+    {
         "date": "2026-10-05",
         "description": [
             {

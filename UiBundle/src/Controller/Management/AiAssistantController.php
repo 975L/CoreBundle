@@ -109,7 +109,7 @@ class AiAssistantController extends AbstractController
             return new JsonResponse(['error' => 'empty_question'], 400);
         }
 
-        $result = $this->aiAssistantClient->ask($question);
+        $result = $this->aiAssistantClient->ask($question, $request->getLocale());
 
         return null === $result
             ? new JsonResponse(['error' => 'unavailable'], 503)

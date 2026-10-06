@@ -16,17 +16,7 @@ interface AiAssistantClientInterface
     // Whether ask() can actually answer right now - fully configured, not just switched on.
     public function isEnabled(): bool;
 
-    /**
-     * Returns null when the feature is disabled/unconfigured, so callers can distinguish "no answer
-     * available" from an empty string answer. "sources" is always present (possibly empty) - a backend
-     * with no citation support of its own can simply omit it from its response, AiAssistantClient
-     * defaults it to []. A source is a {label, url} pair, this bundle making no assumption about what
-     * URL scheme a backend's own citations resolve to. The one exception is a source carrying
-     * "project", a guided project's slug: that one names something this site holds itself, so it comes
-     * with no url at all and is rendered as a button starting the parcours where the answer is read
-     * (see assets/js/ai-assistant.js and ConfigBundle's assets/js/guided-project.js).
-     *
-     * @return array{answer: string, sources: array{label: string, url: string, project?: string}[]}|null
-     */
-    public function ask(string $question): ?array;
+    // Null when disabled/unconfigured; "sources" always present, each a {label, url} pair or a {label, project} one naming a guided project's slug, rendered as a button starting it (see assets/js/ai-assistant.js). $locale is the reader's language, null leaving it to the backend
+    /** @return array{answer: string, sources: array{label: string, url: string, project?: string}[]}|null */
+    public function ask(string $question, ?string $locale = null): ?array;
 }

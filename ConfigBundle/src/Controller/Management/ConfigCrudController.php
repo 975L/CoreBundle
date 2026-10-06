@@ -141,7 +141,7 @@ class ConfigCrudController extends AbstractCrudController
     public function configureFields(string $pageName): iterable
     {
         $context = $this->getContext();
-        $entity = null !== $context ? $context->getEntity()->getInstance() : null;
+        $entity = $context?->getEntity()->getInstance();
         $config = $entity instanceof Config ? $entity : null;
         $isEdit = Crud::PAGE_EDIT === $pageName;
 
@@ -327,7 +327,7 @@ class ConfigCrudController extends AbstractCrudController
     // Three different widgets behind one column: masked on the index, revealed (decrypted) on a sensitive entry's edit form, and matching the entry's own kind otherwise
     private function valueField(string $pageName, ?Config $config): FieldInterface
     {
-        $kind = null !== $config ? $config->getKind() : Config::TYPE_TEXT;
+        $kind = $config?->getKind() ?? Config::TYPE_TEXT;
         $rawValue = $config?->getValue();
         $isEdit = Crud::PAGE_EDIT === $pageName;
 

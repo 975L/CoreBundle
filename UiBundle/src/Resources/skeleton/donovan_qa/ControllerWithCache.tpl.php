@@ -39,7 +39,13 @@ class <?= $class_name ?>
             return new JsonResponse(['error' => 'empty_question'], 400);
         }
 
-        $result = $this->donovanQaService->ask($question);
+        // The reader's language, sent by AiAssistantClient: anything but a locale code is dropped, the value ending up in the model's instructions
+        $locale = \is_array($data) ? (string) ($data['locale'] ?? '') : '';
+        if (!preg_match('/^[a-z]{2,3}([_-][A-Za-z]{2})?$/', $locale)) {
+            $locale = '';
+        }
+
+        $result = $this->donovanQaService->ask($question, $locale);
         if (null === $result) {
             return new JsonResponse(['error' => 'unavailable'], 503);
         }

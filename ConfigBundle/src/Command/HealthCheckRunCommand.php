@@ -11,6 +11,7 @@
 namespace c975L\ConfigBundle\Command;
 
 use c975L\ConfigBundle\Attribute\AsHealthCheck;
+use c975L\ConfigBundle\Management\HealthCheckAlertMailer;
 use c975L\ConfigBundle\Management\HealthCheckRetentionPurger;
 use c975L\ConfigBundle\Management\HealthCheckRunner;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
@@ -36,6 +37,7 @@ class HealthCheckRunCommand extends Command
         private readonly HealthCheckRetentionPurger $healthCheckRetentionPurger,
         private readonly ConfigServiceInterface $configService,
         private readonly RequestContext $requestContext,
+        private readonly HealthCheckAlertMailer $healthCheckAlertMailer,
     ) {
         parent::__construct();
     }
@@ -91,6 +93,14 @@ class HealthCheckRunCommand extends Command
 
         foreach ($counts as $kind => $count) {
             $io->writeln(sprintf('%s: %d result(s) recorded', $kind, $count));
+        }
+
+        // Reported rather than failed: the results are recorded, and the dashboard alert still says so
+        $mailed = $this->healthCheckAlertMailer->notify(array_keys($counts));
+        if (null === $mailed) {
+            $io->warning('New error(s) found, but the alert e-mail could not be sent.');
+        } elseif ($mailed > 0) {
+            $io->writeln(sprintf('%d new error(s) mailed to site-backup-mailto', $mailed));
         }
 
         $io->success('Health check completed.');

@@ -13,12 +13,12 @@ namespace c975L\UiBundle\Tests\Assets;
 use c975L\UiBundle\Testing\JsCase;
 use PHPUnit\Framework\Attributes\Group;
 
-// assets/js/captcha.js with Google's api.js standing in for itself: a stub served in its place, and the request left to fail where the failure is the point
+// assets/js/captcha.js with Google's api.js never reached: a stub served in its place, or a refused connection where the failure is the point
 // Two promises this controller makes are only ever kept at runtime - that a visitor who never touches the form downloads none of the ~765 KB, and that a form whose captcha is blocked still submits. The second is the one that matters: a page that silently refuses to submit is a contact form nobody can reach the site through
 #[Group('browser')]
 class CaptchaBehaviourTest extends JsCase
 {
-    // Google's script replaced on its way into the page, so the happy path can be walked without leaving the machine. Installed once for the life of the page and switched per scenario, because a wrapper laid over the previous one would count every append twice
+    // Google's script replaced on its way into the page, by a stub or by a dead local address, so neither path ever leaves the machine. Installed once for the life of the page and switched per scenario, because a wrapper laid over the previous one would count every append twice
     private const string SEAM = 'window.__asked = [];
         if (!window.__seam) {
             window.__seam = true;
@@ -26,9 +26,9 @@ class CaptchaBehaviourTest extends JsCase
             Node.prototype.appendChild = function (element) {
                 if ("SCRIPT" === element.tagName && String(element.src).includes("recaptcha")) {
                     window.__asked.push(element.src);
-                    if (window.__stub) {
-                        element.src = "data:text/javascript,window.grecaptcha={ready:(f)=>f(),execute:()=>Promise.resolve(\'a-token\')};";
-                    }
+                    element.src = window.__stub
+                        ? "data:text/javascript,window.grecaptcha={ready:(f)=>f(),execute:()=>Promise.resolve(\'a-token\')};"
+                        : "http://127.0.0.1:9/recaptcha/api.js";
                 }
 
                 return appendChild.call(this, element);
@@ -88,7 +88,7 @@ class CaptchaBehaviourTest extends JsCase
              await new Promise((r) => setTimeout(r, 900));
 
              return { token: root.querySelector("[name=captcha]").value, submits };',
-            // No stub this time: the real address is left to fail, which is what a blocker or a lost network does
+            // No stub this time: a refused connection, which is what a blocker or a lost network does - Google itself would answer, slowly under load
             ''
         );
 

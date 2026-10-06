@@ -32,13 +32,15 @@ class <?= $class_name ?>
     /**
      * @return array{answer: string, sources: array{label: string, url: string}[]}|null
      */
-    public function ask(string $question): ?array
+    public function ask(string $question, string $locale = ''): ?array
     {
         $normalized = $this->normalize($question);
-        $hash = hash('sha256', $normalized);
+        // Per language, or an answer written for an English reader would be served to a French one asking the same words - no locale keeping the hashes written before it
+        $suffix = '' !== $locale ? '|' . $locale : '';
+        $hash = hash('sha256', $normalized . $suffix);
         // TODO: fixed for now, so a cached answer is never invalidated on its own merit; add a version() to the context builder
-        // Bumped to v2 when guided tours joined the context: a v1 answer was written without any parcours to cite
-        $version = 'v2';
+        // Bumped to v2 when guided tours joined the context: a v1 answer was written without any parcours to cite. The locale rides along, which keeps the semantic match within one language too
+        $version = 'v2' . $suffix;
 
         $existing = $this->repository->findOneByQuestionHash($hash);
 
@@ -76,7 +78,7 @@ class <?= $class_name ?>
             }
         }
 
-        $result = $this->llmClient->ask($normalized, $this->contextBuilder->context());
+        $result = $this->llmClient->ask($normalized, $this->contextBuilder->context(), $locale);
 
         // An answer with no text is a failure, not a cheap answer: storing it would serve emptiness to everyone asking the same question until the version moves, and the caller renders it as a blank line rather than as the failure it is
         if (null === $result || '' === trim($result['answer'])) {

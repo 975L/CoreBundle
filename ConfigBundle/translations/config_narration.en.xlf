@@ -14,6 +14,10 @@
                 <source>narration.content_import</source>
                 <target>"Import content" takes in an archive exported from another site, for instance pages carried out with their blocks and their pictures.</target>
             </trans-unit>
+            <trans-unit id="6gPpiSf">
+                <source>narration.guided_projects</source>
+                <target>At the top of the dashboard, "Guided projects" opens the list of walkthroughs: pick a task, and a panel walks you through it screen by screen.</target>
+            </trans-unit>
             <trans-unit id="GpCKJ6q">
                 <source>narration.guided_step_config_content_export_carry</source>
                 <target>Keep the zip as it is, without unzipping it. On the other environment, a super administrator imports it at once from the content import.</target>
@@ -49,6 +53,10 @@
             <trans-unit id="mjJnyUV">
                 <source>narration.guided_step_config_health_check_fix</source>
                 <target>Deal with one error at a time. Each failing row carries the advice of the bundle that produced it: that is where to start, not the whole list.</target>
+            </trans-unit>
+            <trans-unit id="7B_7ULK">
+                <source>narration.guided_step_config_health_check_mail</source>
+                <target>No need to come back every day: the scheduled check e-mails you every new error, at the backups' address, once for as long as it lasts.</target>
             </trans-unit>
             <trans-unit id="8_kAglj">
                 <source>narration.guided_step_config_health_check_open</source>
@@ -312,7 +320,7 @@
             </trans-unit>
             <trans-unit id="SIhdRhg">
                 <source>narration.tutorials</source>
-                <target>At the top of the dashboard, "Tutorials" opens the ecosystem's films, one per back-office screen: a way to see again how it is done, at your own pace.</target>
+                <target>Next to it, "Tutorials" opens the ecosystem's films, one per back-office screen: a way to see again how it is done, at your own pace.</target>
             </trans-unit>
             <trans-unit id="S1kRumm">
                 <source>narration.unused_features</source>

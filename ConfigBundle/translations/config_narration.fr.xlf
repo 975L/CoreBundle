@@ -14,6 +14,10 @@
                 <source>narration.content_import</source>
                 <target>« Importer du contenu » reprend une archive exportée depuis un autre site, par exemple des pages emportées avec leurs blocks et leurs images.</target>
             </trans-unit>
+            <trans-unit id="6gPpiSf">
+                <source>narration.guided_projects</source>
+                <target>En haut du tableau de bord, « Projets guidés » ouvre la liste des parcours : choisissez une tâche, un panneau vous accompagne d'écran en écran.</target>
+            </trans-unit>
             <trans-unit id="GpCKJ6q">
                 <source>narration.guided_step_config_content_export_carry</source>
                 <target>Gardez le zip tel quel, sans le décompresser. Sur l'autre environnement, un super administrateur l'importe en une fois depuis l'import de contenu.</target>
@@ -49,6 +53,10 @@
             <trans-unit id="mjJnyUV">
                 <source>narration.guided_step_config_health_check_fix</source>
                 <target>Traitez une erreur à la fois. Chaque ligne en erreur porte le conseil du bundle qui l'a produite : c'est par là qu'il faut commencer, pas par la liste entière.</target>
+            </trans-unit>
+            <trans-unit id="7B_7ULK">
+                <source>narration.guided_step_config_health_check_mail</source>
+                <target>Inutile de revenir chaque jour : le contrôle planifié vous envoie par e-mail chaque nouvelle erreur, à l'adresse des sauvegardes, une seule fois tant qu'elle dure.</target>
             </trans-unit>
             <trans-unit id="8_kAglj">
                 <source>narration.guided_step_config_health_check_open</source>
@@ -312,7 +320,7 @@
             </trans-unit>
             <trans-unit id="SIhdRhg">
                 <source>narration.tutorials</source>
-                <target>En haut du tableau de bord, « Tutoriels » ouvre les films de l'écosystème, un par écran du back-office : de quoi revoir comment faire, à votre rythme.</target>
+                <target>À côté, « Tutoriels » ouvre les films de l'écosystème, un par écran du back-office : de quoi revoir comment faire, à votre rythme.</target>
             </trans-unit>
             <trans-unit id="S1kRumm">
                 <source>narration.unused_features</source>

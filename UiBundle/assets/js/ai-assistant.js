@@ -276,7 +276,7 @@ export default class extends Controller {
         return link;
     }
 
-    // The guided-project controller is mounted on every admin page and listens for this attribute, so the parcours starts right here instead of sending the reader off to the dashboard
+    // The guided-project controller is mounted on every admin page and listens for this attribute, so the parcours starts right here instead of sending the reader off to the guided projects' page
     buildTourButton(source) {
         const button = document.createElement('button');
         button.type = 'button';

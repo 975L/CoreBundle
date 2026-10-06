@@ -35,7 +35,7 @@ class AiAssistantClient implements AiAssistantClientInterface
             && (bool) $this->configService->get('ui-ai-assistant-dashboard-token');
     }
 
-    public function ask(string $question): ?array
+    public function ask(string $question, ?string $locale = null): ?array
     {
         if (!$this->isEnabled()) {
             return null;
@@ -47,7 +47,8 @@ class AiAssistantClient implements AiAssistantClientInterface
         try {
             $response = $this->httpClient->request('POST', $endpoint, [
                 'auth_bearer' => $token,
-                'json' => ['question' => $question],
+                // The language the reader reads in, the backend's own documentation being written in French
+                'json' => ['question' => $question] + (null !== $locale && '' !== $locale ? ['locale' => $locale] : []),
                 // Idle timeout, so the whole budget given to the backend since nothing comes back before it has finished - above what a Donovan backend spends on a cache miss, reading its context then embedding the question then calling the model, each with its own timeout
                 'timeout' => 45,
             ]);

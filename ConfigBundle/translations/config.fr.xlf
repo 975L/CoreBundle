@@ -182,6 +182,10 @@
                 <source>description.guided_step_config_health_check_fix</source>
                 <target>Chaque ligne en erreur porte le conseil du bundle qui l'a produite : c'est par là qu'il faut commencer, pas par la liste entière.</target>
             </trans-unit>
+            <trans-unit id="3f7SOlv">
+                <source>description.guided_step_config_health_check_mail</source>
+                <target>Chaque nouvelle erreur trouvée par le contrôle planifié vous est envoyée par e-mail, à l'adresse des sauvegardes.</target>
+            </trans-unit>
             <trans-unit id="tLFBlPG">
                 <source>description.guided_step_config_health_check_open</source>
                 <target>Pages introuvables, redirections, en-têtes de sécurité, certificat, sitemaps, validation W3C : le site est passé au crible de l'extérieur.</target>
@@ -1166,6 +1170,10 @@
                 <source>label.guided_projects</source>
                 <target>Projets guidés</target>
             </trans-unit>
+            <trans-unit id="3u_isbj">
+                <source>label.guided_projects_help</source>
+                <target>Des tâches réelles à mener, un panneau vous guidant d'écran en écran</target>
+            </trans-unit>
             <trans-unit id="aOZmqdz">
                 <source>label.guided_projects_intro</source>
                 <target>Votre progression est enregistrée dans ce navigateur, pas sur le site : elle ne vous suivra pas sur un autre ordinateur.</target>
@@ -1205,6 +1213,10 @@
             <trans-unit id="5Mjqbt4">
                 <source>label.guided_step_config_health_check_fix</source>
                 <target>Traiter une erreur</target>
+            </trans-unit>
+            <trans-unit id="E2.YxFP">
+                <source>label.guided_step_config_health_check_mail</source>
+                <target>Être prévenu</target>
             </trans-unit>
             <trans-unit id="SS7Ap3H">
                 <source>label.guided_step_config_health_check_open</source>

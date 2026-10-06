@@ -11,6 +11,7 @@
 namespace c975L\ConfigBundle\Tests\Command;
 
 use c975L\ConfigBundle\Command\HealthCheckRunCommand;
+use c975L\ConfigBundle\Management\HealthCheckAlertMailer;
 use c975L\ConfigBundle\Management\HealthCheckRetentionPurger;
 use c975L\ConfigBundle\Management\HealthCheckRunner;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
@@ -181,7 +182,39 @@ class HealthCheckRunCommandTest extends TestCase
         $this->assertSame('kept.example', $requestContext->getHost());
     }
 
-    private function createCommand(HealthCheckRunner $healthCheckRunner, ?HealthCheckRetentionPurger $purger = null, ?string $siteUrl = null, ?RequestContext $requestContext = null): HealthCheckRunCommand
+    // Only the kinds that ran are handed over, a narrowed run saying nothing about the others
+    public function testExecuteMailsTheNewErrorsOfTheKindsThatRan(): void
+    {
+        $healthCheckRunner = $this->createStub(HealthCheckRunner::class);
+        $healthCheckRunner->method('run')->willReturn(['files-gallery' => 12]);
+
+        $alertMailer = $this->createMock(HealthCheckAlertMailer::class);
+        $alertMailer->expects($this->once())->method('notify')->with(['files-gallery'])->willReturn(12);
+
+        $tester = new CommandTester($this->createCommand($healthCheckRunner, alertMailer: $alertMailer));
+        $tester->execute([]);
+
+        $this->assertSame(Command::SUCCESS, $tester->getStatusCode());
+        $this->assertStringContainsString('12 new error(s) mailed', $tester->getDisplay());
+    }
+
+    // A mail that cannot leave must not fail a run whose results are recorded
+    public function testExecuteWarnsWhenTheAlertCouldNotBeSent(): void
+    {
+        $healthCheckRunner = $this->createStub(HealthCheckRunner::class);
+        $healthCheckRunner->method('run')->willReturn(['files-gallery' => 12]);
+
+        $alertMailer = $this->createStub(HealthCheckAlertMailer::class);
+        $alertMailer->method('notify')->willReturn(null);
+
+        $tester = new CommandTester($this->createCommand($healthCheckRunner, alertMailer: $alertMailer));
+        $tester->execute([]);
+
+        $this->assertSame(Command::SUCCESS, $tester->getStatusCode());
+        $this->assertStringContainsString('could not be sent', $tester->getDisplay());
+    }
+
+    private function createCommand(HealthCheckRunner $healthCheckRunner, ?HealthCheckRetentionPurger $purger = null, ?string $siteUrl = null, ?RequestContext $requestContext = null, ?HealthCheckAlertMailer $alertMailer = null): HealthCheckRunCommand
     {
         if (null === $purger) {
             $purger = $this->createStub(HealthCheckRetentionPurger::class);
@@ -191,6 +224,6 @@ class HealthCheckRunCommandTest extends TestCase
         $configService = $this->createStub(ConfigServiceInterface::class);
         $configService->method('get')->willReturn($siteUrl);
 
-        return new HealthCheckRunCommand($healthCheckRunner, $purger, $configService, $requestContext ?? new RequestContext());
+        return new HealthCheckRunCommand($healthCheckRunner, $purger, $configService, $requestContext ?? new RequestContext(), $alertMailer ?? $this->createStub(HealthCheckAlertMailer::class));
     }
 }

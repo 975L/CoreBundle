@@ -104,6 +104,18 @@ class AiAssistantControllerTest extends TestCase
         $this->assertSame(['answer' => 'Use hero.', 'sources' => []], json_decode((string) $response->getContent(), true));
     }
 
+    // The back office's language goes with the question, the backend answering in it
+    public function testAskPassesTheRequestLocaleToTheClient(): void
+    {
+        $client = $this->createMock(AiAssistantClientInterface::class);
+        $client->expects($this->once())->method('ask')->with('Which block for a hero banner?', 'en')->willReturn(['answer' => 'Use hero.', 'sources' => []]);
+
+        $request = new Request([], ['question' => 'Which block for a hero banner?']);
+        $request->setLocale('en');
+
+        $this->assertSame(200, $this->createController($client)->ask($request)->getStatusCode());
+    }
+
     public function testRephraseDeniesAccessWhenBelowSiteRoleEditor(): void
     {
         $this->expectException(AccessDeniedException::class);

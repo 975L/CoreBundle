@@ -42,19 +42,43 @@ class GuidedProjectBuilder
         return array_map($this->buildProject(...), $this->declaredProjects());
     }
 
+    // The projects grouped by the bundle declaring them, keyed by its name ("SiteBundle"), the application's own under "" - in the guided sequence's order, each bundle owning a thousand-block of it (see GuidedProjectProviderInterface), so a group never comes back further down
+    /** @return array<string, list<array<string, mixed>>> */
+    public function getProjectsByBundle(): array
+    {
+        $groups = [];
+        foreach ($this->getProjects() as $project) {
+            $groups[$project['bundle'] ?? ''][] = $project;
+        }
+
+        return $groups;
+    }
+
     // A "role" may list several roles, all required: no role_hierarchy is shipped, so a parcours walking screens gated on different roles needs each of them held outright
     private function isGrantedRoles(array $project): bool
     {
         return array_all((array) ($project['role'] ?? []), fn (string $role): bool => $this->security->isGranted($role));
     }
 
-    // Merged across every provider and sorted by "order" - a deliberate sequence, not the alphabetical merge MenuBuilder/AlertBuilder use
+    // Merged across every provider and sorted by "order" - a deliberate sequence, not the alphabetical merge MenuBuilder/AlertBuilder use. Merged by hand rather than through ProviderMerger, each project keeping the bundle it comes from
     private function declaredProjects(): array
     {
-        $projects = ProviderMerger::merge($this->guidedProjectProviders, fn (GuidedProjectProviderInterface $provider) => $provider->getGuidedProjects());
+        $projects = [];
+        foreach ($this->guidedProjectProviders as $provider) {
+            $bundle = $this->bundleName($provider);
+            foreach ($provider->getGuidedProjects() as $project) {
+                $projects[] = [...$project, 'bundle' => $bundle];
+            }
+        }
         usort($projects, fn (array $a, array $b) => $a['order'] <=> $b['order']);
 
         return $projects;
+    }
+
+    // Read off the provider's namespace ("c975L\SiteBundle\..." gives "SiteBundle"), null for the application's own, which the page titles with the site's name
+    private function bundleName(GuidedProjectProviderInterface $provider): ?string
+    {
+        return 1 === preg_match('/^c975L\\\\(\w+Bundle)\\\\/', $provider::class, $matches) ? $matches[1] : null;
     }
 
     // One project by its slug, or null when no provider declares it anymore (a bundle uninstalled since the browser stored it) or when the current user lacks its role - a slug being theirs to forge, that second check is the only thing standing between them and another role's parcours
@@ -75,11 +99,26 @@ class GuidedProjectBuilder
 
         return [
             'slug' => $project['slug'],
+            'bundle' => $project['bundle'] ?? null,
             'label' => $this->translator->trans($project['label'], [], $domain),
             'description' => empty($project['description']) ? '' : $this->translator->trans($project['description'], [], $domain),
             'steps' => array_map(fn (array $step) => $this->buildStep($step, $domain), $project['steps']),
             'film' => $this->filmUrl($project['slug']),
+            'player' => $this->filmPlayer($project['slug']),
         ];
+    }
+
+    // The film only the back office shows, played in place on the projects' page - null for every film shown publicly (see TutorialFilmUrlProviderInterface::getFilmPlayer())
+    private function filmPlayer(string $slug): ?array
+    {
+        foreach ($this->tutorialFilmUrlProviders as $provider) {
+            $player = $provider->getFilmPlayer($slug);
+            if (null !== $player) {
+                return $player;
+            }
+        }
+
+        return null;
     }
 
     // Where the project's film is shown: the site's own when it publishes one (see TutorialFilmUrlProviderInterface), the ecosystem's otherwise - an address answering a project never shot too (bundles.975l.com sends it on to its films' index), so that link is written without knowing which films exist

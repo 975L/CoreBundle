@@ -14,6 +14,7 @@ use c975L\ConfigBundle\Management\EcosystemUrls;
 use c975L\ConfigBundle\Management\GuidedProjectBuilder;
 use c975L\ConfigBundle\Management\GuidedProjectProviderInterface;
 use c975L\ConfigBundle\Management\TutorialFilmUrlProviderInterface;
+use c975L\ConfigBundle\Tests\Fixtures\GuidedProjectProviderStub;
 use PHPUnit\Framework\TestCase;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -67,6 +68,7 @@ class GuidedProjectBuilderTest extends TestCase
         $this->assertSame(
             [[
                 'slug' => 'creer-page',
+                'bundle' => null,
                 'label' => 'translated:label.creer-page',
                 'description' => '',
                 'steps' => [[
@@ -77,6 +79,7 @@ class GuidedProjectBuilderTest extends TestCase
                     'highlight' => null,
                 ]],
                 'film' => 'https://bundles.975l.com/tutoriels/film/creer-page',
+                'player' => null,
             ]],
             $builder->getProjects(),
         );
@@ -228,6 +231,21 @@ class GuidedProjectBuilderTest extends TestCase
         $this->assertNull($builder->getProject('gerer-utilisateur'));
     }
 
+    // A bundle's projects are titled with its name, read off its provider's namespace - the application's own, outside any c975L bundle, go under "" for the page to title with the site's name
+    public function testGetProjectsByBundleGroupsEachProviderUnderItsBundle(): void
+    {
+        $builder = $this->createBuilder([
+            $this->createProvider([$this->project('app-project', 20010)]),
+            new GuidedProjectProviderStub([$this->project('bundle-project', 1010), $this->project('bundle-other', 1020)]),
+        ]);
+
+        $groups = $builder->getProjectsByBundle();
+
+        $this->assertSame(['ConfigBundle', ''], array_keys($groups));
+        $this->assertSame(['bundle-project', 'bundle-other'], array_column($groups['ConfigBundle'], 'slug'));
+        $this->assertSame(['app-project'], array_column($groups[''], 'slug'));
+    }
+
     public function testGetProjectsReturnsNothingWithoutAnyProvider(): void
     {
         $this->assertSame([], $this->createBuilder([])->getProjects());
@@ -255,5 +273,22 @@ class GuidedProjectBuilderTest extends TestCase
         );
 
         $this->assertSame(['/tutorials/film/site-own', EcosystemUrls::TUTORIAL_FILM . '/creer-page'], array_column($builder->getProjects(), 'film'));
+    }
+
+    // A film only the back office shows comes with what plays it in place, the others with nothing but their link
+    public function testABackOfficeFilmCarriesItsPlayer(): void
+    {
+        $player = ['video' => '/management/tutorial-film/site-own.webm', 'subtitles' => '/management/tutorial-film/site-own.vtt', 'poster' => '/management/tutorial-film/site-own.jpg', 'locale' => 'fr', 'narrated' => true];
+        $films = $this->createStub(TutorialFilmUrlProviderInterface::class);
+        $films->method('getFilmPlayer')->willReturnCallback(static fn (string $slug): ?array => 'site-own' === $slug ? $player : null);
+
+        $builder = new GuidedProjectBuilder(
+            [$this->createProvider([$this->project('site-own', 10), $this->project('creer-page', 20)])],
+            $this->createSecurity(),
+            $this->createTranslator(),
+            [$films],
+        );
+
+        $this->assertSame([$player, null], array_column($builder->getProjects(), 'player'));
     }
 }

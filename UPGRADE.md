@@ -1,5 +1,13 @@
 # UPGRADE
 
+## v1.55.0
+
+**`TutorialFilmUrlProviderInterface` gains `getFilmPlayer(string $slug): ?array`**, the urls of a film only the back office shows, played in place on the new guided projects' page (`management_guided_projects_index`). SiteBundle implements it from v8.30.0: update both together. A class of your own implementing the interface returns null to keep its films linked.
+
+**The guided projects left the dashboard for a page of their own**, one section per bundle: `_guided_projects.html.twig` and the `[data-guided-project-toggle]` button are gone, and the dashboard receives `hasGuidedProjects` instead of `guidedProjects`. A template overriding the dashboard links to `path('management_guided_projects_index')`.
+
+**Donovan now answers in the reader's language**: `AiAssistantClient` sends a `locale` with the question, which a backend generated before this version ignores. On the Donovan backend, carry over from a fresh `c975l:ui:donovan-qa:create` the changes to the controller (reads `locale`), the LLM client (`ask()` takes it, the system prompt names it) and the cached service (`ask()` takes it, the hash and the context version carry it); their tests come with them. Nothing to migrate: answers cached without a locale stay valid for a request sending none.
+
 ## v1.53.0
 
 **`ui-ai-assistant-rephrase-*` is now `ui-ai-assistant-writer-*`** (provider, api-key, base-uri, model): the key rephrases, translates and writes the social posts. Nothing to do on a site: `c975l:config:load-all`, run at deploy, renames the four rows and keeps their values (`former_slugs`); a site rebuilt from an export older than v1.53.0 gets the imported `rephrase` rows merged into the new ones at the next `load-all`. Code reading the slugs itself (`$configService->get('ui-ai-assistant-rephrase-...')`, a `configPrefix()` returning `ui-ai-assistant-rephrase`) reads the new ones.

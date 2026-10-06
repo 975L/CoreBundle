@@ -24,7 +24,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-// This bundle's own guided projects, running the 1000 block GuidedProjectProviderInterface reserves them - the same docblock stating every other bundle's, so a range is read there rather than recopied here. Each carries the role its own screen is gated by, so a parcours is never offered to someone its very first step turns away - the dashboard the list is started from opens to a contributor (see BackOfficeAccessVoter), and seven of these fourteen walk a screen only an admin may read, one a screen whose buttons only a super admin is shown, and two a screen a super admin alone opens. Only the opening step of each carries an url: from there the parcours walks the screen the user has been sent to, highlighting the button or the field they are meant to use next - one they click themselves, which brings the panel back on that very step (see assets/js/guided-project.js resume())
+// This bundle's own guided projects, running the 1000 block GuidedProjectProviderInterface reserves them - the same docblock stating every other bundle's, so a range is read there rather than recopied here. Each carries the role its own screen is gated by, so a parcours is never offered to someone its very first step turns away - the projects' page the list is started from opens to a contributor (same BackOfficeAccessVoter floor as the dashboard, see GuidedProjectController::index()), and seven of these fourteen walk a screen only an admin may read, one a screen whose buttons only a super admin is shown, and two a screen a super admin alone opens. Only the opening step of each carries an url: from there the parcours walks the screen the user has been sent to, highlighting the button or the field they are meant to use next - one they click themselves, which brings the panel back on that very step (see assets/js/guided-project.js resume())
 class ConfigGuidedProjectProvider implements GuidedProjectProviderInterface
 {
     public function __construct(
@@ -452,6 +452,11 @@ class ConfigGuidedProjectProvider implements GuidedProjectProviderInterface
                     'label' => 'label.guided_step_config_health_check_again',
                     'description' => 'description.guided_step_config_health_check_again',
                     'narration' => 'narration.guided_step_config_health_check_again',
+                ],
+                [
+                    'label' => 'label.guided_step_config_health_check_mail',
+                    'description' => 'description.guided_step_config_health_check_mail',
+                    'narration' => 'narration.guided_step_config_health_check_mail',
                 ],
             ],
         ];

@@ -145,6 +145,32 @@ class <?= $class_name ?> extends TestCase
         $this->assertSame([['label' => 'Collection', 'url' => '']], $result['sources']);
     }
 
+    // One cache entry per language, and the locale handed on to the model
+    public function testAskKeysTheCacheAndTheLlmCallOnTheLocale(): void
+    {
+        $repository = $this->createMock(<?= $repository_short_name ?>::class);
+        $repository->expects($this->once())->method('findOneByQuestionHash')->with(hash('sha256', 'which block for a gallery?|en'))->willReturn(null);
+
+        $llmClient = $this->createMock(<?= $llm_client_short_name ?>::class);
+        $llmClient->expects($this->once())->method('ask')->with('which block for a gallery?', $this->anything(), 'en')->willReturn([
+            'answer' => 'Use the collection block.',
+            'sourceKinds' => [],
+            'inputTokens' => 100,
+            'outputTokens' => 20,
+        ]);
+
+        $service = new <?= $class_name ?>(
+            $repository,
+            $this->createStub(<?= $context_builder_short_name ?>::class),
+            $llmClient,
+            $this->createDisabledEmbeddingClient(),
+            $this->createStub(ConfigServiceInterface::class),
+            $this->createStub(EntityManagerInterface::class),
+        );
+
+        $this->assertSame('Use the collection block.', $service->ask('Which block for a gallery?', 'en')['answer']);
+    }
+
     public function testAskReturnsNullWhenTheLlmIsUnavailable(): void
     {
         $repository = $this->createStub(<?= $repository_short_name ?>::class);

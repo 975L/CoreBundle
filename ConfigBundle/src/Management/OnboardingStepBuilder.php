@@ -12,7 +12,7 @@ namespace c975L\ConfigBundle\Management;
 
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-// Builds the guided-tour steps from MenuBuilder's already-aggregated menus/links, covering every entry so the tour reflects the whole sidebar, then the dashboard header's ecosystem links (see getHeaderSteps()) - a menu or a link needing a role the current user lacks (see MenuProviderInterface) is skipped though, since its sidebar target isn't even rendered for them. 'description' (see MenuProviderInterface) stays optional - a step for an item without one just shows its label, no explanatory text. Each step carries the item's own resolved URL rather than an invented id/slug: assets/js/onboarding-tour.js matches it against the sidebar's own `a[href]` (no EasyAdmin template override needed, see Sidebar/Item.html.twig)
+// Builds the guided-tour steps from MenuBuilder's already-aggregated menus/links, covering every entry so the tour reflects the whole sidebar, then the dashboard header's buttons (see getHeaderSteps()) - a menu or a link needing a role the current user lacks (see MenuProviderInterface) is skipped though, since its sidebar target isn't even rendered for them. 'description' (see MenuProviderInterface) stays optional - a step for an item without one just shows its label, no explanatory text. Each step carries the item's own resolved URL rather than an invented id/slug: assets/js/onboarding-tour.js matches it against the sidebar's own `a[href]` (no EasyAdmin template override needed, see Sidebar/Item.html.twig)
 class OnboardingStepBuilder
 {
     public function __construct(
@@ -48,10 +48,11 @@ class OnboardingStepBuilder
         return $steps;
     }
 
-    // [{url, label, description, narration}], one per link of the dashboard's header leaving for the ecosystem - the tour highlights any a[href] of the page, not only the sidebar's, so they are walked the same way (see management/index.html.twig)
-    public function getHeaderSteps(): array
+    // [{url, label, description, narration}], one per button of the dashboard's header after the tour's own: the guided projects' page when there is any project, then the links leaving for the ecosystem - the tour highlights any a[href] of the page, not only the sidebar's, so they are walked the same way (see management/index.html.twig)
+    public function getHeaderSteps(bool $hasGuidedProjects = false): array
     {
         return [
+            ...($hasGuidedProjects ? [$this->buildStep($this->menuEntryResolver->url(['name' => 'management_guided_projects_index']), ['label' => 'label.guided_projects', 'description' => 'label.guided_projects_help', 'narration' => 'narration.guided_projects', 'translation_domain' => 'config'])] : []),
             $this->buildStep(EcosystemUrls::TUTORIALS, ['label' => 'label.tutorials', 'description' => 'label.tutorials_help', 'narration' => 'narration.tutorials', 'translation_domain' => 'config']),
             $this->buildStep(EcosystemUrls::BLOCK_SHOWCASE, ['label' => 'label.block_showcase', 'description' => 'label.block_showcase_help', 'narration' => 'narration.block_showcase', 'translation_domain' => 'config']),
         ];

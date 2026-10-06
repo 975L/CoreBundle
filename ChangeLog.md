@@ -1,5 +1,25 @@
 # ChangeLog
 
+## v1.55.0
+
+Guided projects on a page of their own, health check errors mailed
+
+### ConfigBundle
+
+- Guided projects listed on their own page `management_guided_projects_index`, one section per bundle (06/10/2026) **See [UPGRADE.md](UPGRADE.md)** [BC-Break]
+- `TutorialFilmUrlProviderInterface::getFilmPlayer()`, back-office films played in place (06/10/2026) **See [UPGRADE.md](UPGRADE.md)** [BC-Break]
+- `c975l:health-check:run` mails new errors to `site-backup-mailto` via `HealthCheckAlertMailer` (06/10/2026)
+- Guided tour steps onto the dashboard's guided projects button (06/10/2026)
+- Health check guided project ends on the alert e-mail (06/10/2026)
+
+### UiBundle
+
+- New `ProductCatalogWriterInterface`, `CatalogProduct` and `CatalogProductItem`, a catalog writing its products into the shop (06/10/2026)
+- `AiAssistantClientInterface::ask()` takes the reader's `$locale`, sent to the backend (06/10/2026) [BC-Break]
+- Donovan backend skeletons answer in the sent `locale`, cached per language (06/10/2026) **See [UPGRADE.md](UPGRADE.md)**
+- Donovan screen texts cover the whole back office, not only blocks (06/10/2026)
+- Turbo link prefetch on hover disabled in the layout (06/10/2026)
+
 ## v1.54.1
 
 Framework endpoints spared by redirects, slider tells its turns

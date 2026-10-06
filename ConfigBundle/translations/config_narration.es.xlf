@@ -14,6 +14,10 @@
                 <source>narration.content_import</source>
                 <target>«Importar contenido» recoge un archivo exportado desde otro sitio, por ejemplo páginas llevadas con sus bloques y sus imágenes.</target>
             </trans-unit>
+            <trans-unit id="6gPpiSf">
+                <source>narration.guided_projects</source>
+                <target>En la parte superior del panel, «Proyectos guiados» abre la lista de recorridos: elija una tarea y un panel le acompaña pantalla por pantalla.</target>
+            </trans-unit>
             <trans-unit id="GpCKJ6q">
                 <source>narration.guided_step_config_content_export_carry</source>
                 <target>Conserve el zip tal cual, sin descomprimirlo. En el otro entorno, un superadministrador lo importa de una vez desde la importación de contenido.</target>
@@ -49,6 +53,10 @@
             <trans-unit id="mjJnyUV">
                 <source>narration.guided_step_config_health_check_fix</source>
                 <target>Trate un error cada vez. Cada fila con error lleva el consejo del bundle que la produjo: por ahí hay que empezar, no por la lista entera.</target>
+            </trans-unit>
+            <trans-unit id="7B_7ULK">
+                <source>narration.guided_step_config_health_check_mail</source>
+                <target>No hace falta volver cada día: el control programado le envía por correo cada nuevo error, a la dirección de las copias de seguridad, una sola vez mientras dure.</target>
             </trans-unit>
             <trans-unit id="8_kAglj">
                 <source>narration.guided_step_config_health_check_open</source>
@@ -312,7 +320,7 @@
             </trans-unit>
             <trans-unit id="SIhdRhg">
                 <source>narration.tutorials</source>
-                <target>En la parte superior del panel, «Tutoriales» abre los vídeos del ecosistema, uno por pantalla del back-office: para volver a ver cómo se hace, a su ritmo.</target>
+                <target>Al lado, «Tutoriales» abre los vídeos del ecosistema, uno por pantalla del back-office: para volver a ver cómo se hace, a su ritmo.</target>
             </trans-unit>
             <trans-unit id="S1kRumm">
                 <source>narration.unused_features</source>

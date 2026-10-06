@@ -113,6 +113,33 @@ class <?= $class_name ?> extends TestCase
         $this->assertSame(['collection'], $result['sourceKinds']);
     }
 
+    // The context is in French: the reader's locale is what makes an English page get an English answer
+    public function testAskTellsTheModelTheReadersLocale(): void
+    {
+        $sent = null;
+        $httpClient = new MockHttpClient(function (string $method, string $url, array $options) use (&$sent): MockResponse {
+            $sent = json_decode($options['body'], true);
+
+            return new MockResponse(json_encode(['content' => [['text' => "Use the collection block.\nSOURCES: none"]]]), ['http_code' => 200]);
+        });
+
+        $client = new <?= $llm_client_short_name ?>(
+            $httpClient,
+            $this->createConfigService([
+                'donovan-qa-llm-enabled' => true,
+                'donovan-qa-llm-provider' => 'anthropic',
+                'donovan-qa-llm-api-key' => 'anthropic-key',
+                'donovan-qa-llm-model' => 'claude-haiku-4-5',
+                'donovan-qa-llm-base-uri' => 'https://api.anthropic.com/v1',
+            ]),
+            $this->createStub(LoggerInterface::class),
+        );
+
+        $client->ask('Which block for a gallery?', 'context', 'en');
+
+        $this->assertStringContainsString('locale "en"', $sent['system']);
+    }
+
     // The split takes the last "SOURCES:" of the text, not the first: an answer naming the word on its way used to be cut short there
     public function testAskKeepsAnAnswerThatNamesSourcesBeforeItsOwnLine(): void
     {

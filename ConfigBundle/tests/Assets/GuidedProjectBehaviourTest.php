@@ -222,21 +222,6 @@ class GuidedProjectBehaviourTest extends JsCase
         $this->assertSame(0, $gone['requests'], 'The document is still listened to after the mount was taken away, so every click on the site can reach the server.');
     }
 
-    public function testTheListIsOpenedAndClosedByItsOwnButton(): void
-    {
-        $toggled = $this->project(
-            'const list = root.querySelector("[data-guided-project-list]");
-             root.querySelector("[data-guided-project-toggle]").click();
-             const opened = list.hidden;
-             root.querySelector("[data-guided-project-toggle]").click();
-
-             return { opened, closed: list.hidden };'
-        );
-
-        $this->assertFalse($toggled['opened'], 'The button offering the projects does not open the list.');
-        $this->assertTrue($toggled['closed'], 'The list cannot be closed again.');
-    }
-
     // The panel sits beside the work rather than over it, so the form the step asks the user to fill stays reachable
     public function testThePanelNeverTakesTheFocusAwayFromTheScreenItComments(): void
     {
@@ -348,13 +333,12 @@ class GuidedProjectBehaviourTest extends JsCase
         );
     }
 
-    // The mount GuidedProjectMountBuilder appends to every admin page, the dashboard list rendered by _guided_projects.html.twig, and something for a step to point at
+    // The mount GuidedProjectMountBuilder appends to every admin page, the list rendered by guided_projects.html.twig, and something for a step to point at
     private function page(): string
     {
         return sprintf(
             '<div data-controller="guided-project" data-guided-project-key-value="tester" data-guided-project-url-value="/management/guided-project/__SLUG__" data-guided-project-labels-value="%s"></div>
-            <button type="button" data-guided-project-toggle>Parcours guides</button>
-            <div data-guided-project-list hidden>
+            <div data-guided-project-list>
                 <ul>
                     <li><button type="button" data-guided-project-slug="pages">Commencer</button><span data-guided-project-badge="pages" hidden>Fait</span></li>
                     <li><button type="button" data-guided-project-slug="menu">Commencer</button><span data-guided-project-badge="menu" hidden>Fait</span></li>

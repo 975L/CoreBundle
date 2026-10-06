@@ -4,7 +4,7 @@
         <body>
             <trans-unit id="kEEDMk2">
                 <source>narration.ai_assistant</source>
-                <target>«Donovan» es el asistente del back-office: pregúntele con sus propias palabras cómo funciona el sistema de bloques, y responde a partir de lo que los bundles instalados ofrecen realmente.</target>
+                <target>«Donovan» es el asistente del back-office: pregúntele con sus propias palabras cómo hacer lo que busca, y responde a partir de lo que los bundles instalados ofrecen realmente, recorridos incluidos.</target>
             </trans-unit>
             <trans-unit id="CqbNhqo">
                 <source>narration.ai_search_answers</source>

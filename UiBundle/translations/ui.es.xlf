@@ -724,7 +724,7 @@
             </trans-unit>
             <trans-unit id="Ohcg3dV">
                 <source>label.ai_assistant_question</source>
-                <target>Haga una pregunta sobre el sistema de bloques…</target>
+                <target>Haga una pregunta sobre el back-office…</target>
             </trans-unit>
             <trans-unit id="dUHWBt0">
                 <source>label.ai_assistant_setup_credentials_help</source>
@@ -732,7 +732,7 @@
             </trans-unit>
             <trans-unit id="M_RyUU0">
                 <source>label.ai_assistant_setup_intro</source>
-                <target>Haga preguntas sobre el sistema de bloques. Aún no activado:</target>
+                <target>Haga preguntas sobre el back-office. Aún no activado:</target>
             </trans-unit>
             <trans-unit id="wA18Cg5">
                 <source>label.ai_assistant_setup_step_endpoint</source>
@@ -744,7 +744,7 @@
             </trans-unit>
             <trans-unit id="ZQt.2mZ">
                 <source>label.ai_assistant_subtitle</source>
-                <target>Haga sus preguntas sobre el sistema de bloques</target>
+                <target>Reformule sus textos y haga sus preguntas sobre el back-office</target>
             </trans-unit>
             <trans-unit id="wI5jL3X">
                 <source>label.ai_rephrase_action_rephrase</source>

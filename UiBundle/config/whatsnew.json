@@ -1,5 +1,20 @@
 [
     {
+        "date": "2026-10-06",
+        "description": [
+            {
+                "en": "Donovan now answers in the language of the back office.",
+                "fr": "Donovan répond désormais dans la langue du back-office.",
+                "es": "Donovan responde ahora en el idioma del back-office."
+            },
+            {
+                "en": "Hovering over \"Logout\" in a menu no longer signs you out.",
+                "fr": "Survoler « Déconnexion » dans un menu ne vous déconnecte plus.",
+                "es": "Pasar el ratón sobre «Cerrar sesión» en un menú ya no cierra su sesión."
+            }
+        ]
+    },
+    {
         "date": "2026-10-05",
         "description": [
             {

@@ -102,6 +102,9 @@ class DashboardController extends AbstractDashboardController
         // Built once, the tour pointing at the panel only when it shows anything
         $unusedFeatures = $this->unusedFeatureBuilder->getFeatures();
 
+        // Only whether there is any, the list having a page of its own (see GuidedProjectController::index()) the tour walks to like the header's other buttons
+        $hasGuidedProjects = [] !== $this->guidedProjectBuilder->getProjects();
+
         return $this->render(
             '@c975LConfig/management/index.html.twig',
             [
@@ -115,8 +118,8 @@ class DashboardController extends AbstractDashboardController
                 'essentialActionsProgress' => $isAdmin ? $this->essentialActionBuilder->getProgress() : [],
                 'widgets' => $this->dashboardWidgetBuilder->getWidgets(),
                 // The sidebar first, then the header's links out to the ecosystem, then the unused features panel, the last thing the tour points at
-                'onboardingSteps' => [...$this->onboardingStepBuilder->getSteps(), ...$this->onboardingStepBuilder->getHeaderSteps(), ...$this->onboardingStepBuilder->getUnusedFeaturesSteps($unusedFeatures)],
-                'guidedProjects' => $this->guidedProjectBuilder->getProjects(),
+                'onboardingSteps' => [...$this->onboardingStepBuilder->getSteps(), ...$this->onboardingStepBuilder->getHeaderSteps($hasGuidedProjects), ...$this->onboardingStepBuilder->getUnusedFeaturesSteps($unusedFeatures)],
+                'hasGuidedProjects' => $hasGuidedProjects,
                 'unusedFeatures' => $unusedFeatures,
             ]
         );

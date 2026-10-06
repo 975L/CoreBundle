@@ -64,6 +64,9 @@
                 {% set cspNonce = csp_nonce('style') %}
                 <meta name="csp-nonce" content="{{ cspNonce }}">
 
+                {# Turbo 8 prefetches every link on hover, so merely crossing "Logout" in a dropdown on the way to another item signed the visitor out, and every hover hit the server. A link is only fetched when clicked #}
+                <meta name="turbo-prefetch" content="false">
+
                 {# "noindex, follow" when a template marked itself as non-indexable (a Page does, see @c975LSite/pages/page.html.twig), and on every error page: "status_code" is only ever set by Symfony's error renderer, and a 404/410/500 rendered with this layout would otherwise inherit the "index, follow" default and invite search engines to index it. "follow" is kept in both cases so the links the page carries still pass on #}
                 <meta name="robots" content="{{ robots|default(status_code is defined and status_code >= 400 ? 'noindex, follow' : 'index, follow') }}">
 

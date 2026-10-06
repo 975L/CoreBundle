@@ -43,8 +43,7 @@ export default class extends Controller {
         this.closePanel();
     }
 
-    // The dashboard list is part of the page while this element is appended to <body>, so it is wired by hand
-    // Delegated on the document rather than bound button by button: a [data-guided-project-slug] can also be appended long after this ran, Donovan citing a parcours in an answer (see UiBundle's assets/js/ai-assistant.js)
+    // The projects' page list is part of the page while this element is appended to <body>, so it is wired by hand. Delegated on the document rather than bound button by button: a [data-guided-project-slug] can also be appended long after this ran, Donovan citing a parcours in an answer (see UiBundle's assets/js/ai-assistant.js)
     wireList() {
         this.boundClick = this.onClick.bind(this);
         document.addEventListener('click', this.boundClick);
@@ -55,23 +54,11 @@ export default class extends Controller {
     onClick(event) {
         if (!(event.target instanceof Element)) return;
 
-        if (event.target.closest('[data-guided-project-toggle]')) {
-            this.toggleList();
-
-            return;
-        }
-
         const button = event.target.closest('[data-guided-project-slug]');
         if (button) this.open(button.dataset.guidedProjectSlug);
     }
 
-    toggleList() {
-        const list = document.querySelector('[data-guided-project-list]');
-        if (list) list.hidden = !list.hidden;
-    }
-
-    // "Start"/"Resume"/"Replay" and the badge come from this browser's storage, the server rendering neutral
-    // Scoped to the dashboard list: a button elsewhere carries a label of its own, Donovan's naming the parcours it cites rather than the action
+    // "Start"/"Resume"/"Replay" and the badge come from this browser's storage, the server rendering neutral. Scoped to the projects' page list: a button elsewhere carries a label of its own, Donovan's naming the parcours it cites rather than the action
     refreshList() {
         const state = this.readState();
         const done = state.done ?? [];
@@ -89,7 +76,7 @@ export default class extends Controller {
         });
     }
 
-    // Tells the dashboard button apart: it resumes the active project, and only starts the others over
+    // Tells the list's button apart: it resumes the active project, and only starts the others over
     async open(slug) {
         if (this.readState().active?.slug === slug) {
             await this.resume(true);
@@ -187,8 +174,7 @@ export default class extends Controller {
         this.refreshList();
     }
 
-    // Keeps the stored position and drops the panel, the dashboard button then reading "Resume"
-    // The flag is what keeps it closed on the next page, resume() running on every one of them
+    // Keeps the stored position and drops the panel, the list's button then reading "Resume". The flag is what keeps it closed on the next page, resume() running on every one of them
     pause() {
         const state = this.readState();
         if (state.active) {

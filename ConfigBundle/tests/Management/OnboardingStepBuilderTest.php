@@ -370,6 +370,24 @@ class OnboardingStepBuilderTest extends TestCase
         $this->assertSame(['narration.tutorials', 'narration.block_showcase'], array_column($steps, 'narration'));
     }
 
+    // The guided projects' button comes first, being the header's first after the tour's own, and only when the page has a project to list
+    public function testGetHeaderStepsOpensOnTheGuidedProjectsWhenThereIsAny(): void
+    {
+        $urlGenerator = $this->createStub(UrlGeneratorInterface::class);
+        $urlGenerator->method('generate')->willReturn('/management/guided-projects');
+
+        $builder = new OnboardingStepBuilder(
+            $this->createMenuBuilder([], []),
+            new MenuEntryResolver($this->createAdminUrlGenerator(), $urlGenerator, $this->createSecurity(), $this->createConfigService()),
+            $this->createTranslator(),
+        );
+
+        $steps = $builder->getHeaderSteps(true);
+
+        $this->assertSame(['/management/guided-projects', EcosystemUrls::TUTORIALS, EcosystemUrls::BLOCK_SHOWCASE], array_column($steps, 'url'));
+        $this->assertSame('narration.guided_projects', $steps[0]['narration']);
+    }
+
     // The unused features panel gets a step only when it shows anything, pointed at by its own selector since its links repeat the sidebar's hrefs
     public function testGetUnusedFeaturesStepsPointsAtThePanelOnlyWhenItShowsAnything(): void
     {

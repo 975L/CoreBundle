@@ -84,6 +84,56 @@ class AiAssistantClientTest extends TestCase
         $this->assertNull($client->ask('Which block for a gallery?'));
     }
 
+    // The backend's documentation is in French: the language the reader reads in goes with the question, or an English page gets a French answer
+    public function testTheReadersLanguageIsSentWithTheQuestion(): void
+    {
+        $sent = null;
+        $httpClient = new MockHttpClient(function (string $method, string $url, array $options) use (&$sent): MockResponse {
+            $sent = json_decode($options['body'], true);
+
+            return new MockResponse(json_encode(['answer' => 'Open the health check.']), ['http_code' => 200]);
+        });
+
+        $client = new AiAssistantClient(
+            $httpClient,
+            $this->createConfigService([
+                'ui-ai-assistant-dashboard-endpoint' => 'https://example.test/ai-assistant',
+                'ui-ai-assistant-dashboard-token' => 'some-token',
+            ]),
+            $this->createStub(GuidedProjectBuilder::class),
+            $this->createStub(LoggerInterface::class),
+        );
+
+        $client->ask('How to run a health check?', 'en');
+
+        $this->assertSame(['question' => 'How to run a health check?', 'locale' => 'en'], $sent);
+    }
+
+    // A question the controller accepts reaches the backend as asked, "0" included, and only an absent locale is left out
+    public function testAFalsyQuestionIsSentAsAsked(): void
+    {
+        $sent = null;
+        $httpClient = new MockHttpClient(function (string $method, string $url, array $options) use (&$sent): MockResponse {
+            $sent = json_decode($options['body'], true);
+
+            return new MockResponse(json_encode(['answer' => 'Zero.']), ['http_code' => 200]);
+        });
+
+        $client = new AiAssistantClient(
+            $httpClient,
+            $this->createConfigService([
+                'ui-ai-assistant-dashboard-endpoint' => 'https://example.test/ai-assistant',
+                'ui-ai-assistant-dashboard-token' => 'some-token',
+            ]),
+            $this->createStub(GuidedProjectBuilder::class),
+            $this->createStub(LoggerInterface::class),
+        );
+
+        $client->ask('0');
+
+        $this->assertSame(['question' => '0'], $sent);
+    }
+
     public function testReturnsAnswerAndSourcesFromConfiguredEndpoint(): void
     {
         $httpClient = new MockHttpClient(
