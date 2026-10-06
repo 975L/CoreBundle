@@ -21,8 +21,8 @@ class AccessibilityClient
     // Offences kept per finding. The point is the offending markup pattern, which repeats: a template whose every card link is an unlabelled icon produces one fix and forty rows, and the count beside the samples still says how wide it spreads
     public const int MAX_OFFENCES = 10;
 
-    // A link with no accessible name: no text of its own, no aria-label/aria-labelledby, no title, no image with an alt inside it, no <title> inside an inline svg. Absent and empty attributes are the same case here, normalize-space() answering '' for a missing one
-    private const string LINK_WITHOUT_NAME = '//a[@href][not(normalize-space(.))][not(normalize-space(@aria-label))][not(@aria-labelledby)][not(normalize-space(@title))][not(.//img[normalize-space(@alt)])][not(.//*[local-name()="svg"]/*[local-name()="title"][normalize-space(.)])]';
+    // A link with no accessible name: no text of its own, no aria-label/aria-labelledby, no title, no image with an alt inside it, no <title> inside an inline svg. Absent and empty attributes are the same case here, normalize-space() answering '' for a missing one. A link both hidden from assistive technologies and taken out of the tab order is left out: it is the duplicate of a named link next to it (a card's cover beside its title), which nothing ever announces
+    private const string LINK_WITHOUT_NAME = '//a[@href][not(@aria-hidden="true" and @tabindex="-1")][not(normalize-space(.))][not(normalize-space(@aria-label))][not(@aria-labelledby)][not(normalize-space(@title))][not(.//img[normalize-space(@alt)])][not(.//*[local-name()="svg"]/*[local-name()="title"][normalize-space(.)])]';
 
     // The form fields carrying a label of their own. Buttons are left out - their name is their own content or value, which criterion 11.9 covers - and so are hidden fields, which nothing announces
     private const string FORM_FIELD = '//input[not(@type) or not(contains("|hidden|submit|reset|button|image|", concat("|", translate(@type, "ABCDEFGHIJKLMNOPQRSTUVWXYZ", "abcdefghijklmnopqrstuvwxyz"), "|")))] | //select | //textarea';

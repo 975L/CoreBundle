@@ -1,5 +1,13 @@
 # ChangeLog
 
+## v1.55.3
+
+Accessibility check skips hidden duplicate links
+
+### ConfigBundle
+
+- `AccessibilityClient` leaves out links both `aria-hidden` and `tabindex="-1"` from unnamed links (06/10/2026)
+
 ## v1.55.2
 
 Scaffold smoke test reads guided projects from their own page

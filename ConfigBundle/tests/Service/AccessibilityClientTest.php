@@ -94,6 +94,17 @@ class AccessibilityClientTest extends TestCase
         $this->assertSame(['<a href="/panier">', '<a href="/vide">'], $result['linksWithoutName']);
     }
 
+    // A card's cover link duplicating its titled link is hidden and unfocusable, while one still reachable by keyboard keeps being reported
+    public function testAHiddenUnfocusableDuplicateLinkIsLeftOut(): void
+    {
+        $result = $this->analyze(
+            '<a href="/album" tabindex="-1" aria-hidden="true"><img src="/cover.webp" alt=""></a><a href="/album">Album</a>'
+            . '<a href="/focusable" aria-hidden="true"><img src="/x.webp" alt=""></a>'
+        );
+
+        $this->assertSame(['<a href="/focusable">'], $result['linksWithoutName']);
+    }
+
     // One template producing the same unlabelled link down a listing is one fix, not forty rows
     public function testTheSameUnlabelledLinkIsReportedOnce(): void
     {
