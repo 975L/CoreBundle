@@ -16,6 +16,11 @@
                 "en": "The health check no longer reports a missing image description on a picture already hidden from screen readers.",
                 "fr": "Le bilan de santé ne signale plus de description d'image manquante sur une image déjà masquée aux lecteurs d'écran.",
                 "es": "El control de salud ya no señala una descripción de imagen ausente en una imagen ya oculta a los lectores de pantalla."
+            },
+            {
+                "en": "A page removed from the site no longer keeps its accessibility result in the health check.",
+                "fr": "Une page retirée du site ne garde plus son résultat d'accessibilité dans le bilan de santé.",
+                "es": "Una página retirada del sitio ya no conserva su resultado de accesibilidad en la revisión de salud."
             }
         ]
     },

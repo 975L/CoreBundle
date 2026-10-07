@@ -16,13 +16,9 @@ use c975L\ConfigBundle\Service\AccessibilityClient;
 use Symfony\Contracts\HttpClient\ResponseInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-// Answers the RGAA 4.1 criteria a page's own markup can settle, one row per url, over every url the site declares for its sitemaps - its pages, and whatever books, products, photos or campaigns the installed bundles add. Nothing to implement bundle-side, same as DeclaredUrlsHealthCheckProvider: declaring a sitemap is all it takes to be checked.
-//
-// Eight criteria out of the RGAA's 106, and that is the honest count. The share usually quoted as automatable is measured with a browser engine driving the page; read from the markup alone, contrast, focus, tab order and every judgement of *relevance* are out of reach, and are left unanswered rather than guessed at - a compliance report is worth what its weakest line is worth. What it does answer, it answers with no false positive, and it answers it at every deployment rather than once a year.
-//
-// Criteria 1.1 (image alternatives), 8.5 (page title) and the <h1> count are deliberately absent: ContentQualityAnalyzer already reports them, and traces the offending image back to the very block holding it (see ContentOffenceLocatorRegistry). A dashboard listing one fix twice teaches its reader to skim it
+// Answers the RGAA 4.1 criteria a page's own markup can settle, one row per url the sitemaps declare - eight out of 106, contrast, focus and every judgement of relevance being out of reach without a browser, and 1.1, 8.5 and the <h1> count being left to ContentQualityAnalyzer. Exhaustive, the sitemaps being the whole of what it checks, so a url no longer declared or past MAX_URLS_PER_SOURCE has its last row dropped
 #[AsHealthCheck(AsHealthCheck::FREQUENCY_MONTHLY)]
-class AccessibilityHealthCheckProvider implements HealthCheckProviderInterface
+class AccessibilityHealthCheckProvider implements HealthCheckExhaustiveInterface
 {
     // The version of the reference these criterion numbers belong to - carried in every row's details, since a report read a year later has to say which edition it was judged against
     public const string RGAA_VERSION = '4.1';

@@ -1,5 +1,18 @@
 # ChangeLog
 
+## v1.58.3
+
+Accessibility and seo files health checks made exhaustive
+
+### ConfigBundle
+
+- `SeoFilesHealthCheckProvider` is now exhaustive, dropping the rows of files it no longer reads (07/10/2026)
+- `SeoFilesHealthCheckProvider` now throws without a site url (07/10/2026)
+- Added the exhaustive case to `SeoFilesHealthCheckProviderTest` (07/10/2026)
+- `AccessibilityHealthCheckProvider` is now exhaustive, dropping the rows of urls the sitemaps no longer declare (07/10/2026)
+- Added the exhaustive case to `AccessibilityHealthCheckProviderTest` (07/10/2026)
+- Updated the readme and the `c975l-operations` skill (07/10/2026)
+
 ## v1.58.2
 
 App screenshots command, declared urls health check made exhaustive

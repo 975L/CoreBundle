@@ -16,8 +16,8 @@ use c975L\ConfigBundle\Service\SeoFilesClient;
 use c975L\ConfigBundle\Service\SiteUrlResolver;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-// Checks robots.txt and sitemap-site.xml (see SitePageSitemapProvider) are actually reachable and sane - both are silent, easy-to-forget deployment steps (eg. a fresh environment never running c975l:sitemaps:create, or an app-level robots.txt left blocking everything from a staging config). The robots.txt "blocks everything" check is a heuristic, not a full parser - it only catches the single most damaging misconfiguration (a global "Disallow: /" under "User-agent: *"), not every possible robots.txt edge case. Also checks sitemap-index.xml (written by ConfigBundle's SitemapWriter, declaring every bundle's own sub-sitemap) and every child sitemap it references, when one is deployed
-class SeoFilesHealthCheckProvider implements HealthCheckProviderInterface
+// Checks robots.txt and sitemap-site.xml (see SitePageSitemapProvider) are actually reachable and sane - both are silent, easy-to-forget deployment steps (eg. a fresh environment never running c975l:sitemaps:create, or an app-level robots.txt left blocking everything from a staging config). The robots.txt "blocks everything" check is a heuristic, not a full parser - it only catches the single most damaging misconfiguration (a global "Disallow: /" under "User-agent: *"), not every possible robots.txt edge case. Also checks sitemap-index.xml (written by ConfigBundle's SitemapWriter, declaring every bundle's own sub-sitemap) and every child sitemap it references, when one is deployed. Exhaustive, the files it reads depending on the site - no sitemap once it is private, no llms.txt while none is deployed - so a file it no longer reads has its last row dropped
+class SeoFilesHealthCheckProvider implements HealthCheckExhaustiveInterface
 {
     // How long the sitemap file may go without being rewritten before it is called stale. Not a rule Google publishes: it's simply longer than any of the schedules this bundle documents (the weekly c975l:sitemaps:create entry), so only a sitemap that genuinely stopped being regenerated trips it
     private const int STALE_AFTER_DAYS = 30;
@@ -37,9 +37,10 @@ class SeoFilesHealthCheckProvider implements HealthCheckProviderInterface
 
     public function runChecks(): array
     {
+        // Thrown rather than an empty run, which would have the runner clear every row this kind wrote: an unconfigured site url says nothing about the files already checked
         $siteUrl = $this->siteUrlResolver->siteUrl();
         if (null === $siteUrl) {
-            return [];
+            throw new \RuntimeException('Site url is not configured: no seo file url can be resolved.');
         }
 
         $rows = [

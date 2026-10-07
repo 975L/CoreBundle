@@ -11,6 +11,7 @@
 namespace c975L\ConfigBundle\Tests\Management;
 
 use c975L\ConfigBundle\Entity\HealthCheckResult;
+use c975L\ConfigBundle\Management\HealthCheckExhaustiveInterface;
 use c975L\ConfigBundle\Management\SeoFilesHealthCheckProvider;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\ConfigBundle\Service\SeoFilesClient;
@@ -89,11 +90,19 @@ class SeoFilesHealthCheckProviderTest extends TestCase
         $this->assertSame('seo-files', $provider->getKind());
     }
 
-    public function testRunChecksReturnsEmptyArrayWithoutASiteUrl(): void
+    // Thrown rather than returned empty: the kind is exhaustive, so an empty run would clear every row it wrote
+    public function testRunChecksThrowsWithoutASiteUrl(): void
     {
         $provider = $this->createProvider($this->createSiteUrlResolver(null), $this->createClient([]));
 
-        $this->assertSame([], $provider->runChecks());
+        $this->expectException(\RuntimeException::class);
+        $provider->runChecks();
+    }
+
+    // The files read depend on the site, so the runner drops the row of one no longer read - the sitemap of a site that went private
+    public function testItIsExhaustive(): void
+    {
+        $this->assertInstanceOf(HealthCheckExhaustiveInterface::class, $this->createProvider($this->createSiteUrlResolver(null), $this->createClient([])));
     }
 
     public function testRunChecksReturnsOneRowEachForRobotsAndSitemapWhenBothAreFine(): void

@@ -13,6 +13,7 @@ namespace c975L\ConfigBundle\Tests\Management;
 use c975L\ConfigBundle\Attribute\AsHealthCheck;
 use c975L\ConfigBundle\Entity\HealthCheckResult;
 use c975L\ConfigBundle\Management\AccessibilityHealthCheckProvider;
+use c975L\ConfigBundle\Management\HealthCheckExhaustiveInterface;
 use c975L\ConfigBundle\Management\SitemapProviderInterface;
 use c975L\ConfigBundle\Service\AccessibilityClient;
 use PHPUnit\Framework\TestCase;
@@ -48,6 +49,12 @@ class AccessibilityHealthCheckProviderTest extends TestCase
         $httpClient = new MockHttpClient(array_map(static fn (string $body): MockResponse => new MockResponse($body, ['http_code' => 200]), $bodies));
 
         return new AccessibilityHealthCheckProvider([$this->createSitemapProvider($urls)], new AccessibilityClient($httpClient), $this->createTranslator());
+    }
+
+    // The sitemaps are the whole of what it checks, so the runner drops the rows of a url they no longer declare - a page renamed would otherwise keep its last verdict on the dashboard for good
+    public function testItIsExhaustive(): void
+    {
+        $this->assertInstanceOf(HealthCheckExhaustiveInterface::class, $this->createProvider([], self::CONFORMING_PAGE));
     }
 
     public function testTheKindAndItsCadenceAreDeclared(): void
