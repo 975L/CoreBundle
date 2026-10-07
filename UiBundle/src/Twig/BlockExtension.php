@@ -71,10 +71,9 @@ class BlockExtension
         $this->contentTranslator->defer(Translation::OWNER_BLOCK, $ids);
     }
 
-    // Every path goes through applyNonce, the early returns below included: a block rendered without being cached (no id, a kind the registry declares uncacheable, a render outside any request) ships the same marker and would otherwise leak it raw into the page
-    // $cacheKey/$cacheTags are for the never-persisted blocks a caller builds itself and can identify better than an id could (see CollectionRuntime, whose items are transient by design but named by their source's own slug) - left out by every Twig caller, "render_block" only ever taking the block
+    // Every path goes through applyNonce, the early returns included, or an uncached block would leak the marker raw. $cacheKey/$cacheTags name the never-persisted blocks a caller builds itself (see CollectionRuntime). $priority marks the first block of a page's run, the likeliest LCP element, whose picture is fetched first
     #[AsTwigFunction('render_block', isSafe: ['html'])]
-    public function renderBlock(Block $block, ?string $cacheKey = null, array $cacheTags = []): string
+    public function renderBlock(Block $block, ?string $cacheKey = null, array $cacheTags = [], bool $priority = false): string
     {
         // A block its editor set aside (see Block::$hidden) renders as nothing at all, wrappers included - the gate is here rather than in the callers, so a slot of a container and a page's own run are covered by the one check. Before the cache below and outside it, the same as the two wrappers: toggling the flag then changes the page with no entry to invalidate
         if ($block->isHidden()) {
@@ -84,7 +83,7 @@ class BlockExtension
         ++$this->renderDepth;
 
         try {
-            $html = $this->wrapInAnimation($block, $this->wrapInCssClasses($block, $this->renderHtml($block, $cacheKey, $cacheTags)));
+            $html = $this->wrapInAnimation($block, $this->wrapInCssClasses($block, $this->renderHtml($block, $cacheKey, $cacheTags, $priority)));
         } finally {
             --$this->renderDepth;
         }
@@ -152,7 +151,7 @@ class BlockExtension
         return implode(' ', array_unique($names));
     }
 
-    private function renderHtml(Block $block, ?string $cacheKey, array $cacheTags): string
+    private function renderHtml(Block $block, ?string $cacheKey, array $cacheTags, bool $priority): string
     {
         $kind = $block->getKind();
 
@@ -164,19 +163,24 @@ class BlockExtension
         // A never-persisted block (e.g. a block showcase's in-memory fixture previews, see BlockFixtureRegistry) has no id - caching it by id would collapse every such block onto the same "block_render_0_..." key, silently serving one block's rendered HTML for every other one. Only a caller handing its own key gets such a block cached, having named it itself
         $key = null !== $block->getId() ? 'block_render_' . $block->getId() : $cacheKey;
         if (null === $key) {
-            return $this->doRender($block);
+            return $this->doRender($block, $priority);
+        }
+
+        // The position is part of the key: a block moved off the top of its page must not keep the priority it was cached with
+        if ($priority) {
+            $key .= '_priority';
         }
 
         // An editor's preview: fresh output, and none of it written where the public site would read it - see BlockRenderContext
         if ($this->renderContext->isCacheDisabled()) {
-            return $this->doRender($block);
+            return $this->doRender($block, $priority);
         }
 
         $request = $this->requestStack->getCurrentRequest();
 
         // Rendered outside any http request (a console command, a messenger worker): the RequestContext then falls back to its "http://localhost" defaults, which "framework.router.default_uri" does not fill in, so anything request-dependent in a template would be frozen into the entry and served to every visitor afterwards - rendered, never cached
         if (null === $request) {
-            return $this->doRender($block);
+            return $this->doRender($block, $priority);
         }
 
         // Locale is part of the key: some templates (e.g. legal_model) render different content per app.request.locale, not just per Block::$data
@@ -185,7 +189,7 @@ class BlockExtension
         // Resolved inside the callback rather than before the get(): for a container it walks the whole slot subtree, hydrating it from the database, and on a hit that work would be thrown away along with the tags it computed
         return $this->cache->get(
             $key . '_' . $locale,
-            function (ItemInterface $item, bool &$save) use ($block, $cacheTags): string {
+            function (ItemInterface $item, bool &$save) use ($block, $cacheTags, $priority): string {
                 // The kind's own "cacheable", plus whatever its instance has to say about it and the tags that go with it - a container's slots included, its html holding theirs (see BlockCacheTagResolver). Null is the veto, and $save is how the contract says "render this one, store nothing"
                 $extraTags = $this->cacheTagResolver->resolve($block);
 
@@ -195,7 +199,7 @@ class BlockExtension
                 if (null === $extraTags) {
                     $save = false;
 
-                    return $this->doRender($block);
+                    return $this->doRender($block, $priority);
                 }
 
                 $item->expiresAfter(null);
@@ -204,7 +208,7 @@ class BlockExtension
                 $own = null !== $block->getId() ? ['block_' . $block->getId()] : [];
                 $item->tag([...$own, BlockCacheInvalidator::CACHE_TAG_ALL, ...$extraTags, ...$cacheTags]);
 
-                return $this->doRender($block);
+                return $this->doRender($block, $priority);
             }
         );
     }
@@ -230,7 +234,7 @@ class BlockExtension
         );
     }
 
-    private function doRender(Block $block): string
+    private function doRender(Block $block, bool $priority = false): string
     {
         // Laid over the values stored in the database, never in their place: a field nobody translated keeps the text it was written in, and the block templates never hear about any of this
         $kind = (string) $block->getKind();
@@ -249,7 +253,8 @@ class BlockExtension
 
         return $this->twig->render(
             $this->registry->getTemplate($block->getKind()),
-            ['block' => $block, 'anchor_id' => $this->buildAnchorId($data['anchor'] ?? null, $block->getId())] + $data
+            // "priority" only when set, read by the adapters whose picture can be the page's LCP element (blocks/Image, blocks/Video)
+            ['block' => $block, 'anchor_id' => $this->buildAnchorId($data['anchor'] ?? null, $block->getId())] + ($priority ? ['priority' => true] : []) + $data
         );
     }
 

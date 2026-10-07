@@ -1,5 +1,34 @@
 # ChangeLog
 
+## v1.57.7
+
+First block prioritized as LCP, metas cut by excerpt
+
+### ConfigBundle
+
+- Added the `--all` option to `c975l:status:dump`, printing the full health check report (07/10/2026)
+- The health check report now carries each row's `editUrl` (07/10/2026)
+- Updated the readme's status report section and the `c975l-operations` skill (07/10/2026)
+- Added the `--all` case to `StatusDumpCommandTest`, `editUrl` to `HealthCheckReportBuilderTest` (07/10/2026)
+
+### UiBundle
+
+- Added the `excerpt` Twig filter, cutting a plain text on a word with an ellipsis (07/10/2026)
+- The meta `description` and `og:description` are now cut to 160 characters on a word, instead of the whole summary and a mid-word cut at 150 (07/10/2026)
+- Added the `excerpt` cases to `TrixExtensionTest`, updated `MinimalLayoutTest` (07/10/2026)
+
+### UiBundle
+
+- `render_block()` takes a `priority` argument, cached under its own key (07/10/2026)
+- `Blocks:Blocks` renders its first block with `priority` (07/10/2026)
+- `image` and `video` adapters pass `priority` to their component (07/10/2026)
+- `Video` component preloads its poster with `fetchpriority="high"` under `priority` (07/10/2026)
+- Added the `excerpt` Twig filter, cutting a text on a word boundary (07/10/2026)
+- Layout's `description` and `og:description` metas cut to 160 characters through `excerpt` (07/10/2026)
+- `animate-scroll` uses an `IntersectionObserver` instead of a scroll listener (07/10/2026)
+- Updated the readme and the `c975l-blocks`/`c975l-ui-assets` skills (07/10/2026)
+- Added tests for `excerpt`, the priority render, the poster preload and `animate-scroll` (07/10/2026)
+
 ## v1.57.6
 
 Video preload set by the presence of a poster

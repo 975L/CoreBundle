@@ -74,7 +74,7 @@ or loses SiteBundle without a template changing. Nothing in the head is written 
 | `title` | The `<h1>` the `heading` block prints, and the `<title>`/`og:title`, suffixed with the site name |
 | `headingDisplayed` | `false` keeps the title in the tab and out of the page |
 | `robots` | The `robots` meta - `index, follow` by default, `noindex, follow` on an error page. Set it on a page not worth finding |
-| `summarySocialNetwork` | The `description` meta and `og:description`, reduced to plain text |
+| `summarySocialNetwork` | The `description` meta and `og:description`, reduced to plain text and cut to 160 characters on a word (`excerpt`) |
 | `ogImage` / `ogImageAlt` | The share image and what it shows, when the template knows better than the media library |
 | `alternates` | `hreflang => absolute url` for the same page in other languages, the group named whole |
 | `bodyClass` | A **block**: the class this one page adds to `<body>` |

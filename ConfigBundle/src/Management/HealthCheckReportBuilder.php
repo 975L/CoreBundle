@@ -56,6 +56,8 @@ class HealthCheckReportBuilder
                 'kind' => $row->getKind(),
                 'url' => $row->getUrl(),
                 'label' => $row->getLabel(),
+                // Where the back office fixes it, so a reader goes straight from the row to the screen rather than hunting for it
+                'editUrl' => $row->getEditUrl(),
                 'status' => $row->getStatus(),
                 'summary' => $row->getSummary(),
                 'checkedAt' => $row->getCheckedAt()->format(\DateTimeInterface::ATOM),

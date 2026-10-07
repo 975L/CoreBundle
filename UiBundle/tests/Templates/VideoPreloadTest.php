@@ -32,6 +32,20 @@ class VideoPreloadTest extends TestCase
         $this->assertStringContainsString('preload="metadata"', $html);
     }
 
+    public function testAPriorityVideoPreloadsItsPosterFirst(): void
+    {
+        $html = $this->render(['src' => '/v.mp4', 'type' => 'video/mp4', 'poster' => '/p.webp', 'priority' => true]);
+
+        $this->assertStringContainsString('<link rel="preload" as="image" href="/p.webp" fetchpriority="high">', $html);
+    }
+
+    public function testAVideoFurtherDownPreloadsNoPoster(): void
+    {
+        $html = $this->render(['src' => '/v.mp4', 'type' => 'video/mp4', 'poster' => '/p.webp']);
+
+        $this->assertStringNotContainsString('rel="preload"', $html);
+    }
+
     // The component alone, its two filters stubbed: only the <video> attributes are under test
     private function render(array $context): string
     {

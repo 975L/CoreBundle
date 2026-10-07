@@ -29,6 +29,26 @@ class TrixExtension
         return trim((string) preg_replace('/\s+/u', ' ', $text));
     }
 
+    // Cuts a plain text to at most $length characters on a word boundary, an ellipsis marking the cut - what a meta description shows before a search engine truncates it mid-word on its own
+    #[AsTwigFilter('excerpt')]
+    public function excerpt(?string $text, int $length = 160): string
+    {
+        $text = trim((string) $text);
+        if (mb_strlen($text) <= $length) {
+            return $text;
+        }
+
+        // One character kept for the ellipsis, then back to the last space so no word is cut in half
+        $cut = mb_substr($text, 0, $length - 1);
+        $lastSpace = mb_strrpos($cut, ' ');
+        $endsOnWord = ' ' === mb_substr($text, $length - 1, 1);
+        if (!$endsOnWord && false !== $lastSpace && $lastSpace > $length / 2) {
+            $cut = mb_substr($cut, 0, $lastSpace);
+        }
+
+        return rtrim($cut, " \t\n\r,;:.-") . '…';
+    }
+
     // Drops Trix's block-level <div> wrappers, invalid where only phrasing content is allowed, joining lines with <br>
     #[AsTwigFilter('trix_inline', isSafe: ['html'])]
     public function trixInline(?string $html): string

@@ -90,13 +90,13 @@ class MinimalLayoutTest extends TestCase
         );
     }
 
-    // The summary a template states often comes from a rich-text column (a Page's, a gallery category's), so a raw one would publish escaped markup as the page's description - SiteBundle's layout has always reduced it, and the two being interchangeable this one has to as well
+    // The summary a template states often comes from a rich-text column (a Page's, a gallery category's), so a raw one would publish escaped markup as the page's description - SiteBundle's layout has always reduced it, and the two being interchangeable this one has to as well. Then cut on a word to what a search engine shows
     public function testTheSummaryIsReducedToPlainTextInTheMetas(): void
     {
         $layout = $this->layout();
 
-        $this->assertStringContainsString('<meta name="description" content="{{ summarySocialNetwork|plain_text }}">', $layout);
-        $this->assertStringContainsString('<meta property="og:description" content="{{ summarySocialNetwork|plain_text|slice(0, 150) }}">', $layout);
+        $this->assertStringContainsString('<meta name="description" content="{{ summarySocialNetwork|plain_text|excerpt(160) }}">', $layout);
+        $this->assertStringContainsString('<meta property="og:description" content="{{ summarySocialNetwork|plain_text|excerpt(160) }}">', $layout);
     }
 
     // A GDPR banner is not something a shop-only site may go without - the component carries its own enabled/disabled guard, so the layout only has to render it

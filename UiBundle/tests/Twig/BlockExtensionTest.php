@@ -461,6 +461,40 @@ class BlockExtensionTest extends TestCase
         $this->assertSame('<article>cached content</article>', $extension->renderBlock($block));
     }
 
+    // The first block of a page is cached apart from the same block further down, and its template is told so
+    public function testAPriorityBlockIsCachedUnderAKeyOfItsOwnAndToldItsPriority(): void
+    {
+        $block = $this->createBlock('image', 42);
+
+        $registry = $this->createStub(BlockRegistry::class);
+        $registry->method('has')->willReturn(true);
+        $registry->method('isCacheable')->willReturn(true);
+        $registry->method('getTemplate')->willReturn('image.html.twig');
+
+        $twig = $this->createMock(Environment::class);
+        $twig->expects($this->once())
+            ->method('render')
+            ->with('image.html.twig', ['block' => $block, 'anchor_id' => '', 'priority' => true, 'title' => 'Hello'])
+            ->willReturn('<img>');
+
+        $request = Request::create('/');
+        $request->setLocale('en');
+
+        $cache = $this->createMock(TagAwareCacheInterface::class);
+        $cache->expects($this->once())
+            ->method('get')
+            ->with('block_render_42_priority_en', $this->isCallable())
+            ->willReturnCallback(function (string $key, callable $callback): string {
+                $save = true;
+
+                return $callback($this->createStub(ItemInterface::class), $save);
+            });
+
+        $extension = new BlockExtension($registry, $twig, $cache, new RequestStack([$request]), new BlockCacheTagResolver($registry, new BlockCacheTagRegistry()), new BlockEditUrlRegistry(), $this->createStub(CspNonceProvider::class), new BlockRenderContext(), $this->createContentTranslator(), $this->createMediaTranslator());
+
+        $this->assertSame('<img>', $extension->renderBlock($block, priority: true));
+    }
+
     // A kind registered with BlockCacheTagProviderInterface (e.g. articles_slider depending on another Page's blocks) gets its extra tags merged in alongside the default "block_{id}"/"blocks_all" ones
     public function testRenderBlockMergesExtraCacheTagsFromTheCacheTagRegistry(): void
     {

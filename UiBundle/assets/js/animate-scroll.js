@@ -9,42 +9,36 @@ import { Controller } from "@hotwired/stimulus";
 
 export default class extends Controller {
     connect() {
-        this.animateOnScroll = this.animateOnScroll.bind(this);
+        // An observer rather than a scroll listener reading every element's box, so no layout is forced and an element in view is never hidden first. The bottom margin keeps the former 200px threshold
+        this.observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                const element = entry.target.closest(".scroll");
 
-        // Applied here rather than server-rendered: if this script never loads (blocked, network error...), ".scroll" elements must never get hidden in the first place - they stay visible by default, just without the entrance effect, instead of being stuck invisible.
-        document.querySelectorAll(".scroll").forEach((element) => { element.classList.add("hidden"); });
+                // Hidden here rather than server-rendered: if this script never loads, ".scroll" elements stay visible, just without the entrance effect
+                if (!entry.isIntersecting) {
+                    element.classList.add("hidden");
+                    return;
+                }
 
-        window.addEventListener("scroll", this.animateOnScroll);
-        this.animateOnScroll();
+                const animationClass = element.getAttribute("data-animation");
+                element.classList.remove("hidden");
+                if (animationClass) {
+                    element.classList.add(animationClass);
+                }
+                this.observer.unobserve(entry.target);
+            });
+        }, { rootMargin: "0px 0px -200px 0px" });
+
+        // The wrapper is "display: contents" and has no box to intersect, so its block's first drawn element is the one observed - never a <style> some kinds open with
+        document.querySelectorAll(".scroll").forEach((element) => {
+            const target = [...element.children].find((child) => !["STYLE", "SCRIPT", "LINK", "TEMPLATE"].includes(child.tagName));
+            if (target) {
+                this.observer.observe(target);
+            }
+        });
     }
 
     disconnect() {
-        window.removeEventListener("scroll", this.animateOnScroll);
-    }
-
-    // Checks if element is in viewport
-    isElementInViewport(element, offset) {
-        if (null !== element) {
-            const rect = element.getBoundingClientRect();
-            return (
-                rect.top < (window.innerHeight || document.documentElement.clientHeight) - offset &&
-                rect.bottom >= 0
-            );
-        }
-        return false;
-    }
-
-    // Animates on scroll
-    animateOnScroll() {
-        var elements = document.querySelectorAll(".scroll");
-        elements.forEach((element) => {
-            if (this.isElementInViewport(element, 200)) {
-                const animationClass = element.getAttribute("data-animation");
-                if (animationClass) {
-                    element.classList.remove("hidden");
-                    element.classList.add(animationClass);
-                }
-            }
-        })
+        this.observer.disconnect();
     }
 }

@@ -128,7 +128,7 @@ class TrixExtensionTest extends TestCase
         // Indexed by name rather than read in order: the attributes are collected in the methods' declaration order, which is no part of the contract
         $names = array_keys($filters);
         sort($names);
-        $this->assertSame(['plain_text', 'trix_inline'], $names);
+        $this->assertSame(['excerpt', 'plain_text', 'trix_inline'], $names);
         $this->assertSame(['html'], $filters['trix_inline']->getSafe(new \Twig\Node\TextNode('', 0)));
     }
 
@@ -173,5 +173,31 @@ class TrixExtensionTest extends TestCase
         $inline = new TrixExtension()->trixInline('<div>Marre <br>des radars</div>');
 
         $this->assertSame('Marre <br>des radars', $inline);
+    }
+
+    // A summary already short enough is left as it is
+    public function testExcerptLeavesAShortTextUntouched(): void
+    {
+        $this->assertSame('A short summary', new TrixExtension()->excerpt('  A short summary  ', 160));
+    }
+
+    // A long one is cut on a word, the ellipsis included in the length
+    public function testExcerptCutsOnAWordWithinTheLength(): void
+    {
+        $excerpt = new TrixExtension()->excerpt('The quick brown fox jumps over the lazy dog', 20);
+
+        $this->assertSame('The quick brown fox…', $excerpt);
+        $this->assertLessThanOrEqual(20, mb_strlen($excerpt));
+    }
+
+    // A single endless word is cut where it must rather than left whole
+    public function testExcerptCutsAWordTooLongToKeep(): void
+    {
+        $this->assertSame('abcdefghi…', new TrixExtension()->excerpt('abcdefghijklmnopqrstuvwxyz', 10));
+    }
+
+    public function testExcerptOfNullIsEmpty(): void
+    {
+        $this->assertSame('', new TrixExtension()->excerpt(null));
     }
 }

@@ -26,6 +26,7 @@ class HealthCheckReportBuilderTest extends TestCase
             ->setKind('w3c-css')
             ->setUrl('https://example.com/shop')
             ->setLabel('Boutique')
+            ->setEditUrl('/management/page/12/edit')
             ->setStatus($status)
             ->setSummary('2 errors')
             ->setDetails(['errors' => ['line 3: The types are incompatible']])
@@ -69,6 +70,7 @@ class HealthCheckReportBuilderTest extends TestCase
         $this->assertCount(1, $results);
         $this->assertSame('w3c-css', $results[0]['kind']);
         $this->assertSame('Boutique', $results[0]['label']);
+        $this->assertSame('/management/page/12/edit', $results[0]['editUrl']);
         $this->assertSame(['errors' => ['line 3: The types are incompatible']], $results[0]['details']);
         $this->assertNull($results[0]['acknowledgedAt']);
     }

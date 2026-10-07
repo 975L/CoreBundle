@@ -2535,6 +2535,9 @@ curl -H 'X-Status-Key: <the key>' https://example.com/status/report
 
 # See exactly what a console would be served - needs no key and no network
 php bin/console c975l:status:dump
+
+# The full health check report instead - every warning and error row with its details and edit url, as the Health check page downloads it
+php bin/console c975l:status:dump --all > report.json
 ```
 
 The key travels in a **header**, never in the query string — an url ends up in the access log and in the `Referer` of anything the site serves, a header does not. Use a different key per site, so one compromised key only ever exposes one site's report. The answer carries `Cache-Control: private, no-store`: its body depends on a header, and a shared cache holding it would serve one caller's report to the next.

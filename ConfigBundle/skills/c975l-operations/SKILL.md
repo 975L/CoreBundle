@@ -25,6 +25,7 @@ php bin/console c975l:config:backup          # dump + archive + offsite, silent 
 php bin/console c975l:config:backup:offsite  # mirror the declared upload folders
 php bin/console c975l:config:backup:digest   # emails a digest of the last 7 days
 php bin/console c975l:status:dump            # the status report, locally
+php bin/console c975l:status:dump --all      # the full health check report, as the Health check page downloads it
 php bin/console c975l:config:sessions-cleanup # expired rows of the PdoSessionHandler table
 php bin/console c975l:dev-profile:run        # dev only: what the toolbar would flag, on every page
 php bin/console c975l:deprecations:check     # groups the logged deprecations your own code triggers

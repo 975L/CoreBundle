@@ -80,11 +80,10 @@
                     <meta name="author" content="{{ config('site-author') }}">
                 {% endif %}
                 <meta name="copyright" content="{{ site_copyright() }}">
-{# The page's own summary, stated by the template rendering it under this name and no other - a Page from its column, a book, a product or a photo from their entity #}
-{# Reduced to plain text: the summary comes from a rich-text column often enough that a template feeding one raw would publish escaped markup as its description, and the filter leaves a summary already plain untouched #}
+{# The page's own summary, stated by the template rendering it under this name and no other, reduced to plain text so a rich-text column never publishes escaped markup, then cut to 160 characters on a word as a search engine shows no more (see ContentQualityAnalyzer::DESCRIPTION_MAX_LENGTH) #}
                 {% if summarySocialNetwork is defined and summarySocialNetwork is not empty %}
-                    <meta name="description" content="{{ summarySocialNetwork|plain_text }}">
-                    <meta property="og:description" content="{{ summarySocialNetwork|plain_text|slice(0, 150) }}">
+                    <meta name="description" content="{{ summarySocialNetwork|plain_text|excerpt(160) }}">
+                    <meta property="og:description" content="{{ summarySocialNetwork|plain_text|excerpt(160) }}">
                 {% endif %}
                 {% if ogImage is defined %}
                     <meta property="og:image" content="{{ ogImage }}">

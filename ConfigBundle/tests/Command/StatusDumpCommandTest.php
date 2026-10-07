@@ -11,6 +11,7 @@
 namespace c975L\ConfigBundle\Tests\Command;
 
 use c975L\ConfigBundle\Command\StatusDumpCommand;
+use c975L\ConfigBundle\Management\HealthCheckReportBuilder;
 use c975L\ConfigBundle\Management\StatusReportBuilder;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Command\Command;
@@ -20,12 +21,17 @@ class StatusDumpCommandTest extends TestCase
 {
     private const array REPORT = ['version' => 1, 'site' => 'https://example.com', 'packages' => ['c975l/core-bundle' => 'v1.4.3']];
 
+    private const array FULL_REPORT = ['reportVersion' => 1, 'site' => 'https://example.com', 'results' => [['kind' => 'w3c-css', 'status' => 'warning']]];
+
     private function createTester(): CommandTester
     {
         $statusReportBuilder = $this->createStub(StatusReportBuilder::class);
         $statusReportBuilder->method('build')->willReturn(self::REPORT);
 
-        return new CommandTester(new StatusDumpCommand($statusReportBuilder));
+        $healthCheckReportBuilder = $this->createStub(HealthCheckReportBuilder::class);
+        $healthCheckReportBuilder->method('build')->willReturn(self::FULL_REPORT);
+
+        return new CommandTester(new StatusDumpCommand($statusReportBuilder, $healthCheckReportBuilder));
     }
 
     // The only way to see exactly what a console would be served, and it must need no key and no network
@@ -54,5 +60,14 @@ class StatusDumpCommandTest extends TestCase
         $tester->execute([]);
 
         $this->assertStringContainsString('https://example.com', $tester->getDisplay());
+    }
+
+    // "--all" hands over the downloadable report, warnings and details included, so a whole site can be read without the back office
+    public function testTheAllOptionPrintsTheFullHealthCheckReport(): void
+    {
+        $tester = $this->createTester();
+
+        $this->assertSame(Command::SUCCESS, $tester->execute(['--all' => true]));
+        $this->assertSame(self::FULL_REPORT, json_decode($tester->getDisplay(), true));
     }
 }
