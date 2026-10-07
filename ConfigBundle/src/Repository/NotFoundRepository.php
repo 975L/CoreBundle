@@ -67,6 +67,12 @@ class NotFoundRepository extends ServiceEntityRepository
         ;
     }
 
+    // A plain statement, as in record(): called from inside a flush (see NotFoundRedirectListener), where nothing needs hydrating
+    public function deleteByPath(string $path): void
+    {
+        $this->connection->delete(NotFound::TABLE, ['path' => $path]);
+    }
+
     public function purgeOlderThan(int $days): int
     {
         $limit = new \DateTime(sprintf('-%d days', $days));

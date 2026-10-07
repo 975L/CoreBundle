@@ -1,5 +1,16 @@
 # ChangeLog
 
+## v1.57.4
+
+Broken links list freed of forged referers and handled paths
+
+### ConfigBundle
+
+- `NotFoundSubscriber` skips scanner paths through `PROBE_PATH_PATTERN` (07/10/2026)
+- `NotFoundSubscriber` skips a referer naming the requested url itself (07/10/2026)
+- `NotFoundRedirectListener` deletes the broken link a new `Redirect` answers for (07/10/2026)
+- `NotFoundRepository::deleteByPath()` added (07/10/2026)
+
 ## v1.57.3
 
 Stale robots contradictions cleared on the next run

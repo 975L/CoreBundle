@@ -6,6 +6,11 @@
                 "en": "A page no longer blocked by robots.txt, or a site hidden from search engines, no longer stays flagged in red in the health check.",
                 "fr": "Une page qui n'est plus bloquée par le robots.txt, ou un site masqué aux moteurs de recherche, ne reste plus signalé en rouge dans le bilan de santé.",
                 "es": "Una página que ya no está bloqueada por el robots.txt, o un sitio oculto a los motores de búsqueda, ya no queda marcado en rojo en la revisión de salud."
+            },
+            {
+                "en": "The broken links list no longer fills up with robot visits, and a link disappears from it as soon as a redirect answers for it.",
+                "fr": "La liste des liens cassés ne se remplit plus des visites de robots, et un lien en disparaît dès qu'une redirection lui répond.",
+                "es": "La lista de enlaces rotos ya no se llena con visitas de robots, y un enlace desaparece de ella en cuanto una redirección le responde."
             }
         ]
     },

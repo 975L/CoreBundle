@@ -14,7 +14,7 @@ use c975L\ConfigBundle\Repository\NotFoundRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
-// A 404 someone was actually sent to, one row per path. Only requests carrying a Referer are recorded (see NotFoundSubscriber): a scanner walking "/wp-admin" sends none, so what lands here is a link that exists somewhere and no longer answers - either on the site itself, which is the case worth an alert, or on another one pointing at it
+// A 404 someone was actually sent to, one row per path. Only requests carrying a Referer are recorded (see NotFoundSubscriber): a scanner walking "/wp-admin" sends none, or a forged one the subscriber filters out, so what lands here is a link that exists somewhere and no longer answers - either on the site itself, which is the case worth an alert, or on another one pointing at it
 #[ORM\Entity(repositoryClass: NotFoundRepository::class)]
 #[ORM\Table(name: NotFound::TABLE)]
 #[ORM\Index(name: 'idx_not_found_last_seen', columns: ['last_seen'])]

@@ -12,6 +12,7 @@ namespace c975L\ConfigBundle\Tests\EventSubscriber;
 
 use c975L\ConfigBundle\EventSubscriber\NotFoundSubscriber;
 use c975L\ConfigBundle\Repository\NotFoundRepository;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Clock\MockClock;
@@ -135,6 +136,35 @@ class NotFoundSubscriberTest extends TestCase
         $repository->expects($this->never())->method('record');
 
         $this->createSubscriber($repository)->onKernelException($this->createEvent(url: 'https://example.com/assets/app-123456.css'));
+    }
+
+    // Scanners forge a referer too: what they walk for is still recognisable by its shape
+    #[DataProvider('probePathProvider')]
+    public function testRecordsNothingForAScannerPath(string $path): void
+    {
+        $repository = $this->createRepository();
+        $repository->expects($this->never())->method('record');
+
+        $this->createSubscriber($repository)->onKernelException($this->createEvent(url: 'https://example.com' . $path, referer: 'https://www.binance.com/'));
+    }
+
+    // One path per family of probe the pattern covers
+    public static function probePathProvider(): iterable
+    {
+        yield 'wordpress' => ['/wp-admin/css/'];
+        yield 'dotfile' => ['/config/.env'];
+        yield 'php script' => ['/phpinfo.php'];
+        yield 'cgi' => ['/cgi-bin/authLogin.cgi'];
+        yield 'config file' => ['/config/application.properties'];
+    }
+
+    // A page linking to itself would not 404: such a referer is forged
+    public function testRecordsNothingForARefererNamingTheRequestedUrl(): void
+    {
+        $repository = $this->createRepository();
+        $repository->expects($this->never())->method('record');
+
+        $this->createSubscriber($repository)->onKernelException($this->createEvent(url: 'https://example.com/console', referer: 'http://example.com/console'));
     }
 
     // Skipped rather than truncated: half a path is a row nobody could act on

@@ -19,9 +19,12 @@ use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\KernelEvents;
 
-// Records the 404s that came from a link, so a broken one is known before anyone reports it. Monolog is deliberately not that place: its prod handler excludes 404 precisely because the mail it would otherwise send is 99% scanners walking "/wp-admin", and the same noise would drown a table just as well - hence the Referer, which those requests do not carry and a browser following a link always does
+// Records the 404s that came from a link, so a broken one is known before anyone reports it. Monolog is deliberately not that place: its prod handler excludes 404 precisely because the mail it would otherwise send is 99% scanners walking "/wp-admin", and the same noise would drown a table just as well - hence the Referer, which a browser following a link always sends and most scanners do not. Some forge one, which PROBE_PATH_PATTERN and the self-referer check are there for
 class NotFoundSubscriber implements EventSubscriberInterface
 {
+    // What scanners walk for and this site never serves: dotfiles, WordPress, CGI and server-side scripts or config files. Scanners forge a referer too ("https://www.binance.com/", "https://google.com/", the url itself), so the shape of the path is what is left to tell them apart
+    public const string PROBE_PATH_PATTERN = '#(?:^|/)(?:\.|wp-|cgi-bin)|\.(?:php\d?|aspx?|axd|jsp|cgi|cc|env|ini|ya?ml|sql|bak|old|log|properties|py|sh)$#i';
+
     public function __construct(
         private readonly NotFoundRepository $notFoundRepository,
         private readonly ClockInterface $clock,
@@ -67,7 +70,12 @@ class NotFoundSubscriber implements EventSubscriberInterface
         }
 
         // The same paths RedirectSubscriber declines to answer for: a missing asset is a deployment matter, not a published url anyone can be sent to
-        if (1 === preg_match(Redirect::STATIC_PATH_PATTERN, $path)) {
+        if (1 === preg_match(Redirect::STATIC_PATH_PATTERN, $path) || 1 === preg_match(self::PROBE_PATH_PATTERN, $path)) {
+            return false;
+        }
+
+        // A page linking to itself does not 404 - a referer naming the very url asked for is forged
+        if (parse_url($referer, \PHP_URL_PATH) === $path) {
             return false;
         }
 
