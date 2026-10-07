@@ -1,5 +1,21 @@
 # ChangeLog
 
+## v1.58.2
+
+App screenshots command, declared urls health check made exhaustive
+
+### ConfigBundle
+
+- `DeclaredUrlsHealthCheckProvider` is now exhaustive, dropping the rows of urls no longer declared (07/10/2026)
+- Added the exhaustive case to `DeclaredUrlsHealthCheckProviderTest` (07/10/2026)
+- Updated the `c975l-operations` skill (07/10/2026)
+
+### UiBundle
+
+- Added the `c975l:ui:app-screenshots` command, replacing the `app-screenshot` pool with a folder's images (07/10/2026)
+- Updated the readme and the `c975l-media` skill (07/10/2026)
+- Added `AppScreenshotsCommandTest` (07/10/2026)
+
 ## v1.58.1
 
 Health check findings of 07/10/2026

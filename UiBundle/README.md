@@ -204,6 +204,12 @@ Turning `ui-pwa-enabled` on makes the site installable on a phone or a computer,
 
 The layout then declares the manifest and the `theme-color`, and mounts the `pwa` Stimulus controller on `<body>`, which registers the worker; `pwa_enabled()` says whether it does. `ui-pwa-share-target` adds the site to the phone's *Share* menu: the path of a page receiving `title`, `text` and `url` as GET parameters. Nothing changes in the CSP: the worker and the manifest are served by the site itself. Once installed, the app hides the footer, the share band and the scroll buttons (`display-mode: standalone`).
 
+The `app-screenshot` pool is replaced whole from a folder of images, taken in their name order (`.webp`, `.png`, `.jpg`); an empty or missing folder leaves the current screenshots in place:
+
+```bash
+php bin/console c975l:ui:app-screenshots path/to/screenshots
+```
+
 ---
 
 ## Deleting an entity in two steps

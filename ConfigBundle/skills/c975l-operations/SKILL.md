@@ -188,7 +188,7 @@ deployment carries. Do not write a file-exists check of your own. A PDF's `.webp
 checked apart, by kind `pdf-thumbnail`, which a bundle holding PDFs of its own feeds through UiBundle's
 `PdfDocumentSourceInterface`.
 
-A provider whose run lists the whole of its domain — the file checks above, `pdf-thumbnail`, `svg-fonts`, `sitemap-robots` — implements
+A provider whose run lists the whole of its domain — the file checks above, `pdf-thumbnail`, `svg-fonts`, `sitemap-robots`, `urls-<bundle>` — implements
 `HealthCheckExhaustiveInterface`, and the runner then drops that kind's rows for the urls the run no
 longer returns. Without it a url carrying a generated filename keeps its last error for good, the
 retention purge preserving the latest row of each (url, kind). Never put it on a provider checking a

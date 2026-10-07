@@ -16,6 +16,7 @@ use c975L\ConfigBundle\Management\ContentOffenceLocatorRegistry;
 use c975L\ConfigBundle\Management\ContentQualityAnalyzer;
 use c975L\ConfigBundle\Management\DeclaredUrlsHealthCheckProvider;
 use c975L\ConfigBundle\Management\ExternalLinkCheckSchedule;
+use c975L\ConfigBundle\Management\HealthCheckExhaustiveInterface;
 use c975L\ConfigBundle\Management\SitemapProviderInterface;
 use c975L\ConfigBundle\Service\ContentQualityClient;
 use c975L\ConfigBundle\Service\UrlStatusChecker;
@@ -280,6 +281,14 @@ class DeclaredUrlsHealthCheckProviderTest extends TestCase
 
         $this->assertCount(1, $results);
         $this->assertSame('https://example.com/livres', $results[0]['url']);
+    }
+
+    // The sitemap is the whole of what the bundle declares, so the runner drops the rows of a url it no longer declares - a gallery renamed would otherwise keep its last warning on the dashboard for good
+    public function testItIsExhaustive(): void
+    {
+        $provider = new DeclaredUrlsHealthCheckProvider($this->createSitemapProvider('gallery', []), $this->createAnalyzer());
+
+        $this->assertInstanceOf(HealthCheckExhaustiveInterface::class, $provider);
     }
 
     // A bundle saying nothing about its volume is checked weekly, like the site's own pages
