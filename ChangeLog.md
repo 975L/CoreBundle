@@ -1,5 +1,13 @@
 # ChangeLog
 
+## v1.57.5
+
+Replaced font file stored on upload
+
+### UiBundle
+
+- `Font::setFile()` clears the size so a replaced file gets stored (07/10/2026)
+
 ## v1.57.4
 
 Broken links list freed of forged referers and handled paths

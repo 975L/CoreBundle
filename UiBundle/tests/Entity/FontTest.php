@@ -12,9 +12,28 @@ namespace c975L\UiBundle\Tests\Entity;
 
 use c975L\UiBundle\Entity\Font;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\HttpFoundation\File\File;
 
 class FontTest extends TestCase
 {
+    public function testSetFileClearsTheSizeSoAReplacedFileMakesTheRowDirty(): void
+    {
+        $font = new Font()->setSize(1234);
+
+        $font->setFile(new File(__FILE__));
+
+        $this->assertNull($font->getSize());
+    }
+
+    public function testSetFileWithNullKeepsTheSize(): void
+    {
+        $font = new Font()->setSize(1234);
+
+        $font->setFile(null);
+
+        $this->assertSame(1234, $font->getSize());
+    }
+
     public function testIsVariableIsTrueOnlyForTheVariableWeightSentinel(): void
     {
         $this->assertTrue(new Font()->setWeight(Font::WEIGHT_VARIABLE)->isVariable());

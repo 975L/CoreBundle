@@ -1,5 +1,15 @@
 [
     {
+        "date": "2026-10-07",
+        "description": [
+            {
+                "en": "Replacing a font file in the back office now really saves the new one.",
+                "fr": "Remplacer le fichier d'une police dans le back-office enregistre désormais bien le nouveau.",
+                "es": "Sustituir el archivo de una fuente en el back-office guarda ahora realmente el nuevo."
+            }
+        ]
+    },
+    {
         "date": "2026-10-06",
         "description": [
             {

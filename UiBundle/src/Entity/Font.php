@@ -108,9 +108,13 @@ class Font implements VichMediaNamableInterface, \Stringable
         return $this->file;
     }
 
+    // A new file alone changes no mapped column, so Doctrine would skip the update and Vich never store it: clearing size, which Vich fills again on upload, makes the row dirty
     public function setFile(?File $file): self
     {
         $this->file = $file;
+        if (null !== $file) {
+            $this->size = null;
+        }
 
         return $this;
     }
