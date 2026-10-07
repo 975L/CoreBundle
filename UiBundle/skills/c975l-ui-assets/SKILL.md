@@ -168,6 +168,9 @@ what the rule does with it: `--primary` is the fill laid on the page (a button's
 band), `--primary-ink` that same color read against it (text, an outline, a rule, a focus ring). They
 hold the same value until dark mode, where SiteBundle lightens the ink and leaves the fill its hue — so
 a rule writing with `--primary` on a dark ground stays the dark brand color and vanishes into it.
+A light page can part them too: a `theme-color-primary` under 4.5:1 against `theme-color-background`
+gets `--c975l-color-primary-ink` from `ThemeVariablesCssListener`, the darkened shade `--primary-ink`
+reads before `--primary`.
 `PrimaryInkRoleTest` fails on any ink property (`color`, `outline`, `border-*`, `text-decoration-color`,
 `text-emphasis-color`, `column-rule-color`, `caret-color`, `fill`, `stroke`) reading `--primary`, its
 one listed exception being a label on a flat that inverts to a stated white.

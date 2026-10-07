@@ -82,6 +82,10 @@
                 <source>description.guided_project_ui_media_add</source>
                 <target>Upload an image straight into the media library, ready to be picked by any block.</target>
             </trans-unit>
+            <trans-unit id="JktcV6.">
+                <source>description.guided_project_ui_pwa_play_store</source>
+                <target>Link the site to its Android app published on the Play Store, which then shows it with no address bar.</target>
+            </trans-unit>
             <trans-unit id="8_mk_Af">
                 <source>description.guided_project_ui_pwa_setup</source>
                 <target>Make the site installable on a phone or a computer, with no store involved.</target>
@@ -93,6 +97,10 @@
             <trans-unit id="GHBZCNG">
                 <source>description.guided_project_ui_site_graphic</source>
                 <target>Favicon, logo, share image: the handful of files a site is recognised by, uploaded once and for all.</target>
+            </trans-unit>
+            <trans-unit id="iRWj.uH">
+                <source>description.guided_project_ui_theme_colors</source>
+                <target>The brand color, for a light page and for a dark one.</target>
             </trans-unit>
             <trans-unit id="VoJ0CnM">
                 <source>description.guided_step_ui_ai_assistant_action</source>
@@ -414,17 +422,37 @@
                 <source>description.guided_step_ui_media_pick</source>
                 <target>The thumbnail opens its own form. A site-wide graphic (favicon, logo…) opens the "Site graphics" screen instead, which is where those are edited.</target>
             </trans-unit>
+            <trans-unit id="O0EG6hJ">
+                <source>description.guided_step_ui_pwa_play_store_entry</source>
+                <target>Start with "Android app package".</target>
+            </trans-unit>
+            <trans-unit id="WAPi0Jt">
+                <source>description.guided_step_ui_pwa_play_store_fingerprint</source>
+                <target>Do the same for "Android app fingerprint": the Play Console shows it under App integrity. Both are published in /.well-known/assetlinks.json, which proves the site and the app belong together.</target>
+            </trans-unit>
+            <trans-unit id="RBIeZ_2">
+                <source>description.guided_step_ui_pwa_play_store_open</source>
+                <target>Two entries link the site to the app: "Android app package" and "Android app fingerprint". The site has to be made installable first.</target>
+            </trans-unit>
+            <trans-unit id="3fKA2uY">
+                <source>description.guided_step_ui_pwa_play_store_screenshots</source>
+                <target>The app's screenshots are uploaded in the site graphics, as "App screenshot", or generated with the c975l:ui:app-screenshots command.</target>
+            </trans-unit>
+            <trans-unit id="pQJIoS8">
+                <source>description.guided_step_ui_pwa_play_store_value</source>
+                <target>Type it as the Play Console shows it, for example com.example.app.</target>
+            </trans-unit>
             <trans-unit id="j9kKdun">
                 <source>description.guided_step_ui_pwa_setup_entry</source>
                 <target>Start with "Installable web app".</target>
             </trans-unit>
             <trans-unit id="JjVQ08Y">
                 <source>description.guided_step_ui_pwa_setup_icon</source>
-                <target>The browser only offers the install with the 512px app icon: upload it in the site graphics. While it is missing, the dashboard says so.</target>
+                <target>The browser only offers the install with the 512px app icon: upload it in the site graphics. While it is missing, the dashboard says so. The screenshots are uploaded there too, as "App screenshot", or generated with the c975l:ui:app-screenshots command.</target>
             </trans-unit>
             <trans-unit id="Wa.5cYm">
                 <source>description.guided_step_ui_pwa_setup_open</source>
-                <target>The "Installable web app" entry switches it on. The short name under the icon and the page receiving shares are optional.</target>
+                <target>The "Installable web app" entry switches it on. The short name under the icon and the page receiving shares are optional; so is "App description", but with the screenshots it gives a store-like install dialog.</target>
             </trans-unit>
             <trans-unit id=".P5FcW.">
                 <source>description.guided_step_ui_pwa_setup_value</source>
@@ -469,6 +497,22 @@
             <trans-unit id="3m_c5Tb">
                 <source>description.guided_step_ui_site_graphic_pick</source>
                 <target>One button per graphic the site does not have yet, opening the upload form with its role already picked. All of them in place already? Edit the one you want to replace instead.</target>
+            </trans-unit>
+            <trans-unit id="bro1sGu">
+                <source>description.guided_step_ui_theme_colors_dark</source>
+                <target>Do the same for "Primary color (dark mode)", a lighter shade, a deep brand color reading badly on a dark page. Left empty, the primary color applies.</target>
+            </trans-unit>
+            <trans-unit id="uh76wNF">
+                <source>description.guided_step_ui_theme_colors_entry</source>
+                <target>Start with "Primary color".</target>
+            </trans-unit>
+            <trans-unit id="5U_G4dT">
+                <source>description.guided_step_ui_theme_colors_open</source>
+                <target>"Primary color" paints the buttons, the bands, the headings and the links. "Primary color (dark mode)" replaces it on a dark page.</target>
+            </trans-unit>
+            <trans-unit id="dH.tMM.">
+                <source>description.guided_step_ui_theme_colors_value</source>
+                <target>Type it, for example #0a2d6b. Too light to be read on the page background, it is darkened by itself for links and headings; buttons and bands keep yours.</target>
             </trans-unit>
             <trans-unit id="emqi7.W">
                 <source>description.legal_customize</source>
@@ -2542,6 +2586,10 @@
                 <source>label.guided_project_ui_media_add</source>
                 <target>Add an image to the library</target>
             </trans-unit>
+            <trans-unit id="BglUgtV">
+                <source>label.guided_project_ui_pwa_play_store</source>
+                <target>Link the Play Store app</target>
+            </trans-unit>
             <trans-unit id="g8R4XN6">
                 <source>label.guided_project_ui_pwa_setup</source>
                 <target>Make the site installable</target>
@@ -2553,6 +2601,10 @@
             <trans-unit id="42UrnqR">
                 <source>label.guided_project_ui_site_graphic</source>
                 <target>Put the site's own graphics in place</target>
+            </trans-unit>
+            <trans-unit id="nLPO1rp">
+                <source>label.guided_project_ui_theme_colors</source>
+                <target>Pick the site's colors</target>
             </trans-unit>
             <trans-unit id="71qjK16">
                 <source>label.guided_step_ui_ai_assistant_action</source>
@@ -2918,6 +2970,30 @@
                 <source>label.guided_step_ui_media_save</source>
                 <target>Save the media</target>
             </trans-unit>
+            <trans-unit id="us5QPKm">
+                <source>label.guided_step_ui_pwa_play_store_entry</source>
+                <target>Open the package</target>
+            </trans-unit>
+            <trans-unit id="jBJyIZj">
+                <source>label.guided_step_ui_pwa_play_store_fingerprint</source>
+                <target>The fingerprint</target>
+            </trans-unit>
+            <trans-unit id="ys84SzU">
+                <source>label.guided_step_ui_pwa_play_store_open</source>
+                <target>The Interface group of the settings</target>
+            </trans-unit>
+            <trans-unit id="BQR5QYz">
+                <source>label.guided_step_ui_pwa_play_store_save</source>
+                <target>Save</target>
+            </trans-unit>
+            <trans-unit id="Psef4sB">
+                <source>label.guided_step_ui_pwa_play_store_screenshots</source>
+                <target>The screenshots</target>
+            </trans-unit>
+            <trans-unit id="rqC3Sff">
+                <source>label.guided_step_ui_pwa_play_store_value</source>
+                <target>The package name</target>
+            </trans-unit>
             <trans-unit id="q9dT27u">
                 <source>label.guided_step_ui_pwa_setup_entry</source>
                 <target>Open the entry</target>
@@ -2985,6 +3061,26 @@
             <trans-unit id="bKv1nui">
                 <source>label.guided_step_ui_site_graphic_save</source>
                 <target>Save</target>
+            </trans-unit>
+            <trans-unit id="SRmD0rd">
+                <source>label.guided_step_ui_theme_colors_dark</source>
+                <target>Dark mode</target>
+            </trans-unit>
+            <trans-unit id="3h554y8">
+                <source>label.guided_step_ui_theme_colors_entry</source>
+                <target>Open the primary color</target>
+            </trans-unit>
+            <trans-unit id="qScTky2">
+                <source>label.guided_step_ui_theme_colors_open</source>
+                <target>The Theme group of the settings</target>
+            </trans-unit>
+            <trans-unit id="kASyg3_">
+                <source>label.guided_step_ui_theme_colors_save</source>
+                <target>Save</target>
+            </trans-unit>
+            <trans-unit id="0AG.3.Y">
+                <source>label.guided_step_ui_theme_colors_value</source>
+                <target>The color</target>
             </trans-unit>
             <trans-unit id="njHadGB">
                 <source>label.health_check_advice_legal_model_drift</source>

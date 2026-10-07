@@ -180,7 +180,7 @@
             </trans-unit>
             <trans-unit id="QG5uvYM">
                 <source>description.guided_step_config_health_check_fix</source>
-                <target>Each failing row carries the advice of the bundle that produced it: that is where to start, not the whole list.</target>
+                <target>Each failing row carries the advice of the bundle that produced it: that is where to start, not the whole list. Once the error is fixed, the ✓ marks it as dealt with.</target>
             </trans-unit>
             <trans-unit id="3f7SOlv">
                 <source>description.guided_step_config_health_check_mail</source>
@@ -252,7 +252,7 @@
             </trans-unit>
             <trans-unit id="RzywLrh">
                 <source>description.guided_step_config_not_found_done</source>
-                <target>That path now leads to the chosen page, for a visitor as for a search engine. The row stays in the list until nothing hits it any more.</target>
+                <target>That path now leads to the chosen page, for a visitor as for a search engine. Its row leaves the list as soon as it is saved.</target>
             </trans-unit>
             <trans-unit id="luoawAN">
                 <source>description.guided_step_config_not_found_from</source>

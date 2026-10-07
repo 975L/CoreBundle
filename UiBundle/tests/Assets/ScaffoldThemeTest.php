@@ -58,6 +58,7 @@ class ScaffoldThemeTest extends TestCase
         '--c975l-button-secondary-icon-invert-dark-mode',
         '--c975l-color-background',
         '--c975l-color-primary',
+        '--c975l-color-primary-ink',
         '--c975l-color-secondary',
         '--c975l-color-text',
         '--c975l-font-family-accent',

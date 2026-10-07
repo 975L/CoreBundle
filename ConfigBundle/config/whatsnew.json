@@ -21,6 +21,11 @@
                 "en": "A page removed from the site no longer keeps its accessibility result in the health check.",
                 "fr": "Une page retirée du site ne garde plus son résultat d'accessibilité dans le bilan de santé.",
                 "es": "Una página retirada del sitio ya no conserva su resultado de accesibilidad en la revisión de salud."
+            },
+            {
+                "en": "The failed messages screen is now also reachable from the \"Advanced\" menu.",
+                "fr": "L'écran des messages en échec est désormais aussi accessible depuis le menu « Avancé ».",
+                "es": "La pantalla de mensajes fallidos ahora también es accesible desde el menú «Avanzado»."
             }
         ]
     },

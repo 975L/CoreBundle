@@ -297,7 +297,8 @@ ones, so a console reading only the failure count reads a dead worker as healthy
 cannot count themselves (the scheduler's) are left out rather than reported as zero.
 
 What sits in the failure transport is replayed or dropped from `management_config_messenger_failed`,
-the screen the failed-messages alert opens: the `config-messenger-failed` guided project walks it, held
+the screen the failed-messages alert opens, also linked under the sidebar's "Avancé" submenu
+(`messenger_failed` link): the `config-messenger-failed` guided project walks it, held
 at `ROLE_SUPER_ADMIN` because an admin is only shown the failure there — the buttons its steps point at
 carry `data-messenger-retry`, `data-messenger-delete` and `data-messenger-delete-group`.
 

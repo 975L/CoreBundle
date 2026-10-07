@@ -52,7 +52,7 @@
             </trans-unit>
             <trans-unit id="mjJnyUV">
                 <source>narration.guided_step_config_health_check_fix</source>
-                <target>Trate un error cada vez. Cada fila con error lleva el consejo del bundle que la produjo: por ahí hay que empezar, no por la lista entera.</target>
+                <target>Trate un error cada vez. Cada fila con error lleva el consejo del bundle que la produjo: por ahí hay que empezar, no por la lista entera. Una vez corregido el error, el botón de visto bueno lo marca como tratado.</target>
             </trans-unit>
             <trans-unit id="7B_7ULK">
                 <source>narration.guided_step_config_health_check_mail</source>
@@ -124,7 +124,7 @@
             </trans-unit>
             <trans-unit id="75YQjtn">
                 <source>narration.guided_step_config_not_found_done</source>
-                <target>El enlace vuelve a responder: esa ruta lleva a la página elegida, tanto para un visitante como para un buscador. La fila permanece en la lista mientras algo siga tocándola.</target>
+                <target>El enlace vuelve a responder: esa ruta lleva a la página elegida, tanto para un visitante como para un buscador. Su fila sale de la lista en cuanto se guarda.</target>
             </trans-unit>
             <trans-unit id="nD1m.i7">
                 <source>narration.guided_step_config_not_found_from</source>
@@ -305,6 +305,10 @@
             <trans-unit id="2nHgm8X">
                 <source>narration.health_check</source>
                 <target>«Estado de salud» revisa el sitio a fondo visto desde fuera: rendimiento, accesibilidad, errores de consola, página por página, bajo demanda o periódicamente.</target>
+            </trans-unit>
+            <trans-unit id="zi68mlp">
+                <source>narration.messenger_failed</source>
+                <target>«Mensajes fallidos» enumera los correos y tareas que no pudieron salir. Los casos menores, lista negra o spam, se purgan solos; los demás se reintentan o se eliminan aquí.</target>
             </trans-unit>
             <trans-unit id="Dgj9o_a">
                 <source>narration.not_founds</source>

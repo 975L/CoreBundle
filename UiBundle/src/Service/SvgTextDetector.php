@@ -28,19 +28,28 @@ class SvgTextDetector
         return null !== $this->load($absolutePath);
     }
 
-    // True when the file is an SVG still drawing at least one run of text
+    // True when the file is an SVG still drawing at least one run of text with a font it does not carry itself
     public function drawsText(string $absolutePath): bool
     {
-        return [] !== $this->textNodes($absolutePath);
+        $nodes = $this->textNodes($absolutePath);
+        $embedded = [] === $nodes ? [] : $this->embeddedFamilies($absolutePath);
+        if ([] === $embedded) {
+            return [] !== $nodes;
+        }
+
+        // A font embedded as a data: url travels with the file, even into an <img>: text naming no family of its own (a class, an ancestor, the default) is not proven to use it
+        foreach ($nodes as $node) {
+            $families = $this->familiesOf($node);
+            if ([] === $families || [] !== $this->notEmbedded($families, $embedded)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
-    /**
-     * Font families that text depends on, deduplicated and in document order - for a message naming what
-     * has to be installed, or vectorized away. Empty for a file drawing no text at all, and empty too for
-     * text carrying no family of its own, which falls back to the renderer's default.
-     *
-     * @return list<string>
-     */
+    // Font families that text depends on and the file does not embed, deduplicated and in document order, for a message naming what has to be installed or vectorized away. Empty for a file drawing no text, or text carrying no family of its own
+    /** @return list<string> */
     public function fontFamilies(string $absolutePath): array
     {
         $families = [];
@@ -51,7 +60,7 @@ class SvgTextDetector
             }
         }
 
-        return array_keys($families);
+        return [] === $families ? [] : $this->notEmbedded(array_keys($families), $this->embeddedFamilies($absolutePath));
     }
 
     /**
@@ -70,6 +79,34 @@ class SvgTextDetector
 
         // Not a comparison against null alone: xpath() answers false on an expression it cannot parse, whatever the stubs say of its return type
         return is_array($nodes) ? array_values($nodes) : [];
+    }
+
+    // Families the file's own @font-face rules embed as data: urls, an external url not counting as an <img> loads nothing outside itself
+    /** @return list<string> */
+    private function embeddedFamilies(string $absolutePath): array
+    {
+        preg_match_all('/@font-face\s*\{([^}]*)\}/i', (string) file_get_contents($absolutePath), $rules);
+
+        $families = [];
+        foreach ($rules[1] as $rule) {
+            if (preg_match('/src\s*:[^;]*url\(\s*[\'"]?data:/i', $rule) && preg_match('/font-family\s*:\s*([^;]+)/i', $rule, $matches)) {
+                $families[] = trim(trim($matches[1]), "'\"");
+            }
+        }
+
+        return array_values(array_unique($families));
+    }
+
+    // Families of the list the file does not embed, compared without case as CSS matches them
+    /**
+     * @param list<string> $families
+     * @param list<string> $embedded
+     *
+     * @return list<string>
+     */
+    private function notEmbedded(array $families, array $embedded): array
+    {
+        return array_values(array_udiff($families, $embedded, strcasecmp(...)));
     }
 
     // Null for anything that is not an SVG document. Re-read on each call rather than memoized: a cache would put state into a service the upload listener and the health check both hold, to save one parse of a file measured in kilobytes

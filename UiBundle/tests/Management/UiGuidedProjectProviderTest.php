@@ -221,8 +221,8 @@ class UiGuidedProjectProviderTest extends TestCase
     {
         $projects = $this->createProvider()->getGuidedProjects();
 
-        $this->assertSame(['ui-media', 'ui-site-graphic', 'ui-legal-model', 'ui-ai-assistant', 'ui-form', 'ui-calculator', 'ui-form-field-template', 'ui-email-template', 'ui-font', 'ui-review', 'ui-media-add', 'ui-ai-search-answers', 'ui-content-export', 'ui-ai-search-setup', 'ui-donovan-ask', 'ui-pwa-setup'], array_column($projects, 'slug'));
-        $this->assertSame([3010, 3020, 3030, 3040, 3050, 3060, 3070, 3080, 3090, 3100, 3110, 3130, 3140, 3150, 3160, 3170], array_column($projects, 'order'));
+        $this->assertSame(['ui-media', 'ui-site-graphic', 'ui-legal-model', 'ui-ai-assistant', 'ui-form', 'ui-calculator', 'ui-form-field-template', 'ui-email-template', 'ui-font', 'ui-review', 'ui-media-add', 'ui-ai-search-answers', 'ui-content-export', 'ui-ai-search-setup', 'ui-donovan-ask', 'ui-pwa-setup', 'ui-pwa-play-store', 'ui-theme-colors'], array_column($projects, 'slug'));
+        $this->assertSame([3010, 3020, 3030, 3040, 3050, 3060, 3070, 3080, 3090, 3100, 3110, 3130, 3140, 3150, 3160, 3170, 3180, 3190], array_column($projects, 'order'));
     }
 
     // Orders are merged across every bundle contributing projects, and two equal ones leave their sequence to the order the providers happen to be registered in - this bundle's own block is the 3000 GuidedProjectProviderInterface reserves it
@@ -258,6 +258,8 @@ class UiGuidedProjectProviderTest extends TestCase
             'ui-content-export' => 'ROLE_ADMIN',
             'ui-donovan-ask' => 'ROLE_SUPER_ADMIN',
             'ui-pwa-setup' => 'ROLE_SUPER_ADMIN',
+            'ui-pwa-play-store' => 'ROLE_SUPER_ADMIN',
+            'ui-theme-colors' => 'ROLE_ADMIN',
         ];
 
         foreach ($this->createProvider()->getGuidedProjects() as $project) {
@@ -312,7 +314,7 @@ class UiGuidedProjectProviderTest extends TestCase
         $this->createProvider($controllers)->getGuidedProjects();
 
         $this->assertSame(
-            ['MediaCrudController', 'SiteGraphicCrudController', 'FormCrudController', 'FormCrudController', 'FormFieldTemplateCrudController', 'EmailTemplateCrudController', 'FontCrudController', 'ReviewCrudController', 'MediaCrudController', 'AiSearchAnswerCrudController', 'FormCrudController', 'ConfigCrudController', 'ConfigCrudController'],
+            ['MediaCrudController', 'SiteGraphicCrudController', 'FormCrudController', 'FormCrudController', 'FormFieldTemplateCrudController', 'EmailTemplateCrudController', 'FontCrudController', 'ReviewCrudController', 'MediaCrudController', 'AiSearchAnswerCrudController', 'FormCrudController', 'ConfigCrudController', 'ConfigCrudController', 'ConfigCrudController', 'ConfigCrudController'],
             array_map(static fn (string $fqcn): string => basename(str_replace('\\', '/', $fqcn)), $controllers)
         );
     }

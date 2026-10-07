@@ -52,7 +52,7 @@
             </trans-unit>
             <trans-unit id="mjJnyUV">
                 <source>narration.guided_step_config_health_check_fix</source>
-                <target>Deal with one error at a time. Each failing row carries the advice of the bundle that produced it: that is where to start, not the whole list.</target>
+                <target>Deal with one error at a time. Each failing row carries the advice of the bundle that produced it: that is where to start, not the whole list. Once the error is fixed, the tick button marks it as dealt with.</target>
             </trans-unit>
             <trans-unit id="7B_7ULK">
                 <source>narration.guided_step_config_health_check_mail</source>
@@ -124,7 +124,7 @@
             </trans-unit>
             <trans-unit id="75YQjtn">
                 <source>narration.guided_step_config_not_found_done</source>
-                <target>The link answers again: that path leads to the chosen page, for a visitor as for a search engine. The row stays in the list until nothing hits it any more.</target>
+                <target>The link answers again: that path leads to the chosen page, for a visitor as for a search engine. Its row leaves the list as soon as it is saved.</target>
             </trans-unit>
             <trans-unit id="nD1m.i7">
                 <source>narration.guided_step_config_not_found_from</source>
@@ -305,6 +305,10 @@
             <trans-unit id="2nHgm8X">
                 <source>narration.health_check</source>
                 <target>"Health check" combs through the site as seen from outside: performance, accessibility, console errors, page by page, on demand or periodically.</target>
+            </trans-unit>
+            <trans-unit id="zi68mlp">
+                <source>narration.messenger_failed</source>
+                <target>"Failed messages" lists the emails and tasks that could not go out. Minor cases, blacklist or spam, are purged on their own; the others are replayed or deleted here.</target>
             </trans-unit>
             <trans-unit id="Dgj9o_a">
                 <source>narration.not_founds</source>

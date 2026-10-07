@@ -31,7 +31,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-// This bundle's guided projects, running the 3000 block GuidedProjectProviderInterface reserves them - the same docblock stating every other bundle's, so a range is read there rather than recopied here. They open on the media library first, the one screen of this bundle the sidebar keeps essential, then the three a site puts in place as it opens (its graphics, its legal documents, the key its rephrasing runs on), the occasional ones after, the site search's setup and the installable app last. Each carries the role its own screen is gated by, so a parcours is never offered to someone its very first step turns away. Only the opening step of each carries an url: from there the parcours walks the screen the user has been sent to, highlighting the button or the field they are meant to use next - one they click themselves, which brings the panel back on that very step (see ConfigBundle's assets/js/guided-project.js)
+// This bundle's guided projects, running the 3000 block GuidedProjectProviderInterface reserves them - the same docblock stating every other bundle's, so a range is read there rather than recopied here. They open on the media library first, the one screen of this bundle the sidebar keeps essential, then the three a site puts in place as it opens (its graphics, its legal documents, the key its rephrasing runs on), the occasional ones after, the site search's setup, the installable app and its Play Store twin, then the theme colours last. Each carries the role its own screen is gated by, so a parcours is never offered to someone its very first step turns away. Only the opening step of each carries an url: from there the parcours walks the screen the user has been sent to, highlighting the button or the field they are meant to use next - one they click themselves, which brings the panel back on that very step (see ConfigBundle's assets/js/guided-project.js)
 // No parcours teaches a block kind, however much one asks for beforehand (the "map" one wants its provider picked in Configuration first): a block is composed inside a page, and a page belongs to SiteBundle, which is where that parcours goes. What is walked here is this bundle's own screens.
 class UiGuidedProjectProvider implements GuidedProjectProviderInterface
 {
@@ -78,6 +78,8 @@ class UiGuidedProjectProvider implements GuidedProjectProviderInterface
         }
 
         $projects[] = $this->pwaSetupProject();
+        $projects[] = $this->pwaPlayStoreProject();
+        $projects[] = $this->themeColorsProject();
 
         return $projects;
     }
@@ -118,7 +120,7 @@ class UiGuidedProjectProvider implements GuidedProjectProviderInterface
                     'label' => 'label.guided_step_ui_ai_search_setup_value',
                     'description' => 'description.guided_step_ui_ai_search_setup_value',
                     'narration' => 'narration.guided_step_ui_ai_search_setup_value',
-                    'highlight' => '#Config_value',
+                    'highlight' => '[data-guided-config-value]',
                 ],
                 [
                     'label' => 'label.guided_step_ui_ai_search_setup_save',
@@ -997,7 +999,7 @@ class UiGuidedProjectProvider implements GuidedProjectProviderInterface
                     'label' => 'label.guided_step_ui_pwa_setup_value',
                     'description' => 'description.guided_step_ui_pwa_setup_value',
                     'narration' => 'narration.guided_step_ui_pwa_setup_value',
-                    'highlight' => '#Config_value',
+                    'highlight' => '[data-guided-config-value]',
                 ],
                 [
                     'label' => 'label.guided_step_ui_pwa_setup_save',
@@ -1008,6 +1010,109 @@ class UiGuidedProjectProvider implements GuidedProjectProviderInterface
                     'label' => 'label.guided_step_ui_pwa_setup_icon',
                     'description' => 'description.guided_step_ui_pwa_setup_icon',
                     'narration' => 'narration.guided_step_ui_pwa_setup_icon',
+                ],
+            ],
+        ];
+    }
+
+    // The Android app wrapping the installable site is tied to it by two settings published in /.well-known/assetlinks.json - the second one and the screenshots only named, the screen walked being the first one's
+    private function pwaPlayStoreProject(): array
+    {
+        return [
+            'slug' => 'ui-pwa-play-store',
+            'label' => 'label.guided_project_ui_pwa_play_store',
+            'description' => 'description.guided_project_ui_pwa_play_store',
+            'translation_domain' => 'ui',
+            'order' => 3180,
+            // Same as the installable app's: both entries are restricted, kept out of the list below this role
+            'role' => 'ROLE_SUPER_ADMIN',
+            'steps' => [
+                [
+                    'label' => 'label.guided_step_ui_pwa_play_store_open',
+                    'description' => 'description.guided_step_ui_pwa_play_store_open',
+                    'narration' => 'narration.guided_step_ui_pwa_play_store_open',
+                    'url' => $this->adminUrlGenerator
+                        ->unsetAll()
+                        ->setController(ConfigCrudController::class)
+                        ->setAction(Action::INDEX)
+                        ->set('group', 'ui')
+                        ->generateUrl(),
+                ],
+                [
+                    'label' => 'label.guided_step_ui_pwa_play_store_entry',
+                    'description' => 'description.guided_step_ui_pwa_play_store_entry',
+                    'narration' => 'narration.guided_step_ui_pwa_play_store_entry',
+                    'highlight' => '.action-edit',
+                ],
+                [
+                    'label' => 'label.guided_step_ui_pwa_play_store_value',
+                    'description' => 'description.guided_step_ui_pwa_play_store_value',
+                    'narration' => 'narration.guided_step_ui_pwa_play_store_value',
+                    'highlight' => '[data-guided-config-value]',
+                ],
+                [
+                    'label' => 'label.guided_step_ui_pwa_play_store_save',
+                    'narration' => 'narration.guided_step_ui_pwa_play_store_save',
+                    'highlight' => '.action-saveAndReturn',
+                ],
+                [
+                    'label' => 'label.guided_step_ui_pwa_play_store_fingerprint',
+                    'description' => 'description.guided_step_ui_pwa_play_store_fingerprint',
+                    'narration' => 'narration.guided_step_ui_pwa_play_store_fingerprint',
+                ],
+                [
+                    'label' => 'label.guided_step_ui_pwa_play_store_screenshots',
+                    'description' => 'description.guided_step_ui_pwa_play_store_screenshots',
+                    'narration' => 'narration.guided_step_ui_pwa_play_store_screenshots',
+                ],
+            ],
+        ];
+    }
+
+    // The brand colour paints every button, band, heading and link, and a dark page needs a lighter one - a light primary being darkened for its ink on its own (see ThemeVariablesCssListener::primaryInkLines())
+    private function themeColorsProject(): array
+    {
+        return [
+            'slug' => 'ui-theme-colors',
+            'label' => 'label.guided_project_ui_theme_colors',
+            'description' => 'description.guided_project_ui_theme_colors',
+            'translation_domain' => 'ui',
+            'order' => 3190,
+            // The bar ConfigCrudController sets on its own index and edit
+            'role' => $this->configService->get('site-role-admin'),
+            'steps' => [
+                [
+                    'label' => 'label.guided_step_ui_theme_colors_open',
+                    'description' => 'description.guided_step_ui_theme_colors_open',
+                    'narration' => 'narration.guided_step_ui_theme_colors_open',
+                    'url' => $this->adminUrlGenerator
+                        ->unsetAll()
+                        ->setController(ConfigCrudController::class)
+                        ->setAction(Action::INDEX)
+                        ->set('group', 'theme')
+                        ->generateUrl(),
+                ],
+                [
+                    'label' => 'label.guided_step_ui_theme_colors_entry',
+                    'description' => 'description.guided_step_ui_theme_colors_entry',
+                    'narration' => 'narration.guided_step_ui_theme_colors_entry',
+                    'highlight' => '.action-edit',
+                ],
+                [
+                    'label' => 'label.guided_step_ui_theme_colors_value',
+                    'description' => 'description.guided_step_ui_theme_colors_value',
+                    'narration' => 'narration.guided_step_ui_theme_colors_value',
+                    'highlight' => '[data-guided-config-value]',
+                ],
+                [
+                    'label' => 'label.guided_step_ui_theme_colors_save',
+                    'narration' => 'narration.guided_step_ui_theme_colors_save',
+                    'highlight' => '.action-saveAndReturn',
+                ],
+                [
+                    'label' => 'label.guided_step_ui_theme_colors_dark',
+                    'description' => 'description.guided_step_ui_theme_colors_dark',
+                    'narration' => 'narration.guided_step_ui_theme_colors_dark',
                 ],
             ],
         ];

@@ -158,6 +158,29 @@ class ThemeVariablesCssListenerTest extends TestCase
         $this->assertStringContainsString('--c975l-button-icon-invert: 0;', $css);
     }
 
+    // A light primary read on the white page is darkened just enough for 4.5:1, a dark one is left alone
+    public function testALightPrimaryIsDarkenedForItsInkOnly(): void
+    {
+        $listener = $this->createListener([$this->config('theme-color-primary', '#e8730c')]);
+        $this->flush($this->markStale($listener, 'theme-color-primary', '#e8730c'));
+        $this->assertStringContainsString('--c975l-color-primary-ink: #ba5c0a;', file_get_contents($this->cssPath));
+
+        $listener = $this->createListener([$this->config('theme-color-primary', '#1d3557')]);
+        $this->flush($this->markStale($listener, 'theme-color-primary', '#1d3557'));
+        $this->assertStringNotContainsString('--c975l-color-primary-ink', file_get_contents($this->cssPath));
+    }
+
+    // A cream page leaves less room than white, so the same primary needs a darker ink to keep 4.5:1
+    public function testThePrimaryInkIsMeasuredAgainstTheConfiguredBackground(): void
+    {
+        $listener = $this->createListener([$this->config('theme-color-primary', '#e8730c'), $this->config('theme-color-background', '#f3e9d2')]);
+        $this->flush($this->markStale($listener, 'theme-color-primary', '#e8730c'));
+
+        preg_match('/--c975l-color-primary-ink: (#[0-9a-f]{6});/', (string) file_get_contents($this->cssPath), $matches);
+        $this->assertNotEmpty($matches);
+        $this->assertLessThan(hexdec('ba'), hexdec(substr($matches[1], 1, 2)));
+    }
+
     // The icon goes with the label and never apart from it: an <img> takes no colour of its own, so it is turned over by an inversion
     public function testADarkThemeColourKeepsTheWhiteInkAndTheInvertedIcon(): void
     {

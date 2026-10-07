@@ -123,7 +123,7 @@
     --label-color: color-mix(in srgb, var(--text) 70%, var(--background));
     --link-color: var(--primary-ink);
     --primary: var(--c975l-color-primary, var(--button-background-primary));
-    --primary-ink: var(--primary);
+    --primary-ink: var(--c975l-color-primary-ink, var(--primary));
     --radius-btn: 5px;
     --radius-card: 10px;
     --radius-panel: 16px;

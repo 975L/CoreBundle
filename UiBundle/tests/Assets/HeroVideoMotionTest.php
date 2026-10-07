@@ -57,6 +57,18 @@ class HeroVideoMotionTest extends TestCase
         $this->assertStringContainsString('this.observer.disconnect()', $script);
     }
 
+    // Printed with preload="none", a paused video under reduced motion still gets its first frame once on screen
+    public function testTheControllerFetchesTheFirstFrameWhenItDoesNotPlay(): void
+    {
+        $this->assertStringContainsString('this.element.preload = "metadata"', $this->read(self::CONTROLLER_JS));
+    }
+
+    // A play() refused outright (iOS Low Power Mode) would otherwise leave the section with nothing painted
+    public function testTheControllerFetchesTheFirstFrameWhenPlayIsRefused(): void
+    {
+        $this->assertMatchesRegularExpression('/\.play\(\)\.catch\(\(\) => \{\s*this\.element\.preload = "metadata";/', $this->read(self::CONTROLLER_JS));
+    }
+
     // Lazily registered, and only for a document actually holding one - the identifier is what pairs the two halves
     public function testTheControllerIsRegisteredUnderTheIdentifierTheMarkupWrites(): void
     {

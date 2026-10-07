@@ -180,7 +180,7 @@
             </trans-unit>
             <trans-unit id="QG5uvYM">
                 <source>description.guided_step_config_health_check_fix</source>
-                <target>Cada fila con error lleva el consejo del bundle que la produjo: ahí hay que empezar, no en la lista entera.</target>
+                <target>Cada fila con error lleva el consejo del bundle que la produjo: ahí hay que empezar, no en la lista entera. Una vez corregido el error, el ✓ lo marca como tratado.</target>
             </trans-unit>
             <trans-unit id="3f7SOlv">
                 <source>description.guided_step_config_health_check_mail</source>
@@ -252,7 +252,7 @@
             </trans-unit>
             <trans-unit id="RzywLrh">
                 <source>description.guided_step_config_not_found_done</source>
-                <target>Esa ruta lleva ahora a la página elegida, tanto para un visitante como para un buscador. La fila permanece en la lista mientras algo siga tocándola.</target>
+                <target>Esa ruta lleva ahora a la página elegida, tanto para un visitante como para un buscador. Su fila sale de la lista en cuanto se guarda.</target>
             </trans-unit>
             <trans-unit id="luoawAN">
                 <source>description.guided_step_config_not_found_from</source>

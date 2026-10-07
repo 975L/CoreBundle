@@ -35,7 +35,7 @@ class HeroVideoBackgroundTest extends TestCase
     {
         $html = $this->render(['videoSrc' => '/media/generique.mp4', 'videoType' => 'video/mp4']);
 
-        $this->assertStringContainsString('<video class="hero__bg hero__bg--video" data-controller="heroVideo" muted loop playsinline preload="auto" aria-hidden="true">', $html);
+        $this->assertStringContainsString('<video class="hero__bg hero__bg--video" data-controller="heroVideo" muted loop playsinline preload="none" aria-hidden="true">', $html);
         $this->assertStringContainsString('<source src="/media/generique.mp4" type="video/mp4">', $html);
         $this->assertStringNotContainsString('controls', $html);
     }

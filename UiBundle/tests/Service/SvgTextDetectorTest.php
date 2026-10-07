@@ -140,6 +140,45 @@ class SvgTextDetectorTest extends TestCase
         $this->assertFalse($this->detector->drawsText($path));
     }
 
+    // A font embedded as a data: url renders the same everywhere, so only text naming a family the file lacks is reported
+    public function testTextDrawnWithAnEmbeddedFontIsNotReported(): void
+    {
+        $style = '<style>@font-face{font-family:\'EBG\';src:url(data:font/woff2;base64,d09GMg==) format(\'woff2\')}</style>';
+        $embedded = $this->write($this->svg($style . '<text font-family="\'EBG\'">Thryndor</text><text style="font-family:EBG,serif">Carte</text>'));
+        $missing = $this->write($this->svg($style . '<text font-family="Riffic Free">975L</text>'), 'missing.svg');
+        $external = $this->write($this->svg('<style>@font-face{font-family:\'EBG\';src:url(https://example.com/ebg.woff2)}</style><text>Thryndor</text>'), 'external.svg');
+
+        $this->assertFalse($this->detector->drawsText($embedded));
+        $this->assertTrue($this->detector->drawsText($missing));
+        $this->assertTrue($this->detector->drawsText($external));
+    }
+
+    // A family coming from a class or from nowhere is not read, so not proven to be the embedded one
+    public function testTextWithoutItsOwnFamilyIsReportedDespiteAnEmbeddedFont(): void
+    {
+        $style = '<style>@font-face{font-family:EBG;src:url(data:font/woff2;base64,d09GMg==)}.t{font-family:EBG}</style>';
+
+        $this->assertTrue($this->detector->drawsText($this->write($this->svg($style . '<text class="t">Thryndor</text>'))));
+    }
+
+    // CSS matches family names without case, and Inkscape or Font Squirrel put a local() before the data: url
+    public function testEmbeddedFamiliesAreMatchedWithoutCaseAndAfterALocalSource(): void
+    {
+        $style = '<style>@font-face{font-family:\'EBG\';src:local(\'EBG\'),url(data:font/woff2;base64,d09GMg==) format(\'woff2\')}</style>';
+        $path = $this->write($this->svg($style . '<text font-family="ebg">Thryndor</text>'));
+
+        $this->assertFalse($this->detector->drawsText($path));
+    }
+
+    // The message names only what the visitor would have to install, an embedded family travelling with the file
+    public function testFontFamiliesLeaveOutTheEmbeddedOnes(): void
+    {
+        $style = '<style>@font-face{font-family:EBG;src:url(data:font/woff2;base64,d09GMg==)}</style>';
+        $path = $this->write($this->svg($style . '<text font-family="EBG">Thryndor</text><text font-family="Riffic Free">975L</text>'));
+
+        $this->assertSame(['Riffic Free'], $this->detector->fontFamilies($path));
+    }
+
     public function testMalformedMarkupIsIgnored(): void
     {
         $path = $this->write('<svg><text>975L</svg>');

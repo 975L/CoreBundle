@@ -386,17 +386,41 @@
                 <source>narration.guided_step_ui_media_save</source>
                 <target>Enregistrez le média avec le bouton en bas du formulaire.</target>
             </trans-unit>
+            <trans-unit id="dA7AGPs">
+                <source>narration.guided_step_ui_pwa_play_store_entry</source>
+                <target>Cliquez sur le crayon de l'entrée « Paquet de l'application Android ».</target>
+            </trans-unit>
+            <trans-unit id="o8fR4PZ">
+                <source>narration.guided_step_ui_pwa_play_store_fingerprint</source>
+                <target>Faites de même pour l'empreinte, que la Play Console affiche sous Intégrité de l'application.</target>
+            </trans-unit>
+            <trans-unit id="0Tu_vex">
+                <source>narration.guided_step_ui_pwa_play_store_open</source>
+                <target>Voici les réglages, ouverts sur le groupe Interface : deux entrées relient le site à son application Android, le paquet et l'empreinte.</target>
+            </trans-unit>
+            <trans-unit id="UKANhAT">
+                <source>narration.guided_step_ui_pwa_play_store_save</source>
+                <target>Enregistrez.</target>
+            </trans-unit>
+            <trans-unit id="nQ4c6XZ">
+                <source>narration.guided_step_ui_pwa_play_store_screenshots</source>
+                <target>Dernière étape : les captures d'écran de l'application se déposent dans les graphismes du site, ou se génèrent par une commande.</target>
+            </trans-unit>
+            <trans-unit id="Xki66Xy">
+                <source>narration.guided_step_ui_pwa_play_store_value</source>
+                <target>Saisissez le nom du paquet tel que la Play Console l'affiche.</target>
+            </trans-unit>
             <trans-unit id="5xBLCZs">
                 <source>narration.guided_step_ui_pwa_setup_entry</source>
                 <target>Cliquez sur le crayon de l'entrée « Application web installable ».</target>
             </trans-unit>
             <trans-unit id="ObV0jRq">
                 <source>narration.guided_step_ui_pwa_setup_icon</source>
-                <target>Dernière étape : déposez l'icône d'application 512 px dans les graphismes du site, sans elle le navigateur ne propose pas l'installation.</target>
+                <target>Dernière étape : déposez l'icône d'application 512 px dans les graphismes du site, sans elle le navigateur ne propose pas l'installation. Les captures d'écran s'y déposent aussi, ou se génèrent par une commande.</target>
             </trans-unit>
             <trans-unit id="19jCxNZ">
                 <source>narration.guided_step_ui_pwa_setup_open</source>
-                <target>Voici les réglages, ouverts sur le groupe Interface : l'entrée « Application web installable » rend le site installable, le nom court et la page de partage sont facultatifs.</target>
+                <target>Voici les réglages, ouverts sur le groupe Interface : l'entrée « Application web installable » rend le site installable, le nom court et la page de partage sont facultatifs. La description de l'application aussi, mais avec des captures d'écran elle donne un dialogue d'installation façon store.</target>
             </trans-unit>
             <trans-unit id="ucQIab6">
                 <source>narration.guided_step_ui_pwa_setup_save</source>
@@ -453,6 +477,26 @@
             <trans-unit id="IP7FAq7">
                 <source>narration.guided_step_ui_site_graphic_save</source>
                 <target>Enregistrez avec le bouton en bas du formulaire.</target>
+            </trans-unit>
+            <trans-unit id="L5HU_rh">
+                <source>narration.guided_step_ui_theme_colors_dark</source>
+                <target>Dernière étape : faites de même pour la couleur du mode sombre, une teinte plus claire. Vide, la couleur primaire s'applique.</target>
+            </trans-unit>
+            <trans-unit id="wNes.Oc">
+                <source>narration.guided_step_ui_theme_colors_entry</source>
+                <target>Cliquez sur le crayon de l'entrée « Couleur primaire ».</target>
+            </trans-unit>
+            <trans-unit id="lf7NYqT">
+                <source>narration.guided_step_ui_theme_colors_open</source>
+                <target>Voici les réglages, ouverts sur le groupe Thème : la couleur primaire peint les boutons, les titres et les liens, et la couleur du mode sombre la remplace sur une page sombre.</target>
+            </trans-unit>
+            <trans-unit id="cU9hfEO">
+                <source>narration.guided_step_ui_theme_colors_save</source>
+                <target>Enregistrez.</target>
+            </trans-unit>
+            <trans-unit id="tii74TZ">
+                <source>narration.guided_step_ui_theme_colors_value</source>
+                <target>Saisissez la couleur. Trop claire, elle est assombrie d'elle-même pour les liens et les titres.</target>
             </trans-unit>
             <trans-unit id="qj2GNDz">
                 <source>narration.legal_models</source>

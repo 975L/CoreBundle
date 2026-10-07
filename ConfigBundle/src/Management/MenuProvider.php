@@ -117,6 +117,18 @@ class MenuProvider implements MenuProviderInterface
                 // Same key as content_import.html.twig's own explanatory text
                 'description' => 'label.content_import_help',
             ],
+            // Empty most of the time, so tucked under "Avancé": the alert stays the way in when something failed, this the way back to it once dismissed
+            'messenger_failed' => [
+                'label' => 'label.messenger_failed',
+                'narration' => 'narration.messenger_failed',
+                'name' => 'management_config_messenger_failed',
+                'translation_domain' => 'config',
+                'icon' => 'fas fa-envelope-circle-check',
+                'tier' => 'advanced',
+                // Same gate as MessengerFailedController::index(), which shows an admin the reassuring message and a super admin the detail
+                'role' => $this->configService->get('site-role-admin'),
+                'description' => 'description.messenger_failed',
+            ],
         ];
 
         // Link to the site itself, using its own "name"/"url" configs - pinned so it always stays at the very bottom of the links section, regardless of its label; omitted while the site's url isn't configured yet

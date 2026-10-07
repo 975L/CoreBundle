@@ -26,9 +26,6 @@ class AccessibilityHealthCheckProvider implements HealthCheckExhaustiveInterface
     // Urls checked per sitemap, so installing a gallery declaring two thousand photos doesn't turn a monthly check into a two-thousand-page crawl. Pages built by one template fail the same criteria in the same place: what is being looked for is the template's offence, not a count of how many urls repeat it
     public const int MAX_URLS_PER_SOURCE = 50;
 
-    // How many requests are kept in flight at once, same value and same reason as ContentQualityAnalyzer's. Every url here belongs to this very site, and firing them all at once does not make them arrive sooner: HttpClient caps concurrent connections per host, so the surplus queues while each queued request's own timeout is already counting down. Worse, the ones that do go through arrive together on a shared hosting's php-fpm pool, which answers the rest 503 - the check then reports pages as unverifiable that were merely busy answering the check itself
-    private const int BATCH_SIZE = 10;
-
     public function __construct(
         private readonly iterable $sitemapProviders,
         private readonly AccessibilityClient $accessibilityClient,
@@ -43,9 +40,9 @@ class AccessibilityHealthCheckProvider implements HealthCheckExhaustiveInterface
 
     public function runChecks(): array
     {
-        // Every request of a batch is fired before any of its responses is read, letting the HttpClient transport run them concurrently instead of paying each timeout serially - but one batch at a time (see BATCH_SIZE), the urls being this site's own. AbstractW3cValidationHealthCheckProvider fires everything up front and is right to: its requests all go to the w3c validator, not to the site being checked
+        // Every request of a batch is fired before any of its responses is read, letting the HttpClient transport run them concurrently instead of paying each timeout serially - but one batch at a time (see ContentQualityAnalyzer::BATCH_SIZE), the urls being this site's own: firing them all at once has a shared hosting's php-fpm pool answer the surplus 503, reporting pages as unverifiable that were merely busy answering the check itself. AbstractW3cValidationHealthCheckProvider fires everything up front and is right to: its requests all go to the w3c validator, not to the site being checked
         $results = [];
-        foreach (array_chunk($this->collectUrls(), self::BATCH_SIZE) as $batch) {
+        foreach (array_chunk($this->collectUrls(), ContentQualityAnalyzer::BATCH_SIZE) as $batch) {
             $pending = [];
             foreach ($batch as $url) {
                 $pending[$url] = $this->accessibilityClient->request($url);

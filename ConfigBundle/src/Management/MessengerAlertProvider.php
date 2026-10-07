@@ -43,7 +43,7 @@ class MessengerAlertProvider implements AlertProviderInterface
                 'label' => $this->translator->trans('label.messenger_alert_super_admin', ['%count%' => $count], 'config'),
                 'description' => $this->translator->trans('description.messenger_alert_super_admin', [], 'config'),
                 'severity' => Config::SEVERITY_DANGER,
-                // Its screen is the admin's own (see MessengerFailedController), and the only way in - the dashboard now renders for an editor, who would read an alert about something they cannot open
+                // Its screen is the admin's own (see MessengerFailedController), and its main way in - the dashboard now renders for an editor, who would read an alert about something they cannot open
                 'role' => $this->configService->get('site-role-admin'),
                 'url' => $url,
             ]];

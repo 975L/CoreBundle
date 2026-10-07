@@ -15,16 +15,16 @@ use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
 use Twig\TwigFilter;
 
-// An audio player fetches its duration only, never the whole file before play
+// An audio player fetches nothing with the page, its duration asked for once on screen
 class AudioPreloadTest extends TestCase
 {
-    public function testAnAudioPreloadsItsMetadataOnly(): void
+    public function testAnAudioPreloadsNothingWithThePage(): void
     {
         $twig = new Environment(new FilesystemLoader(\dirname(__DIR__, 2) . '/templates/components/Audio'));
         $twig->addFilter(new TwigFilter('trans', static fn (string $id): string => $id));
 
         $html = $twig->render('Audio.html.twig', ['src' => '/a.mp3', 'type' => 'audio/mpeg']);
 
-        $this->assertStringContainsString('preload="metadata"', $html);
+        $this->assertStringContainsString('preload="none" data-controller="mediaPreload"', $html);
     }
 }

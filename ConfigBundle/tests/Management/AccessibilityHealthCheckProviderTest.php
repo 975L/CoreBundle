@@ -193,7 +193,12 @@ class AccessibilityHealthCheckProviderTest extends TestCase
         new AccessibilityHealthCheckProvider([$this->createSitemapProvider($urls)], new AccessibilityClient($httpClient), $this->createTranslator())->runChecks();
 
         $this->assertSame(
-            [...array_fill(0, 10, 'request'), ...array_fill(0, 10, 'read'), ...array_fill(0, 5, 'request'), ...array_fill(0, 5, 'read')],
+            [
+                ...array_fill(0, 4, 'request'), ...array_fill(0, 4, 'read'),
+                ...array_fill(0, 4, 'request'), ...array_fill(0, 4, 'read'),
+                ...array_fill(0, 4, 'request'), ...array_fill(0, 4, 'read'),
+                ...array_fill(0, 3, 'request'), ...array_fill(0, 3, 'read'),
+            ],
             $log,
         );
     }

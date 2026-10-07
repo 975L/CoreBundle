@@ -7,7 +7,7 @@
  */
 import { Controller } from "@hotwired/stimulus";
 
-// A video playing by itself - a hero's background, a book's flipbook - plays through this controller rather than through an "autoplay" attribute, which no stylesheet and no preference can take back once the browser has honored it, and which fetches the whole file with the page. Nothing else has to run for the page to hold: a video whose script never loads keeps its own first frame, a still picture over which the title reads exactly as it does over a background image
+// A video playing by itself - a hero's background, a book's flipbook - plays through this controller rather than through an "autoplay" attribute, which no stylesheet and no preference can take back once the browser has honored it, and which fetches the whole file with the page. Nothing else has to run for the page to hold: a video whose script never loads fetches nothing ("preload" none) and paints nothing, the background image uploaded beside it, if any, being what the title reads over
 export default class extends Controller {
     connect() {
         this.motion = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -35,10 +35,17 @@ export default class extends Controller {
         if (this.motion.matches || !this.visible) {
             this.element.pause();
 
+            // Nothing is fetched with the page ("preload" none): a visitor asking for reduced motion is still shown the first frame once the video is on screen
+            if (this.visible) {
+                this.element.preload = "metadata";
+            }
+
             return;
         }
 
-        // Rejected by a browser refusing to play it at all: nothing to recover, the first frame stays painted
-        this.element.play().catch(() => {});
+        // Rejected by a browser refusing to play it at all (iOS Low Power Mode): the first frame is still fetched, so the section is not left bare
+        this.element.play().catch(() => {
+            this.element.preload = "metadata";
+        });
     }
 }

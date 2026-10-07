@@ -293,7 +293,7 @@ class ConfigGuidedProjectProvider implements GuidedProjectProviderInterface
         ];
     }
 
-    // The screen the failed messages alert opens, and no menu does: what to replay, what to drop
+    // The screen the failed messages alert opens, also linked under "Avancé": what to replay, what to drop
     private function messengerFailedProject(): array
     {
         return [

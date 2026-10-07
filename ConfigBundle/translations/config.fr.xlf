@@ -180,7 +180,7 @@
             </trans-unit>
             <trans-unit id="QG5uvYM">
                 <source>description.guided_step_config_health_check_fix</source>
-                <target>Chaque ligne en erreur porte le conseil du bundle qui l'a produite : c'est par là qu'il faut commencer, pas par la liste entière.</target>
+                <target>Chaque ligne en erreur porte le conseil du bundle qui l'a produite : c'est par là qu'il faut commencer, pas par la liste entière. Une fois l'erreur corrigée, le ✓ la marque traitée.</target>
             </trans-unit>
             <trans-unit id="3f7SOlv">
                 <source>description.guided_step_config_health_check_mail</source>
@@ -252,7 +252,7 @@
             </trans-unit>
             <trans-unit id="RzywLrh">
                 <source>description.guided_step_config_not_found_done</source>
-                <target>Ce chemin mène désormais à la page choisie, pour un visiteur comme pour un moteur de recherche. La ligne reste dans la liste tant que quelque chose la touche encore.</target>
+                <target>Ce chemin mène désormais à la page choisie, pour un visiteur comme pour un moteur de recherche. Sa ligne quitte la liste dès l'enregistrement.</target>
             </trans-unit>
             <trans-unit id="luoawAN">
                 <source>description.guided_step_config_not_found_from</source>

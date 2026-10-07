@@ -52,7 +52,7 @@
             </trans-unit>
             <trans-unit id="mjJnyUV">
                 <source>narration.guided_step_config_health_check_fix</source>
-                <target>Traitez une erreur à la fois. Chaque ligne en erreur porte le conseil du bundle qui l'a produite : c'est par là qu'il faut commencer, pas par la liste entière.</target>
+                <target>Traitez une erreur à la fois. Chaque ligne en erreur porte le conseil du bundle qui l'a produite : c'est par là qu'il faut commencer, pas par la liste entière. Une fois l'erreur corrigée, le bouton de coche la marque traitée.</target>
             </trans-unit>
             <trans-unit id="7B_7ULK">
                 <source>narration.guided_step_config_health_check_mail</source>
@@ -124,7 +124,7 @@
             </trans-unit>
             <trans-unit id="75YQjtn">
                 <source>narration.guided_step_config_not_found_done</source>
-                <target>Le lien répond de nouveau : ce chemin mène à la page choisie, pour un visiteur comme pour un moteur de recherche. La ligne reste dans la liste tant que quelque chose la touche encore.</target>
+                <target>Le lien répond de nouveau : ce chemin mène à la page choisie, pour un visiteur comme pour un moteur de recherche. Sa ligne quitte la liste dès l'enregistrement.</target>
             </trans-unit>
             <trans-unit id="nD1m.i7">
                 <source>narration.guided_step_config_not_found_from</source>
@@ -305,6 +305,10 @@
             <trans-unit id="2nHgm8X">
                 <source>narration.health_check</source>
                 <target>« Bilan de santé » passe le site au crible vu de l'extérieur : performances, accessibilité, erreurs de console, page par page, à la demande ou périodiquement.</target>
+            </trans-unit>
+            <trans-unit id="zi68mlp">
+                <source>narration.messenger_failed</source>
+                <target>« Messages en échec » liste les e-mails et tâches qui n'ont pas pu partir. Les cas mineurs, liste noire ou spam, sont purgés d'eux-mêmes ; les autres se rejouent ou se suppriment ici.</target>
             </trans-unit>
             <trans-unit id="Dgj9o_a">
                 <source>narration.not_founds</source>

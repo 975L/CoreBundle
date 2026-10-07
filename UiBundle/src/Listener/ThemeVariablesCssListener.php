@@ -61,6 +61,9 @@ class ThemeVariablesCssListener implements CacheWarmerInterface
         ],
     ];
 
+    // What WCAG AA asks of normal text, which a link or a heading painted with --primary on the page background is
+    private const float INK_MIN_CONTRAST = 4.5;
+
     // Where white stops being readable and black starts: the two contrast ratios meet at this relative luminance, so it is the one crossing point rather than a taste
     private const float INK_THRESHOLD = 0.179;
 
@@ -151,7 +154,7 @@ class ThemeVariablesCssListener implements CacheWarmerInterface
         }
 
         // Appended after the loop, and not in variableLine(): that mapping is mechanical on purpose, and a colour read to write two other properties is exactly the lookup table it exists not to have
-        $lines = [...$lines, ...$this->derivedInkLines($values)];
+        $lines = [...$lines, ...$this->derivedInkLines($values), ...$this->primaryInkLines($values['theme-color-primary'] ?? null, $values['theme-color-background'] ?? null)];
 
         BuildFileWriter::write($this->projectDir, $this->buildDir, 'site-theme.css', [] === $lines ? '' : ":root {\n" . implode("\n", $lines) . "\n}\n");
 
@@ -203,6 +206,29 @@ class ThemeVariablesCssListener implements CacheWarmerInterface
         }
 
         return $lines;
+    }
+
+    // The primary darkened just enough to be read on the page background, for --primary-ink (see sass/_tokens.scss): buttons and bands keep the brand colour, links and headings take the darker shade. Nothing for a primary already readable there or one this does not read, an unreadable background counting as white
+    /** @return string[] */
+    private function primaryInkLines(?string $primary, ?string $background): array
+    {
+        $channels = $this->rgb($primary);
+        if (null === $channels) {
+            return [];
+        }
+
+        $page = $this->luminance($background) ?? 1.0;
+
+        for ($percent = 0; $percent <= 100; ++$percent) {
+            $shade = array_map(static fn (int $channel): int => (int) round($channel * (100 - $percent) / 100), $channels);
+            $hex = vsprintf('#%02x%02x%02x', $shade);
+            $ink = (float) $this->luminance($hex);
+            if ((max($page, $ink) + 0.05) / (min($page, $ink) + 0.05) >= self::INK_MIN_CONTRAST) {
+                return 0 === $percent ? [] : [sprintf('    --c975l-color-primary-ink: %s;', $hex)];
+            }
+        }
+
+        return [];
     }
 
     // The relative luminance of a colour as WCAG defines it, or null for one this does not read. Hex and rgb() only: those are what the back-office colour picker writes, and a form nobody can produce there is not worth a parser

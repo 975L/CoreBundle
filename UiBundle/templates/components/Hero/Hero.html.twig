@@ -18,8 +18,8 @@
         <img class="hero__bg" src="{{ bgSrc }}" alt="" aria-hidden="true" fetchpriority="high">
     {% endif %}
     {% if videoSrc %}
-        {# No "autoplay" attribute: playing is the controller's call (assets/js/hero-video.js), so a browser asking for reduced motion - or running no script at all - is left on the video's own first frame rather than on motion nobody asked for. Muted is not an option offered to the editor either: the background prints no controls, so a viewer given sound could not turn it off. After the still on purpose, both being absolutely placed: the later one covers the other #}
-        <video class="hero__bg hero__bg--video" data-controller="heroVideo" muted loop playsinline preload="auto" aria-hidden="true">
+        {# No "autoplay" attribute: playing is the controller's call (assets/js/hero-video.js), so a browser asking for reduced motion is left on the video's own first frame, fetched once on screen, rather than on motion nobody asked for. "preload" none: the file is only requested by that controller, after the page has painted, rather than competing with the picture it opens on. Muted is not an option offered to the editor either: the background prints no controls, so a viewer given sound could not turn it off. After the still on purpose, both being absolutely placed: the later one covers the other #}
+        <video class="hero__bg hero__bg--video" data-controller="heroVideo" muted loop playsinline preload="none" aria-hidden="true">
             {# Only when it holds something: a browser reads type="" as a format it does not support and skips the source altogether, where no attribute at all has it sniff the file and play it #}
             <source src="{{ videoSrc }}"{% if videoType|default('') %} type="{{ videoType }}"{% endif %}>
         </video>

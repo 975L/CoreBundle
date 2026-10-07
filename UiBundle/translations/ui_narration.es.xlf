@@ -386,17 +386,41 @@
                 <source>narration.guided_step_ui_media_save</source>
                 <target>Guarde el medio con el botón situado en la parte inferior del formulario.</target>
             </trans-unit>
+            <trans-unit id="dA7AGPs">
+                <source>narration.guided_step_ui_pwa_play_store_entry</source>
+                <target>Haga clic en el lápiz de la entrada « Paquete de la aplicación Android ».</target>
+            </trans-unit>
+            <trans-unit id="o8fR4PZ">
+                <source>narration.guided_step_ui_pwa_play_store_fingerprint</source>
+                <target>Haga lo mismo con la huella, que Play Console muestra en Integridad de la aplicación.</target>
+            </trans-unit>
+            <trans-unit id="0Tu_vex">
+                <source>narration.guided_step_ui_pwa_play_store_open</source>
+                <target>Estos son los ajustes, abiertos en el grupo Interfaz: dos entradas vinculan el sitio con su aplicación Android, el paquete y la huella.</target>
+            </trans-unit>
+            <trans-unit id="UKANhAT">
+                <source>narration.guided_step_ui_pwa_play_store_save</source>
+                <target>Guarde.</target>
+            </trans-unit>
+            <trans-unit id="nQ4c6XZ">
+                <source>narration.guided_step_ui_pwa_play_store_screenshots</source>
+                <target>Último paso: las capturas de la aplicación se suben en los gráficos del sitio, o se generan con un comando.</target>
+            </trans-unit>
+            <trans-unit id="Xki66Xy">
+                <source>narration.guided_step_ui_pwa_play_store_value</source>
+                <target>Escriba el nombre del paquete tal como lo muestra Play Console.</target>
+            </trans-unit>
             <trans-unit id="5xBLCZs">
                 <source>narration.guided_step_ui_pwa_setup_entry</source>
                 <target>Haga clic en el lápiz de la entrada « Aplicación web instalable ».</target>
             </trans-unit>
             <trans-unit id="ObV0jRq">
                 <source>narration.guided_step_ui_pwa_setup_icon</source>
-                <target>Último paso: suba el icono de aplicación de 512 px en los gráficos del sitio, sin él el navegador no ofrece la instalación.</target>
+                <target>Último paso: suba el icono de aplicación de 512 px en los gráficos del sitio, sin él el navegador no ofrece la instalación. Las capturas también van allí, o se generan con un comando.</target>
             </trans-unit>
             <trans-unit id="19jCxNZ">
                 <source>narration.guided_step_ui_pwa_setup_open</source>
-                <target>Estos son los ajustes, abiertos en el grupo Interfaz: la entrada « Aplicación web instalable » hace el sitio instalable, el nombre corto y la página para compartir son opcionales.</target>
+                <target>Estos son los ajustes, abiertos en el grupo Interfaz: la entrada « Aplicación web instalable » hace el sitio instalable, el nombre corto y la página para compartir son opcionales. La descripción de la aplicación también, pero con capturas da un diálogo de instalación como el de una tienda.</target>
             </trans-unit>
             <trans-unit id="ucQIab6">
                 <source>narration.guided_step_ui_pwa_setup_save</source>
@@ -453,6 +477,26 @@
             <trans-unit id="IP7FAq7">
                 <source>narration.guided_step_ui_site_graphic_save</source>
                 <target>Guarde con el botón situado en la parte inferior del formulario.</target>
+            </trans-unit>
+            <trans-unit id="L5HU_rh">
+                <source>narration.guided_step_ui_theme_colors_dark</source>
+                <target>Último paso: haga lo mismo con el color del modo oscuro, un tono más claro. Vacío, se aplica el color primario.</target>
+            </trans-unit>
+            <trans-unit id="wNes.Oc">
+                <source>narration.guided_step_ui_theme_colors_entry</source>
+                <target>Haga clic en el lápiz de la entrada « Color primario ».</target>
+            </trans-unit>
+            <trans-unit id="lf7NYqT">
+                <source>narration.guided_step_ui_theme_colors_open</source>
+                <target>Estos son los ajustes, abiertos en el grupo Tema: el color primario pinta los botones, los títulos y los enlaces, y el color del modo oscuro lo sustituye en una página oscura.</target>
+            </trans-unit>
+            <trans-unit id="cU9hfEO">
+                <source>narration.guided_step_ui_theme_colors_save</source>
+                <target>Guarde.</target>
+            </trans-unit>
+            <trans-unit id="tii74TZ">
+                <source>narration.guided_step_ui_theme_colors_value</source>
+                <target>Escriba el color. Si es demasiado claro, se oscurece solo para los enlaces y los títulos.</target>
             </trans-unit>
             <trans-unit id="qj2GNDz">
                 <source>narration.legal_models</source>

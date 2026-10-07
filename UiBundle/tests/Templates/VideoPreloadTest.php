@@ -15,7 +15,7 @@ use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
 use Twig\TwigFilter;
 
-// A video with a poster fetches nothing before play, one without keeps its metadata for a first frame instead of a black box
+// A video fetches nothing before play, poster or not
 class VideoPreloadTest extends TestCase
 {
     public function testAVideoWithAPosterPreloadsNothing(): void
@@ -25,11 +25,13 @@ class VideoPreloadTest extends TestCase
         $this->assertStringContainsString('preload="none"', $html);
     }
 
-    public function testAVideoWithoutAPosterPreloadsItsMetadata(): void
+    // Without a poster too, its first frame fetched only once on screen: its metadata alone pulled megabytes of a small preview along with the page
+    public function testAVideoWithoutAPosterPreloadsNothingEither(): void
     {
         $html = $this->render(['src' => '/v.mp4', 'type' => 'video/mp4']);
 
-        $this->assertStringContainsString('preload="metadata"', $html);
+        $this->assertStringContainsString('preload="none"', $html);
+        $this->assertStringContainsString('data-controller="mediaPreload"', $html);
     }
 
     public function testAPriorityVideoPreloadsItsPosterFirst(): void

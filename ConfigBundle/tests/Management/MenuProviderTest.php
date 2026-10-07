@@ -124,6 +124,17 @@ class MenuProviderTest extends TestCase
         $this->assertSame('label.content_import_help', $links['content_import']['description']);
     }
 
+    // The screen the failed messages alert opens, reachable again once that alert is gone, under the same gate as the controller
+    public function testGetLinksExposesTheFailedMessagesLinkUnderAdvanced(): void
+    {
+        $links = new MenuProvider($this->createConfigService(['site-role-admin' => 'ROLE_ADMIN']))->getLinks();
+
+        $this->assertSame('management_config_messenger_failed', $links['messenger_failed']['name']);
+        $this->assertSame('advanced', $links['messenger_failed']['tier']);
+        $this->assertSame('ROLE_ADMIN', $links['messenger_failed']['role']);
+        $this->assertSame('description.messenger_failed', $links['messenger_failed']['description']);
+    }
+
     // The site link uses the site's own "name"/"url" configs (name passed as a translation parameter so the "Site :" prefix stays translated), opens in a new tab, and is pinned to always stay at the very bottom of the links section (see MenuBuilder::sortAlphabetically)
     public function testGetLinksExposesThePinnedSiteLinkUsingItsNameAndUrlConfigs(): void
     {

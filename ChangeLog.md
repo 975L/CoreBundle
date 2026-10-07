@@ -1,5 +1,41 @@
 # ChangeLog
 
+## v1.58.4
+
+Media players fetch nothing with the page, theme and Play Store tours
+
+### UiBundle
+
+- `SvgTextDetector::drawsText()` ignores text whose font the SVG embeds as a data: url (07/10/2026)
+- `SvgTextDetector` still reports text naming no family of its own beside an embedded font (07/10/2026)
+- `SvgTextDetector` matches embedded families without case and after a `local()` source (07/10/2026)
+- `SvgTextDetector::fontFamilies()` leaves out the embedded families (07/10/2026)
+- A primary too light to be read on the page gets a darkened `--c975l-color-primary-ink`, read by `--primary-ink` (07/10/2026)
+- `--c975l-color-primary-ink` is measured against `theme-color-background` (07/10/2026)
+- Scaffolded `ui.css` shows `--primary-ink` reading `--c975l-color-primary-ink` (07/10/2026)
+- Added the `mediaPreload` controller, raising a player's preload to metadata once on screen (07/10/2026)
+- `Video` component always sets `preload="none"`, poster or not (07/10/2026)
+- `Audio` component sets `preload="none"` and mounts `mediaPreload` (07/10/2026)
+- `Hero` background video sets `preload="none"` instead of `auto` (07/10/2026)
+- `heroVideo` controller fetches the first frame on screen under reduced motion or a refused play (07/10/2026)
+- Added the `ui-pwa-play-store` and `ui-theme-colors` guided projects (07/10/2026)
+- Guided config value steps highlight `[data-guided-config-value]` instead of `#Config_value` (07/10/2026)
+- `ui-pwa-setup` steps name the app description and the screenshots (07/10/2026)
+- Added cases to `SvgTextDetectorTest`, `ThemeVariablesCssListenerTest` and `HeroVideoMotionTest` (07/10/2026)
+- Updated `VideoPreloadTest`, `AudioPreloadTest` and `HeroVideoBackgroundTest` (07/10/2026)
+- Updated `UiGuidedProjectProviderTest` and `ScaffoldThemeTest` (07/10/2026)
+- Added `MediaPreloadControllerTest` (07/10/2026)
+- Updated the readme and the `c975l-ui-assets` skill (07/10/2026)
+
+### ConfigBundle
+
+- Accessibility and content quality health checks keep 4 requests in flight instead of 10 (07/10/2026)
+- `AccessibilityHealthCheckProvider` reads `ContentQualityAnalyzer::BATCH_SIZE` (07/10/2026)
+- Added the failed messages link under "Avancé" (07/10/2026)
+- Corrected the `config-not-found` and `config-health-check` guided step texts (07/10/2026)
+- Updated `AccessibilityHealthCheckProviderTest` and `MenuProviderTest` (07/10/2026)
+- Updated the readme and the `c975l-operations` skill (07/10/2026)
+
 ## v1.58.3
 
 Accessibility and seo files health checks made exhaustive
@@ -97,9 +133,6 @@ First block prioritized as LCP, metas cut by excerpt
 - Added the `excerpt` Twig filter, cutting a plain text on a word with an ellipsis (07/10/2026)
 - The meta `description` and `og:description` are now cut to 160 characters on a word, instead of the whole summary and a mid-word cut at 150 (07/10/2026)
 - Added the `excerpt` cases to `TrixExtensionTest`, updated `MinimalLayoutTest` (07/10/2026)
-
-### UiBundle
-
 - `render_block()` takes a `priority` argument, cached under its own key (07/10/2026)
 - `Blocks:Blocks` renders its first block with `priority` (07/10/2026)
 - `image` and `video` adapters pass `priority` to their component (07/10/2026)

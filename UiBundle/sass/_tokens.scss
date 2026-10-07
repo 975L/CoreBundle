@@ -158,8 +158,8 @@
         --label-color: color-mix(in srgb, var(--text) 70%, var(--background));
         --link-color: var(--primary-ink);
         --primary: var(--c975l-color-primary, var(--button-background-primary));
-        // Where --primary has to be read *against* the page instead of painting it: a surtitle, a link, a "Voir" on a card, the dots of a slider. Its own token because the two roles part ways as soon as the page goes dark - there --primary stays the dark flat a button and a band need, and a deep brand colour used as an ink on that same dark ground reads at 1.4:1. SiteBundle lightens this one alone in its dark palette, which is why every rule painting with --primary and not on it reads it through here. The default is --primary itself, so a light page is unchanged and a site setting nothing keeps exactly what it had
-        --primary-ink: var(--primary);
+        // Where --primary has to be read *against* the page instead of painting it: a surtitle, a link, a "Voir" on a card, the dots of a slider. Its own token because the two roles part ways as soon as the page goes dark - there --primary stays the dark flat a button and a band need, and a deep brand colour used as an ink on that same dark ground reads at 1.4:1. SiteBundle lightens this one alone in its dark palette, which is why every rule painting with --primary and not on it reads it through here. The default is --primary itself, darkened by the back-office when too light to be read on the page (see ThemeVariablesCssListener::primaryInkLines())
+        --primary-ink: var(--c975l-color-primary-ink, var(--primary));
         --radius-btn: 5px;
         --radius-card: 10px;
         --radius-panel: 16px;

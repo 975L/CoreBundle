@@ -25,6 +25,7 @@ const LAZY_CONTROLLERS = {
     infiniteScroll: () => import('./js/infinite-scroll.js'),
     'legal-model-edit': () => import('./js/legal-model-edit.js'),
     matomo: () => import('./js/matomo.js'),
+    mediaPreload: () => import('./js/media-preload.js'),
     password: () => import('./js/password.js'),
     pwa: () => import('./js/pwa.js'),
     readmore: () => import('./js/readmore.js'),

@@ -82,6 +82,10 @@
                 <source>description.guided_project_ui_media_add</source>
                 <target>Subir una imagen directamente a la biblioteca de medios, lista para elegirse desde cualquier block.</target>
             </trans-unit>
+            <trans-unit id="JktcV6.">
+                <source>description.guided_project_ui_pwa_play_store</source>
+                <target>Vincular el sitio a su aplicación Android publicada en Play Store, que lo muestra entonces sin barra de direcciones.</target>
+            </trans-unit>
             <trans-unit id="8_mk_Af">
                 <source>description.guided_project_ui_pwa_setup</source>
                 <target>Hacer el sitio instalable en un teléfono o un ordenador, sin pasar por una tienda.</target>
@@ -93,6 +97,10 @@
             <trans-unit id="GHBZCNG">
                 <source>description.guided_project_ui_site_graphic</source>
                 <target>Favicon, logotipo, imagen para compartir: el puñado de archivos por los que se reconoce un sitio, subidos de una vez por todas.</target>
+            </trans-unit>
+            <trans-unit id="iRWj.uH">
+                <source>description.guided_project_ui_theme_colors</source>
+                <target>El color de la marca, para una página clara y para una oscura.</target>
             </trans-unit>
             <trans-unit id="VoJ0CnM">
                 <source>description.guided_step_ui_ai_assistant_action</source>
@@ -414,17 +422,37 @@
                 <source>description.guided_step_ui_media_pick</source>
                 <target>La miniatura abre su propia ficha. Un gráfico global del sitio (favicon, logotipo…) abre en cambio la pantalla «Gráficos del sitio», donde se editan esos.</target>
             </trans-unit>
+            <trans-unit id="O0EG6hJ">
+                <source>description.guided_step_ui_pwa_play_store_entry</source>
+                <target>Empiece por « Paquete de la aplicación Android ».</target>
+            </trans-unit>
+            <trans-unit id="WAPi0Jt">
+                <source>description.guided_step_ui_pwa_play_store_fingerprint</source>
+                <target>Haga lo mismo con « Huella de la aplicación Android »: Play Console la muestra en Integridad de la aplicación. Ambas se publican en /.well-known/assetlinks.json, que demuestra que el sitio y la aplicación van juntos.</target>
+            </trans-unit>
+            <trans-unit id="RBIeZ_2">
+                <source>description.guided_step_ui_pwa_play_store_open</source>
+                <target>Dos entradas vinculan el sitio con la aplicación: « Paquete de la aplicación Android » y « Huella de la aplicación Android ». Antes, el sitio debe hacerse instalable.</target>
+            </trans-unit>
+            <trans-unit id="3fKA2uY">
+                <source>description.guided_step_ui_pwa_play_store_screenshots</source>
+                <target>Las capturas de la aplicación se suben en los gráficos del sitio, como « Captura de la aplicación », o se generan con el comando c975l:ui:app-screenshots.</target>
+            </trans-unit>
+            <trans-unit id="pQJIoS8">
+                <source>description.guided_step_ui_pwa_play_store_value</source>
+                <target>Escríbalo tal como lo muestra Play Console, por ejemplo com.ejemplo.app.</target>
+            </trans-unit>
             <trans-unit id="j9kKdun">
                 <source>description.guided_step_ui_pwa_setup_entry</source>
                 <target>Empiece por « Aplicación web instalable ».</target>
             </trans-unit>
             <trans-unit id="JjVQ08Y">
                 <source>description.guided_step_ui_pwa_setup_icon</source>
-                <target>El navegador solo ofrece la instalación con el icono de aplicación de 512 px: súbalo en los gráficos del sitio. Mientras falte, el panel lo indica.</target>
+                <target>El navegador solo ofrece la instalación con el icono de aplicación de 512 px: súbalo en los gráficos del sitio. Mientras falte, el panel lo indica. Las capturas también se suben allí, como « Captura de la aplicación », o se generan con el comando c975l:ui:app-screenshots.</target>
             </trans-unit>
             <trans-unit id="Wa.5cYm">
                 <source>description.guided_step_ui_pwa_setup_open</source>
-                <target>La entrada « Aplicación web instalable » la enciende. El nombre corto bajo el icono y la página que recibe lo compartido son opcionales.</target>
+                <target>La entrada « Aplicación web instalable » la enciende. El nombre corto bajo el icono y la página que recibe lo compartido son opcionales; « Descripción de la aplicación » también, pero con las capturas da un diálogo de instalación como el de una tienda.</target>
             </trans-unit>
             <trans-unit id=".P5FcW.">
                 <source>description.guided_step_ui_pwa_setup_value</source>
@@ -469,6 +497,22 @@
             <trans-unit id="3m_c5Tb">
                 <source>description.guided_step_ui_site_graphic_pick</source>
                 <target>Un botón por cada gráfico que el sitio aún no tiene, que abre el formulario de subida con su rol ya elegido. ¿Están todos ya colocados? Edite entonces el que quiera reemplazar.</target>
+            </trans-unit>
+            <trans-unit id="bro1sGu">
+                <source>description.guided_step_ui_theme_colors_dark</source>
+                <target>Haga lo mismo con « Color primario (modo oscuro) », un tono más claro, ya que un color de marca intenso se lee mal en una página oscura. Vacío, se aplica el color primario.</target>
+            </trans-unit>
+            <trans-unit id="uh76wNF">
+                <source>description.guided_step_ui_theme_colors_entry</source>
+                <target>Empiece por « Color primario ».</target>
+            </trans-unit>
+            <trans-unit id="5U_G4dT">
+                <source>description.guided_step_ui_theme_colors_open</source>
+                <target>« Color primario » pinta los botones, las bandas, los títulos y los enlaces. « Color primario (modo oscuro) » lo sustituye en una página oscura.</target>
+            </trans-unit>
+            <trans-unit id="dH.tMM.">
+                <source>description.guided_step_ui_theme_colors_value</source>
+                <target>Escríbalo, por ejemplo #0a2d6b. Si es demasiado claro para leerse sobre el fondo de la página, se oscurece solo para los enlaces y los títulos; botones y bandas conservan el suyo.</target>
             </trans-unit>
             <trans-unit id="emqi7.W">
                 <source>description.legal_customize</source>
@@ -2542,6 +2586,10 @@
                 <source>label.guided_project_ui_media_add</source>
                 <target>Añadir una imagen a la biblioteca</target>
             </trans-unit>
+            <trans-unit id="BglUgtV">
+                <source>label.guided_project_ui_pwa_play_store</source>
+                <target>Vincular la aplicación de Play Store</target>
+            </trans-unit>
             <trans-unit id="g8R4XN6">
                 <source>label.guided_project_ui_pwa_setup</source>
                 <target>Hacer el sitio instalable</target>
@@ -2553,6 +2601,10 @@
             <trans-unit id="42UrnqR">
                 <source>label.guided_project_ui_site_graphic</source>
                 <target>Colocar los gráficos propios del sitio</target>
+            </trans-unit>
+            <trans-unit id="nLPO1rp">
+                <source>label.guided_project_ui_theme_colors</source>
+                <target>Elegir los colores del sitio</target>
             </trans-unit>
             <trans-unit id="71qjK16">
                 <source>label.guided_step_ui_ai_assistant_action</source>
@@ -2918,6 +2970,30 @@
                 <source>label.guided_step_ui_media_save</source>
                 <target>Guardar el medio</target>
             </trans-unit>
+            <trans-unit id="us5QPKm">
+                <source>label.guided_step_ui_pwa_play_store_entry</source>
+                <target>Abrir el paquete</target>
+            </trans-unit>
+            <trans-unit id="jBJyIZj">
+                <source>label.guided_step_ui_pwa_play_store_fingerprint</source>
+                <target>La huella</target>
+            </trans-unit>
+            <trans-unit id="ys84SzU">
+                <source>label.guided_step_ui_pwa_play_store_open</source>
+                <target>El grupo Interfaz de los ajustes</target>
+            </trans-unit>
+            <trans-unit id="BQR5QYz">
+                <source>label.guided_step_ui_pwa_play_store_save</source>
+                <target>Guardar</target>
+            </trans-unit>
+            <trans-unit id="Psef4sB">
+                <source>label.guided_step_ui_pwa_play_store_screenshots</source>
+                <target>Las capturas</target>
+            </trans-unit>
+            <trans-unit id="rqC3Sff">
+                <source>label.guided_step_ui_pwa_play_store_value</source>
+                <target>El nombre del paquete</target>
+            </trans-unit>
             <trans-unit id="q9dT27u">
                 <source>label.guided_step_ui_pwa_setup_entry</source>
                 <target>Abrir la entrada</target>
@@ -2985,6 +3061,26 @@
             <trans-unit id="bKv1nui">
                 <source>label.guided_step_ui_site_graphic_save</source>
                 <target>Guardar</target>
+            </trans-unit>
+            <trans-unit id="SRmD0rd">
+                <source>label.guided_step_ui_theme_colors_dark</source>
+                <target>El modo oscuro</target>
+            </trans-unit>
+            <trans-unit id="3h554y8">
+                <source>label.guided_step_ui_theme_colors_entry</source>
+                <target>Abrir el color primario</target>
+            </trans-unit>
+            <trans-unit id="qScTky2">
+                <source>label.guided_step_ui_theme_colors_open</source>
+                <target>El grupo Tema de los ajustes</target>
+            </trans-unit>
+            <trans-unit id="kASyg3_">
+                <source>label.guided_step_ui_theme_colors_save</source>
+                <target>Guardar</target>
+            </trans-unit>
+            <trans-unit id="0AG.3.Y">
+                <source>label.guided_step_ui_theme_colors_value</source>
+                <target>El color</target>
             </trans-unit>
             <trans-unit id="njHadGB">
                 <source>label.health_check_advice_legal_model_drift</source>

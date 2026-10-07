@@ -3,9 +3,14 @@
         "date": "2026-10-07",
         "description": [
             {
-                "en": "Videos with a cover image no longer slow down the page before you press play.",
-                "fr": "Les vidéos dotées d'une image de couverture ne ralentissent plus la page avant d'appuyer sur lecture.",
-                "es": "Los vídeos con imagen de portada ya no ralentizan la página antes de pulsar reproducir."
+                "en": "Videos no longer slow down the page before you press play, with or without a cover image.",
+                "fr": "Les vidéos ne ralentissent plus la page avant d'appuyer sur lecture, avec ou sans image de couverture.",
+                "es": "Los vídeos ya no ralentizan la página antes de pulsar reproducir, con o sin imagen de portada."
+            },
+            {
+                "en": "An SVG image carrying its own font no longer triggers the text warning on upload.",
+                "fr": "Une image SVG qui embarque sa propre police ne déclenche plus l'avertissement sur le texte au téléversement.",
+                "es": "Una imagen SVG que incluye su propia fuente ya no muestra el aviso sobre el texto al subirla."
             },
             {
                 "en": "Replacing a font file in the back office now really saves the new one.",
@@ -31,6 +36,16 @@
                 "en": "The first picture of a page now shows up sooner.",
                 "fr": "La première image d'une page s'affiche désormais plus tôt.",
                 "es": "La primera imagen de una página aparece ahora antes."
+            },
+            {
+                "en": "A brand colour too light to be read now gets a darker shade for links and headings on its own, buttons keeping yours.",
+                "fr": "Une couleur de marque trop claire pour être lue reçoit d'elle-même une teinte plus foncée pour les liens et les titres, les boutons gardant la vôtre.",
+                "es": "Un color de marca demasiado claro para leerse recibe por sí solo un tono más oscuro para los enlaces y los títulos, y los botones conservan el suyo."
+            },
+            {
+                "en": "Two new guided projects: choosing the site's colours, and linking the Play Store app.",
+                "fr": "Deux nouveaux projets guidés : choisir les couleurs du site, et relier l'application du Play Store.",
+                "es": "Dos nuevos proyectos guiados: elegir los colores del sitio y vincular la aplicación de Play Store."
             }
         ]
     },
