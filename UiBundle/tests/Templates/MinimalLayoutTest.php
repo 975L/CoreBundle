@@ -45,6 +45,12 @@ class MinimalLayoutTest extends TestCase
         $this->assertStringContainsString('<meta property="og:image"', $layout);
     }
 
+    // The site's name only follows a title short enough to keep it, a search engine cutting past 65 characters
+    public function testTheSiteNameIsAppendedOnlyWithinTheTitleLength(): void
+    {
+        $this->assertStringContainsString("siteName and (title ~ ' - ' ~ siteName)|length <= 65 ? title ~ ' - ' ~ siteName : title", $this->layout());
+    }
+
     // Without these a link shared on a social network renders as a bare url
     public function testTheShareTagsAreRendered(): void
     {

@@ -168,7 +168,7 @@ Any `/management` form can also be opened straight on one of its fields by addin
 
 | Variable | What it does |
 |---|---|
-| `title` | The `<h1>` the `heading` block prints, and the `<title>`/`og:title`, suffixed with the site name |
+| `title` | The `<h1>` the `heading` block prints, and the `<title>`/`og:title`, suffixed with the site name while the whole stays within 65 characters |
 | `headingDisplayed` | `false` keeps the title in the tab and out of the page |
 | `robots` | The `robots` meta. `index, follow` by default, `noindex, follow` on an error page (`status_code >= 400`) - set it yourself on a page not worth finding, as the review form does |
 | `summarySocialNetwork` | The `description` meta and `og:description`, reduced to plain text so a rich-text column can feed it raw without publishing escaped markup |

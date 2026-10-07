@@ -1,5 +1,22 @@
 # ChangeLog
 
+## v1.57.8
+
+Page titles kept within what a search engine shows
+
+### ConfigBundle
+
+- A site-wide health check row's label now links to its edit screen (07/10/2026)
+- Updated the readme's `editUrl` paragraph (07/10/2026)
+- Added `HealthCheckLabelLinkTest` (07/10/2026)
+
+### UiBundle
+
+- The site's name is no longer appended to a page title when the whole would exceed 65 characters (07/10/2026)
+- `Audio` component preloads its metadata only (07/10/2026)
+- Updated the readme and the `c975l-ui-assets` skill (07/10/2026)
+- Added the title case to `MinimalLayoutTest`, added `AudioPreloadTest` (07/10/2026)
+
 ## v1.57.7
 
 First block prioritized as LCP, metas cut by excerpt

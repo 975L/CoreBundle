@@ -71,7 +71,7 @@ or loses SiteBundle without a template changing. Nothing in the head is written 
 
 | Variable | What it does |
 |---|---|
-| `title` | The `<h1>` the `heading` block prints, and the `<title>`/`og:title`, suffixed with the site name |
+| `title` | The `<h1>` the `heading` block prints, and the `<title>`/`og:title`, suffixed with the site name while the whole stays within 65 characters |
 | `headingDisplayed` | `false` keeps the title in the tab and out of the page |
 | `robots` | The `robots` meta - `index, follow` by default, `noindex, follow` on an error page. Set it on a page not worth finding |
 | `summarySocialNetwork` | The `description` meta and `og:description`, reduced to plain text and cut to 160 characters on a word (`excerpt`) |

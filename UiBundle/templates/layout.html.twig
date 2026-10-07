@@ -44,7 +44,8 @@
 {% endif %}
 
 {% set siteName = config('site-name') %}
-{% set pageTitle = title is defined and title != '' ? (siteName ? title ~ ' - ' ~ siteName : title) : siteName %}
+{# The site's name is appended only while the whole stays within 65 characters (see ContentQualityAnalyzer::TITLE_MAX_LENGTH): past that a search engine cuts the title anyway, and it would rather cut the page's own words than the site's name #}
+{% set pageTitle = title is defined and title != '' ? (siteName and (title ~ ' - ' ~ siteName)|length <= 65 ? title ~ ' - ' ~ siteName : title) : siteName %}
 
 <!DOCTYPE html>
 {# "auto" leaves data-theme unset, so prefers-color-scheme takes over #}

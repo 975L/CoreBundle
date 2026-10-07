@@ -2385,7 +2385,7 @@ Make sure your bundle's `services.yaml` includes the `Management/` folder in its
 
 **Never call a slow/paid API from a controller** — `runChecks()` is only ever invoked from `c975l:health-check:run` (via `HealthCheckRunner`), so a page load never blocks on it. If your check needs an API key, read it via `ConfigServiceInterface` like any other config (see [Defining config entries for your bundle](#defining-config-entries-for-your-bundle) above) and degrade gracefully without one — either skip entirely (return `[]`) or, if the check is otherwise expected to be configured (see `c975l/site-bundle`'s own PageSpeed/WAVE providers), return a single explanatory row instead of one per page.
 
-`editUrl` is optional (omit or `null` for a row with no admin CRUD counterpart, e.g. a site-wide check) — the admin edit screen for the entity behind that row (e.g. SiteBundle's Page edit screen), shown on the Health check table as a pencil link next to the tested url.
+`editUrl` is optional (omit or `null` for a row with no admin CRUD counterpart, e.g. a site-wide check) — the admin edit screen for the entity behind that row (e.g. SiteBundle's Page edit screen), shown on the Health check table as a pencil link next to the tested url; on a site-wide row, the label itself leads there too.
 
 ### Scheduling a provider
 

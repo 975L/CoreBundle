@@ -53,7 +53,12 @@
                     {# The inner span (not the <td> itself) is what JS toggles (health-check-table.js#updateGrouping) when this row's url repeats the previous visible row's - keeps the <td> itself always present so the table's column alignment survives, and re-evaluated after every sort/filter since rowspan can't survive the table's client-side row reordering #}
                     <td>
                         <span data-health-check-table-target="label">
-                            <a href="{{ result.url }}" target="_blank" rel="noopener">{{ result.label ?: result.url }}</a>
+                            {# A site-wide row's url is often a mere key (eg. "https://site/#shipping-grid"), so its label leads to the back-office screen where it gets fixed when there is one #}
+                            {% if not (group ?? true) and result.editUrl %}
+                                <a href="{{ result.editUrl }}">{{ result.label ?: result.url }}</a>
+                            {% else %}
+                                <a href="{{ result.url }}" target="_blank" rel="noopener">{{ result.label ?: result.url }}</a>
+                            {% endif %}
                             {% if result.editUrl %}
                                 <a href="{{ result.editUrl }}" class="health-check-edit-link" title="{{ 'label.health_check_edit_page'|trans({}, 'config') }}"><i class="fa fa-pencil"></i></a>
                             {% endif %}
