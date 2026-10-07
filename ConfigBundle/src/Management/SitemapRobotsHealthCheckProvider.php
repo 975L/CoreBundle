@@ -18,7 +18,7 @@ use c975L\ConfigBundle\Service\SiteUrlResolver;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 // Cross-checks what the site hands to search engines against what it forbids them: every url its sitemaps declare, tested against the robots.txt actually deployed. SeoFilesHealthCheckProvider only catches the blanket "Disallow: /" under "User-agent: *" - a rule scoped to a path keeps declared urls out of the results just as effectively, and silently, which is what Search Console reports as "Blocked by robots.txt" on urls the sitemap itself declares. A contradiction the site states about itself, like the noindex ContentQualityAnalyzer looks for, and one nothing else can see: the page answers 200 and reads perfectly well to anyone but a crawler
-class SitemapRobotsHealthCheckProvider implements HealthCheckProviderInterface
+class SitemapRobotsHealthCheckProvider implements HealthCheckExhaustiveInterface
 {
     // Checked once for the whole site, not once per page: HealthCheckController lists this kind in SITE_WIDE_KINDS
     public const KIND = 'sitemap-robots';
@@ -45,7 +45,7 @@ class SitemapRobotsHealthCheckProvider implements HealthCheckProviderInterface
             return [];
         }
 
-        // A private site declares no url at all (see SitemapWriter) and closes robots.txt on purpose, so there is no contradiction to find - SeoFilesHealthCheckProvider already reports the closed file as the expected state
+        // A private site declares no url at all (see SitemapWriter) and closes robots.txt on purpose, so there is no contradiction to find - SeoFilesHealthCheckProvider already reports the closed file as the expected state, and the empty run clears the rows recorded while the site was still public (see HealthCheckExhaustiveInterface)
         if ((bool) $this->configService->get('seo-robots-private')) {
             return [];
         }
@@ -66,7 +66,7 @@ class SitemapRobotsHealthCheckProvider implements HealthCheckProviderInterface
         return $this->crossCheck($robotsUrl, $file['content'], (string) parse_url($siteUrl, \PHP_URL_HOST));
     }
 
-    // The urls the site's own robots.txt refuses, one row each, plus the summary row carrying the count either way - a check whose light goes out entirely when it passes would be indistinguishable from one that never ran
+    // The urls the site's own robots.txt refuses, one row each, plus the summary row carrying the count either way - a check whose light goes out entirely when it passes would be indistinguishable from one that never ran. An url let through again gets no row, and HealthCheckRunner drops its last ERROR rather than keep it as the current state
     private function crossCheck(string $robotsUrl, string $content, string $siteHost): array
     {
         // Read as Googlebot, not as the wildcard group: a file scoping its rules to "User-agent: Googlebot" would otherwise be cross-checked against rules that don't apply to it, and for() already falls back to the wildcard group when the file never names Googlebot - one pass covers both. It is also the crawler whose "Blocked by robots.txt" message this check reproduces

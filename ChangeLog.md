@@ -1,5 +1,13 @@
 # ChangeLog
 
+## v1.57.3
+
+Stale robots contradictions cleared on the next run
+
+### ConfigBundle
+
+- `SitemapRobotsHealthCheckProvider` implements `HealthCheckExhaustiveInterface` (07/10/2026)
+
 ## v1.57.2
 
 Neutral texts kept as they are by the content translation

@@ -11,6 +11,7 @@
 namespace c975L\ConfigBundle\Tests\Management;
 
 use c975L\ConfigBundle\Entity\HealthCheckResult;
+use c975L\ConfigBundle\Management\HealthCheckExhaustiveInterface;
 use c975L\ConfigBundle\Management\SitemapProviderInterface;
 use c975L\ConfigBundle\Management\SitemapRobotsHealthCheckProvider;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
@@ -78,6 +79,12 @@ class SitemapRobotsHealthCheckProviderTest extends TestCase
     public function testGetKindReturnsSitemapRobots(): void
     {
         $this->assertSame('sitemap-robots', $this->createProvider(null, [])->getKind());
+    }
+
+    // Its run lists every blocked url, so a row it no longer returns is stale and must be dropped rather than kept as the current state
+    public function testIsExhaustive(): void
+    {
+        $this->assertInstanceOf(HealthCheckExhaustiveInterface::class, $this->createProvider(null, []));
     }
 
     public function testRunChecksReturnsEmptyArrayWithoutASiteUrl(): void
