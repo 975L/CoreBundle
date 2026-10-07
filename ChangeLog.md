@@ -1,5 +1,13 @@
 # ChangeLog
 
+## v1.58.1
+
+Health check findings of 07/10/2026
+
+### ConfigBundle
+
+### UiBundle
+
 ## v1.58
 
 Web app made ready for the Play Store, stored images optimized
