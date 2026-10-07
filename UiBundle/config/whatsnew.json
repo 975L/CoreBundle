@@ -3,6 +3,11 @@
         "date": "2026-10-07",
         "description": [
             {
+                "en": "Videos with a cover image no longer slow down the page before you press play.",
+                "fr": "Les vidéos dotées d'une image de couverture ne ralentissent plus la page avant d'appuyer sur lecture.",
+                "es": "Los vídeos con imagen de portada ya no ralentizan la página antes de pulsar reproducir."
+            },
+            {
                 "en": "Replacing a font file in the back office now really saves the new one.",
                 "fr": "Remplacer le fichier d'une police dans le back-office enregistre désormais bien le nouveau.",
                 "es": "Sustituir el archivo de una fuente en el back-office guarda ahora realmente el nuevo."

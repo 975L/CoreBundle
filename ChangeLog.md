@@ -1,5 +1,13 @@
 # ChangeLog
 
+## v1.57.6
+
+Video preload set by the presence of a poster
+
+### UiBundle
+
+- `Video` component preloads nothing with a poster, its metadata without one (07/10/2026)
+
 ## v1.57.5
 
 Replaced font file stored on upload
