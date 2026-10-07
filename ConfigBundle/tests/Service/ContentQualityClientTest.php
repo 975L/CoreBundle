@@ -217,6 +217,15 @@ class ContentQualityClientTest extends TestCase
         $this->assertSame([], $client->analyze('https://example.com/pages/home/')['imagesWithoutAlt']);
     }
 
+    // A card's cover link, hidden because the card's title links to the same page: everything inside it is out of the accessibility tree already
+    public function testAnalyzeSkipsAnEmptyAltInsideAHiddenLink(): void
+    {
+        $html = '<html><body><h1>T</h1><a href="/albums/one" tabindex="-1" aria-hidden="true"><img src="cover.webp" alt=""></a></body></html>';
+        $client = new ContentQualityClient($this->htmlResponse($html));
+
+        $this->assertSame([], $client->analyze('https://example.com/pages/home/')['imagesWithoutAlt']);
+    }
+
     // The site logo sitting next to the site name inside the same link: the link is named by its own text, so an alt there would have a screen reader announce that name twice (see SiteBundle's Navbar)
     public function testAnalyzeSkipsAnEmptyAltInsideALinkNamedByItsText(): void
     {

@@ -510,9 +510,85 @@ class VichImageResizeListenerTest extends TestCase
     // --- helpers -------------------------------------------------------------------------------------------
 
     // The watermark it is handed stamps nothing unless a signature was uploaded for one of the two site-wide roles, which is what every test but the watermarking ones wants (see ImageWatermarkerTest for the stamping itself)
-    /**
-     * @param array<string, string> $configs
-     */
+    // --- stored files ---------------------------------------------------------------------------------------
+
+    // A jpeg written under a ".webp" name before its entity opted in is converted and brought down to the entity's width, in place
+    public function testOptimizeStoredImageConvertsAndResizesAFileStoredWide(): void
+    {
+        $path = $this->projectDir . '/public/photo.webp';
+        imagejpeg(imagecreatetruecolor(3000, 1500), $path);
+        $media = new Media()->setFilename('photo.webp');
+
+        $this->assertTrue($this->createListener()->optimizeStoredImage($media, $path));
+
+        $size = getimagesize($path);
+        $this->assertSame(IMAGETYPE_WEBP, $size[2]);
+        $this->assertSame($media->getImageWidth(), $size[0]);
+        $this->assertSame((string) $media->getImageWidth(), $media->getWidth());
+    }
+
+    public function testOptimizeStoredImageLeavesAWebpAlreadyInLineAlone(): void
+    {
+        $path = $this->projectDir . '/public/small.webp';
+        imagewebp(imagecreatetruecolor(300, 200), $path);
+        $before = (string) file_get_contents($path);
+
+        $this->assertFalse($this->createListener()->optimizeStoredImage(new Media()->setFilename('small.webp'), $path));
+        $this->assertSame($before, file_get_contents($path));
+    }
+
+    // A dry run answers the same question without touching the file
+    public function testOptimizeStoredImageWritesNothingWhenAskedNotTo(): void
+    {
+        $path = $this->projectDir . '/public/photo.webp';
+        imagejpeg(imagecreatetruecolor(3000, 1500), $path);
+        $before = (string) file_get_contents($path);
+
+        $this->assertTrue($this->createListener()->optimizeStoredImage(new Media()->setFilename('photo.webp'), $path, false));
+        $this->assertSame($before, file_get_contents($path));
+    }
+
+    // Its derivatives were cut from an upload that is gone, so a multi-size entity is converted at its own width and never resized
+    public function testOptimizeStoredImageOnlyConvertsAMultiSizeImage(): void
+    {
+        $path = $this->projectDir . '/public/multi-size.webp';
+        imagepng(imagecreatetruecolor(1200, 800), $path);
+
+        $this->assertTrue($this->createListener()->optimizeStoredImage(new MultiSizeImageStub($path), $path));
+
+        $size = getimagesize($path);
+        $this->assertSame(IMAGETYPE_WEBP, $size[2]);
+        $this->assertSame(1200, $size[0]);
+        $this->assertFileDoesNotExist($this->projectDir . '/public/multi-size-thumb.webp');
+    }
+
+    public function testOptimizeStoredImageLeavesAMultiSizeWebpAloneWhateverItsWidth(): void
+    {
+        $path = $this->projectDir . '/public/multi-size.webp';
+        imagewebp(imagecreatetruecolor(1200, 800), $path);
+
+        $this->assertFalse($this->createListener()->optimizeStoredImage(new MultiSizeImageStub($path), $path));
+    }
+
+    // A fixed icon keeps the format its role asks for
+    public function testOptimizeStoredImageLeavesAFixedIconAlone(): void
+    {
+        $path = $this->projectDir . '/public/app-icon.png';
+        imagepng(imagecreatetruecolor(512, 512), $path);
+        $before = (string) file_get_contents($path);
+
+        $this->assertFalse($this->createListener()->optimizeStoredImage(new Media()->setRole(Media::ROLE_APP_ICON)->setFilename('app-icon.png'), $path));
+        $this->assertSame($before, file_get_contents($path));
+    }
+
+    public function testOptimizeStoredImageLeavesAFileThatIsNotARasterAlone(): void
+    {
+        $path = $this->projectDir . '/public/document.webp';
+        file_put_contents($path, '%PDF-1.4');
+
+        $this->assertFalse($this->createListener()->optimizeStoredImage(new Media()->setFilename('document.webp'), $path));
+    }
+
     private function createListener(?string $logo = null, array $configs = []): VichImageResizeListener
     {
         $parameterBag = $this->createStub(ParameterBagInterface::class);

@@ -158,6 +158,18 @@
                 <source>description.ui_pdf_weasyprint_path</source>
                 <target>Leave empty if the “weasyprint” command is found as it stands. On shared or managed hosting it is commonly installed in a Python environment of its own: state its full path then, for instance /home/clients/xxx/venv/bin/weasyprint.</target>
             </trans-unit>
+            <trans-unit id="FX2LelG">
+                <source>description.ui_pwa_android_fingerprint</source>
+                <target>SHA-256 fingerprint of the Android app's signing key, as the Play Console shows it (App integrity); several separated by commas. Published in /.well-known/assetlinks.json with the package name</target>
+            </trans-unit>
+            <trans-unit id=".tcnyxU">
+                <source>description.ui_pwa_android_package</source>
+                <target>Package name of the Android app published on the Play Store, for example com.example.app; no linked app when empty</target>
+            </trans-unit>
+            <trans-unit id="R5vo1zh">
+                <source>description.ui_pwa_description</source>
+                <target>One or two sentences saying what the app does, shown by Android in the install dialog next to the app screenshots (site graphics); 300 characters at most, none when empty</target>
+            </trans-unit>
             <trans-unit id="cJsJeMC">
                 <source>description.ui_pwa_enabled</source>
                 <target>Lets visitors install the site as an app on a phone or a computer, with a page shown when offline</target>
@@ -353,6 +365,18 @@
             <trans-unit id="KQWPYr_">
                 <source>label.ui_pdf_weasyprint_path</source>
                 <target>WeasyPrint command path</target>
+            </trans-unit>
+            <trans-unit id="KVl4cje">
+                <source>label.ui_pwa_android_fingerprint</source>
+                <target>Android app fingerprint</target>
+            </trans-unit>
+            <trans-unit id="YRjWeTQ">
+                <source>label.ui_pwa_android_package</source>
+                <target>Android app package</target>
+            </trans-unit>
+            <trans-unit id="YqeQIUh">
+                <source>label.ui_pwa_description</source>
+                <target>App description</target>
             </trans-unit>
             <trans-unit id="NsXpom2">
                 <source>label.ui_pwa_enabled</source>

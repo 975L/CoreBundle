@@ -1046,6 +1046,10 @@
                 <source>label.app_icon</source>
                 <target>App icon (512 px)</target>
             </trans-unit>
+            <trans-unit id="Gn_ANPq">
+                <source>label.app_screenshot</source>
+                <target>App screenshot</target>
+            </trans-unit>
             <trans-unit id="gBMbs0d">
                 <source>label.apple_touch_icon</source>
                 <target>Apple touch icon</target>

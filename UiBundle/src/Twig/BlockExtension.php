@@ -251,11 +251,23 @@ class BlockExtension
         // The medias' own texts, which live on the row and not in the data just translated: a card's title and text, a picture's caption and its alternative. Laid on the entities themselves, unmapped and read by the getters alone, so the templates below go on saying "media.label" (see Media::setTranslated)
         $this->mediaTranslator->apply($block->getMedias());
 
-        return $this->twig->render(
+        $html = $this->twig->render(
             $this->registry->getTemplate($block->getKind()),
             // "priority" only when set, read by the adapters whose picture can be the page's LCP element (blocks/Image, blocks/Video)
             ['block' => $block, 'anchor_id' => $this->buildAnchorId($data['anchor'] ?? null, $block->getId())] + ($priority ? ['priority' => true] : []) + $data
         );
+
+        return $priority ? $this->prioritizeFirstImage($html) : $html;
+    }
+
+    // The first picture of a block opening the page is fetched first and never lazily, whatever kind drew it - a slider, a banner, a collection's first card - without each template having to be told. An svg is passed over, an icon never being what the page is measured on. Inside the cache entry, whose key already carries the priority
+    private function prioritizeFirstImage(string $html): string
+    {
+        return (string) preg_replace_callback('/<img\b(?![^>]*\bsrc="[^"]*\.svg[?"])[^>]*>/', static function (array $matches): string {
+            $tag = str_replace('loading="lazy"', 'loading="eager"', $matches[0]);
+
+            return str_contains($tag, 'fetchpriority=') ? $tag : substr_replace($tag, ' fetchpriority="high"', 4, 0);
+        }, $html, 1);
     }
 
     // The links of the rendered html, read in the language the page is being read in: a call to action, a card's target, a word linked inside a rich text, a portfolio card's own url. Outside the cache like the nonce, and for the same reason: where a link leads depends on what another page says in that language and on the url the visitor asked for, neither of which this block's entry is keyed or tagged on (see InternalLinkLocalizerInterface)

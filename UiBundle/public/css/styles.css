@@ -6061,5 +6061,13 @@ span {
     padding: 8px 6px;
   }
 }
+@media (display-mode: standalone) {
+  body > footer,
+  .page-share,
+  a.pullDown,
+  a.backTop {
+    display: none;
+  }
+}
 
 /*# sourceMappingURL=styles.css.map */

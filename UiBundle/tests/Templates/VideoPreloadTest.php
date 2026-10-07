@@ -46,6 +46,15 @@ class VideoPreloadTest extends TestCase
         $this->assertStringNotContainsString('rel="preload"', $html);
     }
 
+    // Played by the heroVideo controller once on screen, never by the attribute that would fetch the whole file with the page
+    public function testAnAutoplayVideoIsLeftToTheControllerThatPlaysItOnScreen(): void
+    {
+        $html = $this->render(['src' => '/v.mp4', 'type' => 'video/mp4', 'autoplay' => true, 'muted' => true]);
+
+        $this->assertStringContainsString('data-controller="heroVideo"', $html);
+        $this->assertStringNotContainsString(' autoplay', $html);
+    }
+
     // The component alone, its two filters stubbed: only the <video> attributes are under test
     private function render(array $context): string
     {

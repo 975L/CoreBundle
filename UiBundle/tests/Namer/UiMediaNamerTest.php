@@ -10,6 +10,7 @@
 
 namespace c975L\UiBundle\Tests\Namer;
 
+use c975L\UiBundle\Contract\VichImageResizableInterface;
 use c975L\UiBundle\Contract\VichMediaNamableInterface;
 use c975L\UiBundle\Entity\Block;
 use c975L\UiBundle\Entity\Media;
@@ -209,7 +210,12 @@ class UiMediaNamerTest extends TestCase
     public function testGenericVichMediaNamableEntitySkipsSingletonHandling(): void
     {
         $namer = new UiMediaNamer(new AsciiSlugger());
-        $entity = new readonly class ($this->createFile('upload.gif', 'GIF89a' . str_repeat("\0", 20))) implements VichMediaNamableInterface {
+        $entity = new readonly class ($this->createFile('upload.gif', 'GIF89a' . str_repeat("\0", 20))) implements VichMediaNamableInterface, VichImageResizableInterface {
+            public function getImageWidth(): int
+            {
+                return 800;
+            }
+
             public function __construct(private File $file)
             {
             }
@@ -228,5 +234,28 @@ class UiMediaNamerTest extends TestCase
         $name = $namer->name($entity, $this->createMapping());
 
         $this->assertMatchesRegularExpression('#^custom/path-[a-z0-9]+\.webp$#', $name);
+    }
+
+    // An entity the resize pipeline never converts keeps its own extension: a ".webp" name over jpeg bytes is what left multi-megabyte pictures on the books' pages
+    public function testAnEntityThatIsNotResizedKeepsItsOwnExtension(): void
+    {
+        $namer = new UiMediaNamer(new AsciiSlugger());
+        $entity = new readonly class ($this->createFile('upload.gif', 'GIF89a' . str_repeat("\0", 20))) implements VichMediaNamableInterface {
+            public function __construct(private File $file)
+            {
+            }
+
+            public function getFile(): File
+            {
+                return $this->file;
+            }
+
+            public function getVichMediaPath(): string
+            {
+                return 'custom/path';
+            }
+        };
+
+        $this->assertMatchesRegularExpression('#^custom/path-[a-z0-9]+\.gif$#', $namer->name($entity, $this->createMapping()));
     }
 }

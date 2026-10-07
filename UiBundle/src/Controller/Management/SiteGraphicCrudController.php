@@ -51,11 +51,13 @@ class SiteGraphicCrudController extends AbstractCrudController
         Media::ROLE_WATERMARK_ON_LIGHT => 'label.watermark_on_light',
         Media::ROLE_WATERMARK_ON_DARK => 'label.watermark_on_dark',
         Media::ROLE_ERROR_IMAGE => 'label.error_image',
+        Media::ROLE_APP_SCREENSHOT => 'label.app_screenshot',
     ];
 
     // Roles allowed to have several rows (e.g. a pool of images picked at random), unlike the singleton graphics
     private const array REPEATABLE_ROLES = [
         Media::ROLE_ERROR_IMAGE,
+        Media::ROLE_APP_SCREENSHOT,
     ];
 
     // Query parameter carrying the role picked on the index (or in a dashboard alert), which pre-fills the "new" form - see missingRoles()

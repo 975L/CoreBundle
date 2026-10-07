@@ -11,6 +11,11 @@
                 "en": "The broken links list no longer fills up with robot visits, and a link disappears from it as soon as a redirect answers for it.",
                 "fr": "La liste des liens cassés ne se remplit plus des visites de robots, et un lien en disparaît dès qu'une redirection lui répond.",
                 "es": "La lista de enlaces rotos ya no se llena con visitas de robots, y un enlace desaparece de ella en cuanto una redirección le responde."
+            },
+            {
+                "en": "The health check no longer reports a missing image description on a picture already hidden from screen readers.",
+                "fr": "Le bilan de santé ne signale plus de description d'image manquante sur une image déjà masquée aux lecteurs d'écran.",
+                "es": "El control de salud ya no señala una descripción de imagen ausente en una imagen ya oculta a los lectores de pantalla."
             }
         ]
     },

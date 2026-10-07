@@ -158,6 +158,18 @@
                 <source>description.ui_pdf_weasyprint_path</source>
                 <target>À laisser vide si la commande « weasyprint » est trouvée telle quelle. Sur un hébergement mutualisé ou managé, elle est souvent installée dans un environnement Python à part : indiquez alors son chemin complet, par exemple /home/clients/xxx/venv/bin/weasyprint.</target>
             </trans-unit>
+            <trans-unit id="FX2LelG">
+                <source>description.ui_pwa_android_fingerprint</source>
+                <target>Empreinte SHA-256 de la clé de signature de l'application Android, telle que la Play Console l'affiche (Intégrité de l'application) ; plusieurs séparées par des virgules. Publiée dans /.well-known/assetlinks.json avec le nom du paquet</target>
+            </trans-unit>
+            <trans-unit id=".tcnyxU">
+                <source>description.ui_pwa_android_package</source>
+                <target>Nom du paquet de l'application Android publiée sur le Play Store, par exemple com.exemple.app ; aucune application liée si vide</target>
+            </trans-unit>
+            <trans-unit id="R5vo1zh">
+                <source>description.ui_pwa_description</source>
+                <target>Une ou deux phrases disant ce que fait l'application, affichées par Android dans la fenêtre d'installation avec les captures de l'application (graphismes du site) ; 300 caractères au plus, aucune si vide</target>
+            </trans-unit>
             <trans-unit id="cJsJeMC">
                 <source>description.ui_pwa_enabled</source>
                 <target>Permet d'installer le site comme une application sur un téléphone ou un ordinateur, avec une page affichée hors connexion</target>
@@ -353,6 +365,18 @@
             <trans-unit id="KQWPYr_">
                 <source>label.ui_pdf_weasyprint_path</source>
                 <target>Chemin de la commande WeasyPrint</target>
+            </trans-unit>
+            <trans-unit id="KVl4cje">
+                <source>label.ui_pwa_android_fingerprint</source>
+                <target>Empreinte de l'application Android</target>
+            </trans-unit>
+            <trans-unit id="YRjWeTQ">
+                <source>label.ui_pwa_android_package</source>
+                <target>Paquet de l'application Android</target>
+            </trans-unit>
+            <trans-unit id="YqeQIUh">
+                <source>label.ui_pwa_description</source>
+                <target>Description de l'application</target>
             </trans-unit>
             <trans-unit id="NsXpom2">
                 <source>label.ui_pwa_enabled</source>

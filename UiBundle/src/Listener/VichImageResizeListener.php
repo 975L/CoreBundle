@@ -110,6 +110,35 @@ class VichImageResizeListener
         }
     }
 
+    // Brings a stored file back in line with what an upload of it would give today, true once rewritten (or, with "$write" off, once it would be). A fixed icon is left alone, a multi-size or watermarked entity only converted, never resized, its derivatives having been cut from the upload
+    public function optimizeStoredImage(VichImageResizableInterface $entity, string $absolutePath, bool $write = true): bool
+    {
+        if (($entity instanceof Media && null !== $entity->getFixedIconSpec()) || !$this->isReadable($absolutePath)) {
+            return false;
+        }
+
+        $size = (array) getimagesize($absolutePath);
+        $isWebp = IMAGETYPE_WEBP === $size[2];
+        if ($isWebp && $size[0] <= $entity->getImageWidth()) {
+            return false;
+        }
+
+        $convertOnly = $entity instanceof VichMultiSizeImageInterface || $entity instanceof VichWatermarkableInterface;
+        if (($convertOnly && $isWebp) || !$write) {
+            return !($convertOnly && $isWebp);
+        }
+
+        if ($convertOnly) {
+            new Imagine()->open($absolutePath)->save($absolutePath, ['format' => 'webp', 'webp_quality' => 90]);
+        } else {
+            $this->processImage($entity, $absolutePath);
+        }
+
+        $this->storeDimensions($entity, $absolutePath);
+
+        return true;
+    }
+
     // Re-arms the clock the request is already running against, rather than lifting it: a single image that ran away still stops, and the ceiling an admin set stays the ceiling - only what it is counted against changes, from the whole batch to one file of it
     // Guarded on function_exists() because a host can put set_time_limit() on disable_functions, where function_exists() answers false and calling it would be a fatal of its own. A limit of 0 is left alone: that is the command line, on no clock at all, and setting 0 back would be lifting a limit rather than renewing one
     private function renewTimeLimit(): void

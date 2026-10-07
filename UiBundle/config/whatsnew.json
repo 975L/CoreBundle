@@ -11,6 +11,26 @@
                 "en": "Replacing a font file in the back office now really saves the new one.",
                 "fr": "Remplacer le fichier d'une police dans le back-office enregistre désormais bien le nouveau.",
                 "es": "Sustituir el archivo de una fuente en el back-office guarda ahora realmente el nuevo."
+            },
+            {
+                "en": "Your installed app now offers the full install dialog, with a description and screenshots you add as site graphics.",
+                "fr": "Votre application installable propose désormais la grande fenêtre d'installation, avec une description et des captures d'écran ajoutées dans les graphismes du site.",
+                "es": "Su aplicación instalable ofrece ahora el gran cuadro de instalación, con una descripción y capturas de pantalla añadidas en los gráficos del sitio."
+            },
+            {
+                "en": "Your site can now be published as an app on the Play Store, linked to it without the browser's address bar.",
+                "fr": "Votre site peut désormais être publié comme application sur le Play Store, reliée à lui sans la barre d'adresse du navigateur.",
+                "es": "Su sitio puede publicarse ahora como aplicación en Play Store, vinculada a él sin la barra de direcciones del navegador."
+            },
+            {
+                "en": "Videos playing by themselves only start once on screen, so pages load faster.",
+                "fr": "Les vidéos en lecture automatique ne démarrent qu'une fois à l'écran, pour des pages plus rapides.",
+                "es": "Los vídeos en reproducción automática solo empiezan una vez en pantalla, para páginas más rápidas."
+            },
+            {
+                "en": "The first picture of a page now shows up sooner.",
+                "fr": "La première image d'une page s'affiche désormais plus tôt.",
+                "es": "La primera imagen de una página aparece ahora antes."
             }
         ]
     },

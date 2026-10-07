@@ -153,6 +153,7 @@ class SiteGraphicCrudControllerTest extends TestCase
                 Media::ROLE_WATERMARK_ON_LIGHT,
                 Media::ROLE_WATERMARK_ON_DARK,
                 Media::ROLE_ERROR_IMAGE,
+                Media::ROLE_APP_SCREENSHOT,
             ],
             array_keys($choices)
         );

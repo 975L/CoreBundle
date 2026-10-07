@@ -10,6 +10,7 @@
 
 namespace c975L\UiBundle\Namer;
 
+use c975L\UiBundle\Contract\VichImageResizableInterface;
 use c975L\UiBundle\Contract\VichMediaNamableInterface;
 use c975L\UiBundle\Entity\Media;
 use Symfony\Component\Filesystem\Filesystem;
@@ -61,7 +62,8 @@ class UiMediaNamer implements NamerInterface
         }
 
         // A Page's or a UrlMetadata's own og-image is rasterized like the site-wide one, so an SVG upload is named webp here too
-        $extension = $object instanceof Media && $object->isOgImage() ? 'webp' : $this->determineExtension($file);
+        // ".webp" is only promised to an entity VichImageResizeListener converts: anything else would keep its jpeg or png bytes under a name that lies about them
+        $extension = $object instanceof Media && $object->isOgImage() ? 'webp' : $this->determineExtension($file, $object instanceof VichImageResizableInterface);
         $basePath = $object instanceof Media ? $this->resolveBasePath($object) : $object->getVichMediaPath();
 
         return $basePath . '-' . uniqid() . '.' . $extension;

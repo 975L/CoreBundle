@@ -48,6 +48,8 @@ class Media implements DrawableMediaInterface, VichImageResizableInterface, Vich
 
     // Site-wide but repeatable role: several rows share it (e.g. a pool of images picked at random), each gets its own filename
     public const ROLE_ERROR_IMAGE = 'error-image';
+    // The screens an installed web app shows in Android's install dialog (see PwaController), a phone in portrait read as "narrow"
+    public const ROLE_APP_SCREENSHOT = 'app-screenshot';
 
     private const array SINGLETON_ROLES = [
         self::ROLE_FAVICON,

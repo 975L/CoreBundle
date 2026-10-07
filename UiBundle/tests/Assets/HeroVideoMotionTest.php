@@ -48,6 +48,15 @@ class HeroVideoMotionTest extends TestCase
         $this->assertStringContainsString('removeEventListener("change"', $script);
     }
 
+    // Played only while on screen, so a video further down the page is not downloaded with it
+    public function testTheControllerPlaysOnlyWhileTheVideoIsOnScreen(): void
+    {
+        $script = $this->read(self::CONTROLLER_JS);
+
+        $this->assertStringContainsString('new IntersectionObserver(', $script);
+        $this->assertStringContainsString('this.observer.disconnect()', $script);
+    }
+
     // Lazily registered, and only for a document actually holding one - the identifier is what pairs the two halves
     public function testTheControllerIsRegisteredUnderTheIdentifierTheMarkupWrites(): void
     {

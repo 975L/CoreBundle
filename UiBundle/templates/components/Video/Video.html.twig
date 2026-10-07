@@ -15,8 +15,8 @@
     {% if priority and poster != '' %}<link rel="preload" as="image" href="{{ poster }}" fetchpriority="high">{% endif %}
     {% if caption and title is defined and title %}<{{ level }} class="video-title">{{ title }}</{{ level }}>{% endif %}
     {# "playsinline" always set, as on Hero's and Slider's <video>: without it iOS Safari takes playback fullscreen, breaking any layout counting on the video where it sits - and an autoplay there becomes a takeover of the screen #}
-    {# With a poster nothing is fetched before play; without one, the metadata gives a first frame rather than a black box - an autoplay loads whatever this says #}
-    <video controls playsinline preload="{{ poster != '' ? 'none' : 'metadata' }}" class="img img-responsive {{ class|default([])|join(' ') }}" {% if poster != '' %} poster="{{ poster }}" {% endif %} {% if autoplay %} autoplay {% endif %} {% if muted %} muted {% endif %} {% if loop %} loop {% endif %}  {% if width is defined and width != "" %} width="{{ width }}" {% endif %} {% if height is defined and height != "" %} height="{{ height }}" {% endif %}>
+    {# With a poster nothing is fetched before play, without one the metadata gives a first frame. "autoplay" is handed to the heroVideo controller, which plays it once on screen only, where the attribute would fetch the whole file with the page #}
+    <video controls playsinline preload="{{ poster != '' ? 'none' : 'metadata' }}" class="img img-responsive {{ class|default([])|join(' ') }}" {% if poster != '' %} poster="{{ poster }}" {% endif %} {% if autoplay %} data-controller="heroVideo" {% endif %} {% if muted %} muted {% endif %} {% if loop %} loop {% endif %}  {% if width is defined and width != "" %} width="{{ width }}" {% endif %} {% if height is defined and height != "" %} height="{{ height }}" {% endif %}>
         <source src="{{ src }}" type="{{ type }}">
         <p>{{ 'label.video_not_supported'|trans({}, "ui") }} <a href="{{ src }}">{{ 'label.download'|trans({}, "ui") }}</a></p>
     </video>

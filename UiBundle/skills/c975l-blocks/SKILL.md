@@ -178,9 +178,10 @@ their medias nor their slots — the owner's own row is all the request loads.
 - A run rendered by `Blocks:Blocks` without that entry (a footer, a navbar) goes through
   `defer_block_translations()`: nothing is read while every block is cached, and the first miss reads
   the whole run's translations in one query (`ContentTranslator::defer()`).
-- `Blocks:Blocks` renders its first block with `render_block(block, priority: true)`: the `image` and
-  `video` adapters receive `priority`, so the likeliest LCP picture is fetched first. That render is
-  cached under its own `block_render_<id>_priority` key.
+- `Blocks:Blocks` renders its first two blocks with `render_block(block, priority: true)`: the `image`
+  and `video` adapters receive `priority`, and `BlockExtension` rewrites the first non-svg `<img>` of
+  any kind into `loading="eager" fetchpriority="high"`, so the likeliest LCP picture is fetched first.
+  That render is cached under its own `block_render_<id>_priority` key.
 
 ### `{% cache %}` fragments share the same tags
 

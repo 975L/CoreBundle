@@ -1,0 +1,9 @@
+// Installed as an app (see PwaController), the site sheds what only a web page needs: the footer, the share band and the scroll buttons
+@media (display-mode: standalone) {
+    body > footer,
+    .page-share,
+    a.pullDown,
+    a.backTop {
+        display: none;
+    }
+}

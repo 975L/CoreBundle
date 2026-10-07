@@ -1,5 +1,32 @@
 # ChangeLog
 
+## v1.58
+
+Web app made ready for the Play Store, stored images optimized
+
+### ConfigBundle
+
+- An empty alt inside an `aria-hidden` ancestor is no longer reported as missing (07/10/2026)
+- Added the hidden link case to `ContentQualityClientTest` (07/10/2026)
+
+### UiBundle
+
+- Added the `ui_pwa_icon` route, cutting the 192px and maskable icons from the `app-icon` (07/10/2026)
+- Added the `/.well-known/assetlinks.json` route, from `ui-pwa-android-package` and `ui-pwa-android-fingerprint` (07/10/2026)
+- Added `ui-pwa-description` and the `app-screenshot` site graphic role to the manifest (07/10/2026)
+- The manifest declares its `id` and writes its colors in hexadecimal (07/10/2026)
+- Installed app hides the footer, the share band and the scroll buttons (07/10/2026)
+- Added the `c975l:ui:media-optimize` command, converting and resizing stored images in place (07/10/2026)
+- Added `VichImageResizeListener::optimizeStoredImage()` (07/10/2026)
+- `UiMediaNamer` names `.webp` only the files of a `VichImageResizableInterface` entity (07/10/2026)
+- `Blocks:Blocks` gives `priority` to its first two blocks (07/10/2026)
+- A priority block gets `fetchpriority="high"` on its first non-svg image, whatever its kind (07/10/2026)
+- `Video` autoplay goes through the `heroVideo` controller instead of the attribute (07/10/2026)
+- `heroVideo` plays a video only while on screen (07/10/2026)
+- An untitled `ai_search` is wrapped in a `div` instead of a `section` (07/10/2026)
+- Updated the readme and the `c975l-media`, `c975l-ui-assets` and `c975l-blocks` skills (07/10/2026)
+- Added `MediaOptimizeCommandTest`, `AiSearchWrapperTest`, the new cases to `PwaControllerTest`, `VichImageResizeListenerTest`, `UiMediaNamerTest`, `BlockExtensionTest`, `VideoPreloadTest` and `HeroVideoMotionTest` (07/10/2026)
+
 ## v1.57.8
 
 Page titles kept within what a search engine shows

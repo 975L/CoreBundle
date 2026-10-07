@@ -492,7 +492,22 @@ class BlockExtensionTest extends TestCase
 
         $extension = new BlockExtension($registry, $twig, $cache, new RequestStack([$request]), new BlockCacheTagResolver($registry, new BlockCacheTagRegistry()), new BlockEditUrlRegistry(), $this->createStub(CspNonceProvider::class), new BlockRenderContext(), $this->createContentTranslator(), $this->createMediaTranslator());
 
-        $this->assertSame('<img>', $extension->renderBlock($block, priority: true));
+        $this->assertSame('<img fetchpriority="high">', $extension->renderBlock($block, priority: true));
+    }
+
+    // Whatever kind drew it, the first picture of a block opening the page is fetched first - an icon passed over - and the next ones are left as they were
+    public function testThePriorityBlocksFirstPictureIsFetchedFirst(): void
+    {
+        $block = $this->createBlock('slider', null);
+        $registry = $this->createStub(BlockRegistry::class);
+        $registry->method('has')->willReturn(true);
+        $registry->method('getTemplate')->willReturn('slider.html.twig');
+        $twig = $this->createStub(Environment::class);
+        $twig->method('render')->willReturn('<img src="/icon.svg" loading="lazy"><img src="/a.webp" loading="lazy"><img src="/b.webp" loading="lazy">');
+
+        $extension = new BlockExtension($registry, $twig, $this->createStub(TagAwareCacheInterface::class), new RequestStack([Request::create('/')]), new BlockCacheTagResolver($registry, new BlockCacheTagRegistry()), new BlockEditUrlRegistry(), $this->createStub(CspNonceProvider::class), new BlockRenderContext(), $this->createContentTranslator(), $this->createMediaTranslator());
+
+        $this->assertSame('<img src="/icon.svg" loading="lazy"><img fetchpriority="high" src="/a.webp" loading="eager"><img src="/b.webp" loading="lazy">', $extension->renderBlock($block, priority: true));
     }
 
     // A kind registered with BlockCacheTagProviderInterface (e.g. articles_slider depending on another Page's blocks) gets its extra tags merged in alongside the default "block_{id}"/"blocks_all" ones

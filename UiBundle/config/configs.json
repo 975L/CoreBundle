@@ -179,6 +179,28 @@
         "description": "description.ui_showcase_demo_url"
     },
     {
+        "label": "label.ui_pwa_android_package",
+        "slug": "ui-pwa-android-package",
+        "sensitive": false,
+        "restricted": true,
+        "value": null,
+        "kind": "text",
+        "group": "ui",
+        "severity": null,
+        "description": "description.ui_pwa_android_package"
+    },
+    {
+        "label": "label.ui_pwa_android_fingerprint",
+        "slug": "ui-pwa-android-fingerprint",
+        "sensitive": false,
+        "restricted": true,
+        "value": null,
+        "kind": "text",
+        "group": "ui",
+        "severity": null,
+        "description": "description.ui_pwa_android_fingerprint"
+    },
+    {
         "label": "label.ui_pwa_enabled",
         "slug": "ui-pwa-enabled",
         "sensitive": false,
@@ -199,6 +221,17 @@
         "group": "ui",
         "severity": null,
         "description": "description.ui_pwa_short_name"
+    },
+    {
+        "label": "label.ui_pwa_description",
+        "slug": "ui-pwa-description",
+        "sensitive": false,
+        "restricted": true,
+        "value": null,
+        "kind": "text",
+        "group": "ui",
+        "severity": null,
+        "description": "description.ui_pwa_description"
     },
     {
         "label": "label.ui_pwa_share_target",

@@ -13,18 +13,29 @@ namespace c975L\UiBundle\Controller;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\UiBundle\Entity\Media;
 use c975L\UiBundle\Repository\MediaRepository;
+use Imagine\Gd\Imagine;
+use Imagine\Image\Box;
+use Imagine\Image\ImageInterface;
+use Imagine\Image\Palette\RGB;
+use Imagine\Image\Point;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-// Makes the site an installable web app once "ui-pwa-enabled" is on: its manifest, its service worker and the page shown when the network is gone. The manifest and the offline page answer 404 while it is off, the worker being replaced by one that unregisters itself, since a browser keeps a worker whose update fails
+// Makes the site an installable web app once "ui-pwa-enabled" is on: its manifest and icons, its service worker, the page shown when the network is gone and the proof linking it to its Play Store app. Everything but the worker answers 404 while it is off, the worker being replaced by one that unregisters itself, since a browser keeps a worker whose update fails
 class PwaController extends AbstractController
 {
+    // The share of a maskable icon Android never crops, whatever shape the phone cuts it to
+    private const float MASKABLE_SAFE_ZONE = 0.8;
+
     public function __construct(
         private readonly ConfigServiceInterface $configService,
         private readonly MediaRepository $mediaRepository,
+        #[Autowire(param: 'kernel.project_dir')]
+        private readonly string $projectDir,
     ) {
     }
 
@@ -36,16 +47,27 @@ class PwaController extends AbstractController
 
         $name = (string) $this->configService->get('site-name');
         $manifest = [
+            'id' => '/',
             'name' => $name,
             'short_name' => trim((string) $this->configService->get('ui-pwa-short-name')) ?: $name,
             'lang' => $request->getDefaultLocale(),
             'start_url' => '/',
             'scope' => '/',
             'display' => 'standalone',
-            'theme_color' => $this->color('theme-color-primary', '#ffffff'),
-            'background_color' => $this->color('theme-color-background', '#ffffff'),
+            'theme_color' => $this->hexColor('theme-color-primary'),
+            'background_color' => $this->hexColor('theme-color-background'),
             'icons' => $this->icons(),
         ];
+
+        // Both turn Chrome's install prompt into the larger dialog an app store shows, each left out until the site fills it
+        $description = trim((string) $this->configService->get('ui-pwa-description'));
+        if ('' !== $description) {
+            $manifest['description'] = $description;
+        }
+        $screenshots = $this->screenshots();
+        if ([] !== $screenshots) {
+            $manifest['screenshots'] = $screenshots;
+        }
 
         // Lets the phone's "Share" menu send a link to the site, as GET parameters a page of the site reads
         $shareTarget = trim((string) $this->configService->get('ui-pwa-share-target'));
@@ -89,30 +111,138 @@ class PwaController extends AbstractController
         return $this->render('@c975LUi/pwa/offline.html.twig');
     }
 
-    // The 512px icon Android installs from, the apple-touch-icon as a fallback, too small for Chrome to offer the install but still drawn by the others
-    private function icons(): array
+    // The 192px and maskable icons Chrome requires, cut on the fly from the single 512px app icon so a site uploads nothing more. Their url carries the upload's date, hence the year-long cache
+    #[Route('/app-icon-{variant}.png', name: 'ui_pwa_icon', requirements: ['variant' => '192|maskable'], methods: ['GET'])]
+    public function icon(string $variant, Request $request): Response
     {
-        $icons = [];
-        foreach ([Media::ROLE_APP_ICON, Media::ROLE_APPLE_TOUCH_ICON] as $role) {
-            $media = $this->mediaRepository->findOneByRole($role);
-            $spec = Media::getFixedIconSpecs()[$role];
-            if (null !== $media?->getFilename()) {
-                $icons[] = [
-                    'src' => '/' . $media->getFilename(),
-                    'sizes' => $spec['width'] . 'x' . $spec['height'],
-                    'type' => 'image/png',
-                    'purpose' => 'any',
-                ];
-            }
+        $this->denyUnlessEnabled();
+
+        $path = $this->appIconPath();
+        if (null === $path) {
+            throw $this->createNotFoundException();
         }
 
-        return $icons;
+        $response = new Response();
+        $response->setPublic();
+        $response->setMaxAge(31536000);
+        $response->setImmutable();
+        $response->setLastModified(new \DateTimeImmutable('@' . filemtime($path)));
+        if ($response->isNotModified($request)) {
+            return $response;
+        }
+
+        $imagine = new Imagine();
+        $source = $imagine->open($path);
+        $icon = '192' === $variant
+            ? $source->thumbnail(new Box(192, 192), ImageInterface::THUMBNAIL_INSET)
+            : $this->maskable($imagine, $source);
+
+        $response->setContent($icon->get('png'));
+        $response->headers->set('Content-Type', 'image/png');
+
+        return $response;
     }
 
-    // A theme color as the site stores it, any CSS notation a manifest accepts
-    private function color(string $slug, string $default): string
+    // Proves the Play Store app and the site share an owner, without which the app shows Chrome's url bar: the package and its signing fingerprints as the Play Console lists them
+    #[Route('/.well-known/assetlinks.json', name: 'ui_pwa_asset_links', methods: ['GET'])]
+    public function assetLinks(): JsonResponse
     {
-        return trim((string) $this->configService->get($slug)) ?: $default;
+        $this->denyUnlessEnabled();
+
+        $package = trim((string) $this->configService->get('ui-pwa-android-package'));
+        $fingerprints = array_values(array_filter(array_map(trim(...), explode(',', (string) $this->configService->get('ui-pwa-android-fingerprint')))));
+        if ('' === $package || [] === $fingerprints) {
+            throw $this->createNotFoundException();
+        }
+
+        return new JsonResponse([[
+            'relation' => ['delegate_permission/common.handle_all_urls'],
+            'target' => [
+                'namespace' => 'android_app',
+                'package_name' => $package,
+                'sha256_cert_fingerprints' => $fingerprints,
+            ],
+        ]]);
+    }
+
+    // The three sizes Chrome asks for before offering the install, all drawn from the app icon
+    private function icons(): array
+    {
+        $media = $this->mediaRepository->findOneByRole(Media::ROLE_APP_ICON);
+        if (null === $media?->getFilename()) {
+            return [];
+        }
+
+        $version = null !== $media->getUpdatedAt() ? ['v' => $media->getUpdatedAt()->getTimestamp()] : [];
+
+        return [
+            ['src' => $this->generateUrl('ui_pwa_icon', ['variant' => '192'] + $version), 'sizes' => '192x192', 'type' => 'image/png', 'purpose' => 'any'],
+            ['src' => '/' . $media->getFilename() . ([] !== $version ? '?v=' . $version['v'] : ''), 'sizes' => '512x512', 'type' => 'image/png', 'purpose' => 'any'],
+            ['src' => $this->generateUrl('ui_pwa_icon', ['variant' => 'maskable'] + $version), 'sizes' => '512x512', 'type' => 'image/png', 'purpose' => 'maskable'],
+        ];
+    }
+
+    // The screens uploaded as site graphics, in their upload order, those whose size was never measured left out since the manifest has to state it
+    private function screenshots(): array
+    {
+        $screenshots = [];
+        foreach ($this->mediaRepository->findBy(['role' => Media::ROLE_APP_SCREENSHOT], ['id' => 'ASC']) as $media) {
+            $width = (int) $media->getWidth();
+            $height = (int) $media->getHeight();
+            if (null === $media->getFilename() || 0 === $width || 0 === $height) {
+                continue;
+            }
+
+            $screenshots[] = [
+                'src' => '/' . $media->getFilename(),
+                'sizes' => $width . 'x' . $height,
+                'type' => $media->getMimeType(),
+                'form_factor' => $width < $height ? 'narrow' : 'wide',
+            ];
+        }
+
+        return $screenshots;
+    }
+
+    // The app icon's file on disk, null when none was uploaded
+    private function appIconPath(): ?string
+    {
+        $filename = $this->mediaRepository->findOneByRole(Media::ROLE_APP_ICON)?->getFilename();
+        $path = $this->projectDir . '/public/' . $filename;
+
+        return null !== $filename && is_file($path) ? $path : null;
+    }
+
+    // The icon shrunk into the safe zone, on its own corner color so the bleed Android crops away matches it - the background color when that corner is transparent
+    private function maskable(Imagine $imagine, ImageInterface $source): ImageInterface
+    {
+        $size = $source->getSize()->getWidth();
+        $corner = $source->getColorAt(new Point(0, 0));
+        $bleed = 100 === $corner->getAlpha() ? $corner : new RGB()->color($this->hexColor('theme-color-background'));
+
+        $inner = (int) round($size * self::MASKABLE_SAFE_ZONE);
+        $offset = (int) (($size - $inner) / 2);
+        $icon = $imagine->create(new Box($size, $size), $bleed);
+        $icon->paste($source->copy()->resize(new Box($inner, $inner)), new Point($offset, $offset));
+
+        return $icon;
+    }
+
+    // A theme color in the hexadecimal form the Play Store packaging tools read, from the hex or rgb() notation the site stores - white for anything else
+    private function hexColor(string $slug): string
+    {
+        $color = trim((string) $this->configService->get($slug));
+        if (1 === preg_match('/^#[0-9a-f]{6}$/i', $color)) {
+            return strtolower($color);
+        }
+        if (1 === preg_match('/^#([0-9a-f])([0-9a-f])([0-9a-f])$/i', $color, $matches)) {
+            return strtolower('#' . $matches[1] . $matches[1] . $matches[2] . $matches[2] . $matches[3] . $matches[3]);
+        }
+        if (1 === preg_match('/^rgba?\(\s*(\d{1,3})[\s,]+(\d{1,3})[\s,]+(\d{1,3})/i', $color, $matches)) {
+            return \sprintf('#%02x%02x%02x', min(255, (int) $matches[1]), min(255, (int) $matches[2]), min(255, (int) $matches[3]));
+        }
+
+        return '#ffffff';
     }
 
     // Whether the site turns the app on
@@ -121,7 +251,7 @@ class PwaController extends AbstractController
         return $this->configService->getBool($this->configService->get('ui-pwa-enabled'));
     }
 
-    // The manifest and the offline page exist only while the site turns the app on
+    // Everything but the worker exists only while the site turns the app on
     private function denyUnlessEnabled(): void
     {
         if (!$this->isEnabled()) {

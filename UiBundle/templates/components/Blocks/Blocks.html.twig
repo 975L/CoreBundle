@@ -15,8 +15,8 @@
         {% set prevIsCard = loop.index0 > 0 and kinds[loop.index0 - 1] in cardKinds %}
         {% set nextIsCard = not loop.last and kinds[loop.index0 + 1] in cardKinds %}
         {% if isCard and not prevIsCard %}<div class="cards">{% endif %}
-        {# The first block is the likeliest LCP element, its picture fetched first (see BlockExtension::renderBlock) #}
-        <twig:c975LUi:Blocks:Block block="{{ block }}" editUrl="{{ editUrls[block.id] ?? null }}" :priority="loop.first"/>
+        {# The first two blocks hold the likeliest LCP element - a text hero is often followed by the picture the page opens on - and have their first picture fetched first (see BlockExtension::renderBlock) #}
+        <twig:c975LUi:Blocks:Block block="{{ block }}" editUrl="{{ editUrls[block.id] ?? null }}" :priority="loop.index <= 2"/>
         {% if isCard and not nextIsCard %}</div>{% endif %}
     {% endfor %}
 </div>
