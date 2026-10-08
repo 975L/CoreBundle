@@ -1,5 +1,16 @@
 # ChangeLog
 
+## v1.58.5
+
+Install button driven by the pwa controller
+
+### UiBundle
+
+- `pwa` controller keeps the `beforeinstallprompt` offer across Turbo visits (08/10/2026)
+- Added the `install` target and `pwa#install` action to the `pwa` controller (08/10/2026)
+- Added `PwaInstallControllerTest` (08/10/2026)
+- Updated the readme and the `c975l-ui-assets` skill (08/10/2026)
+
 ## v1.58.4
 
 Media players fetch nothing with the page, theme and Play Store tours

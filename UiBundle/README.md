@@ -204,6 +204,14 @@ Turning `ui-pwa-enabled` on makes the site installable on a phone or a computer,
 
 The layout then declares the manifest and the `theme-color`, and mounts the `pwa` Stimulus controller on `<body>`, which registers the worker; `pwa_enabled()` says whether it does. `ui-pwa-share-target` adds the site to the phone's *Share* menu: the path of a page receiving `title`, `text` and `url` as GET parameters. Nothing changes in the CSP: the worker and the manifest are served by the site itself. Once installed, the app hides the footer, the share band and the scroll buttons (`display-mode: standalone`).
 
+**The install button.** Chrome offers to install on its own only now and then - a bar the visitor dismisses for months - and otherwise leaves it in its menu. The `pwa` controller keeps the browser's offer (`beforeinstallprompt`) and drives any element written as its `install` target: write it `hidden`, the controller shows it while the offer stands and opens the browser's dialog on `pwa#install`, then hides it once used or once the app is installed. The offer is kept at the module's level, so a Turbo visit, which swaps the body without the browser firing it again, gets the button back. Safari fires no such event: an iPhone installs from *Share > Add to Home Screen*, and the button simply never shows there. SiteBundle's navbar writes one beside its magnifier; a site without it writes its own:
+
+```twig
+{% if pwa_enabled() %}
+    <button type="button" data-pwa-target="install" data-action="pwa#install" hidden>Install</button>
+{% endif %}
+```
+
 The `app-screenshot` pool is replaced whole from a folder of images, taken in their name order (`.webp`, `.png`, `.jpg`); an empty or missing folder leaves the current screenshots in place:
 
 ```bash
