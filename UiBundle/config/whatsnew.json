@@ -1,5 +1,25 @@
 [
     {
+        "date": "2026-10-08",
+        "description": [
+            {
+                "en": "Visitors can download a page of the installed app to read or listen to it without a connection, and manage their downloads.",
+                "fr": "Les visiteurs peuvent télécharger une page de l'application installée pour la lire ou l'écouter sans connexion, et gérer leurs téléchargements.",
+                "es": "Los visitantes pueden descargar una página de la aplicación instalada para leerla o escucharla sin conexión, y gestionar sus descargas."
+            },
+            {
+                "en": "On iPhone and iPad, the install button now explains how to add the site to the home screen, with its own icon.",
+                "fr": "Sur iPhone et iPad, le bouton d'installation explique désormais comment ajouter le site à l'écran d'accueil, avec sa propre icône.",
+                "es": "En iPhone y iPad, el botón de instalación explica ahora cómo añadir el sitio a la pantalla de inicio, con su propio icono."
+            },
+            {
+                "en": "The installed app can be locked in portrait or landscape.",
+                "fr": "L'application installée peut être verrouillée en portrait ou en paysage.",
+                "es": "La aplicación instalada puede bloquearse en vertical u horizontal."
+            }
+        ]
+    },
+    {
         "date": "2026-10-07",
         "description": [
             {

@@ -69,6 +69,12 @@ class PwaController extends AbstractController
             $manifest['screenshots'] = $screenshots;
         }
 
+        // Locks the installed app in one orientation, left free to follow the phone until the site picks one
+        $orientation = (string) $this->configService->get('ui-pwa-orientation');
+        if (\in_array($orientation, ['portrait', 'landscape'], true)) {
+            $manifest['orientation'] = $orientation;
+        }
+
         // Lets the phone's "Share" menu send a link to the site, as GET parameters a page of the site reads
         $shareTarget = trim((string) $this->configService->get('ui-pwa-share-target'));
         if ('' !== $shareTarget) {
@@ -111,8 +117,17 @@ class PwaController extends AbstractController
         return $this->render('@c975LUi/pwa/offline.html.twig');
     }
 
-    // The 192px and maskable icons Chrome requires, cut on the fly from the single 512px app icon so a site uploads nothing more. Their url carries the upload's date, hence the year-long cache
-    #[Route('/app-icon-{variant}.png', name: 'ui_pwa_icon', requirements: ['variant' => '192|maskable'], methods: ['GET'])]
+    // What this browser keeps for offline use, listed by a script from the cache itself: the page is the same for everyone
+    #[Route('/pwa-downloads', name: 'ui_pwa_downloads', methods: ['GET'])]
+    public function downloads(): Response
+    {
+        $this->denyUnlessEnabled();
+
+        return $this->render('@c975LUi/pwa/downloads.html.twig');
+    }
+
+    // The 192px and maskable icons Chrome requires and the 180px one iOS puts on its home screen, cut on the fly from the single 512px app icon so a site uploads nothing more. Their url carries the upload's date, hence the year-long cache
+    #[Route('/app-icon-{variant}.png', name: 'ui_pwa_icon', requirements: ['variant' => '192|180|maskable'], methods: ['GET'])]
     public function icon(string $variant, Request $request): Response
     {
         $this->denyUnlessEnabled();
@@ -133,9 +148,11 @@ class PwaController extends AbstractController
 
         $imagine = new Imagine();
         $source = $imagine->open($path);
-        $icon = '192' === $variant
-            ? $source->thumbnail(new Box(192, 192), ImageInterface::THUMBNAIL_INSET)
-            : $this->maskable($imagine, $source);
+        $icon = match ($variant) {
+            '192' => $source->thumbnail(new Box(192, 192), ImageInterface::THUMBNAIL_INSET),
+            '180' => $this->opaque($imagine, $source->thumbnail(new Box(180, 180), ImageInterface::THUMBNAIL_INSET)),
+            default => $this->maskable($imagine, $source),
+        };
 
         $response->setContent($icon->get('png'));
         $response->headers->set('Content-Type', 'image/png');
@@ -224,6 +241,15 @@ class PwaController extends AbstractController
         $offset = (int) (($size - $inner) / 2);
         $icon = $imagine->create(new Box($size, $size), $bleed);
         $icon->paste($source->copy()->resize(new Box($inner, $inner)), new Point($offset, $offset));
+
+        return $icon;
+    }
+
+    // The icon on the background color, since iOS paints a transparent home screen icon black
+    private function opaque(Imagine $imagine, ImageInterface $source): ImageInterface
+    {
+        $icon = $imagine->create($source->getSize(), new RGB()->color($this->hexColor('theme-color-background')));
+        $icon->paste($source, new Point(0, 0));
 
         return $icon;
     }

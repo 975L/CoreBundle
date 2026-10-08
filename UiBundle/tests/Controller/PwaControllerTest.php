@@ -65,6 +65,14 @@ class PwaControllerTest extends TestCase
         $this->assertSame('Papa Câlin', $this->manifest()['short_name']);
     }
 
+    // Locked only once the site picks an orientation, anything else leaving the screen to follow the phone
+    public function testTheOrientationIsSetOnlyWhenPicked(): void
+    {
+        $this->assertSame('portrait', $this->manifest(['ui-pwa-orientation' => 'portrait'])['orientation']);
+        $this->assertArrayNotHasKey('orientation', $this->manifest());
+        $this->assertArrayNotHasKey('orientation', $this->manifest(['ui-pwa-orientation' => 'sideways']));
+    }
+
     // Chrome offers the install only with a 192px and a 512px icon, the maskable one keeping the logo out of a white circle - all three drawn from the app icon
     public function testTheIconsAreAllDrawnFromTheAppIcon(): void
     {
@@ -102,6 +110,24 @@ class PwaControllerTest extends TestCase
 
         $this->assertSame(512, $icon->getSize()->getWidth());
         $this->assertSame('#ff0000', (string) $icon->getColorAt(new Point(5, 5)));
+    }
+
+    // iOS paints a transparent home screen icon black, so its 180px one stands on the background color
+    public function testThe180IconIsOpaque(): void
+    {
+        new Imagine()->create(new Box(512, 512), new RGB()->color('#ffffff', 0))->save($this->projectDir . '/public/app-icon.png');
+        $icon = new Imagine()->load((string) $this->controller()->icon('180', new Request())->getContent());
+
+        $this->assertSame(180, $icon->getSize()->getWidth());
+        $this->assertSame('#0c1f33', (string) $icon->getColorAt(new Point(5, 5)));
+        $this->assertSame(100, $icon->getColorAt(new Point(5, 5))->getAlpha());
+    }
+
+    public function testTheDownloadsPageIsNotFoundWhileTheAppIsOff(): void
+    {
+        $this->expectException(NotFoundHttpException::class);
+
+        $this->controller(['ui-pwa-enabled' => 'false'])->downloads();
     }
 
     public function testTheIconIsNotFoundWithoutAnAppIcon(): void

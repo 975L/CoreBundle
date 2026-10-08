@@ -3790,6 +3790,50 @@
                 <source>label.progress_percent</source>
                 <target>Pourcentage (0-100)</target>
             </trans-unit>
+            <trans-unit id="4RW2_yl">
+                <source>label.pwa_download</source>
+                <target>Télécharger pour l'ouvrir hors connexion</target>
+            </trans-unit>
+            <trans-unit id="zGRIJjz">
+                <source>label.pwa_download_error</source>
+                <target>Le téléchargement a échoué : vérifiez la connexion et réessayez.</target>
+            </trans-unit>
+            <trans-unit id="bxpyWDm">
+                <source>label.pwa_download_remove</source>
+                <target>Supprimer</target>
+            </trans-unit>
+            <trans-unit id="t2NcZNo">
+                <source>label.pwa_downloaded</source>
+                <target>Disponible hors connexion.</target>
+            </trans-unit>
+            <trans-unit id="0oTRy67">
+                <source>label.pwa_downloading</source>
+                <target>Téléchargement en cours</target>
+            </trans-unit>
+            <trans-unit id="Y33mYcC">
+                <source>label.pwa_downloads</source>
+                <target>Mes téléchargements</target>
+            </trans-unit>
+            <trans-unit id="Iir6bNm">
+                <source>label.pwa_downloads_empty</source>
+                <target>Aucun téléchargement pour l'instant.</target>
+            </trans-unit>
+            <trans-unit id="_uonHD5">
+                <source>label.pwa_downloads_remove_all</source>
+                <target>Tout supprimer</target>
+            </trans-unit>
+            <trans-unit id="8pORdkw">
+                <source>label.pwa_downloads_total</source>
+                <target>Espace occupé :</target>
+            </trans-unit>
+            <trans-unit id="3UB1T1w">
+                <source>label.pwa_downloads_unsupported</source>
+                <target>Ce navigateur ne peut pas garder de pages hors connexion.</target>
+            </trans-unit>
+            <trans-unit id="zUGbrAu">
+                <source>label.pwa_ios_install</source>
+                <target>Installer l'application</target>
+            </trans-unit>
             <trans-unit id="xeJW4Zp">
                 <source>label.pwa_offline</source>
                 <target>Hors connexion</target>
@@ -4665,6 +4709,10 @@
             <trans-unit id="vcT08Ej">
                 <source>text.logged_in_as</source>
                 <target>Vous êtes connecté en tant que %user%,</target>
+            </trans-unit>
+            <trans-unit id="4__qeS6">
+                <source>text.pwa_ios_install</source>
+                <target>Dans Safari, touchez le bouton Partager, puis « Sur l'écran d'accueil ».</target>
             </trans-unit>
             <trans-unit id="JdqcjEg">
                 <source>text.review_submitted</source>

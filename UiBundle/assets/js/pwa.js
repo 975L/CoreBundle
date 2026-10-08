@@ -11,10 +11,20 @@ import { Controller } from "@hotwired/stimulus";
 let installPrompt = null;
 const installButtons = new Set();
 
+// iOS offers no install prompt, Safari installing from its Share menu: there the button explains how, until the site is opened as the installed app. An iPad says it is a Mac, its touch screen telling them apart
+const isIos = /iPhone|iPad|iPod/.test(navigator.userAgent) || ("MacIntel" === navigator.platform && navigator.maxTouchPoints > 1);
+const isStandalone = window.matchMedia("(display-mode: standalone)").matches || true === navigator.standalone;
+const explainsIosInstall = isIos && !isStandalone;
+
+// Whether the button has something to do: an offer from the browser to use, or the iOS way to explain
+function canInstall() {
+    return null !== installPrompt || explainsIosInstall;
+}
+
 // Shows or hides every install button on the page, whichever controller instance wrote it
 function refreshInstallButtons() {
     installButtons.forEach((button) => {
-        button.hidden = null === installPrompt;
+        button.hidden = !canInstall();
     });
 }
 
@@ -41,16 +51,20 @@ export default class extends Controller {
 
     installTargetConnected(button) {
         installButtons.add(button);
-        button.hidden = null === installPrompt;
+        button.hidden = !canInstall();
     }
 
     installTargetDisconnected(button) {
         installButtons.delete(button);
     }
 
-    // Opens the browser's own install dialog. The offer can only be used once, whatever the answer: the browser fires a new one later if the visitor declined
+    // Opens the browser's own install dialog, or on iOS the explanation the layout writes (see layout.html.twig). The offer can only be used once, whatever the answer: the browser fires a new one later if the visitor declined
     async install() {
         if (null === installPrompt) {
+            if (explainsIosInstall) {
+                document.getElementById("pwa-ios-install")?.showModal();
+            }
+
             return;
         }
 

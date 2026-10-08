@@ -1,5 +1,28 @@
 # ChangeLog
 
+## v1.59
+
+PWA pages downloadable for offline use, iOS install
+
+### UiBundle
+
+- Added the `Pwa:Download` component and `pwa-download` controller keeping a page for offline use (08/10/2026)
+- Added the `/pwa-downloads` page (`ui_pwa_downloads`) and its `pwa-downloads` controller (08/10/2026)
+- Added `pwa-downloads-store.js`, the shared `c975l-pwa-downloads` cache and registry (08/10/2026)
+- Service worker serves downloaded pages and files once offline, ranges included (08/10/2026)
+- Offline page lists the downloaded pages (08/10/2026)
+- Offline page set to `noindex` (08/10/2026)
+- Install button opens the `pwa-ios-install` dialog on iOS (08/10/2026)
+- Layout declares `apple-mobile-web-app-title` and a 180px `apple-touch-icon` (08/10/2026)
+- `ui_pwa_icon` serves an opaque 180px variant (08/10/2026)
+- Added the `ui-pwa-orientation` config (08/10/2026)
+- Added `PwaDownloadsTest` and the iOS, orientation and 180px icon tests (08/10/2026)
+- Updated the readme and the `c975l-ui-assets` skill (08/10/2026)
+
+### The package
+
+- Declared the `caches` and `Response` globals to ESLint (08/10/2026)
+
 ## v1.58.5
 
 Install button driven by the pwa controller

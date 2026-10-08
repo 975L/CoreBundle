@@ -1,7 +1,10 @@
-// The site's service worker (see PwaController): pages from the network, the offline page when it fails, and the files a page draws with kept for that page
+// The site's service worker (see PwaController): pages from the network, the offline page when it fails, the files a page draws with kept for that page, and the downloaded ones served once the network is gone
 
 // Named after the deploy, so each one installs this worker again and its activation drops the files the previous deploy kept
 const CACHE = "c975l-pwa-{{ version|e('js') }}";
+// What a visitor chose to keep for offline use (see assets/js/pwa-downloads-store.js): named after no deploy, so no activation ever drops it
+const DOWNLOADS = "c975l-pwa-downloads";
+const REGISTRY_URL = "/pwa-downloads.json";
 const OFFLINE_URL = "{{ offlineUrl|e('js') }}";
 const STATIC_DESTINATIONS = ["style", "script", "font", "image"];
 const MAX_ENTRIES = 100;
@@ -11,9 +14,9 @@ self.addEventListener("install", (event) => {
     event.waitUntil(caches.open(CACHE).then((cache) => cache.add(new Request(OFFLINE_URL, { cache: "reload", credentials: "omit" }))).then(() => self.skipWaiting()));
 });
 
-// A cache left by an earlier version of this worker is dropped
+// A cache left by an earlier version of this worker is dropped, the downloads staying
 self.addEventListener("activate", (event) => {
-    event.waitUntil(caches.keys().then((keys) => Promise.all(keys.filter((key) => key !== CACHE).map((key) => caches.delete(key)))).then(() => self.clients.claim()));
+    event.waitUntil(caches.keys().then((keys) => Promise.all(keys.filter((key) => key !== CACHE && key !== DOWNLOADS).map((key) => caches.delete(key)))).then(() => self.clients.claim()));
 });
 
 self.addEventListener("fetch", (event) => {
@@ -23,23 +26,86 @@ self.addEventListener("fetch", (event) => {
         return;
     }
 
-    // A page, loaded by the browser or by a Turbo visit, which asks for html without being a navigation - a frame or a prefetch is a fragment, never answered with a whole page
+    // A page, loaded by the browser or by a Turbo visit, which asks for html without being a navigation - a frame or a prefetch is a fragment, never answered with a whole page. A downloaded copy is only the fallback: online, a page is always the server's
     const isFragment = request.headers.has("Turbo-Frame") || (request.headers.get("Sec-Purpose") || request.headers.get("X-Sec-Purpose") || "").includes("prefetch");
     if ("navigate" === request.mode || (!isFragment && (request.headers.get("Accept") || "").includes("text/html"))) {
-        event.respondWith(fetch(request).catch(() => caches.match(OFFLINE_URL)));
+        event.respondWith(fetch(request).catch(() => downloaded(request).then((copy) => copy || offlinePage())));
         return;
     }
 
-    // AssetMapper's files carry their hash in their name, so a cached copy never goes stale
+    // AssetMapper's files carry their hash in their name, so a cached copy never goes stale. A downloaded page's own, dropped from this cache by the next deploy, come from its download
     if (url.pathname.startsWith("/assets/")) {
-        event.respondWith(caches.match(request).then((cached) => cached || fetchAndKeep(request)));
+        event.respondWith(caches.match(request, { cacheName: CACHE }).then((cached) => cached || fetchAndKeep(request).catch(() => downloaded(request))));
         return;
     }
 
     if (STATIC_DESTINATIONS.includes(request.destination)) {
-        event.respondWith(fetchAndKeep(request).catch(() => caches.match(request)));
+        event.respondWith(fetchAndKeep(request).catch(() => caches.match(request, { cacheName: CACHE }).then((cached) => cached || downloaded(request))));
+        return;
+    }
+
+    // Anything else - a recording, its timecodes, a script's own requests - is left to the browser while it is online, as if there were no worker: only offline is a downloaded copy looked for
+    if (!self.navigator.onLine) {
+        event.respondWith(downloaded(request).then((copy) => (copy ? ranged(request, copy) : fetch(request))));
     }
 });
+
+// The copy kept by a download, whatever "Vary" the page was served with: a language negotiated page varies on a header the stored request never carried
+function downloaded(request) {
+    return caches.match(request.url, { cacheName: DOWNLOADS, ignoreVary: true });
+}
+
+// A media element asks for byte ranges, and some browsers play nothing unless a range is answered with one: the stored file is cut to it
+async function ranged(request, response) {
+    const match = /^bytes=(\d*)-(\d*)$/.exec(request.headers.get("Range") || "");
+    if (null === match || ("" === match[1] && "" === match[2])) {
+        return response;
+    }
+
+    const blob = await response.blob();
+    const start = "" === match[1] ? Math.max(0, blob.size - Number(match[2])) : Number(match[1]);
+    const end = "" === match[1] || "" === match[2] ? blob.size - 1 : Math.min(Number(match[2]), blob.size - 1);
+    if (start > end) {
+        return new Response(null, { status: 416, headers: { "Content-Range": `bytes */${blob.size}` } });
+    }
+
+    return new Response(blob.slice(start, end + 1), {
+        status: 206,
+        headers: {
+            "Content-Type": response.headers.get("Content-Type") || "",
+            "Content-Range": `bytes ${start}-${end}/${blob.size}`,
+            "Content-Length": String(end - start + 1),
+            "Accept-Ranges": "bytes",
+        },
+    });
+}
+
+// The offline page, with the downloaded pages listed where its template leaves room for them
+async function offlinePage() {
+    const page = await caches.match(OFFLINE_URL, { cacheName: CACHE });
+    const registry = await caches.match(REGISTRY_URL, { cacheName: DOWNLOADS });
+    if (!page || !registry) {
+        return page;
+    }
+
+    const entries = Object.values(await registry.json());
+    if (0 === entries.length) {
+        return page;
+    }
+
+    const items = entries.map((entry) => `<li><a href="${escape(entry.url)}">${escape(entry.title)}</a></li>`).join("");
+    const html = (await page.text()).replace("<!--pwa-downloads-->", items).replace("data-pwa-downloads hidden", "data-pwa-downloads");
+    // The stored length is the page's before the list went in
+    const headers = new Headers(page.headers);
+    headers.delete("Content-Length");
+
+    return new Response(html, { status: page.status, headers });
+}
+
+// A title or a url written into the offline page's html
+function escape(text) {
+    return String(text).replace(/[&<>"']/g, (character) => `&#${character.charCodeAt(0)};`);
+}
 
 // The network's answer, a copy kept for when it is gone, the oldest copy dropped past MAX_ENTRIES
 function fetchAndKeep(request) {

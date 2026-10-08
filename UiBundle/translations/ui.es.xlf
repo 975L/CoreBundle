@@ -3790,6 +3790,50 @@
                 <source>label.progress_percent</source>
                 <target>Porcentaje (0-100)</target>
             </trans-unit>
+            <trans-unit id="4RW2_yl">
+                <source>label.pwa_download</source>
+                <target>Descargar para abrirlo sin conexión</target>
+            </trans-unit>
+            <trans-unit id="zGRIJjz">
+                <source>label.pwa_download_error</source>
+                <target>La descarga ha fallado: compruebe la conexión e inténtelo de nuevo.</target>
+            </trans-unit>
+            <trans-unit id="bxpyWDm">
+                <source>label.pwa_download_remove</source>
+                <target>Eliminar</target>
+            </trans-unit>
+            <trans-unit id="t2NcZNo">
+                <source>label.pwa_downloaded</source>
+                <target>Disponible sin conexión.</target>
+            </trans-unit>
+            <trans-unit id="0oTRy67">
+                <source>label.pwa_downloading</source>
+                <target>Descargando</target>
+            </trans-unit>
+            <trans-unit id="Y33mYcC">
+                <source>label.pwa_downloads</source>
+                <target>Mis descargas</target>
+            </trans-unit>
+            <trans-unit id="Iir6bNm">
+                <source>label.pwa_downloads_empty</source>
+                <target>Todavía no hay descargas.</target>
+            </trans-unit>
+            <trans-unit id="_uonHD5">
+                <source>label.pwa_downloads_remove_all</source>
+                <target>Eliminar todo</target>
+            </trans-unit>
+            <trans-unit id="8pORdkw">
+                <source>label.pwa_downloads_total</source>
+                <target>Espacio ocupado:</target>
+            </trans-unit>
+            <trans-unit id="3UB1T1w">
+                <source>label.pwa_downloads_unsupported</source>
+                <target>Este navegador no puede guardar páginas sin conexión.</target>
+            </trans-unit>
+            <trans-unit id="zUGbrAu">
+                <source>label.pwa_ios_install</source>
+                <target>Instalar la aplicación</target>
+            </trans-unit>
             <trans-unit id="xeJW4Zp">
                 <source>label.pwa_offline</source>
                 <target>Sin conexión</target>
@@ -4665,6 +4709,10 @@
             <trans-unit id="vcT08Ej">
                 <source>text.logged_in_as</source>
                 <target>Has iniciado sesión como %user%,</target>
+            </trans-unit>
+            <trans-unit id="4__qeS6">
+                <source>text.pwa_ios_install</source>
+                <target>En Safari, toque el botón Compartir y luego «Añadir a pantalla de inicio».</target>
             </trans-unit>
             <trans-unit id="JdqcjEg">
                 <source>text.review_submitted</source>

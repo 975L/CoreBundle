@@ -14,6 +14,7 @@ export default [
             // Browser globals used across the c975L bundles, plus the third-party ones loaded by AssetMapper
             globals: {
                 AbortController: "readonly",
+                caches: "readonly",
                 cancelAnimationFrame: "readonly",
                 clearInterval: "readonly",
                 clearTimeout: "readonly",
@@ -42,6 +43,7 @@ export default [
                 Node: "readonly",
                 requestAnimationFrame: "readonly",
                 ResizeObserver: "readonly",
+                Response: "readonly",
                 screen: "readonly",
                 sessionStorage: "readonly",
                 setInterval: "readonly",

@@ -7,3 +7,43 @@
         display: none;
     }
 }
+
+// The download button of a page kept for offline use (see templates/components/Pwa/Download.html.twig)
+.pwa-download {
+    margin: 1rem auto;
+    text-align: center;
+
+    progress {
+        width: min(100%, 320px);
+        height: 1rem;
+        accent-color: var(--primary);
+    }
+}
+
+// The downloads listed on the "My downloads" page and on the offline page
+.pwa-downloads-list {
+    list-style: none;
+    padding: 0;
+
+    li {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid var(--border-color, #ddd);
+    }
+
+    a {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        flex: 1;
+        min-height: 44px;
+    }
+
+    img {
+        border-radius: 4px;
+        object-fit: cover;
+    }
+}

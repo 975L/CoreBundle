@@ -125,6 +125,12 @@
 {# The installable web app, when the site turns it on (see PwaController) #}
                 {% if pwa_enabled() %}
                     <link rel="manifest" href="{{ path('ui_pwa_manifest') }}">
+{# iOS reads neither the manifest's short name nor its icons: the title under the home screen icon, and that icon at the 180px it asks for, drawn from the app icon #}
+                    <meta name="apple-mobile-web-app-title" content="{{ config('ui-pwa-short-name')|trim ?: config('site-name') }}">
+                    {% set appIcon = site_media('app-icon') %}
+                    {% if appIcon is not null %}
+                        <link rel="apple-touch-icon" sizes="180x180" href="{{ path('ui_pwa_icon', {variant: '180'}|merge(appIcon.updatedAt ? {v: appIcon.updatedAt.timestamp} : {})) }}">
+                    {% endif %}
                     <meta name="theme-color" content="{{ config('theme-color-primary')|default('#ffffff') }}">
                 {% endif %}
             {% endblock %}
@@ -242,6 +248,12 @@
                 <div hidden data-controller="blockEditOverlay edit-pencils" data-edit-label="{{ 'label.edit'|trans({}, 'ui') }}" data-edit-pencils-pattern-value="{{ editPattern }}"></div>
             {% endif %}
         {% endblock %}
+{# What the install button opens on iOS, where no browser offers to install: Safari does it from its Share menu (see assets/js/pwa.js). Outside the body block, so a layout overriding it keeps the explanation #}
+        {% if pwa_enabled() %}
+            <twig:c975LUi:Dialog:Dialog id="pwa-ios-install" title="{{ 'label.pwa_ios_install'|trans({}, 'ui') }}">
+                <p>{{ 'text.pwa_ios_install'|trans({}, 'ui') }}</p>
+            </twig:c975LUi:Dialog:Dialog>
+        {% endif %}
         <span id="bottom"></span>
     </body>
 </html>

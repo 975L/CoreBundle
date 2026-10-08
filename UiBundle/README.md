@@ -192,24 +192,31 @@ Any `/management` form can also be opened straight on one of its fields by addin
 
 ## The installable web app
 
-Turning `ui-pwa-enabled` on makes the site installable on a phone or a computer, from the browser alone - no store, no build. `PwaController` then serves five routes. While the setting is off, everything but the worker answers 404 and `/sw.js` serves a worker that drops the caches and unregisters itself, since a browser keeps a worker whose update fails:
+Turning `ui-pwa-enabled` on makes the site installable on a phone or a computer, from the browser alone - no store, no build. `PwaController` then serves six routes. While the setting is off, everything but the worker answers 404 and `/sw.js` serves a worker that drops the caches and unregisters itself, since a browser keeps a worker whose update fails:
 
 | Route | What it serves |
 |---|---|
 | `/manifest.webmanifest` (`ui_pwa_manifest`) | The manifest, built from `site-name` (or `ui-pwa-short-name` under the icon), `theme-color-primary` and `theme-color-background` (written in hexadecimal), the `app-icon` media role (512px, a dashboard alert while it is missing), and - each left out until filled - `ui-pwa-description` and the `app-screenshot` site graphics, which turn Chrome's install prompt into the larger store-like dialog |
-| `/app-icon-{192\|maskable}.png` (`ui_pwa_icon`) | The 192px and maskable icons Chrome requires, cut on the fly from the `app-icon`, cached for a year under a url carrying its upload date |
+| `/app-icon-{192\|180\|maskable}.png` (`ui_pwa_icon`) | The 192px and maskable icons Chrome requires and the opaque 180px one iOS puts on its home screen, cut on the fly from the `app-icon`, cached for a year under a url carrying its upload date |
 | `/.well-known/assetlinks.json` (`ui_pwa_asset_links`) | The Digital Asset Links proving a Play Store app (a TWA) and the site share an owner, from `ui-pwa-android-package` and `ui-pwa-android-fingerprint` (comma-separated); 404 until both are set |
-| `/sw.js` (`ui_pwa_service_worker`) | The service worker: pages from the network and the offline page when it fails (never for a Turbo frame or a prefetch), AssetMapper's hashed files from the cache, styles, scripts, fonts and images kept for when the network is gone - 100 files at most, the cache named after the container build so each deploy starts it afresh |
-| `/offline` (`ui_pwa_offline`) | The page shown in place of one the network could not bring, kept at the worker's install as an anonymous visitor sees it |
+| `/sw.js` (`ui_pwa_service_worker`) | The service worker: pages from the network and the offline page when it fails (never for a Turbo frame or a prefetch), AssetMapper's hashed files from the cache, styles, scripts, fonts and images kept for when the network is gone - 100 files at most, the cache named after the container build so each deploy starts it afresh; offline, the downloaded pages and their files, ranges answered for a recording |
+| `/offline` (`ui_pwa_offline`) | The page shown in place of one the network could not bring, kept at the worker's install as an anonymous visitor sees it, the worker listing the downloaded pages in it |
+| `/pwa-downloads` (`ui_pwa_downloads`) | *My downloads*: what this browser keeps for offline use, the room it takes, and a button to delete one or all |
 
-The layout then declares the manifest and the `theme-color`, and mounts the `pwa` Stimulus controller on `<body>`, which registers the worker; `pwa_enabled()` says whether it does. `ui-pwa-share-target` adds the site to the phone's *Share* menu: the path of a page receiving `title`, `text` and `url` as GET parameters. Nothing changes in the CSP: the worker and the manifest are served by the site itself. Once installed, the app hides the footer, the share band and the scroll buttons (`display-mode: standalone`).
+The layout then declares the manifest, the `theme-color` and, for iOS which reads neither the manifest's short name nor its icons, `apple-mobile-web-app-title` and the 180px `apple-touch-icon`, and mounts the `pwa` Stimulus controller on `<body>`, which registers the worker; `pwa_enabled()` says whether it does. `ui-pwa-share-target` adds the site to the phone's *Share* menu: the path of a page receiving `title`, `text` and `url` as GET parameters. `ui-pwa-orientation` locks the installed app in `portrait` or `landscape`, left free while empty. Nothing changes in the CSP: the worker and the manifest are served by the site itself. Once installed, the app hides the footer, the share band and the scroll buttons (`display-mode: standalone`).
 
-**The install button.** Chrome offers to install on its own only now and then - a bar the visitor dismisses for months - and otherwise leaves it in its menu. The `pwa` controller keeps the browser's offer (`beforeinstallprompt`) and drives any element written as its `install` target: write it `hidden`, the controller shows it while the offer stands and opens the browser's dialog on `pwa#install`, then hides it once used or once the app is installed. The offer is kept at the module's level, so a Turbo visit, which swaps the body without the browser firing it again, gets the button back. Safari fires no such event: an iPhone installs from *Share > Add to Home Screen*, and the button simply never shows there. SiteBundle's navbar writes one beside its magnifier; a site without it writes its own:
+**The install button.** Chrome offers to install on its own only now and then - a bar the visitor dismisses for months - and otherwise leaves it in its menu. The `pwa` controller keeps the browser's offer (`beforeinstallprompt`) and drives any element written as its `install` target: write it `hidden`, the controller shows it while the offer stands and opens the browser's dialog on `pwa#install`, then hides it once used or once the app is installed. The offer is kept at the module's level, so a Turbo visit, which swaps the body without the browser firing it again, gets the button back. Safari fires no such event: on iOS, until the site is opened as the installed app, the button shows anyway and opens a dialog the layout writes (`pwa-ios-install`), explaining *Share > Add to Home Screen*. SiteBundle's navbar writes one beside its magnifier; a site without it writes its own:
 
 ```twig
 {% if pwa_enabled() %}
     <button type="button" data-pwa-target="install" data-action="pwa#install" hidden>Install</button>
 {% endif %}
+```
+
+**Offline downloads.** A page offers to keep itself for offline use with the `Pwa:Download` component - a story to read, a recording to listen to. The `pwa-download` controller fetches the page, the `urls` it names and the styles, scripts and images it loaded, with a progress bar, into a cache no deploy drops; the worker serves it only once the network is gone, a page online always being the server's. Nothing shows while the app is off or in a browser unable to keep files:
+
+```twig
+<twig:c975LUi:Pwa:Download name="story-12" title="{{ story.title }}" image="/cover.webp" urls="{{ ['/audio/story-12.mp3'] }}"/>
 ```
 
 The `app-screenshot` pool is replaced whole from a folder of images, taken in their name order (`.webp`, `.png`, `.jpg`); an empty or missing folder leaves the current screenshots in place:

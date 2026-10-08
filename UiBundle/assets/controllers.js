@@ -28,6 +28,9 @@ const LAZY_CONTROLLERS = {
     mediaPreload: () => import('./js/media-preload.js'),
     password: () => import('./js/password.js'),
     pwa: () => import('./js/pwa.js'),
+    // Kebab-case identifier, same reason as cookie-consent above: every "data-pwa-download-*-value" binding is derived from it
+    'pwa-download': () => import('./js/pwa-download.js'),
+    'pwa-downloads': () => import('./js/pwa-downloads.js'),
     readmore: () => import('./js/readmore.js'),
     scrollButtons: () => import('./js/scroll-buttons.js'),
     slider: () => import('./js/slider.js'),

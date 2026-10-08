@@ -234,6 +234,21 @@
         "description": "description.ui_pwa_description"
     },
     {
+        "label": "label.ui_pwa_orientation",
+        "slug": "ui-pwa-orientation",
+        "sensitive": false,
+        "restricted": true,
+        "value": null,
+        "kind": "choice",
+        "choices": [
+            "portrait",
+            "landscape"
+        ],
+        "group": "ui",
+        "severity": null,
+        "description": "description.ui_pwa_orientation"
+    },
+    {
         "label": "label.ui_pwa_share_target",
         "slug": "ui-pwa-share-target",
         "sensitive": false,

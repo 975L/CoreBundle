@@ -1,0 +1,10 @@
+{# <twig:c975LUi:Pwa:Download name="listen-12" title="The story" [label="Download to listen offline"] [image="/cover.webp"] [urls="{{ ['/audio.mp3', '/page-1.webp'] }}"] /> #}
+{# Keeps the page for offline use, with the files it names and those it has already loaded (see assets/js/pwa-download.js). Hidden until the script finds a browser able to keep them, and absent while the site is no installable app #}
+{% if pwa_enabled() %}
+    <div class="pwa-download" data-controller="pwa-download" data-pwa-download-key-value="{{ name }}" data-pwa-download-title-value="{{ title }}" data-pwa-download-image-value="{{ image|default('') }}" data-pwa-download-urls-value="{{ urls|default([])|json_encode }}" hidden>
+        <button type="button" class="btn btn-primary" data-pwa-download-target="button" data-action="pwa-download#download" hidden>{{ label|default('label.pwa_download'|trans({}, 'ui')) }}</button>
+        <progress max="100" value="0" aria-label="{{ 'label.pwa_downloading'|trans({}, 'ui') }}" data-pwa-download-target="progress" hidden></progress>
+        <p role="status" data-pwa-download-target="done" hidden>{{ 'label.pwa_downloaded'|trans({}, 'ui') }} <a href="{{ path('ui_pwa_downloads') }}">{{ 'label.pwa_downloads'|trans({}, 'ui') }}</a></p>
+        <p role="alert" data-pwa-download-target="error" hidden>{{ 'label.pwa_download_error'|trans({}, 'ui') }}</p>
+    </div>
+{% endif %}

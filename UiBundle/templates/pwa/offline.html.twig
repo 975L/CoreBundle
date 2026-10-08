@@ -3,11 +3,16 @@
 
 {# Defines specific variables #}
 {% set title = 'label.pwa_offline'|trans %}
+{% set robots = 'noindex, follow' %}
 
-{# Kept by the service worker at its install and shown in place of any page the network could not bring #}
+{# Kept by the service worker at its install and shown in place of any page the network could not bring, the worker writing the downloaded pages into the list and showing it when there are some (see sw.js.twig) - no script needed, its own may not be cached #}
 {% block content %}
     <div class="container text-center my-5">
         <p>{{ 'label.pwa_offline_text'|trans }}</p>
         <a class="btn btn-primary" href="/">{{ 'label.pwa_retry'|trans }}</a>
     </div>
+    <section class="container pwa-downloads my-5" data-pwa-downloads hidden>
+        <h2>{{ 'label.pwa_downloads'|trans }}</h2>
+        <ul class="pwa-downloads-list"><!--pwa-downloads--></ul>
+    </section>
 {% endblock %}

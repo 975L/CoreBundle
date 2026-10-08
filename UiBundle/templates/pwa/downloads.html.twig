@@ -1,0 +1,24 @@
+{% extends 'layout.html.twig' %}
+{% trans_default_domain 'ui' %}
+
+{# Defines specific variables #}
+{% set title = 'label.pwa_downloads'|trans %}
+{% set robots = 'noindex, follow' %}
+
+{# What this browser keeps for offline use, listed by the script from the cache itself (see assets/js/pwa-downloads.js): the server knows nothing of it #}
+{% block content %}
+    <div class="container pwa-downloads my-5" data-controller="pwa-downloads">
+        <p hidden>{{ 'label.pwa_downloads_total'|trans }} <strong data-pwa-downloads-target="total"></strong></p>
+        <ul class="pwa-downloads-list" data-pwa-downloads-target="list"></ul>
+        <template data-pwa-downloads-target="item">
+            <li>
+                <a href=""><img src="" alt="" aria-hidden="true" width="60" height="85" loading="lazy"> <span data-title></span></a>
+                <span data-size></span>
+                <button type="button" class="btn btn-secondary" data-action="pwa-downloads#remove">{{ 'label.pwa_download_remove'|trans }}</button>
+            </li>
+        </template>
+        <p data-pwa-downloads-target="empty" hidden>{{ 'label.pwa_downloads_empty'|trans }}</p>
+        <p data-pwa-downloads-target="unsupported" hidden>{{ 'label.pwa_downloads_unsupported'|trans }}</p>
+        <button type="button" class="btn btn-secondary" data-pwa-downloads-target="removeAll" data-action="pwa-downloads#removeAll" hidden>{{ 'label.pwa_downloads_remove_all'|trans }}</button>
+    </div>
+{% endblock %}

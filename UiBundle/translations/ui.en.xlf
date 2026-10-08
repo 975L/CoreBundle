@@ -3790,6 +3790,50 @@
                 <source>label.progress_percent</source>
                 <target>Progress Percentage (0-100)</target>
             </trans-unit>
+            <trans-unit id="4RW2_yl">
+                <source>label.pwa_download</source>
+                <target>Download for offline use</target>
+            </trans-unit>
+            <trans-unit id="zGRIJjz">
+                <source>label.pwa_download_error</source>
+                <target>The download failed: check the connection and try again.</target>
+            </trans-unit>
+            <trans-unit id="bxpyWDm">
+                <source>label.pwa_download_remove</source>
+                <target>Delete</target>
+            </trans-unit>
+            <trans-unit id="t2NcZNo">
+                <source>label.pwa_downloaded</source>
+                <target>Available offline.</target>
+            </trans-unit>
+            <trans-unit id="0oTRy67">
+                <source>label.pwa_downloading</source>
+                <target>Downloading</target>
+            </trans-unit>
+            <trans-unit id="Y33mYcC">
+                <source>label.pwa_downloads</source>
+                <target>My downloads</target>
+            </trans-unit>
+            <trans-unit id="Iir6bNm">
+                <source>label.pwa_downloads_empty</source>
+                <target>No downloads yet.</target>
+            </trans-unit>
+            <trans-unit id="_uonHD5">
+                <source>label.pwa_downloads_remove_all</source>
+                <target>Delete all</target>
+            </trans-unit>
+            <trans-unit id="8pORdkw">
+                <source>label.pwa_downloads_total</source>
+                <target>Space used:</target>
+            </trans-unit>
+            <trans-unit id="3UB1T1w">
+                <source>label.pwa_downloads_unsupported</source>
+                <target>This browser cannot keep pages for offline use.</target>
+            </trans-unit>
+            <trans-unit id="zUGbrAu">
+                <source>label.pwa_ios_install</source>
+                <target>Install the app</target>
+            </trans-unit>
             <trans-unit id="xeJW4Zp">
                 <source>label.pwa_offline</source>
                 <target>Offline</target>
@@ -4665,6 +4709,10 @@
             <trans-unit id="vcT08Ej">
                 <source>text.logged_in_as</source>
                 <target>You are logged in as %user%,</target>
+            </trans-unit>
+            <trans-unit id="4__qeS6">
+                <source>text.pwa_ios_install</source>
+                <target>In Safari, tap the Share button, then “Add to Home Screen”.</target>
             </trans-unit>
             <trans-unit id="JdqcjEg">
                 <source>text.review_submitted</source>

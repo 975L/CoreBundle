@@ -174,6 +174,10 @@
                 <source>description.ui_pwa_enabled</source>
                 <target>Permite instalar el sitio como una aplicación en un teléfono o un ordenador, con una página mostrada sin conexión</target>
             </trans-unit>
+            <trans-unit id="UtzpjL3">
+                <source>description.ui_pwa_orientation</source>
+                <target>Bloquea la aplicación instalada en vertical u horizontal; la pantalla sigue al teléfono si está vacío</target>
+            </trans-unit>
             <trans-unit id="RqrSOkt">
                 <source>description.ui_pwa_share_target</source>
                 <target>Ruta de la página que recibe un enlace compartido desde el menú Compartir del teléfono (parámetros title, text y url); ninguna si está vacío</target>
@@ -381,6 +385,10 @@
             <trans-unit id="NsXpom2">
                 <source>label.ui_pwa_enabled</source>
                 <target>Aplicación web instalable</target>
+            </trans-unit>
+            <trans-unit id="shOk7TO">
+                <source>label.ui_pwa_orientation</source>
+                <target>Orientación de la aplicación</target>
             </trans-unit>
             <trans-unit id="yV1Ck_y">
                 <source>label.ui_pwa_share_target</source>

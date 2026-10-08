@@ -37,7 +37,8 @@ class PwaInstallControllerTest extends TestCase
         $this->assertStringContainsString('static targets = ["install"];', $script);
         $this->assertStringContainsString('installTargetConnected(button)', $script);
         $this->assertStringContainsString('installTargetDisconnected(button)', $script);
-        $this->assertStringContainsString('button.hidden = null === installPrompt;', $script);
+        $this->assertStringContainsString('button.hidden = !canInstall();', $script);
+        $this->assertStringContainsString('return null !== installPrompt || explainsIosInstall;', $script);
         $this->assertStringContainsString('window.addEventListener("appinstalled"', $script);
     }
 
@@ -49,6 +50,15 @@ class PwaInstallControllerTest extends TestCase
 
         $this->assertStringContainsString('if (null === installPrompt) {', $install);
         $this->assertLessThan(strpos($install, 'await prompt.prompt();'), strpos($install, 'installPrompt = null;'));
+    }
+
+    // iOS has no install offer: outside the installed app the button opens the layout's explanation instead
+    public function testTheButtonExplainsTheInstallOnIos(): void
+    {
+        $install = substr($this->read(self::CONTROLLER_JS), (int) strpos($this->read(self::CONTROLLER_JS), 'async install()'));
+
+        $this->assertStringContainsString('document.getElementById("pwa-ios-install")?.showModal();', $install);
+        $this->assertStringContainsString('<twig:c975LUi:Dialog:Dialog id="pwa-ios-install"', $this->read('templates/layout.html.twig'));
     }
 
     // Lazily registered under the identifier the layout mounts on the body
