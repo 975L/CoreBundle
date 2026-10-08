@@ -1,0 +1,43 @@
+/* ALERTS - the page's own look, on top of _alerts.scss which the emails share */
+// A colored edge on the left rather than a centered box: an alert is read as a sentence, and the edge says its type before the words do. Stated rather than inherited, a theme centering its page text otherwise centering the alert's
+.alert {
+    text-align: start;
+}
+
+.alert-success {
+    border-left: 4px solid var(--alert-success-accent);
+}
+
+.alert-info {
+    border-left: 4px solid var(--alert-info-accent);
+}
+
+.alert-danger {
+    border-left: 4px solid var(--alert-danger-accent);
+}
+
+.alert-warning {
+    border-left: 4px solid var(--alert-warning-accent);
+}
+
+// The component's layout, the icon beside the text rather than above it - kept off the bare ".alert" a template writes by hand, where every inline tag would turn into a column
+.alert--icon {
+    display: flex;
+    align-items: flex-start;
+    gap: .75em;
+}
+
+.alert--icon > .icon {
+    flex: none;
+    margin-top: .2em;
+}
+
+.alert__body {
+    flex: 1;
+    min-width: 0;
+}
+
+.alert__body > :last-child,
+.alert__body > div > :last-child {
+    margin-bottom: 0;
+}

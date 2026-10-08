@@ -14,6 +14,10 @@
     --alert-info-background: #d9edf7;
     --alert-success-background: #d0e9c6;
     --alert-warning-background: #f9dba7;
+    --alert-danger-accent: #9c3a44;
+    --alert-info-accent: #31708f;
+    --alert-success-accent: #3c763d;
+    --alert-warning-accent: #b7791f;
     --audio-sticky-background: var(--background);
     --media-title-size: calc(1.3rem * var(--font-size-title-scale, 1));
     --back-pull-background-color: #bababa;
@@ -156,11 +160,12 @@
 }
 /* ALERTS */
 .alert {
-  padding: 1em;
+  padding: 0.9em 1.1em;
   margin: 1em auto;
   max-width: var(--alert-max-width, 700px);
-  border: 1px solid transparent;
-  border-radius: 5px;
+  border: 0;
+  border-radius: var(--radius-card, 10px);
+  line-height: 1.5;
 }
 
 .alert,
@@ -194,6 +199,48 @@
 
 .alert-warning {
   background-color: var(--alert-warning-background);
+}
+
+/* ALERTS - the page's own look, on top of _alerts.scss which the emails share */
+.alert {
+  text-align: start;
+}
+
+.alert-success {
+  border-left: 4px solid var(--alert-success-accent);
+}
+
+.alert-info {
+  border-left: 4px solid var(--alert-info-accent);
+}
+
+.alert-danger {
+  border-left: 4px solid var(--alert-danger-accent);
+}
+
+.alert-warning {
+  border-left: 4px solid var(--alert-warning-accent);
+}
+
+.alert--icon {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75em;
+}
+
+.alert--icon > .icon {
+  flex: none;
+  margin-top: 0.2em;
+}
+
+.alert__body {
+  flex: 1;
+  min-width: 0;
+}
+
+.alert__body > :last-child,
+.alert__body > div > :last-child {
+  margin-bottom: 0;
 }
 
 /* ALIGNMENTS */

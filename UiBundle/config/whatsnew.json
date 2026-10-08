@@ -3,6 +3,11 @@
         "date": "2026-10-08",
         "description": [
             {
+                "en": "Alerts get a cleaner look: a colored edge tells their type at a glance, with the icon beside the text.",
+                "fr": "Les alertes ont un aspect plus net : un liseré de couleur indique leur type d'un coup d'œil, avec l'icône à côté du texte.",
+                "es": "Las alertas tienen un aspecto más limpio: un borde de color indica su tipo de un vistazo, con el icono junto al texto."
+            },
+            {
                 "en": "Visitors can download a page of the installed app to read or listen to it without a connection, and manage their downloads.",
                 "fr": "Les visiteurs peuvent télécharger une page de l'application installée pour la lire ou l'écouter sans connexion, et gérer leurs téléchargements.",
                 "es": "Los visitantes pueden descargar una página de la aplicación instalada para leerla o escucharla sin conexión, y gestionar sus descargas."

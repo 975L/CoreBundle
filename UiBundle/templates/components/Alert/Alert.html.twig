@@ -7,9 +7,9 @@
 {% set content = content | default('') %}
 {% set content = message != '' ? message : content %}
 {% set icon = icon | default(true) | to_bool %}
-<div class="alert alert-{{ type }} text-center">
+<div class="alert alert-{{ type }}{{ icon ? ' alert--icon' }}">
     {% if icon %}
         <twig:c975LUi:Image:Icon src="bundles/c975lsite/icons/alert-{{ type }}.svg" width="16" height="16"/>
     {% endif %}
-    {% block content %}{{ content|raw|nl2br }}{% endblock %}
+    <div class="alert__body">{% block content %}{{ content|raw|nl2br }}{% endblock %}</div>
 </div>

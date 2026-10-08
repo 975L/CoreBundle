@@ -1,10 +1,12 @@
 /* ALERTS */
+// Shared with the email stylesheet, so nothing here a mail client drops: no flex, and no token set per class (see _alert-layout.scss for the page's own)
 .alert {
-    padding: 1em;
+    padding: .9em 1.1em;
     margin: 1em auto;
     max-width: var(--alert-max-width, 700px);
-    border: 1px solid transparent;
-    border-radius: 5px;
+    border: 0;
+    border-radius: var(--radius-card, 10px);
+    line-height: 1.5;
 }
 
 // Descendants included: the theme's "*" rule colors each nested tag directly, beating inheritance

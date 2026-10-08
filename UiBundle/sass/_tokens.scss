@@ -14,6 +14,11 @@
         --alert-info-background: #d9edf7;
         --alert-success-background: #d0e9c6;
         --alert-warning-background: #f9dba7;
+        // The edge each alert is marked by on its left, deeper than its background so the type reads even on a pale tint
+        --alert-danger-accent: #9c3a44;
+        --alert-info-accent: #31708f;
+        --alert-success-accent: #3c763d;
+        --alert-warning-accent: #b7791f;
         // The ground a sticky player writes on, which cannot be transparent: it hides the column sliding under it
         --audio-sticky-background: var(--background);
         // A media's title - a video's, a player's - at the h3 scale whatever its rank: a block's title is an <h2>, and the theme's h2 rule would blow the one in a "video_grid" cell up to a page heading. The standalone block states its own, a section title's (see sass/_images.scss)

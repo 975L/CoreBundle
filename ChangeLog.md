@@ -1,5 +1,17 @@
 # ChangeLog
 
+## v1.59.1
+
+Alerts restyled with a colored left edge and side icon
+
+### UiBundle
+
+- Alerts marked by a colored left edge, left-aligned and rounded (08/10/2026)
+- Added the `--alert-{type}-accent` tokens (08/10/2026)
+- `Alert` component lays its icon beside the text (`alert--icon`, `alert__body`) (08/10/2026)
+- Added `AlertMarkupTest` (08/10/2026)
+- Updated the readme (08/10/2026)
+
 ## v1.59
 
 PWA pages downloadable for offline use, iOS install
