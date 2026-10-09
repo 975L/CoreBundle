@@ -1,5 +1,13 @@
 # ChangeLog
 
+## v1.63.1
+
+Scaffold repositories' docblocks collapsed to one line
+
+### ConfigBundle
+
+- Collapsed the scaffold `UserRepository` and `ResetPasswordRequestRepository` `@extends` docblocks to one line (09/10/2026)
+
 ## v1.63
 
 Shared blocks travel with the content export and are translated like a page
