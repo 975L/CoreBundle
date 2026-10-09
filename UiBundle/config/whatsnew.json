@@ -8,6 +8,11 @@
                 "es": "Bloques compartidos: escriba una sección una sola vez (una llamada a la acción, una banda) y muéstrela en tantas páginas como quiera; modificarla actualiza todas las páginas."
             },
             {
+                "en": "Shared blocks are translated like a page, on their own screen, and travel with the content export.",
+                "fr": "Les blocs partagés se traduisent comme une page, sur leur propre écran, et suivent l'export du contenu.",
+                "es": "Los bloques compartidos se traducen como una página, en su propia pantalla, y acompañan la exportación del contenido."
+            },
+            {
                 "en": "A card's button now names the page it leads to, better read by search engines than a bare “Learn more”.",
                 "fr": "Le bouton d'une carte nomme désormais la page vers laquelle il mène, mieux lu par les moteurs de recherche qu'un simple « En savoir plus ».",
                 "es": "El botón de una tarjeta nombra ahora la página a la que lleva, mejor leído por los buscadores que un simple «Más información»."

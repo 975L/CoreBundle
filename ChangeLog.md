@@ -1,5 +1,17 @@
 # ChangeLog
 
+## v1.63
+
+Shared blocks travel with the content export and are translated like a page
+
+### UiBundle
+
+- Added `SharedBlockExportProvider` and `SharedBlockImportProvider` (kind `site_shared_block`, matched by slug) (09/10/2026)
+- Added `SharedBlockTextProvider`, handing the shared blocks' texts to `c975l:translate:content` (09/10/2026)
+- The "Blocs partagés" edit screen opens on the site's other languages (09/10/2026)
+- Added `SharedBlockExportImportProviderTest`, `SharedBlockTextProviderTest` and `SharedBlockCrudControllerTest` (09/10/2026)
+- Updated the readme and the `c975l-blocks` skill (09/10/2026)
+
 ## v1.62
 
 Shared blocks, written once and shown on several pages
@@ -55,6 +67,7 @@ Social content sources can be browsed and report their post status
 - Added `Contract\BrowsableSocialContentSourceInterface`, listing a source's free contents and their group (09/10/2026)
 - Added `Contract\SocialContentStatusProviderInterface` and `Model\SocialContentStatus` (09/10/2026)
 - Updated the readme (09/10/2026)
+- Updated the `c975l-blocks` skill (09/10/2026)
 
 ## v1.60.1
 
@@ -88,6 +101,7 @@ Alerts name their type with a word instead of an icon
 - Legal documents' PDF cached under the kernel's cache directory instead of `var/pdf/` (09/10/2026)
 - Updated `AlertMarkupTest` and `LegalDocumentTest` (09/10/2026)
 - Updated the readme (09/10/2026)
+- Updated the `c975l-blocks` skill (09/10/2026)
 
 ### ConfigBundle
 

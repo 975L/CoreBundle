@@ -4346,6 +4346,10 @@
                 <source>label.shared_block_slug</source>
                 <target>Identifier</target>
             </trans-unit>
+            <trans-unit id=".91.aZY">
+                <source>label.shared_block_translation_help</source>
+                <target>The same blocks, in the chosen language. The original text in brackets marks what is left to translate: left as is, it is not saved. The shared block is composed in the original language.</target>
+            </trans-unit>
             <trans-unit id="R8vw.C0">
                 <source>label.shared_block_unknown_location</source>
                 <target>an unknown place</target>

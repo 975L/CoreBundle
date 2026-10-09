@@ -792,6 +792,8 @@ A section repeated on several pages - the call to action closing each of them, a
 - A pointer's "Edit" button opens its shared block's screen, whatever entity carries the pointer (`SharedBlockEditUrl`, laid first by `BlockEditUrlRegistry`).
 - A shared block showing itself, directly or through a container, draws its run once: the pointer met again renders nothing.
 - A slug no shared block answers to - deleted, not imported yet - renders nothing rather than a hole, and the pointer is refreshed the day that shared block is created (`SharedBlockCacheInvalidationListener`).
+- The content export carries the shared blocks on their own (kind `site_shared_block`, matched back by slug, the run replaced as a whole), a page export holding only its pointers' slugs.
+- Their texts are translated like a page's: on the edit screen's language tabs, and by `c975l:translate:content` (`SharedBlockTextProvider`).
 - Limits: a shared `card` does not join a `.cards` row of the page's own cards, the grouping reading the pointer's kind; and the same shared block twice on one page writes its anchor twice.
 
 ### The grid of pictures (`portfolio_grid`)

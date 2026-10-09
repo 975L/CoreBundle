@@ -10,6 +10,7 @@
 
 namespace c975L\UiBundle\Controller\Management;
 
+use c975L\ConfigBundle\Management\ContentLocaleScreen;
 use c975L\ConfigBundle\Management\EasyAdminActionHelper;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\UiBundle\Entity\Block;
@@ -20,6 +21,7 @@ use c975L\UiBundle\Management\SharedBlockOwnerResolver;
 use c975L\UiBundle\Registry\BlockLocationRegistry;
 use c975L\UiBundle\Repository\SharedBlockRepository;
 use c975L\UiBundle\Service\BlockMoveRowAttrBuilder;
+use c975L\UiBundle\Service\ContentTranslator;
 use c975L\UiBundle\Service\SharedBlockUsage;
 use c975L\UiBundle\Service\UniqueSlug;
 use Doctrine\ORM\EntityManagerInterface;
@@ -60,6 +62,8 @@ class SharedBlockCrudController extends AbstractCrudController
         private readonly SharedBlockUsage $sharedBlockUsage,
         private readonly BlockLocationRegistry $blockLocationRegistry,
         private readonly SluggerInterface $slugger,
+        private readonly ContentLocaleScreen $contentLocaleScreen,
+        private readonly ContentTranslator $contentTranslator,
     ) {
     }
 
@@ -73,11 +77,13 @@ class SharedBlockCrudController extends AbstractCrudController
     public function createEditFormBuilder(EntityDto $entityDto, KeyValueStore $formOptions, AdminContext $context): FormBuilderInterface
     {
         $formBuilder = parent::createEditFormBuilder($entityDto, $formOptions, $context);
+        $contentLocale = $this->contentLocale();
 
-        $formBuilder->addEventListener(FormEvents::PRE_SUBMIT, function (FormEvent $event): void {
+        $formBuilder->addEventListener(FormEvents::PRE_SUBMIT, function (FormEvent $event) use ($contentLocale): void {
             $data = $event->getData();
             $sharedBlock = $event->getForm()->getData();
-            if (!is_array($data) || !$sharedBlock instanceof SharedBlock) {
+            // A language screen offers neither "+" nor bin, so nothing can have been removed there: reading the absent key as a removal would delete the blocks on a submission carrying only translations
+            if (!is_array($data) || !$sharedBlock instanceof SharedBlock || null !== $contentLocale) {
                 return;
             }
 
@@ -144,6 +150,21 @@ class SharedBlockCrudController extends AbstractCrudController
     public function configureFields(string $pageName): iterable
     {
         $entity = $this->adminContextProvider->getContext()?->getEntity()?->getInstance();
+
+        // A language screen: the blocks alone, written in that language through the form they are always edited with (see BlockType's "translation_locale"). Neither add nor delete, a block taken away there being taken away from every language at once; the name is never read by a visitor, so it is not offered
+        $contentLocale = Crud::PAGE_EDIT === $pageName ? $this->contentLocale() : null;
+        if (null !== $contentLocale) {
+            yield CollectionField::new('blocks')
+                ->setLabel(t('label.blocks', [], 'ui'))
+                ->setColumns('col-12')
+                ->setEntryType(BlockType::class)
+                ->allowAdd(false)
+                ->allowDelete(false)
+                ->setFormTypeOption('by_reference', false)
+                ->setFormTypeOption('entry_options.translation_locale', $contentLocale);
+
+            return;
+        }
 
         yield TextField::new('name')
             ->setLabel(t('label.shared_block_name', [], 'ui'))
@@ -212,6 +233,25 @@ class SharedBlockCrudController extends AbstractCrudController
         }
 
         return parent::delete($context);
+    }
+
+    // The language tabs above the edit form, shared with every screen that has a language of its own (see ContentLocaleScreen) - nothing at all on a site declaring a single one
+    #[\Override]
+    public function configureResponseParameters(KeyValueStore $responseParameters): KeyValueStore
+    {
+        $sharedBlock = $responseParameters->get('entity')?->getInstance();
+
+        if (Crud::PAGE_EDIT === $responseParameters->get('pageName') && $sharedBlock instanceof SharedBlock && null !== $sharedBlock->getId()) {
+            $this->contentLocaleScreen->addParameters($responseParameters, self::class, $sharedBlock->getId(), $this->contentTranslator->getTranslatableLocales(), $this->contentLocale());
+        }
+
+        return parent::configureResponseParameters($responseParameters);
+    }
+
+    // The language the screen is opened on, when it is not the one the site is written in
+    private function contentLocale(): ?string
+    {
+        return $this->contentLocaleScreen->locale($this->contentTranslator->getTranslatableLocales());
     }
 
     private function usageCount(SharedBlock $sharedBlock): int

@@ -4346,6 +4346,10 @@
                 <source>label.shared_block_slug</source>
                 <target>Identifiant</target>
             </trans-unit>
+            <trans-unit id=".91.aZY">
+                <source>label.shared_block_translation_help</source>
+                <target>Les mêmes blocs, dans la langue choisie. Le texte d'origine entre crochets marque ce qui reste à traduire : laissé tel quel, il n'est pas enregistré. La composition du bloc partagé se fait dans la langue d'origine.</target>
+            </trans-unit>
             <trans-unit id="R8vw.C0">
                 <source>label.shared_block_unknown_location</source>
                 <target>un emplacement inconnu</target>

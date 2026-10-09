@@ -1,7 +1,14 @@
 {% extends '@EasyAdmin/crud/edit.html.twig' %}
 
 {% block main %}
-    <p>{{ 'label.info_shared_block'|trans({}, 'ui') }}</p>
+    {# The language the shared block is being written in, on the tabs every screen with a language of its own draws - nothing at all on a site declaring a single one (see ContentLocaleScreen) #}
+    {{ include('@c975LConfig/management/_content_locale_tabs.html.twig') }}
+
+    {% if content_locale is defined and content_locale is not null %}
+        <p class="text-muted">{{ 'label.shared_block_translation_help'|trans({}, 'ui') }}</p>
+    {% else %}
+        <p>{{ 'label.info_shared_block'|trans({}, 'ui') }}</p>
+    {% endif %}
 
     {{ parent() }}
 {% endblock main %}
