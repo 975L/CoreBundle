@@ -31,8 +31,10 @@
                 {# No "url" on this media: nothing to link to, so this must not render as an <a> at all - a href="#" would be a dead link that still looks clickable #}
                 {# A name of its own, "tag" being the container's above: Twig's "set" is not scoped to the loop, so reusing it there closed the whole section with whatever the last project rendered #}
                 {% set projectTag = m.url ? 'a' : 'div' %}
+                {# The card's accent, stored as "accent-<hue>" among the media's css classes and matched against BlockAccentChoiceType's twelve hues, never interpolated: the other classes ("img-*", "width-*") are the picture's and would break the card #}
+                {% set projectAccent = (m.cssClasses|default([])|filter(c => c starts with 'accent-' and c[7:] in ['red', 'orange', 'yellow', 'lime', 'green', 'teal', 'cyan', 'blue', 'indigo', 'violet', 'pink', 'grey'])|first)|default('') %}
                 {# Same reading as the "collection" block's own portfolio variant (see blocks/CollectionItem.html.twig): a tab of its own is for a link leaving the site, never for a page of this one #}
-                <{{ projectTag }} class="portfolio-grid__project"{% if m.url %} href="{{ m.url }}"{% if m.url starts with 'http' %} target="_blank" rel="noopener"{% endif %}{% endif %}>
+                <{{ projectTag }} class="portfolio-grid__project{{ projectAccent ? ' portfolio-grid__project--' ~ projectAccent : '' }}"{% if m.url %} href="{{ m.url }}"{% if m.url starts with 'http' %} target="_blank" rel="noopener"{% endif %}{% endif %}>
                     <div class="portfolio-grid__project-img">
                         {# A project leading somewhere is already an <a>, and the zoom writes one of its own: nesting the two would have the browser split them and leave the dialog outside the controller's element, so the outbound link wins over the zoom #}
                         {% if zoom and not m.url %}

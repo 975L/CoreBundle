@@ -114,9 +114,28 @@ class PortfolioLinkTargetTest extends TestCase
         $this->assertStringContainsString('<img src="/uploads/project.jpg"', $html);
     }
 
-    private function media(string $url, string $label): object
+    // A card marked with one of the twelve hues stands out from its neighbours, the picture's own classes staying off it
+    public function testAnAccentedProjectCarriesItsHueAlone(): void
     {
-        return (object) ['url' => $url, 'label' => $label, 'description' => null, 'filename' => 'project.webp', 'alt' => null, 'intrinsicWidth' => null, 'intrinsicHeight' => null];
+        $html = $this->renderGrid([$this->media('/pages/tutoriels/social-bundle', 'Les tutoriels', ['img-rounded', 'accent-violet'])]);
+
+        $this->assertStringContainsString('class="portfolio-grid__project portfolio-grid__project--accent-violet"', $html);
+        $this->assertStringNotContainsString('img-rounded', $html);
+    }
+
+    // A stored value outside the twelve is never written into a class name
+    public function testAnUnknownAccentIsIgnored(): void
+    {
+        $html = $this->renderGrid([$this->media('/pages/tutoriels/social-bundle', 'Les tutoriels', ['accent-gold" onclick="x'])]);
+
+        $this->assertStringContainsString('class="portfolio-grid__project"', $html);
+        $this->assertStringNotContainsString('accent-', $html);
+    }
+
+    /** @param list<string> $cssClasses */
+    private function media(string $url, string $label, array $cssClasses = []): object
+    {
+        return (object) ['url' => $url, 'label' => $label, 'description' => null, 'filename' => 'project.webp', 'alt' => null, 'intrinsicWidth' => null, 'intrinsicHeight' => null, 'cssClasses' => $cssClasses];
     }
 
     private function renderItem(array $context): string

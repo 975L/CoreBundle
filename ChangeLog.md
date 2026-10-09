@@ -1,5 +1,15 @@
 # ChangeLog
 
+## v1.63.2
+
+Portfolio cards marked with an accent hue
+
+### UiBundle
+
+- A `portfolio_grid` card whose media carries `accent-<hue>` is outlined and banded in that hue (09/10/2026)
+- Added the accent cases to `PortfolioLinkTargetTest` (09/10/2026)
+- Updated the readme (09/10/2026)
+
 ## v1.63.1
 
 Scaffold repositories' docblocks collapsed to one line

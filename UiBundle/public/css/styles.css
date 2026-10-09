@@ -3756,6 +3756,78 @@ main :is(.blocks, .block-animation, .block-editable) > :is(.block-animation, .bl
   line-height: 1.5;
 }
 
+.portfolio-grid__project--accent-red {
+  --portfolio-grid-accent: var(--block-accent-red);
+  --portfolio-grid-accent-color: #fff;
+}
+
+.portfolio-grid__project--accent-green {
+  --portfolio-grid-accent: var(--block-accent-green);
+  --portfolio-grid-accent-color: #fff;
+}
+
+.portfolio-grid__project--accent-cyan {
+  --portfolio-grid-accent: var(--block-accent-cyan);
+  --portfolio-grid-accent-color: #fff;
+}
+
+.portfolio-grid__project--accent-blue {
+  --portfolio-grid-accent: var(--block-accent-blue);
+  --portfolio-grid-accent-color: #fff;
+}
+
+.portfolio-grid__project--accent-indigo {
+  --portfolio-grid-accent: var(--block-accent-indigo);
+  --portfolio-grid-accent-color: #fff;
+}
+
+.portfolio-grid__project--accent-violet {
+  --portfolio-grid-accent: var(--block-accent-violet);
+  --portfolio-grid-accent-color: #fff;
+}
+
+.portfolio-grid__project--accent-pink {
+  --portfolio-grid-accent: var(--block-accent-pink);
+  --portfolio-grid-accent-color: #fff;
+}
+
+.portfolio-grid__project--accent-grey {
+  --portfolio-grid-accent: var(--block-accent-grey);
+  --portfolio-grid-accent-color: #fff;
+}
+
+.portfolio-grid__project--accent-orange {
+  --portfolio-grid-accent: var(--block-accent-orange);
+  --portfolio-grid-accent-color: #000;
+}
+
+.portfolio-grid__project--accent-yellow {
+  --portfolio-grid-accent: var(--block-accent-yellow);
+  --portfolio-grid-accent-color: #000;
+}
+
+.portfolio-grid__project--accent-lime {
+  --portfolio-grid-accent: var(--block-accent-lime);
+  --portfolio-grid-accent-color: #000;
+}
+
+.portfolio-grid__project--accent-teal {
+  --portfolio-grid-accent: var(--block-accent-teal);
+  --portfolio-grid-accent-color: #000;
+}
+
+.portfolio-grid__project[class*=portfolio-grid__project--accent-] {
+  border-color: var(--portfolio-grid-accent);
+}
+
+.portfolio-grid__project[class*=portfolio-grid__project--accent-] .portfolio-grid__project-body {
+  background: var(--portfolio-grid-accent);
+}
+
+.portfolio-grid__project[class*=portfolio-grid__project--accent-] :is(.portfolio-grid__project-title, .portfolio-grid__project-text) {
+  color: var(--portfolio-grid-accent-color);
+}
+
 :is(.portfolio-grid--plain, .portfolio-grid--thumbnail) .portfolio-grid__project {
   background: none;
   border: 0;

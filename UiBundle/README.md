@@ -802,6 +802,8 @@ Its **Presentation** field (`variant`) says what the grid is showing, without an
 
 Its **Image zoom** field (`zoom`) has one click open the picture over the page, through `<twig:c975LUi:Image:Zoom>` and its native `<dialog>`. It only fires on a project carrying no url: a project leading somewhere is already an `<a>` and the zoom writes one of its own, which no browser can nest - the outbound link wins. A block's media has no `-highres` sibling (`Media` does not implement `VichMultiSizeImageInterface`), so the dialog opens the stored file at its own size rather than at the width of its cell, and the link is announced as *enlarge the image* rather than as a high resolution that is not coming.
 
+A project card can stand out from its neighbours: an `accent-<hue>` among its media's css classes, one of the twelve hues `BlockAccentChoiceType` offers, outlines the card and bands its text in that `--block-accent-*` color (`.portfolio-grid__project--accent-<hue>`). Any other value is ignored, never written into the class attribute.
+
 ---
 
 ## Container kinds (blocks made of other blocks)
