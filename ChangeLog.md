@@ -1,5 +1,15 @@
 # ChangeLog
 
+## v1.60.2
+
+Social content sources can be browsed and report their post status
+
+### UiBundle
+
+- Added `Contract\BrowsableSocialContentSourceInterface`, listing a source's free contents and their group (09/10/2026)
+- Added `Contract\SocialContentStatusProviderInterface` and `Model\SocialContentStatus` (09/10/2026)
+- Updated the readme (09/10/2026)
+
 ## v1.60.1
 
 Account with a pending password reset can be deleted

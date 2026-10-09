@@ -3445,6 +3445,10 @@ Each content is a **`Model\SocialContent`**: `sourceId`, `title`, `url`, the ima
 
 A source whose contents fall into groups — a gallery's categories — may also implement **`Contract\ScopedSocialContentSourceInterface`**, so a SocialBundle series can be narrowed to some of them: `getScopes()` lists the groups (labels keyed by id), `getNextScopedContent(array $excludedIds, array $scopeIds)` picks only among those given, an empty list meaning every group. It extends the base interface rather than adding to it, so a source without groups has nothing to change.
 
+A source may also implement **`Contract\BrowsableSocialContentSourceInterface`**, so the content of a SocialBundle draft can be changed on its screen: `findContents(array $excludedIds, array $scopeIds, int $limit)` lists the contents still free, the latest first, and `getContentScope(string $sourceId)` names the group a content belongs to, `null` without groups — drawing another one at random going through `getNextScopedContent()` with that group.
+
+The other way round, **`Contract\SocialContentStatusProviderInterface`** is implemented by SocialBundle: `getStatuses(string $sourceType, array $sourceIds)` tells the bundle owning the contents which ones a post holds, as a **`Model\SocialContentStatus`** — `reserved` by a draft still to go out, at its planned moment, or `published`, at the moment it went out. The owning bundle takes it as a nullable argument (`?SocialContentStatusProviderInterface $socialStatuses = null`), null on a site without SocialBundle, and shows it in its own lists.
+
 A bundle may also offer its pictures and videos to be picked one by one — a gallery's photographs attached to a social post — by implementing **`Contract\PickableMediaProviderInterface`** (auto-discovered by interface, no tag needed): `getPickableMediaLabel()` names the library, `findPickableMedia(string $search, int $limit)` returns `Model\PickableMedia` (path from the site root, title, MIME type, optional thumbnail), the latest first.
 
 ### Exporting and importing blocks
