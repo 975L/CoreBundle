@@ -1,5 +1,26 @@
 # ChangeLog
 
+## v1.62
+
+Shared blocks, written once and shown on several pages
+
+### UiBundle
+
+- Added the `SharedBlock` entity, a named run of blocks, and its `SharedBlockRepository` (09/10/2026) **See [UPGRADE.md](UPGRADE.md)** [Needs db update]
+- Added the `shared_block` block kind, a pointer drawing its shared block's run live (09/10/2026)
+- Added the `render_shared_block()` Twig function (09/10/2026)
+- Added the "Blocs partagés" screen (`SharedBlockCrudController`) (09/10/2026)
+- Deleting a shared block still shown somewhere is refused (09/10/2026)
+- `BlockCacheTagResolver` tags a pointer with its shared block's tags (09/10/2026)
+- Added `SharedBlockCacheInvalidationListener` (09/10/2026)
+- A pointer's "Edit" button opens its shared block's screen (09/10/2026)
+- Added the "Blocs partagés" menu entry and the `ui-shared-block` guided project (09/10/2026)
+- A card's default button names its destination (`label.learn_more_about`) (09/10/2026)
+- A two-column FAQ keeps each question at its own height (09/10/2026)
+- Added `SharedBlockCacheTagResolverTest`, `SharedBlockExtensionTest`, `SharedBlockUsageTest`, `SharedBlockEditUrlTest`, `SharedBlockCacheInvalidationListenerTest`, `SharedBlockOwnerResolverTest` and `CardButtonLabelTest` (09/10/2026)
+- Updated `MenuProviderTest`, `UiGuidedProjectProviderTest` and `BlockEditUrlRegistryTest` (09/10/2026)
+- Updated the readme and the `c975l-blocks` skill (09/10/2026)
+
 ## v1.61
 
 Atom feeds contributed by bundles, announced in every page's head

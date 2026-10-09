@@ -17,6 +17,7 @@ use c975L\UiBundle\Controller\Management\FormCrudController;
 use c975L\UiBundle\Controller\Management\LegalModelController;
 use c975L\UiBundle\Controller\Management\MediaCrudController;
 use c975L\UiBundle\Controller\Management\ReviewCrudController;
+use c975L\UiBundle\Controller\Management\SharedBlockCrudController;
 use c975L\UiBundle\Controller\Management\SiteGraphicCrudController;
 use c975L\UiBundle\Management\MenuProvider;
 use c975L\UiBundle\Service\AiSiteSearchClient;
@@ -98,9 +99,10 @@ class MenuProviderTest extends TestCase
     {
         $menus = new MenuProvider($this->createConfigService(), $this->createTranslator(), $this->createSiteSearchClient())->getMenus();
 
-        $this->assertSame(['media', 'form', 'email_template', 'font', 'site_graphic', 'review'], array_keys($menus));
+        $this->assertSame(['media', 'form', 'shared_block', 'email_template', 'font', 'site_graphic', 'review'], array_keys($menus));
         $this->assertSame(MediaCrudController::class, $menus['media']['controller']);
         $this->assertSame(FormCrudController::class, $menus['form']['controller']);
+        $this->assertSame(SharedBlockCrudController::class, $menus['shared_block']['controller']);
         $this->assertSame(EmailTemplateCrudController::class, $menus['email_template']['controller']);
         $this->assertSame(FontCrudController::class, $menus['font']['controller']);
         $this->assertSame(SiteGraphicCrudController::class, $menus['site_graphic']['controller']);

@@ -3,6 +3,21 @@
         "date": "2026-10-09",
         "description": [
             {
+                "en": "Shared blocks: write a section once (a call to action, a banner) and show it on as many pages as you like; editing it updates every page.",
+                "fr": "Blocs partagés : écrivez une section une seule fois (un appel à l'action, un bandeau) et affichez-la sur autant de pages que vous voulez ; la modifier met à jour toutes les pages.",
+                "es": "Bloques compartidos: escriba una sección una sola vez (una llamada a la acción, una banda) y muéstrela en tantas páginas como quiera; modificarla actualiza todas las páginas."
+            },
+            {
+                "en": "A card's button now names the page it leads to, better read by search engines than a bare “Learn more”.",
+                "fr": "Le bouton d'une carte nomme désormais la page vers laquelle il mène, mieux lu par les moteurs de recherche qu'un simple « En savoir plus ».",
+                "es": "El botón de una tarjeta nombra ahora la página a la que lleva, mejor leído por los buscadores que un simple «Más información»."
+            },
+            {
+                "en": "In a two-column FAQ, opening a question no longer stretches the one beside it.",
+                "fr": "Dans une FAQ sur deux colonnes, ouvrir une question n'étire plus celle d'à côté.",
+                "es": "En unas preguntas frecuentes a dos columnas, abrir una pregunta ya no estira la de al lado."
+            },
+            {
                 "en": "Alerts now name their type with a short word above the text, also read out by screen readers.",
                 "fr": "Les alertes indiquent désormais leur type par un petit mot au-dessus du texte, lu aussi par les lecteurs d'écran.",
                 "es": "Las alertas indican ahora su tipo con una palabra corta encima del texto, leída también por los lectores de pantalla."

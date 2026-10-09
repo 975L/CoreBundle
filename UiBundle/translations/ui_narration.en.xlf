@@ -458,6 +458,30 @@
                 <source>narration.guided_step_ui_review_status</source>
                 <target>The status can also be set by hand in the form. "Published" shows the review on the page it is about and counts its score into the average, "Rejected" takes it back out. A review from a platform cannot be changed here.</target>
             </trans-unit>
+            <trans-unit id="FcCZzen">
+                <source>narration.guided_step_ui_shared_block_blocks</source>
+                <target>Add its blocks here, as you would on a page.</target>
+            </trans-unit>
+            <trans-unit id="kwXMoHh">
+                <source>narration.guided_step_ui_shared_block_done</source>
+                <target>All that is left is adding it to pages with the “Shared block” block.</target>
+            </trans-unit>
+            <trans-unit id="rT_ot.K">
+                <source>narration.guided_step_ui_shared_block_name</source>
+                <target>Give it a meaningful name, the one you will look for on a page.</target>
+            </trans-unit>
+            <trans-unit id="MvYhyyG">
+                <source>narration.guided_step_ui_shared_block_new</source>
+                <target>This button creates a new shared block.</target>
+            </trans-unit>
+            <trans-unit id="BDKW2jz">
+                <source>narration.guided_step_ui_shared_block_open</source>
+                <target>The panel takes you to the shared blocks, the sections several pages show.</target>
+            </trans-unit>
+            <trans-unit id="B4P6O44">
+                <source>narration.guided_step_ui_shared_block_save</source>
+                <target>Save: the shared block is ready to be placed.</target>
+            </trans-unit>
             <trans-unit id="5AgYdI2">
                 <source>narration.guided_step_ui_site_graphic_done</source>
                 <target>Check it on the site: the favicon shows in the browser tab, the share image when a page is posted on a social network. Either may need a forced refresh before it appears.</target>
@@ -509,6 +533,10 @@
             <trans-unit id="UkAKU5V">
                 <source>narration.reviews</source>
                 <target>"Customer reviews" gathers the site's reviews, whatever platform they come from. None shows online until you have published it.</target>
+            </trans-unit>
+            <trans-unit id="k8.kw0r">
+                <source>narration.shared_blocks</source>
+                <target>Shared blocks are written once and shown on several pages: editing them here updates them everywhere.</target>
             </trans-unit>
             <trans-unit id="f.chQ4a">
                 <source>narration.site_graphics</source>

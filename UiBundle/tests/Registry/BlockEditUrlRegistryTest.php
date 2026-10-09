@@ -12,6 +12,7 @@ namespace c975L\UiBundle\Tests\Registry;
 
 use c975L\UiBundle\Contract\BlockEditUrlProviderInterface;
 use c975L\UiBundle\Registry\BlockEditUrlRegistry;
+use c975L\UiBundle\Service\SharedBlockEditUrl;
 use PHPUnit\Framework\TestCase;
 
 class BlockEditUrlRegistryTest extends TestCase
@@ -80,5 +81,34 @@ class BlockEditUrlRegistryTest extends TestCase
         $urls = $registry->getEditUrls([]);
         $this->assertArrayHasKey(1, $urls);
         $this->assertArrayHasKey(2, $urls);
+    }
+
+    // A pointer is edited on its shared block's screen, whichever owner also answers for it
+    public function testGetEditUrlsLaysTheSharedBlockUrlFirst(): void
+    {
+        $sharedBlockEditUrl = $this->createStub(SharedBlockEditUrl::class);
+        $sharedBlockEditUrl->method('getEditUrls')->willReturn([1 => '/shared']);
+
+        $provider = $this->createStub(BlockEditUrlProviderInterface::class);
+        $provider->method('getEditUrls')->willReturn([1 => '/page', 2 => '/page-other']);
+
+        $registry = new BlockEditUrlRegistry($sharedBlockEditUrl);
+        $registry->addProvider($provider);
+
+        $this->assertSame([1 => '/shared', 2 => '/page-other'], $registry->getEditUrls([]));
+    }
+
+    public function testGetEditUrlsKeepsTheProvidersWhenTheSharedBlockUrlThrows(): void
+    {
+        $sharedBlockEditUrl = $this->createStub(SharedBlockEditUrl::class);
+        $sharedBlockEditUrl->method('getEditUrls')->willThrowException(new \RuntimeException());
+
+        $provider = $this->createStub(BlockEditUrlProviderInterface::class);
+        $provider->method('getEditUrls')->willReturn([2 => '/page']);
+
+        $registry = new BlockEditUrlRegistry($sharedBlockEditUrl);
+        $registry->addProvider($provider);
+
+        $this->assertSame([2 => '/page'], $registry->getEditUrls([]));
     }
 }

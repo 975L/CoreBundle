@@ -24,6 +24,7 @@ use c975L\UiBundle\Controller\Management\FormFieldTemplateCrudController;
 use c975L\UiBundle\Controller\Management\LegalModelController;
 use c975L\UiBundle\Controller\Management\MediaCrudController;
 use c975L\UiBundle\Controller\Management\ReviewCrudController;
+use c975L\UiBundle\Controller\Management\SharedBlockCrudController;
 use c975L\UiBundle\Controller\Management\SiteGraphicCrudController;
 use c975L\UiBundle\Service\AiRephraseClient;
 use c975L\UiBundle\Service\AiSiteSearchClient;
@@ -62,6 +63,7 @@ class UiGuidedProjectProvider implements GuidedProjectProviderInterface
             // Offered whatever "ui-enable-reviews" says, like the screen it walks to (see MenuProvider): that switch governs the public side only
             $this->reviewProject(),
             $this->mediaAddProject(),
+            $this->sharedBlockProject(),
         ];
 
         // Same gate as the screen it walks to (see MenuProvider): no question is recorded before the search is configured
@@ -228,6 +230,57 @@ class UiGuidedProjectProvider implements GuidedProjectProviderInterface
                     'label' => 'label.guided_step_ui_media_add_done',
                     'description' => 'description.guided_step_ui_media_add_done',
                     'narration' => 'narration.guided_step_ui_media_add_done',
+                ],
+            ],
+        ];
+    }
+
+    // A section repeated on several pages written once: creating it is this screen's whole job, placing it on a page being SiteBundle's
+    private function sharedBlockProject(): array
+    {
+        return [
+            'slug' => 'ui-shared-block',
+            'label' => 'label.guided_project_ui_shared_block',
+            'description' => 'description.guided_project_ui_shared_block',
+            'translation_domain' => 'ui',
+            // Right after the media one, at the step of 10 the interface states
+            'order' => 3120,
+            'role' => $this->configService->get('site-role-editor'),
+            'steps' => [
+                [
+                    'label' => 'label.guided_step_ui_shared_block_open',
+                    'description' => 'description.guided_step_ui_shared_block_open',
+                    'narration' => 'narration.guided_step_ui_shared_block_open',
+                    'url' => $this->indexUrl(SharedBlockCrudController::class),
+                ],
+                [
+                    'label' => 'label.guided_step_ui_shared_block_new',
+                    'narration' => 'narration.guided_step_ui_shared_block_new',
+                    'highlight' => '.action-new',
+                ],
+                [
+                    'label' => 'label.guided_step_ui_shared_block_name',
+                    'description' => 'description.guided_step_ui_shared_block_name',
+                    'narration' => 'narration.guided_step_ui_shared_block_name',
+                    'highlight' => '#SharedBlock_name',
+                ],
+                [
+                    'label' => 'label.guided_step_ui_shared_block_blocks',
+                    'description' => 'description.guided_step_ui_shared_block_blocks',
+                    'narration' => 'narration.guided_step_ui_shared_block_blocks',
+                    // The shared block's own collection, a container's slots carrying the same sorting group (see SiteGuidedProjectProvider)
+                    'highlight' => '[data-ui-sort-group="block"]:not([data-ui-move-target])',
+                ],
+                [
+                    'label' => 'label.guided_step_ui_shared_block_save',
+                    'narration' => 'narration.guided_step_ui_shared_block_save',
+                    // The creation form offers no "save and continue" (see the calculator project)
+                    'highlight' => '.action-saveAndReturn',
+                ],
+                [
+                    'label' => 'label.guided_step_ui_shared_block_done',
+                    'description' => 'description.guided_step_ui_shared_block_done',
+                    'narration' => 'narration.guided_step_ui_shared_block_done',
                 ],
             ],
         ];

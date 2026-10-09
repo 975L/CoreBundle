@@ -20,6 +20,7 @@ use c975L\UiBundle\Controller\Management\FormCrudController;
 use c975L\UiBundle\Controller\Management\LegalModelController;
 use c975L\UiBundle\Controller\Management\MediaCrudController;
 use c975L\UiBundle\Controller\Management\ReviewCrudController;
+use c975L\UiBundle\Controller\Management\SharedBlockCrudController;
 use c975L\UiBundle\Controller\Management\SiteGraphicCrudController;
 use c975L\UiBundle\Service\AiSiteSearchClient;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -66,6 +67,17 @@ class MenuProvider implements MenuProviderInterface
                 'icon' => 'fas fa-wpforms',
                 'tier' => 'advanced',
                 'description' => 'label.info_form',
+            ],
+            // The blocks written once and shown on several pages, edited by the same role that composes those pages
+            'shared_block' => [
+                'controller' => SharedBlockCrudController::class,
+                'label' => 'label.shared_blocks',
+                'narration' => 'narration.shared_blocks',
+                'translation_domain' => 'ui',
+                'icon' => 'fas fa-clone',
+                'tier' => 'advanced',
+                'role' => $this->configService->get('site-role-editor'),
+                'description' => 'label.info_shared_block',
             ],
             'email_template' => [
                 'controller' => EmailTemplateCrudController::class,

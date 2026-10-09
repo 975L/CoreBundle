@@ -1,5 +1,9 @@
 # UPGRADE
 
+## v1.62
+
+**A migration is needed** for the shared blocks (`site_shared_block`, `site_shared_block_blocks`): run `php bin/console make:migration` then `php bin/console doctrine:migrations:migrate`. **Constructors:** `BlockCacheTagResolver` takes an optional `SharedBlockRepository`, `BlockEditUrlRegistry` an optional `SharedBlockEditUrl`. Nothing to do with autowiring.
+
 ## v1.60.1
 
 **`ResetPasswordRequest.user` is now `onDelete: 'CASCADE'`**: an account with a pending password reset can be deleted. Run `php bin/console doctrine:migrations:diff && php bin/console doctrine:migrations:migrate` once `c975l:scaffold` has refreshed `src/Entity/ResetPasswordRequest.php`. A site whose `ResetPasswordRequest.php` comes back as diverged adds `onDelete: 'CASCADE'` to the `#[ORM\JoinColumn]` of `$user` itself, then runs the same migration. The new `src/EventListener/ResetPasswordRequestAnonymizedListener.php` deletes the pending requests of an anonymized account, which keeps its row and never triggers the cascade: a site that customized `ResetPasswordRequestRepository.php` adds its `removeForUser()` too.

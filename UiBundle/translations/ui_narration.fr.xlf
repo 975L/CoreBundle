@@ -458,6 +458,30 @@
                 <source>narration.guided_step_ui_review_status</source>
                 <target>Le statut se pose aussi à la main dans le formulaire. « Publié » affiche l'avis sur la page concernée et compte sa note dans la moyenne, « Rejeté » l'en retire. Un avis venu d'une plateforme n'est pas modifiable ici.</target>
             </trans-unit>
+            <trans-unit id="FcCZzen">
+                <source>narration.guided_step_ui_shared_block_blocks</source>
+                <target>Ajoutez ici ses blocs, comme vous le feriez dans une page.</target>
+            </trans-unit>
+            <trans-unit id="kwXMoHh">
+                <source>narration.guided_step_ui_shared_block_done</source>
+                <target>Il ne reste qu'à l'ajouter aux pages avec le bloc « Bloc partagé ».</target>
+            </trans-unit>
+            <trans-unit id="rT_ot.K">
+                <source>narration.guided_step_ui_shared_block_name</source>
+                <target>Donnez-lui un nom parlant, celui que vous chercherez dans une page.</target>
+            </trans-unit>
+            <trans-unit id="MvYhyyG">
+                <source>narration.guided_step_ui_shared_block_new</source>
+                <target>Ce bouton crée un nouveau bloc partagé.</target>
+            </trans-unit>
+            <trans-unit id="BDKW2jz">
+                <source>narration.guided_step_ui_shared_block_open</source>
+                <target>Le panneau vous emmène sur les blocs partagés, les sections que plusieurs pages affichent.</target>
+            </trans-unit>
+            <trans-unit id="B4P6O44">
+                <source>narration.guided_step_ui_shared_block_save</source>
+                <target>Enregistrez : le bloc partagé est prêt à être placé.</target>
+            </trans-unit>
             <trans-unit id="5AgYdI2">
                 <source>narration.guided_step_ui_site_graphic_done</source>
                 <target>Vérifiez sur le site : le favicon apparaît dans l'onglet du navigateur, l'image de partage lorsqu'une page est publiée sur un réseau social. L'un comme l'autre peuvent demander un rafraîchissement forcé avant de s'afficher.</target>
@@ -509,6 +533,10 @@
             <trans-unit id="UkAKU5V">
                 <source>narration.reviews</source>
                 <target>« Avis clients » rassemble les avis du site, quelle que soit la plateforme d'où ils viennent. Aucun n'apparaît en ligne tant que vous ne l'avez pas publié.</target>
+            </trans-unit>
+            <trans-unit id="k8.kw0r">
+                <source>narration.shared_blocks</source>
+                <target>Les blocs partagés s'écrivent une fois et s'affichent sur plusieurs pages : les modifier ici les met à jour partout.</target>
             </trans-unit>
             <trans-unit id="f.chQ4a">
                 <source>narration.site_graphics</source>

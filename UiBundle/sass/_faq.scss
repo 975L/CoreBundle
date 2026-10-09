@@ -44,5 +44,7 @@
 @media (min-width: 1024px) {
     .faq--cols2 .faq__items {
         grid-template-columns: repeat(2, 1fr);
+        /* Each question keeps its own height: stretched to an open neighbour, a closed one grew an empty area its summary did not cover, so a click there did nothing */
+        align-items: start;
     }
 }

@@ -20,7 +20,8 @@
         <div class="card-data">
             {# A <div>, not a <p>: raw Trix HTML is already block-level and a <p> would be split #}
             {% if blockContent %}<div class="text-center">{{ blockContent|raw|nl2br }}</div>{% endif %}
-            {% if url %}<twig:c975LUi:Button:Button label="{{ buttonLabel|default('label.learn_more'|trans({}, 'ui')) }}" url="{{ url }}" target="{{ target|default('') }}" icon="{{ buttonIcon|default('') }}"/>{% endif %}
+            {# The destination's own name in the default label rather than a bare "learn more": it is the text a search engine reads the link by #}
+            {% if url %}<twig:c975LUi:Button:Button label="{{ buttonLabel|default(title|default('') ? 'label.learn_more_about'|trans({'%title%': title}, 'ui') : 'label.learn_more'|trans({}, 'ui')) }}" url="{{ url }}" target="{{ target|default('') }}" icon="{{ buttonIcon|default('') }}"/>{% endif %}
         </div>
     </twig:c975LUi:Card:Card>
 {% else %}

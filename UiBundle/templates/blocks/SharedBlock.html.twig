@@ -1,0 +1,2 @@
+{# Pointer kind holding nothing but a slug: the shared block's own run is drawn live, each of its blocks through its own cache entry. Never anything depending on the viewer here, this html being cached for everyone #}
+{{ render_shared_block(slug|default(''), priority|default(false)) }}

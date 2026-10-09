@@ -564,6 +564,7 @@ The bundle ships the following kinds out of the box (see `config/services.yaml` 
 | `flex_columns` | Page sections | `FlexColumnsType` | `blocks/FlexColumns.html.twig` |
 | `section_cards` | Page sections | `SectionCardsType` | `blocks/SectionCards.html.twig` |
 | `section_features` | Page sections | `SectionFeaturesType` | `blocks/SectionFeatures.html.twig` |
+| `shared_block` | Page sections | `SharedBlockPickerType` | `blocks/SharedBlock.html.twig` |
 | `slider` | Media | `SliderType` | `blocks/Slider.html.twig` |
 | `text_hook` | Text | `TextHookType` | `blocks/TextHook.html.twig` |
 | `text_readmore` | Text | `ReadmoreType` | `blocks/TextReadmore.html.twig` |
@@ -781,6 +782,18 @@ Each section the summary points at wears `toc-target`, which is what leaves `--t
 
 Nothing is folded that fits: a short text renders as plain body copy with no link under it, so the component can be dropped on a field whose length isn't known - a description, a lore, an editor's paragraph - without a caller having to count its characters first.
 
+### The shared block (`shared_block`)
+
+A section repeated on several pages - the call to action closing each of them, a banner - is written once on the **Blocs partagés** screen (`SharedBlockCrudController`) and placed on each page with a `shared_block` block. That block stores nothing but the shared block's slug (`{"slug": "contact-banner"}`) and draws its run live through `render_shared_block()`, each of its blocks through `render_block()` and its own cache entry. Editing the shared block updates every page at once: `BlockCacheTagResolver` tags the pointer with the shared block's owner tag and the tags of each of its blocks, and refuses to cache it when one of them is not cacheable (a `form` and its csrf token).
+
+- A `SharedBlock` owns its run like a `Page` or a `Menu` (`HasBlocksInterface`), so it can hold one block or several, containers included, and its blocks are dragged and removed the same way.
+- Its slug is built once from its name and never changed after: renaming a shared block keeps every page pointing at it.
+- Deleting a shared block still shown somewhere is refused, the flash naming the pages that show it (`SharedBlockUsage`); the index shows how many pointers name each one, and offers the delete button only for an unused one. Batch delete is disabled, as it would bypass that guard.
+- A pointer's "Edit" button opens its shared block's screen, whatever entity carries the pointer (`SharedBlockEditUrl`, laid first by `BlockEditUrlRegistry`).
+- A shared block showing itself, directly or through a container, draws its run once: the pointer met again renders nothing.
+- A slug no shared block answers to - deleted, not imported yet - renders nothing rather than a hole, and the pointer is refreshed the day that shared block is created (`SharedBlockCacheInvalidationListener`).
+- Limits: a shared `card` does not join a `.cards` row of the page's own cards, the grouping reading the pointer's kind; and the same shared block twice on one page writes its anchor twice.
+
 ### The grid of pictures (`portfolio_grid`)
 
 Its **Presentation** field (`variant`) says what the grid is showing, without an app-level template override: `''` (default) draws each media as a project card - a picture in a 16/10 box, its title and its text over a ground; `'plain'` takes that chrome off, each file keeping the shape it was uploaded in; `'thumbnail'` takes it off too and counts the pictures instead of reading them one at a time, on the listing gabarit ShopBundle draws its products with, so a row of covers, of posters or of playing cards reads at one size across the site.
@@ -843,7 +856,7 @@ Every "Page sections" kind above (`hero`, `feature_bar`, `section_features`, `co
 - The final HTML `id` rendered on the section is always `{slug}-{block.id}` (e.g. `services-42`) - the trailing block id is added at render time, not stored, so two blocks of the same kind on the same page (or the same title reused elsewhere) never collide.
 - In `SiteBundle`'s Menu admin, a `menu_link` block's target select lists every page's anchored sections alongside its pages/routes (`Home → Services`), decoded by `MenuExtension::getMenuLinkUrl()` into `/home#services-42`.
 - That list is built by `c975L\UiBundle\Service\BlockAnchorCollector` (`fragment => label`), which walks a container's nested slots too (a `text_section` inside a `flex_columns` is listed just like a top-level one) and knows the two id conventions in use: an `anchor` renders as `{slug}-{block.id}`, an auto-derived `slug` (`text_section`, `article`) renders as the slug itself. `MenuExtension` labels a saved anchored target through the very same collector, so picker and menu never disagree.
-- Every link field on `button`, `card`, `collection`, `cta_band`, `hero`, `portfolio_grid`, `slide` and `video_grid` (e.g. `primaryUrl`, `ctaUrl`, `linkUrl`) is a **`Form\LinkTargetType`**: the same searchable list of pages and sections a menu link offers, and an address typed by hand (`/shop`, `https://…`, `#services-42`) taken as a new entry of its own - never Symfony's `UrlType`, which refuses anything but an absolute URL. The list comes from **`Contract\LinkTargetProviderInterface::linkTargets(): array`** (`label => stored value`, e.g. `"Services → Our offer" => "page:12#offer-34"`), auto-discovered by `LinkTargetProviderPass` and merged by `Registry\LinkTargetRegistry`; the bundle implementing it turns its stored values back into urls through an `InternalLinkLocalizerInterface` (see below). With none registered the list is empty and the field only takes what is typed into it. A card whose button has no label reads `label.learn_more` rather than its target.
+- Every link field on `button`, `card`, `collection`, `cta_band`, `hero`, `portfolio_grid`, `slide` and `video_grid` (e.g. `primaryUrl`, `ctaUrl`, `linkUrl`) is a **`Form\LinkTargetType`**: the same searchable list of pages and sections a menu link offers, and an address typed by hand (`/shop`, `https://…`, `#services-42`) taken as a new entry of its own - never Symfony's `UrlType`, which refuses anything but an absolute URL. The list comes from **`Contract\LinkTargetProviderInterface::linkTargets(): array`** (`label => stored value`, e.g. `"Services → Our offer" => "page:12#offer-34"`), auto-discovered by `LinkTargetProviderPass` and merged by `Registry\LinkTargetRegistry`; the bundle implementing it turns its stored values back into urls through an `InternalLinkLocalizerInterface` (see below). With none registered the list is empty and the field only takes what is typed into it. A card whose button has no label reads `label.learn_more_about` with the card's title ("Learn more about …"), or `label.learn_more` when it has none, rather than its target.
 
 Implemented by `c975L\UiBundle\Service\BlockAnchorSlugger` (the slug logic) and `c975L\UiBundle\Form\Block\HasAnchorFieldTrait` (the reusable field + `FormEvents::SUBMIT` listener). To add the same anchor field to a new "section" kind, in any bundle (own or third-party) that requires `c975l/ui-bundle`:
 

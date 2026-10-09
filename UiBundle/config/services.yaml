@@ -701,6 +701,21 @@ services:
               pickable: true
               cacheable: true
 
+    # Pointer to a SharedBlock, edited on its own screen: the slug alone is stored, so nothing to translate
+    ui.block.shared_block:
+        class: stdClass
+        tags:
+            - name: ui.block
+              kind: shared_block
+              label: "label.block_shared_block"
+              description: "label.block_shared_block_description"
+              form: c975L\UiBundle\Form\Block\SharedBlockPickerType
+              template: '@c975LUi/blocks/SharedBlock.html.twig'
+              category: 'label.category_sections'
+              pickable: true
+              # Cached with the tags of the blocks it shows, null when one of them is not cacheable - see BlockCacheTagResolver
+              cacheable: true
+
     ui.block.legal_model:
         class: stdClass
         tags:

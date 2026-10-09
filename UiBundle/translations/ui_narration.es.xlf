@@ -458,6 +458,30 @@
                 <source>narration.guided_step_ui_review_status</source>
                 <target>El estado también se fija a mano en el formulario. «Publicado» muestra la opinión en la página correspondiente y cuenta su valoración en la media, «Rechazado» la retira. Una opinión venida de una plataforma no se modifica aquí.</target>
             </trans-unit>
+            <trans-unit id="FcCZzen">
+                <source>narration.guided_step_ui_shared_block_blocks</source>
+                <target>Añada aquí sus bloques, como lo haría en una página.</target>
+            </trans-unit>
+            <trans-unit id="kwXMoHh">
+                <source>narration.guided_step_ui_shared_block_done</source>
+                <target>Solo queda añadirlo a las páginas con el bloque «Bloque compartido».</target>
+            </trans-unit>
+            <trans-unit id="rT_ot.K">
+                <source>narration.guided_step_ui_shared_block_name</source>
+                <target>Dele un nombre claro, el que buscará en una página.</target>
+            </trans-unit>
+            <trans-unit id="MvYhyyG">
+                <source>narration.guided_step_ui_shared_block_new</source>
+                <target>Este botón crea un nuevo bloque compartido.</target>
+            </trans-unit>
+            <trans-unit id="BDKW2jz">
+                <source>narration.guided_step_ui_shared_block_open</source>
+                <target>El panel le lleva a los bloques compartidos, las secciones que muestran varias páginas.</target>
+            </trans-unit>
+            <trans-unit id="B4P6O44">
+                <source>narration.guided_step_ui_shared_block_save</source>
+                <target>Guarde: el bloque compartido está listo para colocarse.</target>
+            </trans-unit>
             <trans-unit id="5AgYdI2">
                 <source>narration.guided_step_ui_site_graphic_done</source>
                 <target>Compruébelo en el sitio: el favicon aparece en la pestaña del navegador, la imagen para compartir cuando se publica una página en una red social. Tanto uno como otra pueden necesitar una recarga forzada antes de mostrarse.</target>
@@ -509,6 +533,10 @@
             <trans-unit id="UkAKU5V">
                 <source>narration.reviews</source>
                 <target>«Opiniones de clientes» reúne las opiniones del sitio, sea cual sea la plataforma de la que vengan. Ninguna aparece en línea mientras no la haya publicado.</target>
+            </trans-unit>
+            <trans-unit id="k8.kw0r">
+                <source>narration.shared_blocks</source>
+                <target>Los bloques compartidos se escriben una vez y se muestran en varias páginas: modificarlos aquí los actualiza en todas partes.</target>
             </trans-unit>
             <trans-unit id="f.chQ4a">
                 <source>narration.site_graphics</source>

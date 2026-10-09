@@ -94,6 +94,10 @@
                 <source>description.guided_project_ui_review</source>
                 <target>Publish, turn down or answer what your readers wrote — and what the platforms sent back.</target>
             </trans-unit>
+            <trans-unit id=".YA5nKT">
+                <source>description.guided_project_ui_shared_block</source>
+                <target>Write once a section repeated on several pages.</target>
+            </trans-unit>
             <trans-unit id="GHBZCNG">
                 <source>description.guided_project_ui_site_graphic</source>
                 <target>Favicon, logo, share image: the handful of files a site is recognised by, uploaded once and for all.</target>
@@ -482,6 +486,22 @@
                 <source>description.guided_step_ui_review_status</source>
                 <target>"Published" shows it on the page it is about and counts its score into the average; "Rejected" takes it back out. A review from a platform cannot be changed here.</target>
             </trans-unit>
+            <trans-unit id="a9d6u4H">
+                <source>description.guided_step_ui_shared_block_blocks</source>
+                <target>Add one or more blocks, exactly as on a page.</target>
+            </trans-unit>
+            <trans-unit id="RlFIETI">
+                <source>description.guided_step_ui_shared_block_done</source>
+                <target>On a page, add a “Shared block” block and pick this one. Editing it here will update it on all those pages.</target>
+            </trans-unit>
+            <trans-unit id="_Q6kkg1">
+                <source>description.guided_step_ui_shared_block_name</source>
+                <target>This is the name you will then pick it by on a page.</target>
+            </trans-unit>
+            <trans-unit id="PIPTRBW">
+                <source>description.guided_step_ui_shared_block_open</source>
+                <target>Each shared block in this list can be shown on as many pages as you like.</target>
+            </trans-unit>
             <trans-unit id="fqjZMNb">
                 <source>description.guided_step_ui_site_graphic_done</source>
                 <target>The favicon shows in the browser tab, the share image when a page is posted on a social network - both may need a forced refresh before they appear.</target>
@@ -625,6 +645,10 @@
             <trans-unit id="skvF7f2">
                 <source>flash.reviews_enabled</source>
                 <target>Reviews enabled</target>
+            </trans-unit>
+            <trans-unit id="y2bU_dZ">
+                <source>flash.shared_block_used_not_deleted</source>
+                <target>This shared block is still shown (%count%): %locations%. Remove it from those pages before deleting it.</target>
             </trans-unit>
             <trans-unit id="pYFXZHg">
                 <source>flash.stylesheet_compiled</source>
@@ -1450,6 +1474,14 @@
                 <source>label.block_section_features_description</source>
                 <target>Section title followed by a grid of features (icon, title, text)</target>
             </trans-unit>
+            <trans-unit id="mbc7k0e">
+                <source>label.block_shared_block</source>
+                <target>Shared block</target>
+            </trans-unit>
+            <trans-unit id="cV0sI8r">
+                <source>label.block_shared_block_description</source>
+                <target>Shows a block written once under “Shared blocks”: editing it there updates every page showing it.</target>
+            </trans-unit>
             <trans-unit id="qY3htPq">
                 <source>label.block_slider</source>
                 <target>Image/video slider</target>
@@ -1617,6 +1649,10 @@
             <trans-unit id="_vIEuOe">
                 <source>label.choose_form</source>
                 <target>Choose a form</target>
+            </trans-unit>
+            <trans-unit id="FPO.M7u">
+                <source>label.choose_shared_block</source>
+                <target>Choose a shared block</target>
             </trans-unit>
             <trans-unit id="MXpeMi7">
                 <source>label.city</source>
@@ -2614,6 +2650,10 @@
                 <source>label.guided_project_ui_review</source>
                 <target>Moderate the reviews</target>
             </trans-unit>
+            <trans-unit id="osZte78">
+                <source>label.guided_project_ui_shared_block</source>
+                <target>Create a shared block</target>
+            </trans-unit>
             <trans-unit id="42UrnqR">
                 <source>label.guided_project_ui_site_graphic</source>
                 <target>Put the site's own graphics in place</target>
@@ -3058,6 +3098,30 @@
                 <source>label.guided_step_ui_review_status</source>
                 <target>Set the status by hand</target>
             </trans-unit>
+            <trans-unit id="P_2rWEw">
+                <source>label.guided_step_ui_shared_block_blocks</source>
+                <target>Compose its content</target>
+            </trans-unit>
+            <trans-unit id="qyDFMG9">
+                <source>label.guided_step_ui_shared_block_done</source>
+                <target>Place it on your pages</target>
+            </trans-unit>
+            <trans-unit id="FyYqgrP">
+                <source>label.guided_step_ui_shared_block_name</source>
+                <target>Give it a name</target>
+            </trans-unit>
+            <trans-unit id="rw2wjns">
+                <source>label.guided_step_ui_shared_block_new</source>
+                <target>Create a shared block</target>
+            </trans-unit>
+            <trans-unit id="8PNRDG0">
+                <source>label.guided_step_ui_shared_block_open</source>
+                <target>Open the shared blocks</target>
+            </trans-unit>
+            <trans-unit id="uGTNiLn">
+                <source>label.guided_step_ui_shared_block_save</source>
+                <target>Save</target>
+            </trans-unit>
             <trans-unit id="9vn1gPZ">
                 <source>label.guided_step_ui_site_graphic_done</source>
                 <target>Check it on the site</target>
@@ -3274,6 +3338,10 @@
                 <source>label.info_reviews_disabled</source>
                 <target>Reviews are turned off for the whole site: none is shown to visitors and the review form is off. You can still moderate and answer them here.</target>
             </trans-unit>
+            <trans-unit id="na6oHv0">
+                <source>label.info_shared_block</source>
+                <target>A shared block is written once and shown on as many pages as you like, with the “Shared block” block. Editing it here updates it everywhere. It cannot be deleted while a page shows it.</target>
+            </trans-unit>
             <trans-unit id="MwU6S3V">
                 <source>label.info_site_graphic</source>
                 <target>Site-wide graphics: favicon, Apple Touch icon, default Open Graph image, logo and error images. Each role (except error image) can only be used once; replace the file to update it.</target>
@@ -3333,6 +3401,10 @@
             <trans-unit id="Vk2lno7">
                 <source>label.learn_more</source>
                 <target>Learn more</target>
+            </trans-unit>
+            <trans-unit id=".L0rUWZ">
+                <source>label.learn_more_about</source>
+                <target>Learn more about %title%</target>
             </trans-unit>
             <trans-unit id="xeLDFrp">
                 <source>label.legal_customize</source>
@@ -4253,6 +4325,38 @@
             <trans-unit id="xRRMpgY">
                 <source>label.shadow_theme</source>
                 <target>Theme</target>
+            </trans-unit>
+            <trans-unit id="yiUVAIW">
+                <source>label.shared_block</source>
+                <target>Shared block</target>
+            </trans-unit>
+            <trans-unit id="QTM5tZ4">
+                <source>label.shared_block_name</source>
+                <target>Name</target>
+            </trans-unit>
+            <trans-unit id="pPHCuSd">
+                <source>label.shared_block_name_help</source>
+                <target>The name you will pick it by on a page, for example “Contact banner”.</target>
+            </trans-unit>
+            <trans-unit id="EUaHfCU">
+                <source>label.shared_block_picker_help</source>
+                <target>Its content is edited under “Shared blocks”, not here.</target>
+            </trans-unit>
+            <trans-unit id="PRBjkHy">
+                <source>label.shared_block_slug</source>
+                <target>Identifier</target>
+            </trans-unit>
+            <trans-unit id="R8vw.C0">
+                <source>label.shared_block_unknown_location</source>
+                <target>an unknown place</target>
+            </trans-unit>
+            <trans-unit id="eHrkZF4">
+                <source>label.shared_block_usages</source>
+                <target>Uses</target>
+            </trans-unit>
+            <trans-unit id="i3UjAF7">
+                <source>label.shared_blocks</source>
+                <target>Shared blocks</target>
             </trans-unit>
             <trans-unit id="M2zj2An">
                 <source>label.show_percent</source>
