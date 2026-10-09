@@ -1,5 +1,25 @@
 # ChangeLog
 
+## v1.60
+
+Alerts name their type with a word instead of an icon
+
+### UiBundle
+
+- `Alert` component names its type above the text (`alert__label`, keys `label.alert_{type}`) instead of an icon (09/10/2026)
+- `Alert` component's `icon` prop replaced by `label` (09/10/2026) [BC-Break]
+- Removed the `alert--icon` layout (09/10/2026)
+- Added the `--alert-{type}-label` tokens (09/10/2026)
+- Legal documents' PDF cached under the kernel's cache directory instead of `var/pdf/` (09/10/2026)
+- Updated `AlertMarkupTest` and `LegalDocumentTest` (09/10/2026)
+- Updated the readme (09/10/2026)
+
+### ConfigBundle
+
+- Back-office alert lists call the `Alert` component with `label="false"` (09/10/2026)
+- Content exports no longer leave an empty temporary file behind (09/10/2026)
+- Updated `ContentExporterTest` (09/10/2026)
+
 ## v1.59.1
 
 Alerts restyled with a colored left edge and side icon

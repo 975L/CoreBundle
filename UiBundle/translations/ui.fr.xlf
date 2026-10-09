@@ -1018,9 +1018,25 @@
                 <source>label.ai_translate_into_button</source>
                 <target>Traduire en %language% avec %name%</target>
             </trans-unit>
+            <trans-unit id="cmGqWEZ">
+                <source>label.alert_danger</source>
+                <target>Erreur</target>
+            </trans-unit>
+            <trans-unit id="H1VQUB9">
+                <source>label.alert_info</source>
+                <target>Info</target>
+            </trans-unit>
             <trans-unit id="DnqwII7">
                 <source>label.alert_kind</source>
                 <target>Type d'alerte</target>
+            </trans-unit>
+            <trans-unit id="0_QU29v">
+                <source>label.alert_success</source>
+                <target>Succès</target>
+            </trans-unit>
+            <trans-unit id="mab8_zA">
+                <source>label.alert_warning</source>
+                <target>Attention</target>
             </trans-unit>
             <trans-unit id="vbyuEEV">
                 <source>label.all_rights_reserved</source>

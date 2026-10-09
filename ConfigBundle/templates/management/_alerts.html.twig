@@ -11,7 +11,7 @@
 
     {% for severity, items in alerts %}
         {% if items|length > 0 %}
-            <twig:c975LUi:Alert:Alert type="{{ severity }}" icon="false">
+            <twig:c975LUi:Alert:Alert type="{{ severity }}" label="false">
                 <ul class="list-unstyled small text-left">
                     {% for item in items %}
                         <li>

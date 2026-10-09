@@ -330,6 +330,10 @@
     /* --alert-info-accent: #31708f; */
     /* --alert-success-accent: #3c763d; */
     /* --alert-warning-accent: #b7791f; */
+    /* --alert-danger-label: #9c3a44; */
+    /* --alert-info-label: #245a75; */
+    /* --alert-success-label: #2f5f30; */
+    /* --alert-warning-label: #7a4f0f; */
 
     /* Form inputs. Every one of these is restated in dark mode - a value uncommented here applies to both, so a design wanting a different dark field needs its own :root[data-theme="dark"] block. */
     /* Measure every form is laid out on */

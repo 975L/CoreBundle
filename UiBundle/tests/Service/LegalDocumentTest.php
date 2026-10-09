@@ -80,7 +80,7 @@ class LegalDocumentTest extends TestCase
         $file = $document->cacheFile('france/terms-of-sales', 'fr');
 
         $this->assertStringEndsWith(sprintf('france-terms-of-sales-fr-%s.pdf', $document->fingerprint('france/terms-of-sales', 'fr')), $file);
-        $this->assertStringContainsString('/var/pdf/', $file);
+        $this->assertStringStartsWith('/srv/site/var/cache/prod/pdf/', $file);
     }
 
     private function documentRendering(string $html): LegalDocument
@@ -106,7 +106,7 @@ class LegalDocumentTest extends TestCase
             $blockRepository,
             $this->createStub(PdfGeneratorInterface::class),
             $this->createStub(Environment::class),
-            '/srv/site',
+            '/srv/site/var/cache/prod',
         );
     }
 }

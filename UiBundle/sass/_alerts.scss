@@ -42,3 +42,29 @@
 .alert-warning {
     background-color: var(--alert-warning-background);
 }
+
+// The word naming the type above the text, in a shade of the edge deep enough to pass AA at this small size, which the edge itself does not on the warning and success tints
+.alert__label {
+    display: block;
+    margin-bottom: .2em;
+    font-size: .75em;
+    font-weight: bold;
+    letter-spacing: .09em;
+    text-transform: uppercase;
+}
+
+.alert-success .alert__label {
+    color: var(--alert-success-label);
+}
+
+.alert-info .alert__label {
+    color: var(--alert-info-label);
+}
+
+.alert-danger .alert__label {
+    color: var(--alert-danger-label);
+}
+
+.alert-warning .alert__label {
+    color: var(--alert-warning-label);
+}

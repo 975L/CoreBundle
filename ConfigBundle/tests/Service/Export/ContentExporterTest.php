@@ -37,6 +37,17 @@ class ContentExporterTest extends TestCase
         unlink($path);
     }
 
+    // The archive is the only file an export leaves in the temporary directory, and it goes once sent
+    public function testExportLeavesNoEmptyFileBehind(): void
+    {
+        $before = glob(sys_get_temp_dir() . '/content_export_*') ?: [];
+
+        $response = new ContentExporter()->export('site_page', []);
+
+        $this->assertSame([$response->getFile()->getPathname()], array_values(array_diff(glob(sys_get_temp_dir() . '/content_export_*') ?: [], $before)));
+        unlink($response->getFile()->getPathname());
+    }
+
     public function testExportEmbedsReferencedFilesInTheZip(): void
     {
         $sourcePath = tempnam(sys_get_temp_dir(), 'content_exporter_test_');

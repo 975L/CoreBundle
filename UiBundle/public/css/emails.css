@@ -18,6 +18,10 @@
     --alert-info-accent: #31708f;
     --alert-success-accent: #3c763d;
     --alert-warning-accent: #b7791f;
+    --alert-danger-label: #9c3a44;
+    --alert-info-label: #245a75;
+    --alert-success-label: #2f5f30;
+    --alert-warning-label: #7a4f0f;
     --audio-sticky-background: var(--background);
     --media-title-size: calc(1.3rem * var(--font-size-title-scale, 1));
     --back-pull-background-color: #bababa;
@@ -426,6 +430,31 @@ a.btn-secondary:visited {
 
 .alert-warning {
   background-color: var(--alert-warning-background);
+}
+
+.alert__label {
+  display: block;
+  margin-bottom: 0.2em;
+  font-size: 0.75em;
+  font-weight: bold;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.alert-success .alert__label {
+  color: var(--alert-success-label);
+}
+
+.alert-info .alert__label {
+  color: var(--alert-info-label);
+}
+
+.alert-danger .alert__label {
+  color: var(--alert-danger-label);
+}
+
+.alert-warning .alert__label {
+  color: var(--alert-warning-label);
 }
 
 /*# sourceMappingURL=emails.css.map */

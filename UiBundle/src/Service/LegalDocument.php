@@ -16,20 +16,7 @@ use c975L\UiBundle\Repository\BlockRepository;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Twig\Environment;
 
-/**
- * The site's own copy of a legal model - one document, one truth.
- *
- * A model can be read two ways: as this bundle ships it, or as the site rewrote it through a "legal_model" block.
- * Only one of the two is the document a customer accepted, and it is the block's: that is where a client hides a
- * clause, adds one, or dates the last revision. Everything printing, serving or attaching a legal document reads
- * it here, so a page and the file emailed with an order can never come to say different things.
- *
- * A site holding no block for that model - a shop installed without page management - gets the model as shipped.
- *
- * The PDF is cached under "var/pdf/", keyed by a hash of the rendered HTML: it changes when the text changes, for
- * whatever reason - a clause rewritten, a revision date, or a %config% marker resolving to a new company name -
- * and nothing has to be told about any of those. What the key does not cover cannot change the document.
- */
+// The site's own copy of a legal model (the "legal_model" block, else the model as shipped), its PDF cached under the kernel's cache directory and keyed by a hash of the rendered HTML
 class LegalDocument
 {
     private const string BLOCK_KIND = 'legal_model';
@@ -43,8 +30,8 @@ class LegalDocument
         private readonly BlockRepository $blockRepository,
         private readonly PdfGeneratorInterface $pdfGenerator,
         private readonly Environment $twig,
-        #[Autowire(param: 'kernel.project_dir')]
-        private readonly string $projectDir,
+        #[Autowire(param: 'kernel.cache_dir')]
+        private readonly string $cacheDir,
     ) {
     }
 
@@ -88,7 +75,7 @@ class LegalDocument
     // Where that file lives, named after what it holds
     public function cacheFile(string $model, string $locale): string
     {
-        return sprintf('%s/var/pdf/%s-%s-%s.pdf', $this->projectDir, str_replace('/', '-', $model), $locale, $this->fingerprint($model, $locale));
+        return sprintf('%s/pdf/%s-%s-%s.pdf', $this->cacheDir, str_replace('/', '-', $model), $locale, $this->fingerprint($model, $locale));
     }
 
     private function render(string $model, string $locale): string

@@ -20,23 +20,6 @@
     border-left: 4px solid var(--alert-warning-accent);
 }
 
-// The component's layout, the icon beside the text rather than above it - kept off the bare ".alert" a template writes by hand, where every inline tag would turn into a column
-.alert--icon {
-    display: flex;
-    align-items: flex-start;
-    gap: .75em;
-}
-
-.alert--icon > .icon {
-    flex: none;
-    margin-top: .2em;
-}
-
-.alert__body {
-    flex: 1;
-    min-width: 0;
-}
-
 .alert__body > :last-child,
 .alert__body > div > :last-child {
     margin-bottom: 0;

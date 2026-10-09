@@ -27,14 +27,7 @@ class ContentExporter
         // Throws rather than silently writing a truncated/empty manifest - json_encode() returns false (not an exception) on failure, easy to miss with a large payload
         $manifest = json_encode($payload, \JSON_PRETTY_PRINT | \JSON_UNESCAPED_UNICODE | \JSON_UNESCAPED_SLASHES | \JSON_THROW_ON_ERROR);
 
-        $archivePath = tempnam(sys_get_temp_dir(), 'content_export_') . '.zip';
-        $zip = new \ZipArchive();
-        $zip->open($archivePath, \ZipArchive::CREATE | \ZipArchive::OVERWRITE);
-        $zip->addFromString('manifest.json', $manifest);
-        foreach ($files as $archiveRelativePath => $diskPath) {
-            $zip->addFile($diskPath, $archiveRelativePath);
-        }
-        $zip->close();
+        $archivePath = $this->archive($manifest, $files);
 
         $filename = sprintf('%s_%s.zip', $kind, date('Ymd_His'));
         $response = new BinaryFileResponse($archivePath, 200, ['Content-Type' => 'application/zip']);
@@ -60,14 +53,7 @@ class ContentExporter
         ];
         $manifest = json_encode($payload, \JSON_PRETTY_PRINT | \JSON_UNESCAPED_UNICODE | \JSON_UNESCAPED_SLASHES | \JSON_THROW_ON_ERROR);
 
-        $archivePath = tempnam(sys_get_temp_dir(), 'content_export_') . '.zip';
-        $zip = new \ZipArchive();
-        $zip->open($archivePath, \ZipArchive::CREATE | \ZipArchive::OVERWRITE);
-        $zip->addFromString('manifest.json', $manifest);
-        foreach ($files as $archiveRelativePath => $diskPath) {
-            $zip->addFile($diskPath, $archiveRelativePath);
-        }
-        $zip->close();
+        $archivePath = $this->archive($manifest, $files);
 
         $filename = sprintf('sync_all_%s.zip', date('Ymd_His'));
         $response = new BinaryFileResponse($archivePath, 200, ['Content-Type' => 'application/zip']);
@@ -75,5 +61,21 @@ class ContentExporter
         $response->deleteFileAfterSend(true);
 
         return $response;
+    }
+
+    // Writes the manifest and the files into the very file tempnam() creates, so no empty file is left behind
+    /** @param array<string, string> $files the disk path of each file, by its path inside the archive */
+    private function archive(string $manifest, array $files): string
+    {
+        $archivePath = tempnam(sys_get_temp_dir(), 'content_export_');
+        $zip = new \ZipArchive();
+        $zip->open($archivePath, \ZipArchive::OVERWRITE);
+        $zip->addFromString('manifest.json', $manifest);
+        foreach ($files as $archiveRelativePath => $diskPath) {
+            $zip->addFile($diskPath, $archiveRelativePath);
+        }
+        $zip->close();
+
+        return $archivePath;
     }
 }

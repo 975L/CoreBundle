@@ -1,15 +1,13 @@
-{# Static usage : <twig:c975LUi:Alert:Alert type="info">Your content</twig:c975LUi:Alert:Alert> #}
-{# Static usage (prop) : <twig:c975LUi:Alert:Alert type="info" message="Your message"/> or content="Your content" #}
-{# Dynamic usage (Block system) : see templates/blocks/Alert.html.twig #}
+{# Static usage: <twig:c975LUi:Alert:Alert type="info">Your content</twig:c975LUi:Alert:Alert>, or message="Your message"/content="Your content" as a prop. Dynamic usage (Block system): see templates/blocks/Alert.html.twig. A word names the type above the text, label="false" dropping it #}
 
 {% set type = type | default('info') %}
 {% set message = message | default('') %}
 {% set content = content | default('') %}
 {% set content = message != '' ? message : content %}
-{% set icon = icon | default(true) | to_bool %}
-<div class="alert alert-{{ type }}{{ icon ? ' alert--icon' }}">
-    {% if icon %}
-        <twig:c975LUi:Image:Icon src="bundles/c975lsite/icons/alert-{{ type }}.svg" width="16" height="16"/>
+{% set label = label | default(true) | to_bool %}
+<div class="alert alert-{{ type }}">
+    {% if label %}
+        <span class="alert__label">{{ ('label.alert_' ~ type)|trans({}, 'ui') }}</span>
     {% endif %}
     <div class="alert__body">{% block content %}{{ content|raw|nl2br }}{% endblock %}</div>
 </div>
