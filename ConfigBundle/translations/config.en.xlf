@@ -126,9 +126,17 @@
                 <source>description.guided_project_config_redirect</source>
                 <target>A page has moved, or a whole folder: the old address leads to the new one, for a visitor as for a search engine.</target>
             </trans-unit>
+            <trans-unit id="y0hdCwE">
+                <source>description.guided_project_config_registration</source>
+                <target>Decide whether visitors can create an account on the site</target>
+            </trans-unit>
             <trans-unit id="cVYWaeZ">
                 <source>description.guided_project_config_role_preview</source>
                 <target>Check what a lower level sees, without a second account.</target>
+            </trans-unit>
+            <trans-unit id="mPOf1pF">
+                <source>description.guided_project_config_seo</source>
+                <target>Sitemaps, AI crawlers and robots.txt regenerated without waiting for the night</target>
             </trans-unit>
             <trans-unit id="kwjx7gS">
                 <source>description.guided_project_config_settings</source>
@@ -177,6 +185,10 @@
             <trans-unit id="w22XwFU">
                 <source>description.guided_step_config_health_check_again</source>
                 <target>Once corrected, run it again: the trend chart at the top of the page shows whether the site is improving.</target>
+            </trans-unit>
+            <trans-unit id=".SP.fBk">
+                <source>description.guided_step_config_health_check_edit</source>
+                <target>The pencil of a row or of a piece of advice opens the very screen, or field, to fix.</target>
             </trans-unit>
             <trans-unit id="QG5uvYM">
                 <source>description.guided_step_config_health_check_fix</source>
@@ -236,11 +248,15 @@
             </trans-unit>
             <trans-unit id="yIRNqoQ">
                 <source>description.guided_step_config_messenger_failed_group</source>
-                <target>The table at the top groups the messages by error: one cause is deleted at once.</target>
+                <target>The messages are grouped by error: one cause is deleted at once, before looking at the messages one by one.</target>
             </trans-unit>
             <trans-unit id="DJr3YNu">
                 <source>description.guided_step_config_messenger_failed_open</source>
                 <target>The dashboard alert leads here. Each row says who the message was for and why it failed.</target>
+            </trans-unit>
+            <trans-unit id="Y0RGYHF">
+                <source>description.guided_step_config_messenger_failed_purge</source>
+                <target>Runs the nightly cleanup right away: the minor cases (blacklist, spam) past their retention are deleted.</target>
             </trans-unit>
             <trans-unit id="7zfCw4K">
                 <source>description.guided_step_config_messenger_failed_retry</source>
@@ -258,13 +274,17 @@
                 <source>description.guided_step_config_not_found_from</source>
                 <target>Nothing to type: it is the one the list showed, copied as-is.</target>
             </trans-unit>
+            <trans-unit id="sCFxY5o">
+                <source>description.guided_step_config_not_found_internal</source>
+                <target>The internal column says whether the broken link is on the site's own pages - that one is fixed by editing the page, not by a redirect.</target>
+            </trans-unit>
             <trans-unit id="ImyN0zc">
                 <source>description.guided_step_config_not_found_open</source>
                 <target>In the sidebar, under Advanced. The rows are written by the requests themselves, never by hand.</target>
             </trans-unit>
             <trans-unit id="xzmrPZF">
                 <source>description.guided_step_config_not_found_row</source>
-                <target>The most recently hit path comes first. Its number of hits says how much traffic is being lost, and the internal column says whether the broken link is on the site's own pages - that one is fixed by editing the page, not by a redirect.</target>
+                <target>The most recently hit path comes first. Its number of hits says how much traffic is being lost.</target>
             </trans-unit>
             <trans-unit id="eyq1i2_">
                 <source>description.guided_step_config_not_found_to</source>
@@ -306,6 +326,18 @@
                 <source>description.guided_step_config_redirect_to</source>
                 <target>The page replacing it, on this site or elsewhere.</target>
             </trans-unit>
+            <trans-unit id="W.D1lDM">
+                <source>description.guided_step_config_registration_done</source>
+                <target>Existing accounts still log in: only new registrations are concerned.</target>
+            </trans-unit>
+            <trans-unit id="C7VJfmM">
+                <source>description.guided_step_config_registration_open</source>
+                <target>Registration is opened and closed from the dashboard shortcuts, with no screen in between.</target>
+            </trans-unit>
+            <trans-unit id="rtuQVfC">
+                <source>description.guided_step_config_registration_toggle</source>
+                <target>While nobody can register, the tile stays in the warning color: a site closed to registration otherwise looks like one that works.</target>
+            </trans-unit>
             <trans-unit id="66maK2p">
                 <source>description.guided_step_config_role_preview_banner</source>
                 <target>The sidebar, the screens and the guided projects are now those of that level. A banner recalls it on every page.</target>
@@ -321,6 +353,22 @@
             <trans-unit id="LX1nN.Y">
                 <source>description.guided_step_config_role_preview_open</source>
                 <target>A preview can be started from any screen of the back office.</target>
+            </trans-unit>
+            <trans-unit id="Ni9TkWg">
+                <source>description.guided_step_config_seo_crawlers</source>
+                <target>Adds to the AI crawlers setting the ones that appeared in the community list. Nothing does it automatically.</target>
+            </trans-unit>
+            <trans-unit id="ExhqJEA">
+                <source>description.guided_step_config_seo_files</source>
+                <target>Rewrites robots.txt, humans.txt and llms.txt, so a setting just changed or the AI crawlers just added take effect right away.</target>
+            </trans-unit>
+            <trans-unit id="CncQeYM">
+                <source>description.guided_step_config_seo_open</source>
+                <target>The three tiles sit among the site shortcuts.</target>
+            </trans-unit>
+            <trans-unit id="vZ9.bHh">
+                <source>description.guided_step_config_seo_sitemaps</source>
+                <target>Rebuilds every sitemap and their index, which the night does anyway: useful right after publishing.</target>
             </trans-unit>
             <trans-unit id="3BtYhFM">
                 <source>description.guided_step_config_settings_alerts</source>
@@ -338,13 +386,9 @@
                 <source>description.guided_step_config_settings_open</source>
                 <target>Every setting of the site lives here, grouped by subject — none of them is to be written in a file.</target>
             </trans-unit>
-            <trans-unit id="GAjaysK">
-                <source>description.guided_step_config_settings_save_stay</source>
-                <target>Switching language reloads the screen: anything not saved would be lost.</target>
-            </trans-unit>
             <trans-unit id="tbWt3Ve">
                 <source>description.guided_step_config_settings_translate</source>
-                <target>Only a few settings are written in each language, such as the age warning: open one, pick a language above the value and write it.</target>
+                <target>Only a few settings are written in each language, such as the age warning: their row carries the Translate button, which reopens the setting in another language.</target>
             </trans-unit>
             <trans-unit id="qd4IzF2">
                 <source>description.guided_step_config_settings_value</source>
@@ -377,6 +421,10 @@
             <trans-unit id="GFKzUI0">
                 <source>description.guided_step_config_url_metadata_title</source>
                 <target>This is the line a search engine shows above the url, and the one a browser tab carries.</target>
+            </trans-unit>
+            <trans-unit id="ewpRcDY">
+                <source>description.guided_step_config_user_anonymize_button</source>
+                <target>If it shows on no row, no account lends itself to it yet: neither a super administrator account nor your own is anonymized here.</target>
             </trans-unit>
             <trans-unit id="VoQObcO">
                 <source>description.guided_step_config_user_anonymize_done</source>
@@ -1114,9 +1162,17 @@
                 <source>label.guided_project_config_redirect</source>
                 <target>Redirect an old address</target>
             </trans-unit>
+            <trans-unit id="QBmNMtP">
+                <source>label.guided_project_config_registration</source>
+                <target>Open or close registration</target>
+            </trans-unit>
             <trans-unit id="hhhb8xQ">
                 <source>label.guided_project_config_role_preview</source>
                 <target>See the back office as another role</target>
+            </trans-unit>
+            <trans-unit id="0rp9Nec">
+                <source>label.guided_project_config_seo</source>
+                <target>Refresh what search engines read</target>
             </trans-unit>
             <trans-unit id="8QVNypE">
                 <source>label.guided_project_config_settings</source>
@@ -1210,6 +1266,10 @@
                 <source>label.guided_step_config_health_check_again</source>
                 <target>Run it again</target>
             </trans-unit>
+            <trans-unit id="nnqIbVH">
+                <source>label.guided_step_config_health_check_edit</source>
+                <target>Fix it at the source</target>
+            </trans-unit>
             <trans-unit id="5Mjqbt4">
                 <source>label.guided_step_config_health_check_fix</source>
                 <target>Deal with an error</target>
@@ -1274,6 +1334,10 @@
                 <source>label.guided_step_config_messenger_failed_open</source>
                 <target>Open the failed messages</target>
             </trans-unit>
+            <trans-unit id="ZvhgJ9l">
+                <source>label.guided_step_config_messenger_failed_purge</source>
+                <target>Purge now</target>
+            </trans-unit>
             <trans-unit id="sdFrKFD">
                 <source>label.guided_step_config_messenger_failed_retry</source>
                 <target>Replay a message</target>
@@ -1289,6 +1353,10 @@
             <trans-unit id="f2z41Re">
                 <source>label.guided_step_config_not_found_from</source>
                 <target>The path is already there</target>
+            </trans-unit>
+            <trans-unit id="i1M3zwB">
+                <source>label.guided_step_config_not_found_internal</source>
+                <target>Internal or external link</target>
             </trans-unit>
             <trans-unit id="Nkq6Fow">
                 <source>label.guided_step_config_not_found_open</source>
@@ -1350,6 +1418,18 @@
                 <source>label.guided_step_config_redirect_to</source>
                 <target>Say where it leads</target>
             </trans-unit>
+            <trans-unit id="MOhGlWi">
+                <source>label.guided_step_config_registration_done</source>
+                <target>Now you know</target>
+            </trans-unit>
+            <trans-unit id="eM_.Avw">
+                <source>label.guided_step_config_registration_open</source>
+                <target>Open the dashboard</target>
+            </trans-unit>
+            <trans-unit id="teEuQu5">
+                <source>label.guided_step_config_registration_toggle</source>
+                <target>Switch registration</target>
+            </trans-unit>
             <trans-unit id=".k4QzIY">
                 <source>label.guided_step_config_role_preview_banner</source>
                 <target>The back office of that level</target>
@@ -1365,6 +1445,22 @@
             <trans-unit id="LYE6TH7">
                 <source>label.guided_step_config_role_preview_open</source>
                 <target>Open the dashboard</target>
+            </trans-unit>
+            <trans-unit id="LbTQWix">
+                <source>label.guided_step_config_seo_crawlers</source>
+                <target>Update the AI crawlers</target>
+            </trans-unit>
+            <trans-unit id="Gt_P_am">
+                <source>label.guided_step_config_seo_files</source>
+                <target>Rewrite the SEO files</target>
+            </trans-unit>
+            <trans-unit id="iGNyUwc">
+                <source>label.guided_step_config_seo_open</source>
+                <target>Open the dashboard</target>
+            </trans-unit>
+            <trans-unit id="Evl11y4">
+                <source>label.guided_step_config_seo_sitemaps</source>
+                <target>Regenerate the sitemaps</target>
             </trans-unit>
             <trans-unit id="yK2RVv_">
                 <source>label.guided_step_config_settings_alerts</source>
@@ -1385,10 +1481,6 @@
             <trans-unit id="XBS3oAU">
                 <source>label.guided_step_config_settings_save</source>
                 <target>Save</target>
-            </trans-unit>
-            <trans-unit id="Yb8P6co">
-                <source>label.guided_step_config_settings_save_stay</source>
-                <target>Save without leaving</target>
             </trans-unit>
             <trans-unit id="jkrEHgr">
                 <source>label.guided_step_config_settings_translate</source>

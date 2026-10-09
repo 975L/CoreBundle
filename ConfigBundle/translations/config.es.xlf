@@ -126,9 +126,17 @@
                 <source>description.guided_project_config_redirect</source>
                 <target>Una página ha cambiado de dirección, o toda una carpeta: la antigua lleva a la nueva, para un visitante como para un motor de búsqueda.</target>
             </trans-unit>
+            <trans-unit id="y0hdCwE">
+                <source>description.guided_project_config_registration</source>
+                <target>Decida si los visitantes pueden crear una cuenta en el sitio</target>
+            </trans-unit>
             <trans-unit id="cVYWaeZ">
                 <source>description.guided_project_config_role_preview</source>
                 <target>Comprobar lo que ve un nivel inferior, sin una segunda cuenta.</target>
+            </trans-unit>
+            <trans-unit id="mPOf1pF">
+                <source>description.guided_project_config_seo</source>
+                <target>Mapas del sitio, rastreadores de IA y robots.txt regenerados sin esperar a la noche</target>
             </trans-unit>
             <trans-unit id="kwjx7gS">
                 <source>description.guided_project_config_settings</source>
@@ -177,6 +185,10 @@
             <trans-unit id="w22XwFU">
                 <source>description.guided_step_config_health_check_again</source>
                 <target>Tras la corrección, vuelva a lanzarlo: la curva de tendencia en la parte superior muestra si el sitio mejora.</target>
+            </trans-unit>
+            <trans-unit id=".SP.fBk">
+                <source>description.guided_step_config_health_check_edit</source>
+                <target>El lápiz de una fila o de un consejo abre directamente la pantalla, o el campo, que hay que corregir.</target>
             </trans-unit>
             <trans-unit id="QG5uvYM">
                 <source>description.guided_step_config_health_check_fix</source>
@@ -236,11 +248,15 @@
             </trans-unit>
             <trans-unit id="yIRNqoQ">
                 <source>description.guided_step_config_messenger_failed_group</source>
-                <target>La tabla de arriba agrupa los mensajes por error: una misma causa se elimina de una vez.</target>
+                <target>Los mensajes se agrupan por error: una misma causa se elimina de una vez, antes de mirar los mensajes uno por uno.</target>
             </trans-unit>
             <trans-unit id="DJr3YNu">
                 <source>description.guided_step_config_messenger_failed_open</source>
                 <target>La alerta del panel lleva aquí. Cada fila dice a quién iba destinado el mensaje y por qué falló.</target>
+            </trans-unit>
+            <trans-unit id="Y0RGYHF">
+                <source>description.guided_step_config_messenger_failed_purge</source>
+                <target>Lanza enseguida la limpieza nocturna: los casos menores (lista negra, spam) que superan su retención se eliminan.</target>
             </trans-unit>
             <trans-unit id="7zfCw4K">
                 <source>description.guided_step_config_messenger_failed_retry</source>
@@ -258,13 +274,17 @@
                 <source>description.guided_step_config_not_found_from</source>
                 <target>Nada que escribir: es la que mostró la lista, copiada tal cual.</target>
             </trans-unit>
+            <trans-unit id="sCFxY5o">
+                <source>description.guided_step_config_not_found_internal</source>
+                <target>La columna interna dice si el enlace roto está en las páginas del propio sitio: ese se corrige editando la página, no con una redirección.</target>
+            </trans-unit>
             <trans-unit id="ImyN0zc">
                 <source>description.guided_step_config_not_found_open</source>
                 <target>En la barra lateral, bajo Avanzado. Las filas las escriben las propias peticiones, nunca se añaden a mano.</target>
             </trans-unit>
             <trans-unit id="xzmrPZF">
                 <source>description.guided_step_config_not_found_row</source>
-                <target>La ruta visitada más recientemente va primero. Su número de visitas dice cuánto tráfico se pierde, y la columna interna dice si el enlace roto está en las páginas del propio sitio: ese se corrige editando la página, no con una redirección.</target>
+                <target>La ruta visitada más recientemente va primero. Su número de visitas dice cuánto tráfico se pierde.</target>
             </trans-unit>
             <trans-unit id="eyq1i2_">
                 <source>description.guided_step_config_not_found_to</source>
@@ -306,6 +326,18 @@
                 <source>description.guided_step_config_redirect_to</source>
                 <target>La página que la sustituye, en este sitio o en otro.</target>
             </trans-unit>
+            <trans-unit id="W.D1lDM">
+                <source>description.guided_step_config_registration_done</source>
+                <target>Las cuentas existentes siguen conectándose: solo afecta a los nuevos registros.</target>
+            </trans-unit>
+            <trans-unit id="C7VJfmM">
+                <source>description.guided_step_config_registration_open</source>
+                <target>Los registros se abren y se cierran desde los accesos directos del panel, sin pantalla intermedia.</target>
+            </trans-unit>
+            <trans-unit id="rtuQVfC">
+                <source>description.guided_step_config_registration_toggle</source>
+                <target>Mientras nadie pueda registrarse, el mosaico queda en color de aviso: si no, un sitio cerrado a los registros parece uno que funciona.</target>
+            </trans-unit>
             <trans-unit id="66maK2p">
                 <source>description.guided_step_config_role_preview_banner</source>
                 <target>La barra lateral, las pantallas y los proyectos guiados son ahora los de ese nivel. Un aviso lo recuerda en cada página.</target>
@@ -321,6 +353,22 @@
             <trans-unit id="LX1nN.Y">
                 <source>description.guided_step_config_role_preview_open</source>
                 <target>Una vista previa se inicia desde cualquier pantalla del back-office.</target>
+            </trans-unit>
+            <trans-unit id="Ni9TkWg">
+                <source>description.guided_step_config_seo_crawlers</source>
+                <target>Añade al ajuste de los rastreadores de IA los que aparecieron en la lista comunitaria. Nada lo hace automáticamente.</target>
+            </trans-unit>
+            <trans-unit id="ExhqJEA">
+                <source>description.guided_step_config_seo_files</source>
+                <target>Reescribe robots.txt, humans.txt y llms.txt, para que un ajuste recién cambiado o los rastreadores de IA recién añadidos surtan efecto enseguida.</target>
+            </trans-unit>
+            <trans-unit id="CncQeYM">
+                <source>description.guided_step_config_seo_open</source>
+                <target>Los tres mosaicos están entre los accesos directos del sitio.</target>
+            </trans-unit>
+            <trans-unit id="vZ9.bHh">
+                <source>description.guided_step_config_seo_sitemaps</source>
+                <target>Rehace cada mapa del sitio y su índice, lo que la noche hace de todos modos: útil justo después de publicar.</target>
             </trans-unit>
             <trans-unit id="3BtYhFM">
                 <source>description.guided_step_config_settings_alerts</source>
@@ -338,13 +386,9 @@
                 <source>description.guided_step_config_settings_open</source>
                 <target>Todos los ajustes del sitio están aquí, agrupados por tema: ninguno se escribe en un archivo.</target>
             </trans-unit>
-            <trans-unit id="GAjaysK">
-                <source>description.guided_step_config_settings_save_stay</source>
-                <target>Cambiar de idioma recarga la pantalla: lo que no se haya guardado se perdería.</target>
-            </trans-unit>
             <trans-unit id="tbWt3Ve">
                 <source>description.guided_step_config_settings_translate</source>
-                <target>Solo algunos ajustes se escriben en cada idioma, como el aviso de edad: abra uno, elija un idioma encima del valor y escríbalo.</target>
+                <target>Solo algunos ajustes se escriben en cada idioma, como el aviso de edad: su fila lleva el botón Traducir, que vuelve a abrir el ajuste en otro idioma.</target>
             </trans-unit>
             <trans-unit id="qd4IzF2">
                 <source>description.guided_step_config_settings_value</source>
@@ -377,6 +421,10 @@
             <trans-unit id="GFKzUI0">
                 <source>description.guided_step_config_url_metadata_title</source>
                 <target>Es la línea que un buscador muestra encima de la url, y la que lleva la pestaña del navegador.</target>
+            </trans-unit>
+            <trans-unit id="ewpRcDY">
+                <source>description.guided_step_config_user_anonymize_button</source>
+                <target>Si no aparece en ninguna fila, ninguna cuenta se presta a ello todavía: ni una cuenta de superadministrador ni la suya se anonimizan aquí.</target>
             </trans-unit>
             <trans-unit id="VoQObcO">
                 <source>description.guided_step_config_user_anonymize_done</source>
@@ -1114,9 +1162,17 @@
                 <source>label.guided_project_config_redirect</source>
                 <target>Redirigir una dirección antigua</target>
             </trans-unit>
+            <trans-unit id="QBmNMtP">
+                <source>label.guided_project_config_registration</source>
+                <target>Abrir o cerrar los registros</target>
+            </trans-unit>
             <trans-unit id="hhhb8xQ">
                 <source>label.guided_project_config_role_preview</source>
                 <target>Ver el back-office con otro rol</target>
+            </trans-unit>
+            <trans-unit id="0rp9Nec">
+                <source>label.guided_project_config_seo</source>
+                <target>Actualizar lo que leen los buscadores</target>
             </trans-unit>
             <trans-unit id="8QVNypE">
                 <source>label.guided_project_config_settings</source>
@@ -1210,6 +1266,10 @@
                 <source>label.guided_step_config_health_check_again</source>
                 <target>Volver a lanzarlo</target>
             </trans-unit>
+            <trans-unit id="nnqIbVH">
+                <source>label.guided_step_config_health_check_edit</source>
+                <target>Corregir en el origen</target>
+            </trans-unit>
             <trans-unit id="5Mjqbt4">
                 <source>label.guided_step_config_health_check_fix</source>
                 <target>Tratar un error</target>
@@ -1274,6 +1334,10 @@
                 <source>label.guided_step_config_messenger_failed_open</source>
                 <target>Abrir los mensajes fallidos</target>
             </trans-unit>
+            <trans-unit id="ZvhgJ9l">
+                <source>label.guided_step_config_messenger_failed_purge</source>
+                <target>Purgar ahora</target>
+            </trans-unit>
             <trans-unit id="sdFrKFD">
                 <source>label.guided_step_config_messenger_failed_retry</source>
                 <target>Reenviar un mensaje</target>
@@ -1289,6 +1353,10 @@
             <trans-unit id="f2z41Re">
                 <source>label.guided_step_config_not_found_from</source>
                 <target>La ruta ya está puesta</target>
+            </trans-unit>
+            <trans-unit id="i1M3zwB">
+                <source>label.guided_step_config_not_found_internal</source>
+                <target>Enlace interno o externo</target>
             </trans-unit>
             <trans-unit id="Nkq6Fow">
                 <source>label.guided_step_config_not_found_open</source>
@@ -1350,6 +1418,18 @@
                 <source>label.guided_step_config_redirect_to</source>
                 <target>Decir adónde lleva</target>
             </trans-unit>
+            <trans-unit id="MOhGlWi">
+                <source>label.guided_step_config_registration_done</source>
+                <target>Ahora ya lo sabe</target>
+            </trans-unit>
+            <trans-unit id="eM_.Avw">
+                <source>label.guided_step_config_registration_open</source>
+                <target>Abrir el panel</target>
+            </trans-unit>
+            <trans-unit id="teEuQu5">
+                <source>label.guided_step_config_registration_toggle</source>
+                <target>Cambiar los registros</target>
+            </trans-unit>
             <trans-unit id=".k4QzIY">
                 <source>label.guided_step_config_role_preview_banner</source>
                 <target>El back-office de ese nivel</target>
@@ -1365,6 +1445,22 @@
             <trans-unit id="LYE6TH7">
                 <source>label.guided_step_config_role_preview_open</source>
                 <target>Abrir el panel</target>
+            </trans-unit>
+            <trans-unit id="LbTQWix">
+                <source>label.guided_step_config_seo_crawlers</source>
+                <target>Actualizar los rastreadores de IA</target>
+            </trans-unit>
+            <trans-unit id="Gt_P_am">
+                <source>label.guided_step_config_seo_files</source>
+                <target>Reescribir los archivos SEO</target>
+            </trans-unit>
+            <trans-unit id="iGNyUwc">
+                <source>label.guided_step_config_seo_open</source>
+                <target>Abrir el panel</target>
+            </trans-unit>
+            <trans-unit id="Evl11y4">
+                <source>label.guided_step_config_seo_sitemaps</source>
+                <target>Regenerar los mapas del sitio</target>
             </trans-unit>
             <trans-unit id="yK2RVv_">
                 <source>label.guided_step_config_settings_alerts</source>
@@ -1385,10 +1481,6 @@
             <trans-unit id="XBS3oAU">
                 <source>label.guided_step_config_settings_save</source>
                 <target>Guardar</target>
-            </trans-unit>
-            <trans-unit id="Yb8P6co">
-                <source>label.guided_step_config_settings_save_stay</source>
-                <target>Guardar sin salir</target>
             </trans-unit>
             <trans-unit id="jkrEHgr">
                 <source>label.guided_step_config_settings_translate</source>

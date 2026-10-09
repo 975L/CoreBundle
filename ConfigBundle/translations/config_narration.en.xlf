@@ -50,6 +50,10 @@
                 <source>narration.guided_step_config_health_check_again</source>
                 <target>Once your corrections are made, run the check again: the trend chart at the top of the page shows whether the site is improving.</target>
             </trans-unit>
+            <trans-unit id="q38kwTs">
+                <source>narration.guided_step_config_health_check_edit</source>
+                <target>Click the pencil of a row or of a piece of advice: it opens the very screen, or field, to fix.</target>
+            </trans-unit>
             <trans-unit id="mjJnyUV">
                 <source>narration.guided_step_config_health_check_fix</source>
                 <target>Deal with one error at a time. Each failing row carries the advice of the bundle that produced it: that is where to start, not the whole list. Once the error is fixed, the tick button marks it as dealt with.</target>
@@ -108,11 +112,15 @@
             </trans-unit>
             <trans-unit id="RLUiSBP">
                 <source>narration.guided_step_config_messenger_failed_group</source>
-                <target>At the top, the table groups the messages by error: one cause is deleted at once.</target>
+                <target>Start with the table grouping the messages by error: one cause is deleted at once.</target>
             </trans-unit>
             <trans-unit id="Eh0DVqJ">
                 <source>narration.guided_step_config_messenger_failed_open</source>
                 <target>The panel takes you to the screen the dashboard alert leads to: each row says who the message was for and why it failed.</target>
+            </trans-unit>
+            <trans-unit id="k1GKkGC">
+                <source>narration.guided_step_config_messenger_failed_purge</source>
+                <target>Finally, the Purge now button, at the very top, runs the nightly cleanup without waiting: the minor cases, blacklist or spam, past their retention are deleted.</target>
             </trans-unit>
             <trans-unit id="wuNz6dq">
                 <source>narration.guided_step_config_messenger_failed_retry</source>
@@ -130,13 +138,17 @@
                 <source>narration.guided_step_config_not_found_from</source>
                 <target>The first field is already filled in. Nothing to type: it is the path the list showed you, copied as-is.</target>
             </trans-unit>
+            <trans-unit id="bpflWrs">
+                <source>narration.guided_step_config_not_found_internal</source>
+                <target>Look at the internal column: it says whether the broken link is on your own pages. That one is fixed by editing the page, not by a redirect.</target>
+            </trans-unit>
             <trans-unit id="_1uk958">
                 <source>narration.guided_step_config_not_found_open</source>
                 <target>Let's start with the missing pages. In the left-hand column, under "Advanced", the panel takes you to their list. These rows are written by the requests themselves, never by hand.</target>
             </trans-unit>
             <trans-unit id="oomn1I3">
                 <source>narration.guided_step_config_not_found_row</source>
-                <target>Read the first row: the most recently hit path comes first. Its number of hits says how much traffic is being lost, and the internal column says whether the broken link is on your own pages. That one is fixed by editing the page, not by a redirect.</target>
+                <target>Read the first row: the most recently hit path comes first. Its number of hits says how much traffic is being lost.</target>
             </trans-unit>
             <trans-unit id=".QoEjor">
                 <source>narration.guided_step_config_not_found_save</source>
@@ -190,6 +202,18 @@
                 <source>narration.guided_step_config_redirect_to</source>
                 <target>In the next field, say where it leads from now on: the page replacing it, on this site or elsewhere.</target>
             </trans-unit>
+            <trans-unit id="kKHrFR0">
+                <source>narration.guided_step_config_registration_done</source>
+                <target>Accounts already created still log in. Only new registrations are concerned.</target>
+            </trans-unit>
+            <trans-unit id="9RPJTPN">
+                <source>narration.guided_step_config_registration_open</source>
+                <target>The panel brings you back to the dashboard. Registration is opened and closed from its shortcuts, like the maintenance.</target>
+            </trans-unit>
+            <trans-unit id="xXk8GYE">
+                <source>narration.guided_step_config_registration_toggle</source>
+                <target>Click the registration shortcut. While nobody can register, the tile stays in the warning color.</target>
+            </trans-unit>
             <trans-unit id="nuohv_S">
                 <source>narration.guided_step_config_role_preview_banner</source>
                 <target>The back office is now the one of that level: its sidebar, its screens and its guided projects. The banner at the bottom of the page recalls it.</target>
@@ -205,6 +229,22 @@
             <trans-unit id="f8uhAaw">
                 <source>narration.guided_step_config_role_preview_open</source>
                 <target>The panel takes you back to the dashboard. A preview can be started from any screen of the back office.</target>
+            </trans-unit>
+            <trans-unit id="os2sDgK">
+                <source>narration.guided_step_config_seo_crawlers</source>
+                <target>The AI crawlers tile adds to their setting the ones that appeared in the community list. Nothing does it automatically: think of it from time to time.</target>
+            </trans-unit>
+            <trans-unit id="4fMHHkW">
+                <source>narration.guided_step_config_seo_files</source>
+                <target>Finally, the SEO files tile rewrites robots.txt, humans.txt and llms.txt: a setting you just changed, or the AI crawlers just added, take effect right away.</target>
+            </trans-unit>
+            <trans-unit id="sfnG87W">
+                <source>narration.guided_step_config_seo_open</source>
+                <target>The panel brings you back to the dashboard: the three tiles sit among the site shortcuts.</target>
+            </trans-unit>
+            <trans-unit id="vNsJDqH">
+                <source>narration.guided_step_config_seo_sitemaps</source>
+                <target>Click the sitemaps tile: each one is rebuilt with its index, without waiting for the night. Useful right after publishing.</target>
             </trans-unit>
             <trans-unit id="TnV5eu0">
                 <source>narration.guided_step_config_settings_alerts</source>
@@ -226,13 +266,9 @@
                 <source>narration.guided_step_config_settings_save</source>
                 <target>Save with the button at the bottom of the form.</target>
             </trans-unit>
-            <trans-unit id="g0CmdpY">
-                <source>narration.guided_step_config_settings_save_stay</source>
-                <target>Before switching language, save with the button that keeps the form open: switching reloads the screen, and a value not saved would be lost.</target>
-            </trans-unit>
             <trans-unit id="sJiuedR">
                 <source>narration.guided_step_config_settings_translate</source>
-                <target>At the top of the form, pick a language in the tabs, then write the value in that language. The setting's name stays the same: only what it says changes.</target>
+                <target>Back on the list, the Translate button only shows on the settings written in each language. It reopens the setting in another language: write the value there, then save.</target>
             </trans-unit>
             <trans-unit id="5y4RUl6">
                 <source>narration.guided_step_config_settings_value</source>
@@ -272,7 +308,7 @@
             </trans-unit>
             <trans-unit id="C6u64no">
                 <source>narration.guided_step_config_user_anonymize_button</source>
-                <target>Click the anonymize button of the account concerned, then confirm. It shows neither on a super administrator account nor on your own.</target>
+                <target>Click the anonymize button of the account concerned, then confirm. It shows neither on a super administrator account nor on your own: if it shows on no row, no account lends itself to it yet.</target>
             </trans-unit>
             <trans-unit id="W0.Y6vN">
                 <source>narration.guided_step_config_user_anonymize_done</source>

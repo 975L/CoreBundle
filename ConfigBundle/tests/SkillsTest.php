@@ -150,7 +150,9 @@ class SkillsTest extends TestCase
                 glob($package . '/*/templates') ?: [],
                 glob($package . '/*/config') ?: [],
                 glob($package . '/*/tests') ?: [],
-                [$this->root() . '/src', $this->root() . '/templates', $this->root() . '/config', $this->root() . '/tests'],
+                // The scaffold's classes land in every site as App\ ones, no less real for living outside src/
+                glob($package . '/*/scaffold/src') ?: [],
+                [$this->root() . '/src', $this->root() . '/templates', $this->root() . '/config', $this->root() . '/tests', $this->root() . '/scaffold/src'],
             ), is_dir(...));
 
             if ([] === $directories) {

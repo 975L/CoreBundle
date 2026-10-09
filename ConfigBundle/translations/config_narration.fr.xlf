@@ -50,6 +50,10 @@
                 <source>narration.guided_step_config_health_check_again</source>
                 <target>Une fois vos corrections faites, relancez le bilan : la courbe de tendance, en haut de la page, montre si le site s'améliore.</target>
             </trans-unit>
+            <trans-unit id="q38kwTs">
+                <source>narration.guided_step_config_health_check_edit</source>
+                <target>Cliquez sur le crayon d'une ligne ou d'un conseil : il ouvre directement l'écran, voire le champ, à corriger.</target>
+            </trans-unit>
             <trans-unit id="mjJnyUV">
                 <source>narration.guided_step_config_health_check_fix</source>
                 <target>Traitez une erreur à la fois. Chaque ligne en erreur porte le conseil du bundle qui l'a produite : c'est par là qu'il faut commencer, pas par la liste entière. Une fois l'erreur corrigée, le bouton de coche la marque traitée.</target>
@@ -108,11 +112,15 @@
             </trans-unit>
             <trans-unit id="RLUiSBP">
                 <source>narration.guided_step_config_messenger_failed_group</source>
-                <target>En haut, le tableau regroupe les messages par erreur : une même cause se supprime d'un coup.</target>
+                <target>Commencez par le tableau qui regroupe les messages par erreur : une même cause se supprime d'un coup.</target>
             </trans-unit>
             <trans-unit id="Eh0DVqJ">
                 <source>narration.guided_step_config_messenger_failed_open</source>
                 <target>Le panneau vous emmène sur l'écran où l'alerte du tableau de bord mène : chaque ligne dit à qui le message était destiné et pourquoi il a échoué.</target>
+            </trans-unit>
+            <trans-unit id="k1GKkGC">
+                <source>narration.guided_step_config_messenger_failed_purge</source>
+                <target>Pour finir, le bouton Purger maintenant, tout en haut, lance le nettoyage de la nuit sans attendre : les cas mineurs, blacklist ou spam, passés leur rétention sont supprimés.</target>
             </trans-unit>
             <trans-unit id="wuNz6dq">
                 <source>narration.guided_step_config_messenger_failed_retry</source>
@@ -130,13 +138,17 @@
                 <source>narration.guided_step_config_not_found_from</source>
                 <target>Le premier champ est déjà rempli. Rien à taper : c'est le chemin que la liste vous a montré, recopié tel quel.</target>
             </trans-unit>
+            <trans-unit id="bpflWrs">
+                <source>narration.guided_step_config_not_found_internal</source>
+                <target>Regardez la colonne interne : elle dit si le lien cassé est sur vos propres pages. Celui-là se corrige en éditant la page, pas par une redirection.</target>
+            </trans-unit>
             <trans-unit id="_1uk958">
                 <source>narration.guided_step_config_not_found_open</source>
                 <target>Commençons par les pages introuvables. Dans la colonne de gauche, sous « Avancé », le panneau vous emmène sur leur liste. Ces lignes sont écrites par les requêtes elles-mêmes, jamais à la main.</target>
             </trans-unit>
             <trans-unit id="oomn1I3">
                 <source>narration.guided_step_config_not_found_row</source>
-                <target>Lisez la première ligne : le chemin touché le plus récemment vient en tête. Son nombre de visites dit combien de trafic se perd, et la colonne interne dit si le lien cassé est sur vos propres pages. Celui-là se corrige en éditant la page, pas par une redirection.</target>
+                <target>Lisez la première ligne : le chemin touché le plus récemment vient en tête. Son nombre de visites dit combien de trafic se perd.</target>
             </trans-unit>
             <trans-unit id=".QoEjor">
                 <source>narration.guided_step_config_not_found_save</source>
@@ -190,6 +202,18 @@
                 <source>narration.guided_step_config_redirect_to</source>
                 <target>Dans le champ suivant, dites où elle mène désormais : la page qui la remplace, sur ce site ou ailleurs.</target>
             </trans-unit>
+            <trans-unit id="kKHrFR0">
+                <source>narration.guided_step_config_registration_done</source>
+                <target>Les comptes déjà créés se connectent toujours. Seules les nouvelles inscriptions sont concernées.</target>
+            </trans-unit>
+            <trans-unit id="9RPJTPN">
+                <source>narration.guided_step_config_registration_open</source>
+                <target>Le panneau vous ramène au tableau de bord. Les inscriptions s'ouvrent et se ferment depuis ses raccourcis, comme la maintenance.</target>
+            </trans-unit>
+            <trans-unit id="xXk8GYE">
+                <source>narration.guided_step_config_registration_toggle</source>
+                <target>Cliquez sur le raccourci des inscriptions. Tant que personne ne peut s'inscrire, la tuile reste en couleur d'alerte.</target>
+            </trans-unit>
             <trans-unit id="nuohv_S">
                 <source>narration.guided_step_config_role_preview_banner</source>
                 <target>Le back-office est maintenant celui de ce niveau : sa barre latérale, ses écrans et ses projets guidés. Le bandeau en bas de la page le rappelle.</target>
@@ -205,6 +229,22 @@
             <trans-unit id="f8uhAaw">
                 <source>narration.guided_step_config_role_preview_open</source>
                 <target>Le panneau vous ramène au tableau de bord. Un aperçu se lance depuis n'importe quel écran du back-office.</target>
+            </trans-unit>
+            <trans-unit id="os2sDgK">
+                <source>narration.guided_step_config_seo_crawlers</source>
+                <target>La tuile des robots d'IA ajoute à leur réglage ceux apparus dans la liste communautaire. Rien ne le fait automatiquement : pensez-y de temps en temps.</target>
+            </trans-unit>
+            <trans-unit id="4fMHHkW">
+                <source>narration.guided_step_config_seo_files</source>
+                <target>Pour finir, la tuile des fichiers SEO réécrit robots.txt, humans.txt et llms.txt : un réglage que vous venez de modifier, ou les robots d'IA tout juste ajoutés, prennent effet tout de suite.</target>
+            </trans-unit>
+            <trans-unit id="sfnG87W">
+                <source>narration.guided_step_config_seo_open</source>
+                <target>Le panneau vous ramène au tableau de bord : les trois tuiles se trouvent parmi les raccourcis du site.</target>
+            </trans-unit>
+            <trans-unit id="vNsJDqH">
+                <source>narration.guided_step_config_seo_sitemaps</source>
+                <target>Cliquez sur la tuile des plans du site : chacun est refait avec son index, sans attendre la nuit. Utile juste après avoir publié.</target>
             </trans-unit>
             <trans-unit id="TnV5eu0">
                 <source>narration.guided_step_config_settings_alerts</source>
@@ -226,13 +266,9 @@
                 <source>narration.guided_step_config_settings_save</source>
                 <target>Enregistrez avec le bouton en bas du formulaire.</target>
             </trans-unit>
-            <trans-unit id="g0CmdpY">
-                <source>narration.guided_step_config_settings_save_stay</source>
-                <target>Avant de changer de langue, enregistrez avec le bouton qui garde le formulaire ouvert : changer de langue recharge l'écran, et une valeur non enregistrée serait perdue.</target>
-            </trans-unit>
             <trans-unit id="sJiuedR">
                 <source>narration.guided_step_config_settings_translate</source>
-                <target>En haut du formulaire, choisissez une langue dans les onglets, puis écrivez la valeur dans cette langue. Le nom du réglage ne change pas : seul ce qu'il dit change.</target>
+                <target>De retour sur la liste, le bouton Traduire n'apparaît que sur les réglages qui s'écrivent dans chaque langue. Il rouvre le réglage dans une autre langue : écrivez-y la valeur, puis enregistrez.</target>
             </trans-unit>
             <trans-unit id="5y4RUl6">
                 <source>narration.guided_step_config_settings_value</source>
@@ -272,7 +308,7 @@
             </trans-unit>
             <trans-unit id="C6u64no">
                 <source>narration.guided_step_config_user_anonymize_button</source>
-                <target>Cliquez sur le bouton d'anonymisation du compte concerné, puis confirmez. Il n'apparaît ni sur un compte super administrateur, ni sur le vôtre.</target>
+                <target>Cliquez sur le bouton d'anonymisation du compte concerné, puis confirmez. Il n'apparaît ni sur un compte super administrateur, ni sur le vôtre : s'il n'apparaît sur aucune ligne, aucun compte ne s'y prête encore.</target>
             </trans-unit>
             <trans-unit id="W0.Y6vN">
                 <source>narration.guided_step_config_user_anonymize_done</source>

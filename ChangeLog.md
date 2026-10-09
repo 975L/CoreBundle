@@ -1,5 +1,24 @@
 # ChangeLog
 
+## v1.60.1
+
+Account with a pending password reset can be deleted
+
+### ConfigBundle
+
+- Scaffold `ResetPasswordRequest.user` deleted along with its account (`onDelete: 'CASCADE'`) (09/10/2026) [DB-Migration]
+- Added the scaffold's `ResetPasswordRequestAnonymizedListener`, deleting an anonymized account's pending resets (09/10/2026)
+- Added `ResetPasswordRequestRepository::removeForUser()` to the scaffold (09/10/2026)
+- Added the `config-registration` and `config-seo` guided projects (09/10/2026)
+- `config-health-check` guided project shows the edit pencil (09/10/2026)
+- `config-messenger-failed` guided project walks the grouped errors first and closes on the purge (09/10/2026)
+- `config-settings` guided project points at the list's "translate" button instead of the language tabs (09/10/2026)
+- `config-not-found` guided project shows the internal column in a step of its own (09/10/2026)
+- `config-user-anonymize` guided project says why the button may show on no row (09/10/2026)
+- Added `ResetPasswordRequestTest` and `ResetPasswordRequestAnonymizedListenerTest` to the scaffold (09/10/2026)
+- Updated `ConfigGuidedProjectProviderTest` (09/10/2026)
+- Updated the readme, the `c975l-users` and `c975l-operations` skills and `UPGRADE.md` (09/10/2026)
+
 ## v1.60
 
 Alerts name their type with a word instead of an icon

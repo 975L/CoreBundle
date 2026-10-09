@@ -55,30 +55,18 @@ class ConfigGuidedProjectProviderTest extends TestCase
         return new ConfigGuidedProjectProvider($this->createAdminUrlGenerator(), $configService, $this->createUrlGenerator($routes), new SiteLocales($multilingual ? ['fr', 'en'] : [], 'fr'));
     }
 
-    // The language tabs of the edit screen, drawn only on an entry ConfigTranslator::TRANSLATABLE names, which is why the step's description names the one to open
+    // The "translate" button of the list, drawn only on a setting a language can change, where the edit button may have opened any
     public function testTheSettingsProjectSaysHowASettingIsWrittenInAnotherLanguage(): void
     {
         $this->assertContains('label.guided_step_config_settings_translate', $this->settingsStepLabels());
-        $this->assertSame('[data-content-locales]', $this->settingsStep('label.guided_step_config_settings_translate')['highlight']);
+        $this->assertSame('.action-translate', $this->settingsStep('label.guided_step_config_settings_translate')['highlight']);
     }
 
-    // Read from the edit screen the value was just written on, so the tabs it points at are on the screen the visitor is standing on
-    public function testTheTranslateStepIsWalkedBeforeTheSettingIsSaved(): void
+    // Read from the list the save returns to, so the button it points at is on the screen the visitor is standing on
+    public function testTheTranslateStepIsWalkedRightAfterTheSettingIsSaved(): void
     {
-        $labels = $this->settingsStepLabels();
-
-        $this->assertLessThan(
-            array_search('label.guided_step_config_settings_save', $labels, true),
-            array_search('label.guided_step_config_settings_translate', $labels, true),
-        );
-    }
-
-    // A tab reloads the screen and nothing warns of what is left unsaved, so the value just typed is saved on the button keeping the form open right before a language is picked
-    public function testTheSettingIsSavedWithoutLeavingBeforeALanguageIsPicked(): void
-    {
-        $this->assertSame('.action-saveAndContinue', $this->settingsStep('label.guided_step_config_settings_save_stay')['highlight']);
         $this->assertSame(
-            ['label.guided_step_config_settings_value', 'label.guided_step_config_settings_save_stay', 'label.guided_step_config_settings_translate'],
+            ['label.guided_step_config_settings_value', 'label.guided_step_config_settings_save', 'label.guided_step_config_settings_translate'],
             \array_slice($this->settingsStepLabels(), 3, 3),
         );
     }
@@ -96,12 +84,11 @@ class ConfigGuidedProjectProviderTest extends TestCase
         $this->assertArrayNotHasKey('highlight', $step);
     }
 
-    // On a site declaring a single language no tab is ever drawn, and neither step walking them is offered
+    // On a site declaring a single language no "translate" button is ever drawn, and the step walking it is not offered
     public function testASingleLanguageSiteWalksNoLanguageStep(): void
     {
         $labels = $this->settingsStepLabels(false);
 
-        $this->assertNotContains('label.guided_step_config_settings_save_stay', $labels);
         $this->assertNotContains('label.guided_step_config_settings_translate', $labels);
         $this->assertContains('label.guided_step_config_settings_save', $labels);
     }
@@ -148,11 +135,11 @@ class ConfigGuidedProjectProviderTest extends TestCase
         $projects = $this->createProvider()->getGuidedProjects();
 
         $this->assertSame(
-            ['config-settings', 'config-health-check', 'config-maintenance', 'config-login-code', 'config-not-found', 'config-redirect', 'config-url-metadata', 'config-user-role', 'config-user-anonymize', 'config-role-preview', 'config-messenger-failed', 'config-content-export', 'config-content-import', 'config-prune'],
+            ['config-settings', 'config-health-check', 'config-maintenance', 'config-login-code', 'config-registration', 'config-not-found', 'config-redirect', 'config-url-metadata', 'config-seo', 'config-user-role', 'config-user-anonymize', 'config-role-preview', 'config-messenger-failed', 'config-content-export', 'config-content-import', 'config-prune'],
             array_column($projects, 'slug')
         );
-        // 1040 rather than a value after 1050: the missing pages are walked to the redirects, the screen the url metadata has nothing to do with. 1035 keeps the login code beside the maintenance, both dashboard toggles
-        $this->assertSame([1010, 1020, 1030, 1035, 1040, 1045, 1050, 1060, 1065, 1070, 1080, 1085, 1090, 1100], array_column($projects, 'order'));
+        // 1040 rather than a value after 1050: the missing pages are walked to the redirects, the screen the url metadata has nothing to do with. 1035 and 1038 keep the login code and the registration beside the maintenance, the three dashboard toggles, and 1055 the SEO tiles beside the url metadata
+        $this->assertSame([1010, 1020, 1030, 1035, 1038, 1040, 1045, 1050, 1055, 1060, 1065, 1070, 1080, 1085, 1090, 1100], array_column($projects, 'order'));
     }
 
     // A project is offered on a dashboard a contributor now reaches, so one walking an admin screen has to say so or its very first step answers a 403
@@ -169,10 +156,13 @@ class ConfigGuidedProjectProviderTest extends TestCase
                 'config-health-check' => 'site-role-admin',
                 'config-maintenance' => 'site-role-admin',
                 'config-login-code' => 'site-role-admin',
+                'config-registration' => 'site-role-admin',
                 // The three whose screens answer an editor (see NotFoundCrudController, RedirectCrudController, UrlMetadataCrudController)
                 'config-not-found' => 'site-role-editor',
                 'config-redirect' => 'site-role-editor',
                 'config-url-metadata' => 'site-role-editor',
+                // The bar the three SEO tiles it walks declare
+                'config-seo' => 'ROLE_SUPER_ADMIN',
                 'config-user-role' => 'site-role-admin',
                 'config-user-anonymize' => 'site-role-admin',
                 // Every account on the back-office floor has a level below its own to look through
@@ -274,7 +264,7 @@ class ConfigGuidedProjectProviderTest extends TestCase
         $routes = [];
         $this->createProvider($routes)->getGuidedProjects();
 
-        $this->assertSame(['management_health_check_index', 'management', 'management', 'management', 'management_config_messenger_failed', 'management', 'management_content_import_index', 'management_config_prune_index'], $routes);
+        $this->assertSame(['management_health_check_index', 'management', 'management', 'management', 'management', 'management', 'management_config_messenger_failed', 'management', 'management_content_import_index', 'management_config_prune_index'], $routes);
     }
 
     // A label or description with no translation reads as its own key in the panel

@@ -50,6 +50,10 @@
                 <source>narration.guided_step_config_health_check_again</source>
                 <target>Una vez hechas sus correcciones, vuelva a lanzar el control: la curva de tendencia, en la parte superior de la página, muestra si el sitio mejora.</target>
             </trans-unit>
+            <trans-unit id="q38kwTs">
+                <source>narration.guided_step_config_health_check_edit</source>
+                <target>Haga clic en el lápiz de una fila o de un consejo: abre directamente la pantalla, o el campo, que hay que corregir.</target>
+            </trans-unit>
             <trans-unit id="mjJnyUV">
                 <source>narration.guided_step_config_health_check_fix</source>
                 <target>Trate un error cada vez. Cada fila con error lleva el consejo del bundle que la produjo: por ahí hay que empezar, no por la lista entera. Una vez corregido el error, el botón de visto bueno lo marca como tratado.</target>
@@ -108,11 +112,15 @@
             </trans-unit>
             <trans-unit id="RLUiSBP">
                 <source>narration.guided_step_config_messenger_failed_group</source>
-                <target>Arriba, la tabla agrupa los mensajes por error: una misma causa se elimina de una vez.</target>
+                <target>Empiece por la tabla que agrupa los mensajes por error: una misma causa se elimina de una vez.</target>
             </trans-unit>
             <trans-unit id="Eh0DVqJ">
                 <source>narration.guided_step_config_messenger_failed_open</source>
                 <target>El panel le lleva a la pantalla a la que lleva la alerta del panel: cada fila dice a quién iba destinado el mensaje y por qué falló.</target>
+            </trans-unit>
+            <trans-unit id="k1GKkGC">
+                <source>narration.guided_step_config_messenger_failed_purge</source>
+                <target>Por último, el botón Purgar ahora, arriba del todo, lanza la limpieza nocturna sin esperar: los casos menores, lista negra o spam, que superan su retención se eliminan.</target>
             </trans-unit>
             <trans-unit id="wuNz6dq">
                 <source>narration.guided_step_config_messenger_failed_retry</source>
@@ -130,13 +138,17 @@
                 <source>narration.guided_step_config_not_found_from</source>
                 <target>El primer campo ya está relleno. Nada que escribir: es la ruta que le mostró la lista, copiada tal cual.</target>
             </trans-unit>
+            <trans-unit id="bpflWrs">
+                <source>narration.guided_step_config_not_found_internal</source>
+                <target>Mire la columna interna: dice si el enlace roto está en sus propias páginas. Ese se corrige editando la página, no con una redirección.</target>
+            </trans-unit>
             <trans-unit id="_1uk958">
                 <source>narration.guided_step_config_not_found_open</source>
                 <target>Empecemos por las páginas no encontradas. En la columna de la izquierda, bajo «Avanzado», el panel le lleva a su lista. Estas filas las escriben las propias peticiones, nunca se añaden a mano.</target>
             </trans-unit>
             <trans-unit id="oomn1I3">
                 <source>narration.guided_step_config_not_found_row</source>
-                <target>Lea la primera fila: la ruta visitada más recientemente va primero. Su número de visitas dice cuánto tráfico se pierde, y la columna interna dice si el enlace roto está en sus propias páginas. Ese se corrige editando la página, no con una redirección.</target>
+                <target>Lea la primera fila: la ruta visitada más recientemente va primero. Su número de visitas dice cuánto tráfico se pierde.</target>
             </trans-unit>
             <trans-unit id=".QoEjor">
                 <source>narration.guided_step_config_not_found_save</source>
@@ -190,6 +202,18 @@
                 <source>narration.guided_step_config_redirect_to</source>
                 <target>En el campo siguiente, diga adónde lleva ahora: la página que la sustituye, en este sitio o en otro.</target>
             </trans-unit>
+            <trans-unit id="kKHrFR0">
+                <source>narration.guided_step_config_registration_done</source>
+                <target>Las cuentas ya creadas siguen conectándose. Solo afecta a los nuevos registros.</target>
+            </trans-unit>
+            <trans-unit id="9RPJTPN">
+                <source>narration.guided_step_config_registration_open</source>
+                <target>El panel le devuelve al panel de control. Los registros se abren y se cierran desde sus accesos directos, como el mantenimiento.</target>
+            </trans-unit>
+            <trans-unit id="xXk8GYE">
+                <source>narration.guided_step_config_registration_toggle</source>
+                <target>Haga clic en el acceso directo de los registros. Mientras nadie pueda registrarse, el mosaico queda en color de aviso.</target>
+            </trans-unit>
             <trans-unit id="nuohv_S">
                 <source>narration.guided_step_config_role_preview_banner</source>
                 <target>El back-office es ahora el de ese nivel: su barra lateral, sus pantallas y sus proyectos guiados. El aviso en la parte inferior de la página lo recuerda.</target>
@@ -205,6 +229,22 @@
             <trans-unit id="f8uhAaw">
                 <source>narration.guided_step_config_role_preview_open</source>
                 <target>El panel le devuelve a la pantalla de inicio del back-office. Una vista previa se inicia desde cualquier pantalla.</target>
+            </trans-unit>
+            <trans-unit id="os2sDgK">
+                <source>narration.guided_step_config_seo_crawlers</source>
+                <target>El mosaico de los rastreadores de IA añade a su ajuste los que aparecieron en la lista comunitaria. Nada lo hace automáticamente: piense en ello de vez en cuando.</target>
+            </trans-unit>
+            <trans-unit id="4fMHHkW">
+                <source>narration.guided_step_config_seo_files</source>
+                <target>Por último, el mosaico de los archivos SEO reescribe robots.txt, humans.txt y llms.txt: un ajuste que acaba de cambiar, o los rastreadores de IA recién añadidos, surten efecto enseguida.</target>
+            </trans-unit>
+            <trans-unit id="sfnG87W">
+                <source>narration.guided_step_config_seo_open</source>
+                <target>El panel le devuelve al panel de control: los tres mosaicos están entre los accesos directos del sitio.</target>
+            </trans-unit>
+            <trans-unit id="vNsJDqH">
+                <source>narration.guided_step_config_seo_sitemaps</source>
+                <target>Haga clic en el mosaico de los mapas del sitio: cada uno se rehace con su índice, sin esperar a la noche. Útil justo después de publicar.</target>
             </trans-unit>
             <trans-unit id="TnV5eu0">
                 <source>narration.guided_step_config_settings_alerts</source>
@@ -226,13 +266,9 @@
                 <source>narration.guided_step_config_settings_save</source>
                 <target>Guarde con el botón situado en la parte inferior del formulario.</target>
             </trans-unit>
-            <trans-unit id="g0CmdpY">
-                <source>narration.guided_step_config_settings_save_stay</source>
-                <target>Antes de cambiar de idioma, guarde con el botón que mantiene abierto el formulario: el cambio recarga la pantalla y un valor no guardado se perdería.</target>
-            </trans-unit>
             <trans-unit id="sJiuedR">
                 <source>narration.guided_step_config_settings_translate</source>
-                <target>En la parte superior del formulario, elija un idioma en las pestañas y escriba el valor en ese idioma. El nombre del ajuste no cambia: sólo cambia lo que dice.</target>
+                <target>De vuelta en la lista, el botón Traducir solo aparece en los ajustes que se escriben en cada idioma. Vuelve a abrir el ajuste en otro idioma: escriba allí el valor y guarde.</target>
             </trans-unit>
             <trans-unit id="5y4RUl6">
                 <source>narration.guided_step_config_settings_value</source>
@@ -272,7 +308,7 @@
             </trans-unit>
             <trans-unit id="C6u64no">
                 <source>narration.guided_step_config_user_anonymize_button</source>
-                <target>Haga clic en el botón de anonimización de la cuenta en cuestión y confirme. No aparece ni en una cuenta de superadministrador ni en la suya.</target>
+                <target>Haga clic en el botón de anonimización de la cuenta en cuestión y confirme. No aparece ni en una cuenta de superadministrador ni en la suya: si no aparece en ninguna fila, ninguna cuenta se presta a ello todavía.</target>
             </trans-unit>
             <trans-unit id="W0.Y6vN">
                 <source>narration.guided_step_config_user_anonymize_done</source>

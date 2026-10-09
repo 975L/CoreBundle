@@ -17,8 +17,9 @@ class ResetPasswordRequest implements ResetPasswordRequestInterface
     #[ORM\Column]
     private ?int $id = null;
 
+    // Ties the request to its user, deleted along with it ("CASCADE") so a pending reset never keeps an account from being deleted
     public function __construct(#[ORM\ManyToOne]
-        #[ORM\JoinColumn(nullable: false)]
+        #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
         private ?User $user, \DateTimeInterface $expiresAt, string $selector, string $hashedToken)
     {
         $this->initialize($expiresAt, $selector, $hashedToken);

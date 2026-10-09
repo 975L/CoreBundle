@@ -1,5 +1,9 @@
 # UPGRADE
 
+## v1.60.1
+
+**`ResetPasswordRequest.user` is now `onDelete: 'CASCADE'`**: an account with a pending password reset can be deleted. Run `php bin/console doctrine:migrations:diff && php bin/console doctrine:migrations:migrate` once `c975l:scaffold` has refreshed `src/Entity/ResetPasswordRequest.php`. A site whose `ResetPasswordRequest.php` comes back as diverged adds `onDelete: 'CASCADE'` to the `#[ORM\JoinColumn]` of `$user` itself, then runs the same migration. The new `src/EventListener/ResetPasswordRequestAnonymizedListener.php` deletes the pending requests of an anonymized account, which keeps its row and never triggers the cascade: a site that customized `ResetPasswordRequestRepository.php` adds its `removeForUser()` too.
+
 ## v1.57.0
 
 **`TutorialFilmUrlProviderInterface` loses `getFilmPlayer()`**: a film only the back office shows is no longer played in place on the guided projects' page, `getFilmUrl()` linking it like any other - SiteBundle sends it to a back-office page of its own from v8.31.0. The projects lose their `player` key. A class of your own implementing the interface drops the method.

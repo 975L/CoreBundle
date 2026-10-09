@@ -1,5 +1,25 @@
 [
     {
+        "date": "2026-10-09",
+        "description": [
+            {
+                "en": "An account with a pending password reset can now be deleted from the back office.",
+                "fr": "Un compte ayant une demande de réinitialisation de mot de passe en cours peut désormais être supprimé depuis le back-office.",
+                "es": "Una cuenta con una solicitud de restablecimiento de contraseña pendiente ya puede eliminarse desde el back-office."
+            },
+            {
+                "en": "Two new guided projects: opening or closing registration, and refreshing what search engines read.",
+                "fr": "Deux nouveaux projets guidés : ouvrir ou fermer les inscriptions, et mettre à jour ce que lisent les moteurs de recherche.",
+                "es": "Dos nuevos proyectos guiados: abrir o cerrar los registros, y actualizar lo que leen los buscadores."
+            },
+            {
+                "en": "The guided projects for the health check, failed messages, settings and broken links show more of their screens.",
+                "fr": "Les projets guidés du bilan de santé, des messages en échec, des réglages et des liens cassés montrent davantage de leurs écrans.",
+                "es": "Los proyectos guiados de la revisión de salud, los mensajes fallidos, los ajustes y los enlaces rotos muestran más de sus pantallas."
+            }
+        ]
+    },
+    {
         "date": "2026-10-07",
         "description": [
             {

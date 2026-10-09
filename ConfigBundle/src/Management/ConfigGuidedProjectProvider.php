@@ -24,7 +24,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-// This bundle's own guided projects, running the 1000 block GuidedProjectProviderInterface reserves them - the same docblock stating every other bundle's, so a range is read there rather than recopied here. Each carries the role its own screen is gated by, so a parcours is never offered to someone its very first step turns away - the projects' page the list is started from opens to a contributor (same BackOfficeAccessVoter floor as the dashboard, see GuidedProjectController::index()), and seven of these fourteen walk a screen only an admin may read, one a screen whose buttons only a super admin is shown, and two a screen a super admin alone opens. Only the opening step of each carries an url: from there the parcours walks the screen the user has been sent to, highlighting the button or the field they are meant to use next - one they click themselves, which brings the panel back on that very step (see assets/js/guided-project.js resume())
+// This bundle's own guided projects, running the 1000 block GuidedProjectProviderInterface reserves them - the same docblock stating every other bundle's, so a range is read there rather than recopied here. Each carries the role its own screen is gated by, so a parcours is never offered to someone its very first step turns away - the projects' page the list is started from opens to a contributor (same BackOfficeAccessVoter floor as the dashboard, see GuidedProjectController::index()), and eight of these sixteen walk a screen only an admin may read, two the buttons or tiles only a super admin is shown, and two a screen a super admin alone opens. Only the opening step of each carries an url: from there the parcours walks the screen the user has been sent to, highlighting the button or the field they are meant to use next - one they click themselves, which brings the panel back on that very step (see assets/js/guided-project.js resume())
 class ConfigGuidedProjectProvider implements GuidedProjectProviderInterface
 {
     public function __construct(
@@ -42,9 +42,11 @@ class ConfigGuidedProjectProvider implements GuidedProjectProviderInterface
             $this->healthCheckProject(),
             $this->maintenanceProject(),
             $this->loginCodeProject(),
+            $this->registrationProject(),
             $this->notFoundProject(),
             $this->redirectProject(),
             $this->urlMetadataProject(),
+            $this->seoProject(),
             $this->userRoleProject(),
             $this->userAnonymizeProject(),
             $this->rolePreviewProject(),
@@ -119,6 +121,8 @@ class ConfigGuidedProjectProvider implements GuidedProjectProviderInterface
                 ],
                 [
                     'label' => 'label.guided_step_config_user_anonymize_button',
+                    // Drawn on an account the site can anonymize alone (see UserCrudController::isAnonymizable()), so a site holding only its owner and the admin reading this shows it on no row
+                    'description' => 'description.guided_step_config_user_anonymize_button',
                     'narration' => 'narration.guided_step_config_user_anonymize_button',
                     'highlight' => '.action-anonymize',
                 ],
@@ -195,6 +199,13 @@ class ConfigGuidedProjectProvider implements GuidedProjectProviderInterface
                     'description' => 'description.guided_step_config_not_found_row',
                     'narration' => 'narration.guided_step_config_not_found_row',
                     'highlight' => 'tr[data-id]',
+                ],
+                [
+                    // The site's own broken links against the stale ones other sites publish, which are not fixed the same way (see NotFoundCrudController::configureFilters())
+                    'label' => 'label.guided_step_config_not_found_internal',
+                    'description' => 'description.guided_step_config_not_found_internal',
+                    'narration' => 'narration.guided_step_config_not_found_internal',
+                    'highlight' => 'tr[data-id] td[data-column="internal"]',
                 ],
                 [
                     // A custom action, so EasyAdmin names its button after it just the same - it opens RedirectCrudController's "new" with the dead path already set (see its createEntity())
@@ -312,6 +323,13 @@ class ConfigGuidedProjectProvider implements GuidedProjectProviderInterface
                     'url' => $this->urlGenerator->generate('management_config_messenger_failed'),
                 ],
                 [
+                    // One error repeated across many messages is one cause, dropped at once from the table above the detail - walked first, the cause shared by many before the message standing alone
+                    'label' => 'label.guided_step_config_messenger_failed_group',
+                    'description' => 'description.guided_step_config_messenger_failed_group',
+                    'narration' => 'narration.guided_step_config_messenger_failed_group',
+                    'highlight' => '[data-messenger-delete-group]',
+                ],
+                [
                     'label' => 'label.guided_step_config_messenger_failed_retry',
                     'description' => 'description.guided_step_config_messenger_failed_retry',
                     'narration' => 'narration.guided_step_config_messenger_failed_retry',
@@ -324,11 +342,11 @@ class ConfigGuidedProjectProvider implements GuidedProjectProviderInterface
                     'highlight' => '[data-messenger-delete]',
                 ],
                 [
-                    // One error repeated across many messages is one cause, dropped at once from the table above the detail
-                    'label' => 'label.guided_step_config_messenger_failed_group',
-                    'description' => 'description.guided_step_config_messenger_failed_group',
-                    'narration' => 'narration.guided_step_config_messenger_failed_group',
-                    'highlight' => '[data-messenger-delete-group]',
+                    // Runs the nightly cleanup at once, dropping the minor failures past their retention
+                    'label' => 'label.guided_step_config_messenger_failed_purge',
+                    'description' => 'description.guided_step_config_messenger_failed_purge',
+                    'narration' => 'narration.guided_step_config_messenger_failed_purge',
+                    'highlight' => 'form[action$="/messenger-failed/purge"] button',
                 ],
             ],
         ];
@@ -365,28 +383,22 @@ class ConfigGuidedProjectProvider implements GuidedProjectProviderInterface
             ],
         ];
 
-        // The language tabs are drawn on a site declaring several languages alone, so anywhere else the two steps walking them would speak of nothing on the screen - and on an entry ConfigTranslator::TRANSLATABLE names alone (see ConfigCrudController::addContentLocaleParameters), which the step's description points to
-        if ($this->siteLocales->isMultilingual()) {
-            $steps[] = [
-                // A tab is a plain link reloading the screen, and nothing warns of what is left unsaved: the value just typed survives only if saved first, on the button keeping the form open
-                'label' => 'label.guided_step_config_settings_save_stay',
-                'description' => 'description.guided_step_config_settings_save_stay',
-                'narration' => 'narration.guided_step_config_settings_save_stay',
-                'highlight' => '.action-saveAndContinue',
-            ];
-            $steps[] = [
-                'label' => 'label.guided_step_config_settings_translate',
-                'description' => 'description.guided_step_config_settings_translate',
-                'narration' => 'narration.guided_step_config_settings_translate',
-                'highlight' => '[data-content-locales]',
-            ];
-        }
-
         $steps[] = [
             'label' => 'label.guided_step_config_settings_save',
             'narration' => 'narration.guided_step_config_settings_save',
             'highlight' => '.action-saveAndReturn',
         ];
+
+        // Back on the list, the "translate" button is drawn on a site declaring several languages alone, and only on a row a language can change (see ConfigCrudController::configureActions()) - so it points at a setting the language tabs exist for, where the edit button may have opened any
+        if ($this->siteLocales->isMultilingual()) {
+            $steps[] = [
+                'label' => 'label.guided_step_config_settings_translate',
+                'description' => 'description.guided_step_config_settings_translate',
+                'narration' => 'narration.guided_step_config_settings_translate',
+                'highlight' => '.action-translate',
+            ];
+        }
+
         $steps[] = [
             'label' => 'label.guided_step_config_settings_alerts',
             'description' => 'description.guided_step_config_settings_alerts',
@@ -440,6 +452,13 @@ class ConfigGuidedProjectProvider implements GuidedProjectProviderInterface
                     'description' => 'description.guided_step_config_health_check_read',
                     'narration' => 'narration.guided_step_config_health_check_read',
                     'highlight' => '[data-controller="health-check-table"]',
+                ],
+                [
+                    // The pencil a row and each piece of advice carry, opening the very screen - or field - to fix (see health_check/_table.html.twig)
+                    'label' => 'label.guided_step_config_health_check_edit',
+                    'description' => 'description.guided_step_config_health_check_edit',
+                    'narration' => 'narration.guided_step_config_health_check_edit',
+                    'highlight' => '.health-check-edit-link',
                 ],
                 [
                     'label' => 'label.guided_step_config_health_check_fix',
@@ -539,6 +558,40 @@ class ConfigGuidedProjectProvider implements GuidedProjectProviderInterface
         ];
     }
 
+    // The one toggle whose "off" is the state to watch: a site letting nobody register looks exactly like one that works
+    private function registrationProject(): array
+    {
+        return [
+            'slug' => 'config-registration',
+            'label' => 'label.guided_project_config_registration',
+            'description' => 'description.guided_project_config_registration',
+            'translation_domain' => 'config',
+            // Beside the two other dashboard toggles, before the dead links
+            'order' => 1038,
+            // The bar the registration toggle shortcut declares
+            'role' => $this->configService->get('site-role-admin'),
+            'steps' => [
+                [
+                    'label' => 'label.guided_step_config_registration_open',
+                    'description' => 'description.guided_step_config_registration_open',
+                    'narration' => 'narration.guided_step_config_registration_open',
+                    'url' => $this->urlGenerator->generate('management'),
+                ],
+                [
+                    'label' => 'label.guided_step_config_registration_toggle',
+                    'description' => 'description.guided_step_config_registration_toggle',
+                    'narration' => 'narration.guided_step_config_registration_toggle',
+                    'highlight' => 'form[action$="/config/user-registration-enabled-toggle"] button',
+                ],
+                [
+                    'label' => 'label.guided_step_config_registration_done',
+                    'description' => 'description.guided_step_config_registration_done',
+                    'narration' => 'narration.guided_step_config_registration_done',
+                ],
+            ],
+        ];
+    }
+
     // The listings no entity carries speak for themselves nowhere else: left empty, a search result or a shared link shows the url and nothing more
     private function urlMetadataProject(): array
     {
@@ -591,6 +644,49 @@ class ConfigGuidedProjectProvider implements GuidedProjectProviderInterface
                     'label' => 'label.guided_step_config_url_metadata_done',
                     'description' => 'description.guided_step_config_url_metadata_done',
                     'narration' => 'narration.guided_step_config_url_metadata_done',
+                ],
+            ],
+        ];
+    }
+
+    // What search engines and AI crawlers read of the site, rewritten from three tiles rather than waiting for the night
+    private function seoProject(): array
+    {
+        return [
+            'slug' => 'config-seo',
+            'label' => 'label.guided_project_config_seo',
+            'description' => 'description.guided_project_config_seo',
+            'translation_domain' => 'config',
+            // Right after the url metadata, the other half of what a search engine reads
+            'order' => 1055,
+            // The bar the three tiles it walks declare
+            'role' => 'ROLE_SUPER_ADMIN',
+            'steps' => [
+                [
+                    'label' => 'label.guided_step_config_seo_open',
+                    'description' => 'description.guided_step_config_seo_open',
+                    'narration' => 'narration.guided_step_config_seo_open',
+                    'url' => $this->urlGenerator->generate('management'),
+                ],
+                [
+                    'label' => 'label.guided_step_config_seo_sitemaps',
+                    'description' => 'description.guided_step_config_seo_sitemaps',
+                    'narration' => 'narration.guided_step_config_seo_sitemaps',
+                    'highlight' => 'form[action$="/config/sitemaps-create"] button',
+                ],
+                [
+                    // Not scheduled, unlike the sitemaps and the files: the list it reads changes when new crawlers appear, not every night
+                    'label' => 'label.guided_step_config_seo_crawlers',
+                    'description' => 'description.guided_step_config_seo_crawlers',
+                    'narration' => 'narration.guided_step_config_seo_crawlers',
+                    'highlight' => 'form[action$="/config/seo-crawlers-update"] button',
+                ],
+                [
+                    // Last, so robots.txt carries the crawlers the step above just added
+                    'label' => 'label.guided_step_config_seo_files',
+                    'description' => 'description.guided_step_config_seo_files',
+                    'narration' => 'narration.guided_step_config_seo_files',
+                    'highlight' => 'form[action$="/config/seo-files-create"] button',
                 ],
             ],
         ];
