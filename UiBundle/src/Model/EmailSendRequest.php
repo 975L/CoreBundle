@@ -16,7 +16,7 @@ final class EmailSendRequest
     /**
      * @param ?string           $bcc         a blind copy, invisible to the recipient - unlike copyToEmail, which sends a second, separate message. What a shop keeping a record of every order email needs
      * @param bool              $wrapLayout  only meaningful alongside "template": renders it and wraps the result through EmailLayoutRegistry before sending, so a bundle's own email body comes out in the site's branded layout without that template having to {% extends %} a path it would have to know. The body template must then render the body alone, with no layout of its own. Ignored on an "html" request, already-rendered markup being the caller's own call
-     * @param ?string           $text        a plain-text body, sent as such - no template, no layout, nothing to render. What an operational digest written by a command needs: it goes to an administrator, not to a visitor, and gains nothing from branding
+     * @param ?string           $text        a plain-text body, written by the caller with no template - what a system email (a digest, an alert) needs. Sent as such, with its HTML twin in the site's layout when one is registered (see EmailService)
      * @param EmailAttachment[] $attachments files travelling with the message. Appended last, like $text before it, so the positional signature stays what it was. A copy sent to copyToEmail carries them too - it is the same message, sent to a second address
      */
     public function __construct(

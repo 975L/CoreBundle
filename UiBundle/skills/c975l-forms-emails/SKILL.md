@@ -227,7 +227,9 @@ branded layout when that bundle is installed, and with this bundle's bare one ot
 layout's own wording follows the recipient rather than whichever row the database returns first;
 `EmailService` passes none, `findForRendering()` then falling back on the site's default locale. A request
 carries **exactly one** body — `template`, `html` or `text` — anything else is refused rather than
-sent as whichever the chain tested first.
+sent as whichever the chain tested first. A `text` body (a system email: digest, alert) goes out as
+plain text plus its HTML twin (`@c975LUi/emails/text.html.twig`) in the layout, when one is registered.
+`SendEmailFormAction`'s default body is wrapped too; a site's own `template` stays a whole document.
 
 **A root-relative path does not survive the send.** A mailbox has no page to resolve `/medias/…`
 against, so an `src` or an `href` starting with a single slash is a broken picture and a dead link the

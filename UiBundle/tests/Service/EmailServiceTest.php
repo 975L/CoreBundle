@@ -378,7 +378,7 @@ class EmailServiceTest extends TestCase
         $this->assertCount(0, $mailer->sent);
     }
 
-    // An operational digest written by a command has no markup and wants none - it goes out as plain text, and the layout registry never sees it
+    // A system email written by a command, on a site with no layout registered, goes out as plain text alone
     public function testSendDeliversAPlainTextBodyAsIs(): void
     {
         $mailer = $this->createRecordingMailer();
@@ -487,6 +487,26 @@ class EmailServiceTest extends TestCase
 
         $this->assertSame('<div id="branded"><p>body</p></div>', $mailer->sent[0]->getHtmlBody());
         $this->assertNull($mailer->sent[0]->getHtmlTemplate());
+    }
+
+    // A system email keeps its plain text and gains its HTML twin in the site's layout, so every email the site sends carries its branding
+    public function testAPlainTextBodyGetsItsHtmlTwinInTheLayout(): void
+    {
+        $registry = new EmailLayoutRegistry();
+        $registry->addProvider(new class implements \c975L\UiBundle\Contract\EmailLayoutProviderInterface {
+            public function wrap(string $bodyHtml, ?string $locale = null): string
+            {
+                return '<div id="branded">' . $bodyHtml . '</div>';
+            }
+        });
+
+        $mailer = $this->createRecordingMailer();
+        $service = $this->createService($mailer, renderedHtml: '<p>28 run(s)</p>', emailLayoutRegistry: $registry);
+
+        $service->send(new EmailSendRequest(subject: 'Backup Report', context: [], from: 'from@example.com', to: 'to@example.com', text: '28 run(s)'));
+
+        $this->assertSame('28 run(s)', $mailer->sent[0]->getTextBody());
+        $this->assertSame('<div id="branded"><p>28 run(s)</p></div>', $mailer->sent[0]->getHtmlBody());
     }
 
     // No provider registered: the body goes out as it is rather than not at all

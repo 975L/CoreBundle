@@ -9,7 +9,7 @@
     {# The toggle EasyAdmin draws on its grid, which this screen has to draw itself since it replaces the index page and its global actions. Without it, a group holding only sensitive entries - the payment keys - was reachable only by showing them from another group's listing first #}
     {% if canShowSensitive|default(false) %}
         <p>
-            <a class="btn btn-{{ showSensitive|default(false) ? '' : 'outline-' }}warning btn-sm" href="{{ sensitiveToggleUrl }}">
+            <a class="btn btn-{{ showSensitive|default(false) ? '' : 'outline-' }}warning btn-sm" href="{{ sensitiveToggleUrl }}" data-config-sensitive-toggle>
                 <i class="fa fa-eye{{ showSensitive|default(false) ? '-slash' : '' }}"></i>
                 {{ (showSensitive|default(false) ? 'label.hide_sensitive' : 'label.show_sensitive')|trans({}, 'config') }}
             </a>

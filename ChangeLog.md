@@ -1,5 +1,30 @@
 # ChangeLog
 
+## v1.61
+
+Atom feeds contributed by bundles, announced in every page's head
+
+### ConfigBundle
+
+- Added `FeedProviderInterface`, `FeedRenderer` and the `feeds()` Twig function (09/10/2026)
+- Added `FeedController`, serving each feed at `/feed/{name}.xml` (`config_feed`) (09/10/2026)
+- Added the overridable `@c975LConfig/feeds/atom.xml.twig` template (09/10/2026)
+- `UserCrudController`'s DELETE action dispatches `UserAnonymizedEvent` before the removal (09/10/2026)
+- `TutorialAccount::close()` dispatches `UserAnonymizedEvent` before the removal (09/10/2026)
+- Config groups' sensitive toggle carries a `data-config-sensitive-toggle` attribute (09/10/2026)
+- Added `FeedRendererTest`, `FeedControllerTest` and `FeedExtensionTest` (09/10/2026)
+- Updated `UserCrudControllerTest` and `TutorialAccountTest` (09/10/2026)
+- Updated the readme and the `c975l-operations`, `c975l-management` and `c975l-users` skills (09/10/2026)
+
+### UiBundle
+
+- `layout.html.twig` announces the Atom feeds with a `<link rel="alternate">` (09/10/2026)
+- A plain-text email gets its HTML twin in the site's layout (`emails/text.html.twig`) (09/10/2026)
+- `SendEmailFormAction`'s default body is wrapped in the site's layout (09/10/2026)
+- `emails/form_submission.html.twig` renders the body alone, without its own `<html>` (09/10/2026)
+- Updated `EmailServiceTest` and `SendEmailFormActionTest` (09/10/2026)
+- Updated the readme and the `c975l-forms-emails` and `c975l-ui-assets` skills (09/10/2026)
+
 ## v1.60.2
 
 Social content sources can be browsed and report their post status

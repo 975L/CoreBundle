@@ -74,8 +74,12 @@ class EmailService
         }
 
         if (null !== $request->text) {
-            // Sent as plain text, deliberately: an operational digest reads the same in every client and survives one that renders no HTML at all
+            // Kept as plain text, which reads the same in every client and survives one rendering no HTML, with its HTML twin in the site's layout when one is registered - every email the site sends carrying its branding, a system one included
             $email->text($request->text);
+            $html = $this->emailLayoutRegistry->wrap($this->twig->render('@c975LUi/emails/text.html.twig', ['text' => $request->text]));
+            if (null !== $html) {
+                $email->html($html);
+            }
 
             return;
         }

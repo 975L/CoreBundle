@@ -341,6 +341,35 @@ class UserCrudControllerTest extends TestCase
         return $actions->getAsDto(Crud::PAGE_INDEX)->getAction(Crud::PAGE_INDEX, 'anonymize');
     }
 
+    // --- deleteEntity -------------------------------------------------------------------------------------
+
+    // A hard delete runs the listeners of an anonymization first: a foreign key in "SET NULL" would otherwise leave an unpaid basket orphaned and reachable by its recovery cookie
+    public function testDeleteDetachesWhatTheAccountOwnsBeforeRemovingIt(): void
+    {
+        $user = $this->createUser(['ROLE_USER']);
+        $calls = [];
+
+        $eventDispatcher = $this->createMock(EventDispatcherInterface::class);
+        $eventDispatcher->expects($this->once())
+            ->method('dispatch')
+            ->with($this->callback(static fn (object $event): bool => $event instanceof UserAnonymizedEvent && $user === $event->user && 'jane@example.com' === $event->email))
+            ->willReturnCallback(static function (object $event) use (&$calls): object {
+                $calls[] = 'dispatch';
+
+                return $event;
+            });
+
+        $entityManager = $this->createMock(EntityManagerInterface::class);
+        $entityManager->expects($this->once())->method('remove')->with($user)->willReturnCallback(static function () use (&$calls): void {
+            $calls[] = 'remove';
+        });
+        $entityManager->expects($this->once())->method('flush');
+
+        $this->createController(true, eventDispatcher: $eventDispatcher)->deleteEntity($entityManager, $user);
+
+        $this->assertSame(['dispatch', 'remove'], $calls);
+    }
+
     // Runs the action on this account, the acting admin being granted everything but ROLE_SUPER_ADMIN; returns [Response, Session] for the flash
     private function runAnonymize(User $user, bool $validToken, ?EventDispatcherInterface $eventDispatcher = null): array
     {

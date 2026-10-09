@@ -64,6 +64,8 @@ class SendEmailFormAction implements FormActionInterface
             replyToName: $addressing['replyToName'],
             // The visitor's own checkbox answer (see FormSubmissionType's "receiveCopy" field, only rendered when actionConfig's "offerReceiveCopy" is set) - not a fixed admin choice
             copyToEmail: (!empty($submittedData['receiveCopy']) && null !== $senderEmail) ? $senderEmail : null,
+            // The default body in the site's layout; a "template" of the site's own stays the whole document it always was
+            wrapLayout: null === $html && !isset($config['template']),
         );
 
         return $this->emailService->send($request);

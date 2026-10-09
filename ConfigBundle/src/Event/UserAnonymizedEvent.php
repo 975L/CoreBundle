@@ -13,7 +13,7 @@ namespace c975L\ConfigBundle\Event;
 use c975L\ConfigBundle\Contract\InactivityAwareInterface;
 use Symfony\Component\DependencyInjection\Attribute\Exclude;
 
-// Dispatched once an account is anonymized, by c975l:config:users-cleanup or by its owner (see AccountDeleteController), before the flush: the account is not removed, so a listener on Doctrine's preRemove never runs, and an app unlinking what its users own (shortcuts, ads...) does it here. #[Exclude] because services.yaml registers all of src/ as services, and an event carrying a user can't be autowired
+// Dispatched once an account is anonymized, by c975l:config:users-cleanup or by its owner (see AccountDeleteController), before the flush: the account is not removed, so a listener on Doctrine's preRemove never runs, and an app unlinking what its users own (shortcuts, ads...) does it here. Also dispatched right before the rare hard deletes (the DELETE action of UserCrudController, TutorialAccount::close()), so what a listener detaches never outlives the row either way. #[Exclude] because services.yaml registers all of src/ as services, and an event carrying a user can't be autowired
 #[Exclude]
 class UserAnonymizedEvent
 {

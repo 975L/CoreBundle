@@ -254,6 +254,16 @@ class UserCrudController extends AbstractCrudController
         return $this->redirect($this->indexUrl());
     }
 
+    // The DELETE action and its batch twin: the listeners of an anonymization detach what the account owns first, as the foreign keys pointing at it would otherwise either block the removal or leave that data orphaned
+    public function deleteEntity(EntityManagerInterface $entityManager, object $entityInstance): void
+    {
+        if ($entityInstance instanceof InactivityAwareInterface) {
+            $this->eventDispatcher->dispatch(new UserAnonymizedEvent($entityInstance, $entityInstance->getEmail()));
+        }
+
+        parent::deleteEntity($entityManager, $entityInstance);
+    }
+
     // Offered on an account the site can anonymize and that isn't already: never the owner's (nobody left could hand ROLE_SUPER_ADMIN back, as in AccountDeleteController), nor the acting admin's own, which goes through the account page
     private function isAnonymizable(mixed $user): bool
     {

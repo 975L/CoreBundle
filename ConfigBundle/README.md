@@ -29,7 +29,7 @@ See it in action at [bundles.975l.com/pages/config-bundle](https://bundles.975l.
 - **Dashboard** — [EasyAdmin interface](#easyadmin-interface) · [export for deployment](#deploying-to-production--export) · [ROLE_SUPER_ADMIN-only entries](#restricting-configs-to-role_super_admin) · [Export button in another CRUD](#adding-an-export-button-to-another-bundles-crud-controller)
 - **Users & access** — [scaffold and first account](#installing-the-scaffold-and-the-first-account) · [users and roles](#users) · [ROLE_SUPER_ADMIN configs](#restricting-configs-to-role_super_admin) · [disabling registration](#disabling-registration) · [registration anti-spam](#registration-anti-spam-protections) · [login throttling](#login-throttling) · [back-office access control](#back-office-access-control) · [account activation](#account-activation-isenabled) · [the member's own page](#the-members-own-page-account)
 - **Site maintenance** — [Maintenance mode](#maintenance-mode) · [Rate limiting the front](#rate-limiting-the-front) · [Messenger cleanup](#messenger-cleanup) · [Sessions cleanup](#sessions-cleanup) · [Inactive accounts](#inactive-accounts) · [Health check](#health-check) · [Backup](#backup) · [Spreading scheduled commands](#spreading-scheduled-commands-across-installs) · [Status report](#status-report--letting-another-system-read-what-this-site-runs) · [Dev profile](#dev-profile--automating-what-the-dev-toolbar-shows) · [Deprecations](#deprecations--reading-the-log-monolog-isolates)
-- **Extension points for other bundles** — [menu items](#contributing-menu-items-from-other-bundles) · [dashboard alerts](#contributing-dashboard-alerts-from-other-bundles) · [shortcuts](#contributing-dashboard-shortcuts-from-other-bundles) · [essential actions](#contributing-essential-actions-from-other-bundles) · [widgets](#contributing-dashboard-widgets-from-other-bundles) · [guided projects](#contributing-guided-projects-from-other-bundles) · [health check providers](#contributing-health-check-providers-from-other-bundles) and [advice](#contributing-health-check-advice-from-other-bundles) · [maintenance tasks](#contributing-maintenance-tasks-from-other-bundles) · [status data](#contributing-status-data-from-other-bundles) · [sitemaps](#contributing-a-sitemap-from-other-bundles) · [urls to describe](#contributing-urls-to-describe-from-other-bundles) · [importmap entries](#contributing-importmap-entries-from-other-bundles) · [import](#contributing-import-providers-from-other-bundles) and [export providers](#contributing-export-providers-from-other-bundles) · ["What's new" entries](#contributing-whats-new-entries-from-other-bundles) · [linkable routes](#contributing-linkable-routes-for-sitebundle-menus) · [member's page sections](#adding-a-section-to-the-members-page) · [localised routes](#answering-both-shop-and-enshop) · [language screens](#opening-the-same-edit-screen-on-another-language) · [dev profile paths](#contributing-dev-profile-paths-from-other-bundles) · [AI assistant procedures](#contributing-procedures-for-the-dashboard-ai-assistant)
+- **Extension points for other bundles** — [menu items](#contributing-menu-items-from-other-bundles) · [dashboard alerts](#contributing-dashboard-alerts-from-other-bundles) · [shortcuts](#contributing-dashboard-shortcuts-from-other-bundles) · [essential actions](#contributing-essential-actions-from-other-bundles) · [widgets](#contributing-dashboard-widgets-from-other-bundles) · [guided projects](#contributing-guided-projects-from-other-bundles) · [health check providers](#contributing-health-check-providers-from-other-bundles) and [advice](#contributing-health-check-advice-from-other-bundles) · [maintenance tasks](#contributing-maintenance-tasks-from-other-bundles) · [status data](#contributing-status-data-from-other-bundles) · [sitemaps](#contributing-a-sitemap-from-other-bundles) · [Atom feeds](#contributing-an-atom-feed-from-other-bundles) · [urls to describe](#contributing-urls-to-describe-from-other-bundles) · [importmap entries](#contributing-importmap-entries-from-other-bundles) · [import](#contributing-import-providers-from-other-bundles) and [export providers](#contributing-export-providers-from-other-bundles) · ["What's new" entries](#contributing-whats-new-entries-from-other-bundles) · [linkable routes](#contributing-linkable-routes-for-sitebundle-menus) · [member's page sections](#adding-a-section-to-the-members-page) · [localised routes](#answering-both-shop-and-enshop) · [language screens](#opening-the-same-edit-screen-on-another-language) · [dev profile paths](#contributing-dev-profile-paths-from-other-bundles) · [AI assistant procedures](#contributing-procedures-for-the-dashboard-ai-assistant)
 - **For coding agents** — [AI agent skills](#ai-agent-skills)
 
 ## Features
@@ -62,6 +62,7 @@ See it in action at [bundles.975l.com/pages/config-bundle](https://bundles.975l.
 - The languages a site offers, declared once in `framework.enabled_locales`: a language selector in the back office, the front office following the one a visitor picks, and the block content translated per language (see `c975l/ui-bundle`)
 - Maintenance mode closing the site to its visitors, answering the search-engine-friendly 503 they expect from a temporary outage, with a dashboard alert turning to danger once it has lasted long enough to cost indexing
 - Sitemap generation (one sub-sitemap per bundle plus the sitemap index), extensible via `SitemapProviderInterface`
+- Atom feeds at `/feed/<name>.xml`, one per bundle with content to push out, announced in every page's `<head>`, extensible via `FeedProviderInterface`
 - `c975l:seo:files:create`, writing `robots.txt`, `humans.txt` and `llms.txt` from the `seo` configs and from the urls those same providers declare, with a monthly check reporting the AI crawlers that appeared in the community list
 - Url redirects and `410 Gone` rows (`site_redirect` table, EasyAdmin CRUD, export/import, chain/loop check), answering before the router, a `*` on both sides renaming a whole url tree
 - Broken links recorded as they are followed (`site_not_found` table, EasyAdmin CRUD, one click to the redirect that answers it), with a dashboard alert on the ones the site's own pages carry - and none of the scanner noise a 404 log is made of
@@ -1391,6 +1392,46 @@ The merge is **additive** — a name this site added itself, or one upstream has
 > [!WARNING]
 > Nothing here imports the upstream list unattended, and that is deliberate: it marks each crawler with a free-text `function` field — two dozen distinct wordings — so a new bot can't be sorted into "harvests to train" or "answers a question and cites you" by any rule that will keep working. Blocking a citation engine by mistake costs exactly the visibility this setup is trying to keep, which is why applying the diff stays a `ROLE_SUPER_ADMIN` decision and the health check only ever reports it.
 
+## Contributing an Atom feed from other bundles
+
+If your bundle publishes content a reader would follow (comic strips, books, articles…), implement `FeedProviderInterface` — auto-tagged by `TaggedInterfacePass`, like `SitemapProviderInterface` above. `FeedRenderer` serves it at `/feed/<getFeedName()>.xml` (route `config_feed`, `public` with a one-hour `max-age`) and UiBundle's `layout.html.twig` announces it on every page with a `<link rel="alternate" type="application/atom+xml">`, through the `feeds()` Twig function.
+
+```php
+namespace c975L\MyBundle\Management;
+
+use c975L\ConfigBundle\Management\FeedProviderInterface;
+
+class MyFeedProvider implements FeedProviderInterface
+{
+    // Gives /feed/strip.xml - lowercase letters only, it ends up in a public url
+    public function getFeedName(): string
+    {
+        return 'strip';
+    }
+
+    // Read on every page for the <head> link: no database query here
+    public function getFeedTitle(): string
+    {
+        return 'Latest strips';
+    }
+
+    public function getEntries(int $limit): array
+    {
+        return [[
+            'url' => 'https://example.com/strip/some-slug',
+            'title' => 'Some strip',
+            'updated' => new \DateTimeImmutable('2026-10-09'),
+            'summary' => '<p>Rich text is reduced to plain text</p>',
+            'image' => 'https://example.com/medias/strip.webp',
+        ]];
+    }
+}
+```
+
+At most `FeedRenderer::ENTRIES_LIMIT` (20) entries are asked for, newest first, `url` and `image` absolute. The summary is stripped of its markup and cut on a word at 300 characters; the image goes in the entry's `content`, which is what a feed reader displays. The feed is written in the site's default language and titled after the site name.
+
+Return `[]` when there's nothing to publish: the feed then answers a 404 and is not announced. Same for every feed while `site-url` is empty or `seo-robots-private` is on — a site kept out of search engines does not push its content out either. The list of announced feeds is cached for an hour, so the `<head>` never queries the database. `getFeedName()` has to be unique across every installed bundle, a duplicate throwing a `LogicException`. The template is overridable: `@c975LConfig/feeds/atom.xml.twig`.
+
 ## Contributing "What's new" entries from other bundles
 
 The `/management` dashboard shows the 5 latest release notes merged from every c975L bundle, with a link to the full list at `/management/whatsnew`.
@@ -2266,6 +2307,8 @@ It acts on a `User` implementing `InactivityAwareInterface`, which the scaffolde
 **Deleting one's own account** (GDPR right to erasure): `/account/delete` (route `config_account_delete`, `IS_AUTHENTICATED_FULLY`) explains what happens, then asks the user to type their own email address again, which an account signed in with Google can do as well. Confirmed, the account is anonymized exactly as above - `anonymize()`, `UserAnonymizedEvent`, flush - then logged out through the firewall, which sends them to its `logout.target` with the cookies it clears. A `User` not implementing `InactivityAwareInterface` gets a 404, and a `ROLE_SUPER_ADMIN` a 403: the site's owner goes through another super admin or the CLI, since nobody left could hand that role back from the back office. No menu carries it: the site links to it where it sees fit, e.g. `<a href="{{ path('config_account_delete') }}">`, and detaches what its users own in a `UserAnonymizedEvent` listener, which covers the cleanup command at the same time. PaymentBundle deletes the account's unpaid baskets there, ShopBundle the stock alerts of its former address; paid orders, invoices and credits stay, nominative, for the accounting retention, which is what the page tells the member.
 
 **Anonymizing an account from the back office**: the Users screen carries an "Anonymize" row action (`site-role-admin`), for an erasure asked by email or an address that bounces. Confirmed, it runs the same sequence - `anonymize()`, `UserAnonymizedEvent`, flush - behind a CSRF token, and is offered neither on a `ROLE_SUPER_ADMIN` account, nor on the acting admin's own, nor on one already anonymized. The `config-user-anonymize` guided project walks it.
+
+**A hard delete dispatches it too**: the Users screen's "Delete" action (and its batch twin) and `c975l:config:tutorial-account` closing its throwaway account (`TutorialAccount::close()`) fire `UserAnonymizedEvent` right before the removal, so what a listener detaches never outlives the row either way.
 
 ---
 

@@ -36,6 +36,10 @@ services:
         arguments:
             $sitemapProviders: !tagged_iterator c975l.sitemap_provider
 
+    c975L\ConfigBundle\Management\FeedRenderer:
+        arguments:
+            $feedProviders: !tagged_iterator c975l.feed_provider
+
     c975L\ConfigBundle\Management\UrlMetadataSynchronizer:
         arguments:
             $urlMetadataProviders: !tagged_iterator c975l.url_metadata_provider

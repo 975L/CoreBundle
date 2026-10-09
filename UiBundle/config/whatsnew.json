@@ -6,6 +6,11 @@
                 "en": "Alerts now name their type with a short word above the text, also read out by screen readers.",
                 "fr": "Les alertes indiquent désormais leur type par un petit mot au-dessus du texte, lu aussi par les lecteurs d'écran.",
                 "es": "Las alertas indican ahora su tipo con una palabra corta encima del texto, leída también por los lectores de pantalla."
+            },
+            {
+                "en": "Contact form notifications and the site's automatic emails now carry the site's look.",
+                "fr": "Les notifications des formulaires de contact et les e-mails automatiques du site portent désormais son habillage.",
+                "es": "Las notificaciones de los formularios de contacto y los correos automáticos del sitio llevan ahora su aspecto."
             }
         ]
     },

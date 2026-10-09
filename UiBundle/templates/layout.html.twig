@@ -115,6 +115,11 @@
                     <link rel="alternate" hreflang="x-default" href="{{ alternates[app.request.defaultLocale] ?? alternates|first }}">
                 {% endif %}
 
+{# The Atom feeds the installed bundles contribute, for a feed reader to find them from any page (see FeedRenderer) #}
+                {% for feedName, feedTitle in feeds() %}
+                    <link rel="alternate" type="application/atom+xml" title="{{ feedTitle }}" href="{{ url('config_feed', {name: feedName}) }}">
+                {% endfor %}
+
                 {% if favicon is defined %}
                     <link rel="icon" type="image/x-icon" href="{{ favicon }}">
                 {% endif %}

@@ -11,7 +11,9 @@
 namespace c975L\ConfigBundle\Service;
 
 use App\Entity\User;
+use c975L\ConfigBundle\Event\UserAnonymizedEvent;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 // A throwaway account for whatever drives the back office in a browser on a development copy - a screen recorder filming tutorials, an end-to-end run, a screenshot tool: opened with a password nobody types, closed once done. It lives no longer than that, so a local database sent back to production never carries it, and one imported from production never has to keep it
@@ -24,6 +26,7 @@ class TutorialAccount
         private readonly EntityManagerInterface $entityManager,
         private readonly UserPasswordHasherInterface $passwordHasher,
         private readonly AdminUserCreator $adminUserCreator,
+        private readonly EventDispatcherInterface $eventDispatcher,
     ) {
     }
 
@@ -48,7 +51,7 @@ class TutorialAccount
         return $password;
     }
 
-    // Removes the account, false when there was none
+    // Removes the account, false when there was none. Whatever the shoot left on it (a basket, a shortcut...) is detached first by the listeners of an anonymization, as for any deleted account
     public function close(string $email): bool
     {
         $user = $this->find($email);
@@ -56,6 +59,7 @@ class TutorialAccount
             return false;
         }
 
+        $this->eventDispatcher->dispatch(new UserAnonymizedEvent($user, $user->getEmail()));
         $this->entityManager->remove($user);
         $this->entityManager->flush();
 

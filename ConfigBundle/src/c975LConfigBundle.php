@@ -24,6 +24,7 @@ use c975L\ConfigBundle\Management\DashboardWidgetProviderInterface;
 use c975L\ConfigBundle\Management\DevProfilePathProviderInterface;
 use c975L\ConfigBundle\Management\EssentialActionProviderInterface;
 use c975L\ConfigBundle\Management\ExportProviderInterface;
+use c975L\ConfigBundle\Management\FeedProviderInterface;
 use c975L\ConfigBundle\Management\GuidedProjectProviderInterface;
 use c975L\ConfigBundle\Management\HealthCheckAdviceProviderInterface;
 use c975L\ConfigBundle\Management\HealthCheckProviderInterface;
@@ -121,6 +122,7 @@ class c975LConfigBundle extends AbstractBundle
         $container->addCompilerPass(new TaggedInterfacePass(HealthCheckAdviceProviderInterface::class, 'c975l.health_check_advice_provider'));
         $container->addCompilerPass(new TaggedInterfacePass(ImportmapProviderInterface::class, 'c975l.importmap_provider'));
         $container->addCompilerPass(new TaggedInterfacePass(SitemapProviderInterface::class, 'c975l.sitemap_provider'));
+        $container->addCompilerPass(new TaggedInterfacePass(FeedProviderInterface::class, 'c975l.feed_provider'));
         $container->addCompilerPass(new TaggedInterfacePass(UrlMetadataProviderInterface::class, 'c975l.url_metadata_provider'));
         $container->addCompilerPass(new TaggedInterfacePass(ContentOffenceLocatorInterface::class, 'c975l.content_offence_locator'));
         $container->addCompilerPass(new TaggedInterfacePass(StatusProviderInterface::class, 'c975l.status_provider'));

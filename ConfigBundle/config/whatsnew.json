@@ -16,6 +16,16 @@
                 "en": "The guided projects for the health check, failed messages, settings and broken links show more of their screens.",
                 "fr": "Les projets guidés du bilan de santé, des messages en échec, des réglages et des liens cassés montrent davantage de leurs écrans.",
                 "es": "Los proyectos guiados de la revisión de salud, los mensajes fallidos, los ajustes y los enlaces rotos muestran más de sus pantallas."
+            },
+            {
+                "en": "The site now offers feeds a reader can subscribe to, to follow its latest content.",
+                "fr": "Le site propose désormais des flux auxquels un lecteur peut s'abonner pour suivre ses dernières nouveautés.",
+                "es": "El sitio ofrece ahora fuentes a las que un lector puede suscribirse para seguir sus últimas novedades."
+            },
+            {
+                "en": "Deleting an account from the back office now also cleans up what it left behind, such as an unpaid basket.",
+                "fr": "Supprimer un compte depuis le back-office nettoie désormais aussi ce qu'il laissait derrière lui, comme un panier non payé.",
+                "es": "Eliminar una cuenta desde el back-office limpia ahora también lo que dejaba atrás, como una cesta sin pagar."
             }
         ]
     },

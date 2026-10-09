@@ -88,6 +88,7 @@ class SendEmailFormActionTest extends TestCase
         $this->assertSame('New message via newsletter', $captured->subject);
         $this->assertSame('@c975LUi/emails/form_submission.html.twig', $captured->template);
         $this->assertNull($captured->html);
+        $this->assertTrue($captured->wrapLayout);
         $this->assertSame(['Email' => 'visitor@example.com'], $captured->context['fields']);
         $this->assertNull($captured->to);
         $this->assertNull($captured->copyToEmail);
@@ -296,6 +297,7 @@ class SendEmailFormActionTest extends TestCase
         $this->assertSame('Owner', $captured->toName);
         $this->assertSame('Fixed subject', $captured->subject);
         $this->assertSame('@App/emails/custom.html.twig', $captured->template);
+        $this->assertFalse($captured->wrapLayout);
         $this->assertSame('visitor@example.com', $captured->replyTo);
         $this->assertSame('visitor@example.com', $captured->copyToEmail);
     }
