@@ -3817,10 +3817,14 @@ main :is(.blocks, .block-animation, .block-editable) > :is(.block-animation, .bl
 }
 
 .portfolio-grid__project[class*=portfolio-grid__project--accent-] {
+  display: flex;
+  flex-direction: column;
+  border-width: 5px;
   border-color: var(--portfolio-grid-accent);
 }
 
 .portfolio-grid__project[class*=portfolio-grid__project--accent-] .portfolio-grid__project-body {
+  flex: 1;
   background: var(--portfolio-grid-accent);
 }
 

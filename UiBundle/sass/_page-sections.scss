@@ -1062,11 +1062,16 @@ main :is(.blocks, #{$block-wrappers}) > :is(#{$block-wrappers}):has(#{$flat-next
     --portfolio-grid-accent-color: #000;
 }
 
+// A column, so the band stretches down to the bottom of a card the row made taller than its own text
 .portfolio-grid__project[class*="portfolio-grid__project--accent-"] {
+    display: flex;
+    flex-direction: column;
+    border-width: 5px;
     border-color: var(--portfolio-grid-accent);
 }
 
 .portfolio-grid__project[class*="portfolio-grid__project--accent-"] .portfolio-grid__project-body {
+    flex: 1;
     background: var(--portfolio-grid-accent);
 }
 

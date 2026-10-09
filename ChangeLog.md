@@ -1,5 +1,14 @@
 # ChangeLog
 
+## v1.63.3
+
+Accent portfolio cards banded down to their bottom edge
+
+### UiBundle
+
+- An accent `portfolio_grid` card's band stretches to the card's bottom when the row makes it taller (09/10/2026)
+- Thickened an accent `portfolio_grid` card's outline to 5px (09/10/2026)
+
 ## v1.63.2
 
 Portfolio cards marked with an accent hue
