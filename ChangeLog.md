@@ -1,5 +1,15 @@
 # ChangeLog
 
+## v1.63.4
+
+Timezone listener left out of cache:warmup
+
+### ConfigBundle
+
+- `TimezoneListener` no longer reads the configuration on `cache:warmup` (12/10/2026)
+- Added the console cases to `TimezoneListenerTest` (12/10/2026)
+- Updated the readme (12/10/2026)
+
 ## v1.63.3
 
 Accent portfolio cards banded down to their bottom edge

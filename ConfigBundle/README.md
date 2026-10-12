@@ -2864,7 +2864,7 @@ site installed by a third party. Anything else, an unset row included, keeps `la
 
 ## Timezone
 
-The `site-timezone` entry (**Général**, defaulting to `Europe/Paris`) is the hour every template shows — a select of the European identifiers plus `UTC`. `TimezoneListener` applies it to Twig on `kernel.request` and on `console.command`, so a command or a Messenger worker naming a file after the hour reads it too, not requests alone. Without it PHP falls back on `UTC` as long as `date.timezone` is left out of its `php.ini`, and a back-office two hours behind the clock is one whose dates stop being read.
+The `site-timezone` entry (**Général**, defaulting to `Europe/Paris`) is the hour every template shows — a select of the European identifiers plus `UTC`. `TimezoneListener` applies it to Twig on `kernel.request` and on `console.command`, so a command or a Messenger worker naming a file after the hour reads it too, not requests alone — `cache:warmup` aside, Doctrine's metadata warmer refusing to run once the read has loaded any metadata. Without it PHP falls back on `UTC` as long as `date.timezone` is left out of its `php.ini`, and a back-office two hours behind the clock is one whose dates stop being read.
 
 **Only the reading moves.** PHP itself keeps writing in its own timezone: a date stored in base has no business depending on where the server sits, and nothing already recorded is rewritten. A site that never set the entry — one upgrading to this version — keeps reading its dates exactly as it did.
 

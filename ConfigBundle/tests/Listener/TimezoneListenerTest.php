@@ -13,6 +13,10 @@ namespace c975L\ConfigBundle\Tests\Listener;
 use c975L\ConfigBundle\Listener\TimezoneListener;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Event\ConsoleCommandEvent;
+use Symfony\Component\Console\Input\ArrayInput;
+use Symfony\Component\Console\Output\NullOutput;
 use Twig\Environment;
 use Twig\Extension\CoreExtension;
 use Twig\Loader\ArrayLoader;
@@ -61,5 +65,27 @@ class TimezoneListenerTest extends TestCase
         $this->createListener($twig, null)->apply();
 
         $this->assertSame('UTC', $twig->getExtension(CoreExtension::class)->getTimezone()->getName());
+    }
+
+    private function createEvent(string $name): ConsoleCommandEvent
+    {
+        return new ConsoleCommandEvent(new Command($name), new ArrayInput([]), new NullOutput());
+    }
+
+    public function testAConsoleCommandReadsTheConfiguredTimezone(): void
+    {
+        $twig = $this->createTwig();
+        $this->createListener($twig, 'Europe/Paris')->applyOnConsole($this->createEvent('c975l:sitemaps:create'));
+
+        $this->assertSame('Europe/Paris', $twig->getExtension(CoreExtension::class)->getTimezone()->getName());
+    }
+
+    // On an empty cache the read goes through Doctrine, and its metadata warmer throws once any metadata is loaded: the configuration is not read at all
+    public function testCacheWarmupNeverReadsTheConfiguration(): void
+    {
+        $configService = $this->createMock(ConfigServiceInterface::class);
+        $configService->expects($this->never())->method('get');
+
+        new TimezoneListener($configService, $this->createTwig())->applyOnConsole($this->createEvent('cache:warmup'));
     }
 }

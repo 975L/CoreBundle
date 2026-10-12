@@ -11,14 +11,14 @@
 namespace c975L\ConfigBundle\Listener;
 
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
+use Symfony\Component\Console\Event\ConsoleCommandEvent;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Twig\Environment;
 use Twig\Extension\CoreExtension;
 
-// The hour every template shows, taken from "site-timezone" rather than from the machine: PHP falls back on UTC as long as date.timezone is left out of its php.ini, and a back-office two hours behind the clock is one whose dates stop being read. Only the reading is moved - PHP itself keeps writing in its own timezone, a date stored in base having no business depending on where the server sits
-// On the console too, and not on requests alone: a command or a Messenger worker naming a file after the hour reads it here as well
+// The hour every template shows, taken from "site-timezone" rather than from the machine: PHP falls back on UTC as long as date.timezone is left out of its php.ini, and a back-office two hours behind the clock is one whose dates stop being read. Only the reading is moved - PHP itself keeps writing in its own timezone, a date stored in base having no business depending on where the server sits. On the console too, a command or a Messenger worker naming a file after the hour reading it here as well
 #[AsEventListener(event: 'kernel.request', method: 'apply', priority: 7)]
-#[AsEventListener(event: 'console.command', method: 'apply')]
+#[AsEventListener(event: 'console.command', method: 'applyOnConsole')]
 class TimezoneListener
 {
     public function __construct(
@@ -27,6 +27,17 @@ class TimezoneListener
     ) {
     }
 
+    // Leaves "cache:warmup" alone: on an empty cache the read below goes through Doctrine, whose metadata warmer refuses to run once any metadata is loaded
+    public function applyOnConsole(ConsoleCommandEvent $event): void
+    {
+        if ('cache:warmup' === $event->getCommand()?->getName()) {
+            return;
+        }
+
+        $this->apply();
+    }
+
+    // Hands the configured timezone over to Twig
     public function apply(): void
     {
         $timezone = $this->configService->get('site-timezone');
