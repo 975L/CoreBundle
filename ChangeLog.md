@@ -1,5 +1,13 @@
 # ChangeLog
 
+## v1.63.5
+
+Section titles shrunk on phones so a long word fits
+
+### UiBundle
+
+- A section title shrinks below 429px wide so a long single word fits (12/10/2026)
+
 ## v1.63.4
 
 Timezone listener left out of cache:warmup

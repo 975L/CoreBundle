@@ -2681,7 +2681,7 @@ img.white {
   font-family: var(--font-family-title);
   font-weight: var(--section-title-weight, 500);
   letter-spacing: -0.01em;
-  font-size: calc(clamp(30px, 4.4vw, 42px) * var(--font-size-title-scale, 1));
+  font-size: calc(min(7vw, clamp(30px, 4.4vw, 42px)) * var(--font-size-title-scale, 1));
   line-height: 1.1;
   margin: 0 0 48px;
   color: var(--text);
