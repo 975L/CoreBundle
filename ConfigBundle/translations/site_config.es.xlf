@@ -2,6 +2,10 @@
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
     <file source-language="en" target-language="es" datatype="plaintext" original="site_config.es.xlf">
         <body>
+            <trans-unit id="z.ArrE6">
+                <source>description.app_connect_schemes</source>
+                <target>Esquema de URL de la aplicación móvil del sitio (por ejemplo «papacalin»), al que se devuelve el código de conexión de un miembro. Varios separados por comas. Dejar vacío si el sitio no tiene aplicación: la conexión de una aplicación se rechaza.</target>
+            </trans-unit>
             <trans-unit id="ZwY3EOi">
                 <source>description.display_hosted_by</source>
                 <target>Lo que muestra el crédito «Hospedado por» en el pie de página: none, logo, name o logo-name</target>
@@ -277,6 +281,10 @@
             <trans-unit id="hDOR3CX">
                 <source>description.user_roles_available</source>
                 <target>Roles adicionales seleccionables (además de ROLE_USER), array JSON, ej. ["ROLE_ADMIN","ROLE_EDITOR"]</target>
+            </trans-unit>
+            <trans-unit id="iiMWjku">
+                <source>label.app_connect_schemes</source>
+                <target>Esquemas de URL de las aplicaciones móviles</target>
             </trans-unit>
             <trans-unit id="xVF9T4p">
                 <source>label.display_hosted_by</source>

@@ -11,6 +11,11 @@
                 "en": "Links in automatic emails are now clickable, and a link on its own line shows as a button.",
                 "fr": "Les liens des emails automatiques sont désormais cliquables, et un lien seul sur sa ligne s'affiche en bouton.",
                 "es": "Los enlaces de los correos automáticos ahora son clicables, y un enlace solo en su línea se muestra como botón."
+            },
+            {
+                "en": "The site's app keeps a member's favorites and what they listened to, on every phone they connect.",
+                "fr": "L'application du site conserve les favoris d'un membre et ce qu'il a écouté, sur chaque téléphone qu'il connecte.",
+                "es": "La aplicación del sitio conserva los favoritos de un miembro y lo que ha escuchado, en cada teléfono que conecte."
             }
         ]
     },

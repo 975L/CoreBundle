@@ -743,6 +743,28 @@ class FacebookOAuthLoginProvider implements OAuthLoginProviderInterface
 
 Declare its two config keys in your own bundle's `configs.json` (the interface asks for their slugs rather than deriving them, so a provider owns its keys), and add its icon to the `OAuthLogin` component. The authorization code flow itself is written once in `OAuthLoginClient` and never per provider.
 
+### Connecting the site's mobile app to an account
+
+A mobile app of the site can act for a member without ever holding their password (RFC 8252, with PKCE): it opens `/app/connect` in the browser, the member signs in by whatever means the site offers and agrees, the app is handed a one-time code through its own url scheme and trades it at `/app/api/token` for the token it then sends as `Authorization: Bearer ...`. See `AppTokenManager` and `AppConnectController`.
+
+Two things to set on a site that has an app, nothing on one that has none (every route then answers 404):
+
+- the `app-connect-schemes` config entry: the app's url scheme (`papacalin`), several separated by commas - the only addresses a code is ever sent to;
+- a stateless firewall over the app's routes, **before** `main`, in `config/packages/security.yaml`:
+
+```yaml
+security:
+    firewalls:
+        app_api:
+            pattern: ^/app/api/
+            stateless: true
+            provider: app_user_provider
+            access_token:
+                token_handler: c975L\ConfigBundle\Security\AppTokenHandler
+```
+
+A call carrying no token goes through as a visitor, which is what lets UiBundle's `AppLibraryController` hold an app's favorites and plays under the device's own token until the member connects. The tokens live in `site_app_token` (**needs db update**), hashed, and are deleted with the account or when it is anonymized.
+
 ### Being notified of new accounts
 
 Every account created through `UserRegistrar` also sends a short plain-text notification to the site itself, so the owner knows their site is being signed up to without having to watch the User screen. It goes to the site-wide `email-to` address (the one every other c975L email already goes to, see UiBundle's `EmailService`) — there's no separate address to keep in sync — and it's written in `kernel.default_locale`, not in whatever language the visitor was browsing in.

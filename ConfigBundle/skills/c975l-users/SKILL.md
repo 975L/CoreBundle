@@ -1,6 +1,6 @@
 ---
 name: c975l-users
-description: "Use this skill when working on accounts, roles or access control in a Symfony application built on the c975L ecosystem — the User contract, the site-role-* settings, ROLE_SUPER_ADMIN and restricted configs, previewing a lower role, registration and its anti-spam layers, password reset, login throttling and back-office access. Triggers on: UserInterface contract, UserCrudController, deleteEntity, TutorialAccount, site-role-admin, site-role-editor, site-role-contributor, ROLE_CONTRIBUTOR, ROLE_SUPER_ADMIN, RolePreview, role preview, View as, RolePreviewRoleVoter, RolePreviewRoleVoterPass, RolePreviewBanner, user-roles-available, UserManagementVoter, BackOfficeAccessVoter, C975L_ACCESS_BACK_OFFICE, EmailVerifier, UserRegistrar, PasswordResetter, isEnabled, isVerified, UserChecker, sendEmailConfirmation, resend confirmation, confirmation cooldown, EmailVerifier::COOLDOWN, delete a user, unverified account, ON DELETE SET NULL, login_throttling, access_control, register form, reset_password_request, honeypot, DnsEmail, user-creation-notification, InactivityAwareInterface, users-cleanup, c975l:config:users-cleanup, UsersCleanupCommand, InactiveUserFinder, UserAnonymizedEvent, ResetPasswordRequestAnonymizedListener, removeForUser, AccountDeleteController, config_account_delete, delete my account, anonymize action, anonymize a user, AccountController, config_account, my account page, /account, AccountSectionProviderInterface, AccountSectionBuilder, AccountPasswordType, PasswordPolicy, password rules, change password, AccountEmailType, EmailChanger, change email, config_account_email_confirm, account_email_change, account_email_changed, AccountProfileType, AccountProfileTypeExtension, AccountDataProviderInterface, AccountDataCollector, config_account_export, data export, account_password_changed, sendSignedLink, right to erasure, LastLoginSubscriber, lastLogin, user-inactivity-days, user-inactivity-notice-days, anonymize, inactive accounts, tutorial-account, c975l:config:tutorial-account, login-admin-code, LoginCode, LoginCodeShortcutController, LoginCodeSubscriber, LoginCodeController, config_login_code, config_login_code_resend, config-login-code, config-registration, RememberMeBadge, TrustedDevice, trusted device, login_code, two-factor, 2FA, email code, TutorialAccount, tutorial@example.com, end-to-end account, screen recorder account."
+description: "Use this skill when working on accounts, roles or access control in a Symfony application built on the c975L ecosystem — the User contract, the site-role-* settings, ROLE_SUPER_ADMIN and restricted configs, previewing a lower role, registration and its anti-spam layers, password reset, login throttling and back-office access. Triggers on: UserInterface contract, UserCrudController, deleteEntity, TutorialAccount, site-role-admin, site-role-editor, site-role-contributor, ROLE_CONTRIBUTOR, ROLE_SUPER_ADMIN, RolePreview, role preview, View as, RolePreviewRoleVoter, RolePreviewRoleVoterPass, RolePreviewBanner, user-roles-available, UserManagementVoter, BackOfficeAccessVoter, C975L_ACCESS_BACK_OFFICE, EmailVerifier, UserRegistrar, PasswordResetter, isEnabled, isVerified, UserChecker, sendEmailConfirmation, resend confirmation, confirmation cooldown, EmailVerifier::COOLDOWN, delete a user, unverified account, ON DELETE SET NULL, login_throttling, access_control, register form, reset_password_request, honeypot, DnsEmail, user-creation-notification, InactivityAwareInterface, users-cleanup, c975l:config:users-cleanup, UsersCleanupCommand, InactiveUserFinder, UserAnonymizedEvent, ResetPasswordRequestAnonymizedListener, removeForUser, AccountDeleteController, config_account_delete, delete my account, anonymize action, anonymize a user, AccountController, config_account, my account page, /account, AccountSectionProviderInterface, AccountSectionBuilder, AccountPasswordType, PasswordPolicy, password rules, change password, AccountEmailType, EmailChanger, change email, config_account_email_confirm, account_email_change, account_email_changed, AccountProfileType, AccountProfileTypeExtension, AccountDataProviderInterface, AccountDataCollector, config_account_export, data export, account_password_changed, sendSignedLink, right to erasure, LastLoginSubscriber, lastLogin, user-inactivity-days, user-inactivity-notice-days, anonymize, inactive accounts, tutorial-account, c975l:config:tutorial-account, login-admin-code, LoginCode, LoginCodeShortcutController, LoginCodeSubscriber, LoginCodeController, config_login_code, config_login_code_resend, config-login-code, config-registration, RememberMeBadge, TrustedDevice, trusted device, login_code, two-factor, 2FA, email code, TutorialAccount, tutorial@example.com, end-to-end account, screen recorder account, AppTokenManager, AppConnectController, AppTokenHandler, AppToken, AppTokenSubscriber, site_app_token, app-connect-schemes, config_app_connect, config_app_token, config_app_token_revoke, config_app_me, /app/connect, /app/api/, access_token, token_handler, Bearer token, PKCE, RFC 8252, mobile app, connect the app."
 ---
 
 # c975L ConfigBundle — users, roles and access
@@ -10,7 +10,7 @@ description: "Use this skill when working on accounts, roles or access control i
 **Package:** `c975l/core-bundle` · **Bundle:** `c975L\ConfigBundle\`
 
 **Key source paths** (relative to this bundle's directory inside the package):
-`src/Contract/UserInterface.php`, `src/Controller/Management/UserCrudController.php`, `src/Controller/RolePreviewController.php`, `src/Security/`, `src/Service/UserRegistrar.php`, `src/Service/EmailVerifier.php`, `src/Service/PasswordResetter.php`, `src/Service/UserFormSeeder.php`, `src/EventSubscriber/LoginRequestSubscriber.php`, `src/Command/UserCreateCommand.php`, `src/Command/UsersCleanupCommand.php`, `src/Contract/InactivityAwareInterface.php`, `src/Service/InactiveUserFinder.php`, `src/EventSubscriber/LastLoginSubscriber.php`, `src/Event/UserAnonymizedEvent.php`, `src/Controller/AccountDeleteController.php`, `src/Security/LoginCode.php`, `src/Security/TrustedDevice.php`, `src/EventSubscriber/LoginCodeSubscriber.php`, `src/Controller/LoginCodeController.php`, `src/Command/TutorialAccountCommand.php`, `src/Service/TutorialAccount.php`, `scaffold/src/`
+`src/Contract/UserInterface.php`, `src/Controller/Management/UserCrudController.php`, `src/Controller/RolePreviewController.php`, `src/Security/`, `src/Service/UserRegistrar.php`, `src/Service/EmailVerifier.php`, `src/Service/PasswordResetter.php`, `src/Service/UserFormSeeder.php`, `src/EventSubscriber/LoginRequestSubscriber.php`, `src/Command/UserCreateCommand.php`, `src/Command/UsersCleanupCommand.php`, `src/Contract/InactivityAwareInterface.php`, `src/Service/InactiveUserFinder.php`, `src/EventSubscriber/LastLoginSubscriber.php`, `src/Event/UserAnonymizedEvent.php`, `src/Controller/AccountDeleteController.php`, `src/Security/LoginCode.php`, `src/Security/TrustedDevice.php`, `src/EventSubscriber/LoginCodeSubscriber.php`, `src/Controller/LoginCodeController.php`, `src/Command/TutorialAccountCommand.php`, `src/Service/TutorialAccount.php`, `src/Service/AppTokenManager.php`, `src/Controller/AppConnectController.php`, `src/Security/AppTokenHandler.php`, `src/Entity/AppToken.php`, `scaffold/src/`
 
 **Related skills:** `c975l-config`, `c975l-management` in this same bundle, and `c975l-forms-emails` in UiBundle beside it.
 
@@ -231,7 +231,7 @@ Any column the site adds is member-editable: one it keeps for itself (credits, a
 The profile section shows it once it has a field; the column equal to `getUserIdentifier()` is left out.
 `/account/export` (`config_account_export`, fully authenticated) downloads `AccountDataCollector`'s JSON:
 `ProfileAccountDataProvider` (`profile`, no password), `ActivityAccountDataProvider` (UiBundle's favorites,
-ratings, reviews) plus every `AccountDataProviderInterface`. `PasswordResetter`
+plays, ratings, reviews) plus every `AccountDataProviderInterface`. `PasswordResetter`
 sends `account_password_changed` after every change (`notify: false` for `AccountSessionsType`, which
 hashes the same password again to sign every other device out). `SESSION_OAUTH_LOGIN` holds the provider's name.
 
@@ -242,6 +242,20 @@ translated `title` and an `anchor_id` only (`with_context = false`), a `position
 autoconfigured and merged by `AccountSectionBuilder`. `LinkableRouteProvider` offers `config_account`
 as a SiteBundle menu target in every site language, and the back office's user menu links it for
 every account.
+
+## The site's mobile app
+
+A site's app acts for a member without holding their password (RFC 8252, PKCE): it opens
+`/app/connect` (`config_app_connect`) in the browser with `redirect`, `challenge` (S256) and `state`, the
+member signs in and agrees (CSRF id `app_connect`), and the app gets a one-time code on its own url
+scheme, traded at `POST /app/api/token` (`config_app_token`, `{code, verifier}`) for a token sent as
+`Authorization: Bearer`. `DELETE /app/api/token` revokes it, `GET /app/api/me` names the account.
+`AppTokenManager` holds the logic; `site_app_token` stores sha256 hashes only, a code living two minutes.
+The `app-connect-schemes` slug lists the schemes a code may be sent to: empty, every route is a 404. The
+app declares a stateless firewall over `^/app/api/`, before `main`, with
+`access_token.token_handler: c975L\ConfigBundle\Security\AppTokenHandler` (see the readme); no token
+goes through as a visitor. Tokens cascade with the account, and `AppTokenSubscriber` deletes them on
+`UserAnonymizedEvent`.
 
 ## Tutorial account
 
@@ -283,4 +297,6 @@ is taken over, never duplicated. The command refuses to run outside the `dev` en
   stranger's mailbox open to whoever holds a block of addresses.
 - **Do not delete an inactive account** — anonymize it: its payments and invoices must outlive it.
 - **Do not listen to Doctrine's `preRemove` to detach what a user owns** — listen to `UserAnonymizedEvent`, dispatched before a hard delete as well.
+- **Do not send an app code to an address outside `app-connect-schemes`**, nor store a code or a token
+  in clear — `AppTokenManager` keeps their sha256 only.
 - **Do not leave a personal field of the app's User out of `anonymize()`** — the command only knows the contract.

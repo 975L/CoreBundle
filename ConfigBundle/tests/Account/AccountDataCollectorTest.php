@@ -17,6 +17,7 @@ use c975L\ConfigBundle\Account\ActivityAccountDataProvider;
 use c975L\ConfigBundle\Account\ProfileAccountDataProvider;
 use c975L\ConfigBundle\Tests\Fixtures\UserStub;
 use c975L\UiBundle\Entity\Favorite;
+use c975L\UiBundle\Entity\Play;
 use c975L\UiBundle\Entity\Rating;
 use c975L\UiBundle\Entity\Review;
 use Doctrine\ORM\EntityManagerInterface;
@@ -39,20 +40,21 @@ class AccountDataCollectorTest extends TestCase
         $this->assertSame(['orders' => [['date' => '2026-09-27T10:00:00+00:00']]], $data);
     }
 
-    // The favorites and ratings held under the account's key, and the reviews written here under its address
+    // The favorites, plays and ratings held under the account's key, and the reviews written here under its address
     public function testTheActivityIsReadUnderTheAccount(): void
     {
         $favorite = new Favorite()->setOwnerType('book')->setOwnerId(3)->setHolder('u42');
+        $play = new Play()->setOwnerType('book')->setOwnerId(3)->setHolder('u42');
         $rating = new Rating()->setOwnerType('book')->setOwnerId(3)->setVoter('u42')->setValue(5);
 
         $queries = [];
         $entityManager = $this->createStub(EntityManagerInterface::class);
-        $entityManager->method('getRepository')->willReturnCallback(function (string $class) use ($favorite, $rating, &$queries): EntityRepository {
+        $entityManager->method('getRepository')->willReturnCallback(function (string $class) use ($favorite, $play, $rating, &$queries): EntityRepository {
             $repository = $this->createStub(EntityRepository::class);
-            $repository->method('findBy')->willReturnCallback(static function (array $criteria) use ($class, $favorite, $rating, &$queries): array {
+            $repository->method('findBy')->willReturnCallback(static function (array $criteria) use ($class, $favorite, $play, $rating, &$queries): array {
                 $queries[$class] = $criteria;
 
-                return ['Favorite' => [$favorite], 'Rating' => [$rating]][new \ReflectionClass($class)->getShortName()] ?? [];
+                return ['Favorite' => [$favorite], 'Play' => [$play], 'Rating' => [$rating]][new \ReflectionClass($class)->getShortName()] ?? [];
             });
 
             return $repository;
@@ -60,7 +62,9 @@ class AccountDataCollectorTest extends TestCase
 
         $data = new ActivityAccountDataProvider($entityManager)->getAccountData(new UserStub('user@example.test')->withId(42));
 
-        $this->assertSame(['favorites', 'ratings'], array_keys($data));
+        $this->assertSame(['favorites', 'plays', 'ratings'], array_keys($data));
+        $this->assertSame(['type' => 'book', 'id' => 3], array_slice($data['plays'][0], 0, 2));
+        $this->assertSame(['holder' => 'u42'], $queries[Play::class]);
         $this->assertSame(5, $data['ratings'][0]['value']);
         $this->assertSame(['holder' => 'u42'], $queries[Favorite::class]);
         $this->assertSame(['source' => Review::SOURCE_SITE, 'authorEmail' => 'user@example.test'], $queries[Review::class]);

@@ -782,6 +782,18 @@
                 <source>label.account_validation_text</source>
                 <target>Merci de votre inscription. Cliquez sur le bouton ci-dessous pour confirmer votre adresse email.</target>
             </trans-unit>
+            <trans-unit id="4TsTMJK">
+                <source>label.app_connect</source>
+                <target>Connecter l'application</target>
+            </trans-unit>
+            <trans-unit id="VEcN.FT">
+                <source>label.app_connect_button</source>
+                <target>Connecter l'application</target>
+            </trans-unit>
+            <trans-unit id="RkurBG1">
+                <source>label.app_connect_cancel</source>
+                <target>Annuler</target>
+            </trans-unit>
             <trans-unit id="IDGH76b">
                 <source>label.backup_alert_error</source>
                 <target>La dernière sauvegarde a échoué</target>
@@ -2833,6 +2845,14 @@
             <trans-unit id="_FiPpZh">
                 <source>text.account_inactivity_deadline</source>
                 <target>Sans connexion de votre part avant le %date%, votre compte sera anonymisé.</target>
+            </trans-unit>
+            <trans-unit id="h7x6XQH">
+                <source>text.app_connect_intro</source>
+                <target>L'application installée sur votre appareil demande à accéder à votre compte %identifier% : vous y retrouverez vos favoris et votre activité, sur ce site comme sur vos autres appareils.</target>
+            </trans-unit>
+            <trans-unit id="8vMGysP">
+                <source>text.app_connect_password</source>
+                <target>Elle ne connaîtra jamais votre mot de passe, et vous pourrez la déconnecter à tout moment depuis l'application.</target>
             </trans-unit>
             <trans-unit id="JWtDMh7">
                 <source>text.email_change</source>

@@ -51,6 +51,11 @@ services:
         arguments:
             $favoriteLimiterFactory: '@?limiter.ui_favorite'
 
+    # The mobile app's own favorites and plays, under the limit the site's wishlist routes already answer to
+    c975L\UiBundle\Controller\AppLibraryController:
+        arguments:
+            $favoriteLimiterFactory: '@?limiter.ui_favorite'
+
     # Same reading for the site search, guarded twice since every question may cost the site's own key: per caller, and for the whole site
     c975L\UiBundle\Controller\AiSearchController:
         arguments:

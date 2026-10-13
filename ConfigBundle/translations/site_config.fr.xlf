@@ -2,6 +2,10 @@
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
     <file source-language="en" target-language="fr" datatype="plaintext" original="site_config.fr.xlf">
         <body>
+            <trans-unit id="z.ArrE6">
+                <source>description.app_connect_schemes</source>
+                <target>Schéma d'URL de l'application mobile du site (par exemple « papacalin »), auquel est renvoyé le code de connexion d'un membre. Plusieurs séparés par des virgules. Laisser vide si le site n'a pas d'application : la connexion d'une application est alors refusée.</target>
+            </trans-unit>
             <trans-unit id="ZwY3EOi">
                 <source>description.display_hosted_by</source>
                 <target>Ce que le crédit « Hébergé par » affiche dans le pied de page : none, logo, name ou logo-name</target>
@@ -277,6 +281,10 @@
             <trans-unit id="hDOR3CX">
                 <source>description.user_roles_available</source>
                 <target>Rôles supplémentaires sélectionnables (en plus de ROLE_USER), tableau JSON, ex. ["ROLE_ADMIN","ROLE_EDITOR"]</target>
+            </trans-unit>
+            <trans-unit id="iiMWjku">
+                <source>label.app_connect_schemes</source>
+                <target>Schémas d'URL des applications mobiles</target>
             </trans-unit>
             <trans-unit id="xVF9T4p">
                 <source>label.display_hosted_by</source>

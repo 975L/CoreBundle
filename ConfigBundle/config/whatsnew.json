@@ -1,5 +1,15 @@
 [
     {
+        "date": "2026-10-13",
+        "description": [
+            {
+                "en": "Members can now connect the site's mobile app to their account, without ever typing their password into it.",
+                "fr": "Les membres peuvent désormais connecter l'application mobile du site à leur compte, sans jamais y saisir leur mot de passe.",
+                "es": "Los miembros ya pueden conectar la aplicación móvil del sitio a su cuenta, sin escribir nunca su contraseña en ella."
+            }
+        ]
+    },
+    {
         "date": "2026-10-09",
         "description": [
             {

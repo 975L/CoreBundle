@@ -12,11 +12,12 @@ namespace c975L\ConfigBundle\Account;
 
 use c975L\ConfigBundle\Contract\UserInterface;
 use c975L\UiBundle\Entity\Favorite;
+use c975L\UiBundle\Entity\Play;
 use c975L\UiBundle\Entity\Rating;
 use c975L\UiBundle\Entity\Review;
 use Doctrine\ORM\EntityManagerInterface;
 
-// UiBundle's part of a member's export, written here as UiBundle knows nothing of accounts: the favorites and ratings held under the account's key ("u<id>", see FavoriteService and RatingService), and the reviews written on this site under its address
+// UiBundle's part of a member's export, written here as UiBundle knows nothing of accounts: the favorites, plays and ratings held under the account's key ("u<id>", see FavoriteService and RatingService), and the reviews written on this site under its address
 class ActivityAccountDataProvider implements AccountDataProviderInterface
 {
     public function __construct(
@@ -24,7 +25,7 @@ class ActivityAccountDataProvider implements AccountDataProviderInterface
     ) {
     }
 
-    // Under "favorites", "ratings" and "reviews", each left out when empty
+    // Under "favorites", "plays", "ratings" and "reviews", each left out when empty
     public function getAccountData(UserInterface $user): array
     {
         $key = 'u' . $user->getId();
@@ -36,6 +37,11 @@ class ActivityAccountDataProvider implements AccountDataProviderInterface
                 'id' => $favorite->getOwnerId(),
                 'date' => $favorite->getCreatedAt(),
             ], $this->entityManager->getRepository(Favorite::class)->findBy(['holder' => $key])),
+            'plays' => array_map(static fn (Play $play): array => [
+                'type' => $play->getOwnerType(),
+                'id' => $play->getOwnerId(),
+                'date' => $play->getCreatedAt(),
+            ], $this->entityManager->getRepository(Play::class)->findBy(['holder' => $key])),
             'ratings' => array_map(static fn (Rating $rating): array => [
                 'type' => $rating->getOwnerType(),
                 'id' => $rating->getOwnerId(),

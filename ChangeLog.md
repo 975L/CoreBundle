@@ -1,5 +1,26 @@
 # ChangeLog
 
+## v1.65
+
+Connected the site's mobile app to member accounts
+
+### ConfigBundle
+
+- Added `AppConnectController`: `/app/connect` hands the site's app a one-time code, traded at `/app/api/token` for a token (13/10/2026)
+- Added `AppTokenManager`, the `AppToken` entity and `AppTokenHandler` for the app's stateless firewall (13/10/2026) [Needs db update]
+- Added the `app-connect-schemes` config entry, every app route answering 404 while it is empty (13/10/2026)
+- `AppTokenSubscriber` deletes an anonymized account's app tokens (13/10/2026)
+- The account export carries the plays (13/10/2026)
+- Added `AppConnectControllerTest`, `AppTokenManagerTest`, `AppTokenHandlerTest` and `AppTokenSubscriberTest` (13/10/2026)
+
+### UiBundle
+
+- Added `AppLibraryController`: the app's favorites and plays under `/app/api/` (13/10/2026)
+- Added the `Play` entity and `PlayService`, one row per thing played to its end (13/10/2026) [Needs db update]
+- Made `FavoriteService::TOKEN_PATTERN` public (13/10/2026)
+- Added `AppLibraryControllerTest`, `PlayServiceTest` and `PlayRepositoryTest` (13/10/2026)
+- Updated the readmes and the skills (13/10/2026)
+
 ## v1.64
 
 Added the app_install block presenting the site's app

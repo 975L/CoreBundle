@@ -2,6 +2,10 @@
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
     <file source-language="en" target-language="en" datatype="plaintext" original="site_config.en.xlf">
         <body>
+            <trans-unit id="z.ArrE6">
+                <source>description.app_connect_schemes</source>
+                <target>URL scheme of the site's mobile app (for instance "papacalin"), which a member's connection code is sent back to. Several separated by commas. Leave empty if the site has no app: connecting an app is then refused.</target>
+            </trans-unit>
             <trans-unit id="ZwY3EOi">
                 <source>description.display_hosted_by</source>
                 <target>What the "Hosted by" credit shows in the footer: none, logo, name or logo-name</target>
@@ -277,6 +281,10 @@
             <trans-unit id="hDOR3CX">
                 <source>description.user_roles_available</source>
                 <target>Extra selectable roles (besides ROLE_USER), JSON array, e.g. ["ROLE_ADMIN","ROLE_EDITOR"]</target>
+            </trans-unit>
+            <trans-unit id="iiMWjku">
+                <source>label.app_connect_schemes</source>
+                <target>URL schemes of the mobile apps</target>
             </trans-unit>
             <trans-unit id="xVF9T4p">
                 <source>label.display_hosted_by</source>

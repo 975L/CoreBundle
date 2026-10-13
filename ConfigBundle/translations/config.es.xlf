@@ -782,6 +782,18 @@
                 <source>label.account_validation_text</source>
                 <target>Gracias por registrarte. Haz clic en el botón de abajo para confirmar tu dirección de email.</target>
             </trans-unit>
+            <trans-unit id="4TsTMJK">
+                <source>label.app_connect</source>
+                <target>Conectar la aplicación</target>
+            </trans-unit>
+            <trans-unit id="VEcN.FT">
+                <source>label.app_connect_button</source>
+                <target>Conectar la aplicación</target>
+            </trans-unit>
+            <trans-unit id="RkurBG1">
+                <source>label.app_connect_cancel</source>
+                <target>Cancelar</target>
+            </trans-unit>
             <trans-unit id="IDGH76b">
                 <source>label.backup_alert_error</source>
                 <target>La última copia de seguridad ha fallado</target>
@@ -2833,6 +2845,14 @@
             <trans-unit id="_FiPpZh">
                 <source>text.account_inactivity_deadline</source>
                 <target>Sin conexión por su parte antes del %date%, su cuenta será anonimizada.</target>
+            </trans-unit>
+            <trans-unit id="h7x6XQH">
+                <source>text.app_connect_intro</source>
+                <target>La aplicación instalada en su dispositivo solicita acceder a su cuenta %identifier%: allí encontrará sus favoritos y su actividad, en este sitio y en sus otros dispositivos.</target>
+            </trans-unit>
+            <trans-unit id="8vMGysP">
+                <source>text.app_connect_password</source>
+                <target>Nunca conocerá su contraseña, y podrá desconectarla en cualquier momento desde la aplicación.</target>
             </trans-unit>
             <trans-unit id="JWtDMh7">
                 <source>text.email_change</source>

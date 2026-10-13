@@ -823,5 +823,17 @@
         "group": "security",
         "severity": "info",
         "description": "description.login_google_oauth_client_secret"
+    },
+    {
+        "label": "label.app_connect_schemes",
+        "slug": "app-connect-schemes",
+        "feature": true,
+        "sensitive": false,
+        "restricted": true,
+        "value": null,
+        "kind": "text",
+        "group": "security",
+        "severity": null,
+        "description": "description.app_connect_schemes"
     }
 ]

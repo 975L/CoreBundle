@@ -24,7 +24,7 @@ use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 class FavoriteService
 {
     // What a browser-held token has to look like to be accepted, and the shape assets/js/favorite.js generates - the same 32 hex characters a vote is cast under
-    private const string TOKEN_PATTERN = '/^[0-9a-f]{32}$/';
+    public const string TOKEN_PATTERN = '/^[0-9a-f]{32}$/';
 
     public function __construct(
         private readonly FavoriteRepository $favoriteRepository,

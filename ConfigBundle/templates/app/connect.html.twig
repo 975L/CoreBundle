@@ -1,0 +1,24 @@
+{# Rendered by AppConnectController - the app's own scaffolded layout first, then SiteBundle's, then UiBundle's minimal one, as the account pages do #}
+{% extends ['layout.html.twig', '@c975LSite/layout.html.twig', '@c975LUi/layout.html.twig'] %}
+{% trans_default_domain 'config' %}
+
+{% set title = 'label.app_connect'|trans %}
+
+{# A page of one account alone, as the login page: nothing to offer a search result #}
+{% set robots = 'noindex, follow' %}
+
+{% block content %}
+    <div class="alert alert-info text">
+        <p>{{ 'text.app_connect_intro'|trans({'%identifier%': app.user.userIdentifier}) }}</p>
+        <p>{{ 'text.app_connect_password'|trans }}</p>
+    </div>
+
+    {# Posted to the very address the app opened, which carries what it asked for #}
+    <form method="post">
+        <input type="hidden" name="_token" value="{{ csrf_token('app_connect') }}">
+        <button class="btn btn-large btn-primary" type="submit">
+            {{ 'label.app_connect_button'|trans }}
+        </button>
+        <a class="btn btn-large" href="{{ cancelUrl }}">{{ 'label.app_connect_cancel'|trans }}</a>
+    </form>
+{% endblock %}

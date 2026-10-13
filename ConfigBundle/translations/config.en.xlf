@@ -782,6 +782,18 @@
                 <source>label.account_validation_text</source>
                 <target>Thanks for registering. Click the button below to confirm your email address.</target>
             </trans-unit>
+            <trans-unit id="4TsTMJK">
+                <source>label.app_connect</source>
+                <target>Connect the app</target>
+            </trans-unit>
+            <trans-unit id="VEcN.FT">
+                <source>label.app_connect_button</source>
+                <target>Connect the app</target>
+            </trans-unit>
+            <trans-unit id="RkurBG1">
+                <source>label.app_connect_cancel</source>
+                <target>Cancel</target>
+            </trans-unit>
             <trans-unit id="IDGH76b">
                 <source>label.backup_alert_error</source>
                 <target>The last backup failed</target>
@@ -2833,6 +2845,14 @@
             <trans-unit id="_FiPpZh">
                 <source>text.account_inactivity_deadline</source>
                 <target>Without a login by %date%, your account will be anonymized.</target>
+            </trans-unit>
+            <trans-unit id="h7x6XQH">
+                <source>text.app_connect_intro</source>
+                <target>The app installed on your device is asking to access your account %identifier%: you will find your favourites and your activity there, on this site and on your other devices.</target>
+            </trans-unit>
+            <trans-unit id="8vMGysP">
+                <source>text.app_connect_password</source>
+                <target>It will never know your password, and you can sign it out at any time from the app.</target>
             </trans-unit>
             <trans-unit id="JWtDMh7">
                 <source>text.email_change</source>

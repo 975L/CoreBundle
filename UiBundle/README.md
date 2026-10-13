@@ -1579,6 +1579,16 @@ Those routes take **no CSRF token**, for the reason the vote's does not: a token
 
 **Cleaning up after a deletion.** Nothing cascades here either: `FavoriteRepository::deleteForOwner('shop_product', $id)` - or `deleteForOwners()` for a set - on the permanent delete only, never when the row is merely trashed.
 
+**From the site's mobile app.** The routes above only answer a page of this site, so an app has its own under `/app/api/`, in `Controller\AppLibraryController` - a JSON body carrying the device's `token`, the same `ui_favorite` limiter, and a `no-store` answer of `{favorites, plays, connected}`:
+
+| Route | Method | What it does |
+| --- | --- | --- |
+| `ui_app_library` (`/app/api/library`) | POST | Everything the holder put aside and played |
+| `ui_app_favorite` (`/app/api/favorite/{ownerType}/{ownerId}`) | POST | Puts a thing aside or takes it out, as `favorited` says - sent twice, the same order changes nothing |
+| `ui_app_play` (`/app/api/play/{ownerType}/{ownerId}`) | POST | One more time a thing was played to its end, one `Entity\Play` row each (`site_play`, **needs db update**) |
+
+They sit behind the stateless `app_api` firewall ConfigBundle's readme declares: once the app is connected to an account, its holder becomes `u<id>` and what the device held, favorites and plays, is handed over to it on the next call.
+
 ---
 
 ## Selling another bundle's catalog in the shop
