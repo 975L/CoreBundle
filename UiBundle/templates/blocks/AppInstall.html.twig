@@ -1,0 +1,29 @@
+{# The site's app as a block: the browser's install button (see assets/js/pwa.js), the Play Store listing once it is public, and the screens uploaded for the manifest (see PwaController). Drawn only while the app is on, and hidden by _pwa.scss inside the installed app, which has nothing left to install #}
+{% if pwa_enabled() %}
+    {% set playStoreUrl = playStore|default(false) ? pwa_play_store_url() : null %}
+    {% set screenshots = pwa_screenshots() %}
+    <section class="app-install"{% if anchor_id|default('') %} id="{{ anchor_id }}"{% endif %}>
+        {% if title|default('') is not empty %}
+            <h2 class="app-install__title">{{ title }}</h2>
+        {% endif %}
+        {% if text|default('') is not empty %}
+            <p class="app-install__text">{{ text|nl2br }}</p>
+        {% endif %}
+
+        <div class="app-install__actions">
+            {# Written hidden: the "pwa" controller shows it while the browser offers to install, or on iOS to explain how #}
+            <button type="button" class="btn btn-primary" data-pwa-target="install" data-action="pwa#install" hidden>{{ 'label.app_install_button'|trans({}, 'ui') }}</button>
+            {% if playStoreUrl is not null %}
+                <a href="{{ playStoreUrl }}" class="btn btn-primary" target="_blank" rel="noopener">{{ 'label.app_install_play_link'|trans({}, 'ui') }}</a>
+            {% endif %}
+        </div>
+
+        {% if screenshots is not empty %}
+            <div class="app-install__screenshots">
+                {% for screenshot in screenshots %}
+                    <img src="{{ asset('/' ~ screenshot.filename) }}" alt="{{ screenshot.alt|default('') }}"{% if screenshot.intrinsicWidth and screenshot.intrinsicHeight %} width="{{ screenshot.intrinsicWidth }}" height="{{ screenshot.intrinsicHeight }}"{% endif %} loading="lazy">
+                {% endfor %}
+            </div>
+        {% endif %}
+    </section>
+{% endif %}

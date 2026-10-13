@@ -1130,6 +1130,22 @@
                 <source>label.app_icon</source>
                 <target>Icône d'application (512 px)</target>
             </trans-unit>
+            <trans-unit id="QOvmVH3">
+                <source>label.app_install_button</source>
+                <target>Installer l'application</target>
+            </trans-unit>
+            <trans-unit id="zV0YNdN">
+                <source>label.app_install_play_link</source>
+                <target>Disponible sur Google Play</target>
+            </trans-unit>
+            <trans-unit id="7w2sgq9">
+                <source>label.app_install_play_store</source>
+                <target>Afficher le lien Google Play</target>
+            </trans-unit>
+            <trans-unit id="6kPkZR.">
+                <source>label.app_install_play_store_help</source>
+                <target>À cocher une fois l'application publiée sur le Play Store - le lien se déduit du nom de package saisi dans la configuration</target>
+            </trans-unit>
             <trans-unit id="Gn_ANPq">
                 <source>label.app_screenshot</source>
                 <target>Capture de l'application</target>
@@ -1209,6 +1225,14 @@
             <trans-unit id="kgPP_WT">
                 <source>label.block_alert_description</source>
                 <target>Message encadré coloré (info, succès, alerte, erreur)</target>
+            </trans-unit>
+            <trans-unit id="2ASvohX">
+                <source>label.block_app_install</source>
+                <target>Installer l'application</target>
+            </trans-unit>
+            <trans-unit id="dPKIawW">
+                <source>label.block_app_install_description</source>
+                <target>Présente l'application du site : bouton d'installation, lien Google Play et captures d'écran</target>
             </trans-unit>
             <trans-unit id="PhL7j8v">
                 <source>label.block_article</source>
@@ -2089,6 +2113,10 @@
             <trans-unit id="hKKOick">
                 <source>label.email_debug_preview</source>
                 <target>Aperçu de l'email retenu par le mode debug</target>
+            </trans-unit>
+            <trans-unit id="kZjc00_">
+                <source>label.email_open_link</source>
+                <target>Ouvrir le lien</target>
             </trans-unit>
             <trans-unit id="btmHLEL">
                 <source>label.email_templates</source>

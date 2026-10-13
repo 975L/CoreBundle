@@ -242,7 +242,8 @@ ConfigBundle's `UrlMetadataImportProvider` do, or its SVG is stored as SVG.
 Two contributions worth knowing: `MediaUsageProviderInterface` tells the media library where a media
 is used inside your own entities — without it the library cannot warn before a deletion — and
 `PlaceholderMediaProviderInterface` offers stand-in images. `Contract\PickableMediaProviderInterface`
-offers your own pictures and videos to be picked by another bundle (`Model\PickableMedia`).
+offers your own pictures and videos to be picked by another bundle (`Model\PickableMedia`), its optional
+`sourceType`/`sourceId` naming the content the file belongs to so the picker can tell its owner.
 
 A usage may carry an optional `binned` flag saying whether the owner naming it is in the bin. A media
 every owner of which is binned is left out of the gallery — a binned page keeps its blocks and their

@@ -539,6 +539,21 @@ services:
               pickable: true
               cacheable: false
 
+    # The site's app: the browser's install button, its Play Store listing and the screens of the manifest (see PwaController). Not cached: all of it is the site's config and its "app-screenshot" graphics, which change without touching the block
+    ui.block.app_install:
+        class: stdClass
+        tags:
+            - name: ui.block
+              kind: app_install
+              label: "label.block_app_install"
+              description: "label.block_app_install_description"
+              form: c975L\UiBundle\Form\Block\AppInstallType
+              translatable: 'title, text'
+              template: '@c975LUi/blocks/AppInstall.html.twig'
+              category: 'label.category_elements'
+              pickable: true
+              cacheable: false
+
     ui.block.favorite_link:
         class: stdClass
         tags:

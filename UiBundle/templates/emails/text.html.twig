@@ -1,8 +1,21 @@
-{# A plain-text system email's HTML twin (see EmailService), its lines kept, wrapped in the site's layout #}
+{# A plain-text system email's HTML twin (see EmailService), its lines kept, wrapped in the site's layout - an address alone on its line becomes a button, any other a link #}
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
     <tbody>
-        <tr>
-            <td class="text-left" style="font-size:14px;line-height:1.5;">{{ text|e|nl2br }}</td>
-        </tr>
+        {% set lines = [] %}
+        {# The closing null flushes the lines after the last button #}
+        {% for line in text|split("\n")|merge([null]) %}
+            {% set url = line is not null and line|trim matches '~^https?://\\S+$~' %}
+            {% if (url or line is null) and lines|join|trim is not empty %}
+                <tr>
+                    <td class="text-left" style="padding-bottom:16px;font-size:14px;line-height:1.5;">{{ lines|join("\n")|trim("\n")|linkify|nl2br }}</td>
+                </tr>
+            {% endif %}
+            {% if url %}
+                {{ include('@c975LUi/emails/blocks/button.html.twig', {url: line|trim, label: 'label.email_open_link'|trans({}, 'ui')}) }}
+                {% set lines = [] %}
+            {% elseif line is not null %}
+                {% set lines = lines|merge([line]) %}
+            {% endif %}
+        {% endfor %}
     </tbody>
 </table>

@@ -1,5 +1,18 @@
 # ChangeLog
 
+## v1.64
+
+Added the app_install block presenting the site's app
+
+### UiBundle
+
+- Added the `app_install` block: install button, Play Store link and app screenshots (13/10/2026)
+- Added the `pwa_play_store_url()` and `pwa_screenshots()` Twig functions (13/10/2026)
+- A plain-text email's HTML twin turns a lone address line into a button and other addresses into links (13/10/2026)
+- Added optional `sourceType`/`sourceId` to `PickableMedia` (13/10/2026)
+- Added `AppInstallTypeTest`, `PwaExtensionTest` and `EmailTextLinksTest` (13/10/2026)
+- Updated the readme and the skills (13/10/2026)
+
 ## v1.63.5
 
 Section titles shrunk on phones so a long word fits

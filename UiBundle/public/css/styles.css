@@ -6241,4 +6241,37 @@ span {
   object-fit: cover;
 }
 
+.app-install {
+  text-align: center;
+}
+
+.app-install__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+  margin: 1rem 0;
+}
+
+.app-install__screenshots {
+  display: flex;
+  justify-content: safe center;
+  gap: 1rem;
+  padding: 0.5rem 0;
+  overflow-x: auto;
+}
+.app-install__screenshots img {
+  flex: none;
+  width: auto;
+  height: min(60vh, 480px);
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
+}
+
+@media (display-mode: standalone) {
+  .app-install {
+    display: none;
+  }
+}
+
 /*# sourceMappingURL=styles.css.map */

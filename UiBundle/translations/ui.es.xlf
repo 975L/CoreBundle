@@ -1130,6 +1130,22 @@
                 <source>label.app_icon</source>
                 <target>Icono de aplicación (512 px)</target>
             </trans-unit>
+            <trans-unit id="QOvmVH3">
+                <source>label.app_install_button</source>
+                <target>Instalar la aplicación</target>
+            </trans-unit>
+            <trans-unit id="zV0YNdN">
+                <source>label.app_install_play_link</source>
+                <target>Disponible en Google Play</target>
+            </trans-unit>
+            <trans-unit id="7w2sgq9">
+                <source>label.app_install_play_store</source>
+                <target>Mostrar el enlace a Google Play</target>
+            </trans-unit>
+            <trans-unit id="6kPkZR.">
+                <source>label.app_install_play_store_help</source>
+                <target>Marcar una vez publicada la aplicación en Play Store - el enlace se deduce del nombre de paquete indicado en la configuración</target>
+            </trans-unit>
             <trans-unit id="Gn_ANPq">
                 <source>label.app_screenshot</source>
                 <target>Captura de la aplicación</target>
@@ -1209,6 +1225,14 @@
             <trans-unit id="kgPP_WT">
                 <source>label.block_alert_description</source>
                 <target>Mensaje enmarcado de color (info, éxito, aviso, error)</target>
+            </trans-unit>
+            <trans-unit id="2ASvohX">
+                <source>label.block_app_install</source>
+                <target>Instalar la aplicación</target>
+            </trans-unit>
+            <trans-unit id="dPKIawW">
+                <source>label.block_app_install_description</source>
+                <target>Presenta la aplicación del sitio: botón de instalación, enlace a Google Play y capturas de pantalla</target>
             </trans-unit>
             <trans-unit id="PhL7j8v">
                 <source>label.block_article</source>
@@ -2089,6 +2113,10 @@
             <trans-unit id="hKKOick">
                 <source>label.email_debug_preview</source>
                 <target>Vista previa del correo retenido por el modo depuración</target>
+            </trans-unit>
+            <trans-unit id="kZjc00_">
+                <source>label.email_open_link</source>
+                <target>Abrir el enlace</target>
             </trans-unit>
             <trans-unit id="btmHLEL">
                 <source>label.email_templates</source>

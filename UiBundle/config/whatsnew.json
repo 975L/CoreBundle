@@ -1,5 +1,20 @@
 [
     {
+        "date": "2026-10-13",
+        "description": [
+            {
+                "en": "A new block presents your app on any page: install button, Google Play link and screenshots.",
+                "fr": "Un nouveau bloc présente votre application sur n'importe quelle page : bouton d'installation, lien Google Play et captures d'écran.",
+                "es": "Un nuevo bloque presenta su aplicación en cualquier página: botón de instalación, enlace a Google Play y capturas de pantalla."
+            },
+            {
+                "en": "Links in automatic emails are now clickable, and a link on its own line shows as a button.",
+                "fr": "Les liens des emails automatiques sont désormais cliquables, et un lien seul sur sa ligne s'affiche en bouton.",
+                "es": "Los enlaces de los correos automáticos ahora son clicables, y un enlace solo en su línea se muestra como botón."
+            }
+        ]
+    },
+    {
         "date": "2026-10-12",
         "description": [
             {

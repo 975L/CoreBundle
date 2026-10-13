@@ -212,8 +212,8 @@ class PwaControllerTest extends TestCase
 
     public function testTheLayoutFollowsTheSetting(): void
     {
-        $this->assertTrue(new PwaExtension($this->configService([]))->isEnabled());
-        $this->assertFalse(new PwaExtension($this->configService(['ui-pwa-enabled' => 'false']))->isEnabled());
+        $this->assertTrue(new PwaExtension($this->configService([]), $this->createStub(MediaRepository::class))->isEnabled());
+        $this->assertFalse(new PwaExtension($this->configService(['ui-pwa-enabled' => 'false']), $this->createStub(MediaRepository::class))->isEnabled());
     }
 
     private function manifest(array $configs = [], array $screenshots = []): array

@@ -47,3 +47,39 @@
         object-fit: cover;
     }
 }
+
+// The "app_install" block (see templates/blocks/AppInstall.html.twig): the buttons on one centred line, the screens in a row a phone scrolls sideways
+.app-install {
+    text-align: center;
+}
+
+.app-install__actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1rem;
+    margin: 1rem 0;
+}
+
+.app-install__screenshots {
+    display: flex;
+    justify-content: safe center;
+    gap: 1rem;
+    padding: 0.5rem 0;
+    overflow-x: auto;
+
+    img {
+        flex: none;
+        width: auto;
+        height: min(60vh, 480px);
+        border-radius: 12px;
+        box-shadow: 0 2px 12px rgb(0 0 0 / 20%);
+    }
+}
+
+// Nothing left to install from inside the installed app
+@media (display-mode: standalone) {
+    .app-install {
+        display: none;
+    }
+}
