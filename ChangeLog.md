@@ -1,5 +1,16 @@
 # ChangeLog
 
+## v1.67.1
+
+Let a provider call send images along with the prompt
+
+### UiBundle
+
+- `AbstractAiProviderClient::send()` takes images as base64 data URIs (14/10/2026)
+- Raised the provider timeout to 60 seconds when images are sent (14/10/2026)
+- Added `AbstractAiProviderClientImageTest` (14/10/2026)
+- Updated the readme and the skill (14/10/2026)
+
 ## v1.67
 
 Counted every play in a total, and withdrew the app updates

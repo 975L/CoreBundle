@@ -629,6 +629,8 @@ search"). What matters when touching it:
 - **Its spend has its own `AiUsage` row** (`AiUsage::FEATURE_SITE_SEARCH`): a provider call goes through
   `AbstractAiProviderClient`, never a second copy of it. Only the Anthropic call carries `max_tokens`, which
   it requires: OpenAI's reasoning models refuse that field.
+  `send()` takes `$images` (base64 data URIs) for a model that sees: pass them there, never build an
+  image request of your own.
 - `POST /ai-search` takes no CSRF token, like the vote: `SameOriginRequest` plus the `ui_ai_search` and
   `ui_ai_search_site` limiters stand in its place. The block is not cacheable, drawn only while
   `ai_search_enabled()`.
