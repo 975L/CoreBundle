@@ -56,6 +56,11 @@ services:
         arguments:
             $favoriteLimiterFactory: '@?limiter.ui_favorite'
 
+    # The site's own plays, under the same limit
+    c975L\UiBundle\Controller\PlayController:
+        arguments:
+            $favoriteLimiterFactory: '@?limiter.ui_favorite'
+
     # Same reading for the site search, guarded twice since every question may cost the site's own key: per caller, and for the whole site
     c975L\UiBundle\Controller\AiSearchController:
         arguments:

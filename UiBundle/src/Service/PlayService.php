@@ -12,6 +12,7 @@ namespace c975L\UiBundle\Service;
 
 use c975L\UiBundle\Entity\Play;
 use c975L\UiBundle\Repository\PlayRepository;
+use c975L\UiBundle\Repository\PlayTotalRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
 // What a visitor listened to or watched to its end, counted under the key their favorites are held under: the device's own token, then the account once they sign in (see FavoriteService::resolveHolder())
@@ -22,14 +23,21 @@ class PlayService
 
     public function __construct(
         private readonly PlayRepository $playRepository,
+        private readonly PlayTotalRepository $playTotalRepository,
         private readonly EntityManagerInterface $entityManager,
     ) {
     }
 
-    // Writes one play down, and answers with how many times this holder played each thing
+    // Writes one play down: always in the total, and under its holder when there is one - a listener nobody knows is counted and nothing more. Answers with how many times this holder played each thing
     /** @return array<string, int> "book:12" => 3 */
-    public function record(string $ownerType, int $ownerId, string $holder): array
+    public function record(string $ownerType, int $ownerId, ?string $holder): array
     {
+        $this->playTotalRepository->increment($ownerType, $ownerId);
+
+        if (null === $holder) {
+            return [];
+        }
+
         $this->entityManager->persist(new Play()
             ->setOwnerType($ownerType)
             ->setOwnerId($ownerId)
@@ -37,6 +45,17 @@ class PlayService
         $this->entityManager->flush();
 
         return $this->counts($holder);
+    }
+
+    // How many times each of these things was played, by anyone
+    /**
+     * @param int[] $ownerIds
+     *
+     * @return array<int, int> owner id => plays
+     */
+    public function totals(string $ownerType, array $ownerIds): array
+    {
+        return $this->playTotalRepository->totals($ownerType, $ownerIds);
     }
 
     // Counts each thing as played at least as many times as said, which is how a device used before it was connected hands its counts over to the account: said twice, it adds nothing the second time

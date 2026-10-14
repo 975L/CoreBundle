@@ -765,10 +765,6 @@ security:
 
 A call carrying no token goes through as a visitor, which is what lets UiBundle's `AppLibraryController` hold an app's favorites and plays under the device's own token until the member connects. The tokens live in `site_app_token` (**needs db update**), hashed, and are deleted with the account or when it is anonymized.
 
-### Updating the site's mobile app
-
-The app's JavaScript updates come from the site itself rather than from a paid service: `AppUpdateController` answers the [Expo Updates protocol](https://docs.expo.dev/technical-specs/expo-updates-1/) at `/app/updates` (route `config_app_updates`), which is the `updates.url` to give `expo-updates`. Nothing is computed there: an update is published into `public/app-updates/{runtime version}/{android|ios}/`, its `manifest.json` stored as the very bytes that were signed (`manifest.sig` holding the `expo-signature` header) and its files next to it, then `latest` is written last with the update's id - or `rollback`, sending the apps back to the code they were built with, from `rollback.json`; `no-update.json` is the directive answering an app already up to date. A runtime version nothing was published for answers 404.
-
 ### Being notified of new accounts
 
 Every account created through `UserRegistrar` also sends a short plain-text notification to the site itself, so the owner knows their site is being signed up to without having to watch the User screen. It goes to the site-wide `email-to` address (the one every other c975L email already goes to, see UiBundle's `EmailService`) — there's no separate address to keep in sync — and it's written in `kernel.default_locale`, not in whatever language the visitor was browsing in.

@@ -12,6 +12,7 @@ namespace c975L\UiBundle\Tests\Service;
 
 use c975L\UiBundle\Entity\Play;
 use c975L\UiBundle\Repository\PlayRepository;
+use c975L\UiBundle\Repository\PlayTotalRepository;
 use c975L\UiBundle\Service\PlayService;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
@@ -30,7 +31,7 @@ class PlayServiceTest extends TestCase
             $persisted = $play;
         });
 
-        $counts = new PlayService($repository, $entityManager)->record('book', 12, 'u42');
+        $counts = new PlayService($repository, $this->createStub(PlayTotalRepository::class), $entityManager)->record('book', 12, 'u42');
 
         $this->assertInstanceOf(Play::class, $persisted);
         $this->assertSame(['book', 12, 'u42'], [$persisted->getOwnerType(), $persisted->getOwnerId(), $persisted->getHolder()]);
@@ -42,7 +43,7 @@ class PlayServiceTest extends TestCase
         $repository = $this->createMock(PlayRepository::class);
         $repository->expects($this->once())->method('moveHolder')->with('token', 'u42');
 
-        $service = new PlayService($repository, $this->createStub(EntityManagerInterface::class));
+        $service = new PlayService($repository, $this->createStub(PlayTotalRepository::class), $this->createStub(EntityManagerInterface::class));
         $service->merge('token', 'u42');
         // Already its own: nothing to move
         $service->merge('u42', 'u42');
@@ -60,8 +61,20 @@ class PlayServiceTest extends TestCase
             $persisted[] = $play->getOwnerType() . ':' . $play->getOwnerId() . ' ' . $play->getHolder();
         });
 
-        new PlayService($repository, $entityManager)->raise('u42', ['book:12' => 3, 'book:13' => 2]);
+        new PlayService($repository, $this->createStub(PlayTotalRepository::class), $entityManager)->raise('u42', ['book:12' => 3, 'book:13' => 2]);
 
         $this->assertSame(['book:12 u42', 'book:12 u42'], $persisted);
+    }
+
+    // A listener nobody knows is counted in the total, and written under no holder
+    public function testAnAnonymousPlayIsCountedInTheTotalAlone(): void
+    {
+        $total = $this->createMock(PlayTotalRepository::class);
+        $total->expects($this->once())->method('increment')->with('book', 12);
+
+        $entityManager = $this->createMock(EntityManagerInterface::class);
+        $entityManager->expects($this->never())->method('persist');
+
+        $this->assertSame([], new PlayService($this->createStub(PlayRepository::class), $total, $entityManager)->record('book', 12, null));
     }
 }

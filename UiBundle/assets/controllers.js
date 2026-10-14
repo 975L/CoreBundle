@@ -48,6 +48,8 @@ const LAZY_CONTROLLERS = {
     'ui-review-form': () => import('./js/review-form.js'),
     'ui-favorite-count': () => import('./js/favorite-count.js'),
     'ui-favorites': () => import('./js/favorites.js'),
+    // Kebab-case identifier, same reason as cookie-consent above: every "data-ui-play-count-*-value" binding is derived from it
+    'ui-play-count': () => import('./js/play-count.js'),
     videoIframe: () => import('./js/video-iframe.js'),
 };
 

@@ -44,7 +44,7 @@ class AppLibraryController extends AbstractController
     #[Route('/library', name: 'ui_app_library', methods: ['POST'])]
     public function library(Request $request): Response
     {
-        $holder = $this->holder($request);
+        $holder = $this->holder($request) ?? self::nobody();
         if ($holder instanceof Response) {
             return $holder;
         }
@@ -59,7 +59,7 @@ class AppLibraryController extends AbstractController
     #[Route('/favorite/{ownerType}/{ownerId}', name: 'ui_app_favorite', requirements: self::OWNER_REQUIREMENTS, methods: ['POST'])]
     public function favorite(string $ownerType, int $ownerId, Request $request): Response
     {
-        $holder = $this->holder($request);
+        $holder = $this->holder($request) ?? self::nobody();
         if ($holder instanceof Response) {
             return $holder;
         }
@@ -73,7 +73,7 @@ class AppLibraryController extends AbstractController
         return $this->answer($holder);
     }
 
-    // One more time this thing was played to its end
+    // One more time this thing was played to its end. A listener with no account and no token is counted all the same, in the total alone: an app counts every listen without making up anything that names the phone
     #[Route('/play/{ownerType}/{ownerId}', name: 'ui_app_play', requirements: self::OWNER_REQUIREMENTS, methods: ['POST'])]
     public function play(string $ownerType, int $ownerId, Request $request): Response
     {
@@ -85,11 +85,11 @@ class AppLibraryController extends AbstractController
 
         $this->playService->record($ownerType, $ownerId, $holder);
 
-        return $this->answer($holder);
+        return null === $holder ? new Response(null, Response::HTTP_NO_CONTENT) : $this->answer($holder);
     }
 
-    // The key this caller's things are held under, or why they get none: too many calls, or neither an account nor a token the device made up. What the device held is handed over to the account on the way
-    private function holder(Request $request): string | Response
+    // The key this caller's things are held under, null for a caller with neither an account nor a token the device made up, or a refusal for too many calls. What the device held is handed over to the account on the way
+    private function holder(Request $request): string | Response | null
     {
         // Fails open with no client ip, as FavoriteController does
         $clientIp = $request->getClientIp();
@@ -103,7 +103,7 @@ class AppLibraryController extends AbstractController
         $this->favoriteService->merge($token);
         $holder = $this->favoriteService->resolveHolder($token);
         if (null === $holder) {
-            return new JsonResponse(['error' => 'bad_request'], Response::HTTP_BAD_REQUEST);
+            return null;
         }
 
         // Only a token of the shape the favorites accept ever names rows to move
@@ -173,6 +173,12 @@ class AppLibraryController extends AbstractController
         $response->headers->set('Cache-Control', 'no-store, private');
 
         return $response;
+    }
+
+    // Neither an account nor a token: there is no list to answer with
+    private static function nobody(): JsonResponse
+    {
+        return new JsonResponse(['error' => 'bad_request'], Response::HTTP_BAD_REQUEST);
     }
 
     /** @return array<string, mixed> */

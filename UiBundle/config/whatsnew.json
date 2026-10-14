@@ -6,6 +6,11 @@
                 "en": "Favorites and listens made in the app before connecting it are now kept on the member's account.",
                 "fr": "Les favoris et écoutes faits dans l'application avant de la connecter sont désormais conservés sur le compte du membre.",
                 "es": "Los favoritos y escuchas hechos en la aplicación antes de conectarla ahora se conservan en la cuenta del miembro."
+            },
+            {
+                "en": "Every listen played to its end is now counted, on the site as in the app, signed in or not.",
+                "fr": "Chaque écoute menée à son terme est désormais comptée, sur le site comme dans l'application, connecté ou non.",
+                "es": "Cada escucha llevada hasta el final ahora se cuenta, en el sitio como en la aplicación, con o sin sesión iniciada."
             }
         ]
     },

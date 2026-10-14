@@ -1,5 +1,26 @@
 # ChangeLog
 
+## v1.67
+
+Counted every play in a total, and withdrew the app updates
+
+### ConfigBundle
+
+- Removed `AppUpdateController` and its `/app/updates` route (14/10/2026) [BC-Break]
+- Removed `AppUpdateControllerTest` (14/10/2026)
+- Updated the readme and the skill (14/10/2026)
+
+### UiBundle
+
+- Added the `PlayTotal` entity, every play counted by anyone (14/10/2026) [Needs db update]
+- Added `PlayService::totals()` (14/10/2026)
+- Added `PlayController`: `ui_play` counts the site's own plays (14/10/2026)
+- Added the `ui-play-count` Stimulus controller (14/10/2026)
+- `ui_app_play` counts a play with no account nor token in the total alone (14/10/2026)
+- Added `PlayControllerTest`, `PlayTotalRepositoryTest` and `PlayCountControllerTest` (14/10/2026)
+- Added tests to `AppLibraryControllerTest` and `PlayServiceTest` (14/10/2026)
+- Updated the readme and the skill (14/10/2026)
+
 ## v1.66
 
 Served the site's mobile app updates from the site itself

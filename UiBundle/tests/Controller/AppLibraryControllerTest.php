@@ -172,4 +172,13 @@ class AppLibraryControllerTest extends TestCase
 
         $this->assertSame(['raise []'], $this->calls);
     }
+
+    // An app with no account and no token is counted all the same, in the total alone
+    public function testAnAnonymousPlayIsCounted(): void
+    {
+        $response = $this->createController(holder: null)->play('book', 12, $this->request([]));
+
+        $this->assertSame(204, $response->getStatusCode());
+        $this->assertSame(['play book:12'], $this->calls);
+    }
 }
