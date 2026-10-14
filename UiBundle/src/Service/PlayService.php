@@ -17,6 +17,9 @@ use Doctrine\ORM\EntityManagerInterface;
 // What a visitor listened to or watched to its end, counted under the key their favorites are held under: the device's own token, then the account once they sign in (see FavoriteService::resolveHolder())
 class PlayService
 {
+    // No thing is raised past this in one go: a child does not hear one story more often than that before a parent connects the app
+    private const int RAISE_MAX = 500;
+
     public function __construct(
         private readonly PlayRepository $playRepository,
         private readonly EntityManagerInterface $entityManager,
@@ -34,6 +37,25 @@ class PlayService
         $this->entityManager->flush();
 
         return $this->counts($holder);
+    }
+
+    // Counts each thing as played at least as many times as said, which is how a device used before it was connected hands its counts over to the account: said twice, it adds nothing the second time
+    /** @param array<string, int> $counts "book:12" => 3 */
+    public function raise(string $holder, array $counts): void
+    {
+        $held = $this->counts($holder);
+
+        foreach ($counts as $key => $count) {
+            [$ownerType, $ownerId] = explode(':', $key);
+            for ($missing = min($count, self::RAISE_MAX) - ($held[$key] ?? 0); $missing > 0; --$missing) {
+                $this->entityManager->persist(new Play()
+                    ->setOwnerType($ownerType)
+                    ->setOwnerId((int) $ownerId)
+                    ->setHolder($holder));
+            }
+        }
+
+        $this->entityManager->flush();
     }
 
     /** @return array<string, int> */

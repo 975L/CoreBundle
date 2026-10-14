@@ -1,5 +1,15 @@
 [
     {
+        "date": "2026-10-14",
+        "description": [
+            {
+                "en": "The site's mobile app now gets its updates straight from the site, at no extra cost.",
+                "fr": "L'application mobile du site reçoit désormais ses mises à jour directement depuis le site, sans frais supplémentaires.",
+                "es": "La aplicación móvil del sitio ahora recibe sus actualizaciones directamente desde el sitio, sin coste adicional."
+            }
+        ]
+    },
+    {
         "date": "2026-10-13",
         "description": [
             {

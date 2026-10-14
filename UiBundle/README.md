@@ -1583,7 +1583,7 @@ Those routes take **no CSRF token**, for the reason the vote's does not: a token
 
 | Route | Method | What it does |
 | --- | --- | --- |
-| `ui_app_library` (`/app/api/library`) | POST | Everything the holder put aside and played |
+| `ui_app_library` (`/app/api/library`) | POST | Everything the holder put aside and played, after taking in the `favorites` and `plays` an app used before it was connected sends along - only things this site can show, a play count raised to what is said and never added to, so the same handover sent twice changes nothing |
 | `ui_app_favorite` (`/app/api/favorite/{ownerType}/{ownerId}`) | POST | Puts a thing aside or takes it out, as `favorited` says - sent twice, the same order changes nothing |
 | `ui_app_play` (`/app/api/play/{ownerType}/{ownerId}`) | POST | One more time a thing was played to its end, one `Entity\Play` row each (`site_play`, **needs db update**) |
 

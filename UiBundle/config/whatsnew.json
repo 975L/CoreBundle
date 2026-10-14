@@ -1,5 +1,15 @@
 [
     {
+        "date": "2026-10-14",
+        "description": [
+            {
+                "en": "Favorites and listens made in the app before connecting it are now kept on the member's account.",
+                "fr": "Les favoris et écoutes faits dans l'application avant de la connecter sont désormais conservés sur le compte du membre.",
+                "es": "Los favoritos y escuchas hechos en la aplicación antes de conectarla ahora se conservan en la cuenta del miembro."
+            }
+        ]
+    },
+    {
         "date": "2026-10-13",
         "description": [
             {

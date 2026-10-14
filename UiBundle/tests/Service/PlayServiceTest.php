@@ -47,4 +47,21 @@ class PlayServiceTest extends TestCase
         // Already its own: nothing to move
         $service->merge('u42', 'u42');
     }
+
+    // Three said, one already held: two are added, and none for a thing already played more often than said
+    public function testCountsAreRaisedToWhatIsSaidAndNoFurther(): void
+    {
+        $repository = $this->createStub(PlayRepository::class);
+        $repository->method('countsByHolder')->willReturn(['book:12' => 1, 'book:13' => 5]);
+
+        $persisted = [];
+        $entityManager = $this->createStub(EntityManagerInterface::class);
+        $entityManager->method('persist')->willReturnCallback(static function (Play $play) use (&$persisted): void {
+            $persisted[] = $play->getOwnerType() . ':' . $play->getOwnerId() . ' ' . $play->getHolder();
+        });
+
+        new PlayService($repository, $entityManager)->raise('u42', ['book:12' => 3, 'book:13' => 2]);
+
+        $this->assertSame(['book:12 u42', 'book:12 u42'], $persisted);
+    }
 }

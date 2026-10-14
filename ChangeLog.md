@@ -1,5 +1,21 @@
 # ChangeLog
 
+## v1.66
+
+Served the site's mobile app updates from the site itself
+
+### ConfigBundle
+
+- Added `AppUpdateController`: `/app/updates` serves the app's updates over the Expo Updates protocol (14/10/2026)
+- Added `AppUpdateControllerTest` (14/10/2026)
+
+### UiBundle
+
+- `ui_app_library` takes in the favorites and plays an app held before it was connected (14/10/2026)
+- Added `PlayService::raise()`, raising play counts without adding to them (14/10/2026)
+- Added tests to `AppLibraryControllerTest` and `PlayServiceTest` (14/10/2026)
+- Updated the readmes and the skills (14/10/2026)
+
 ## v1.65
 
 Connected the site's mobile app to member accounts

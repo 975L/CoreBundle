@@ -49,6 +49,9 @@ class AppLibraryControllerTest extends TestCase
 
             return [];
         });
+        $playService->method('raise')->willReturnCallback(function (string $holder, array $counts): void {
+            $this->calls[] = 'raise ' . json_encode($counts);
+        });
         $playService->method('merge')->willReturnCallback(function (string $token, string $holder): void {
             $this->calls[] = 'merge ' . $token . ' > ' . $holder;
         });
@@ -149,5 +152,24 @@ class AppLibraryControllerTest extends TestCase
         $this->createController(holder: 'u42')->library($this->request(['token' => 'u1']));
 
         $this->assertSame([], $this->calls);
+    }
+
+    // An app used before it was connected hands over what it held: only what the site can show, and no favorite already there
+    public function testWhatTheAppHeldIsTakenIn(): void
+    {
+        $this->createController(holder: 'u42')->library($this->request([
+            'favorites' => ['book:12', 'book:12', 'book:999', 'nonsense'],
+            'plays' => ['book:12' => 4, 'book:999' => 2, 'book:13' => 'many'],
+        ]));
+
+        $this->assertSame(['toggle book:12', 'raise {"book:12":4}'], $this->calls);
+    }
+
+    // Handed over again, a favorite already on the list is not taken back out
+    public function testAFavoriteAlreadyHeldIsLeftAlone(): void
+    {
+        $this->createController(holder: 'u42', keys: ['book:12'])->library($this->request(['favorites' => ['book:12']]));
+
+        $this->assertSame(['raise []'], $this->calls);
     }
 }
