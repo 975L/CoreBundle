@@ -611,7 +611,7 @@ The same terms as the ratings above, for a thing a visitor puts *aside*: `Entity
   Every play also adds one to `Entity\PlayTotal` (`site_play_total`), the count by anyone that
   `PlayService::totals()` reads; an app with no account nor token is counted there alone. The site's pages
   count theirs through `ui_play` (`PlayController`, same-origin json, sent by the `ui-play-count` Stimulus
-  controller at 95% of the media), never minting a token.
+  controller at 95% of the media, the `<audio>` before any `<video>`), never minting a token.
   The account side is ConfigBundle's `AppConnectController`.
 
 ## Site search

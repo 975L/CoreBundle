@@ -1,5 +1,14 @@
 # ChangeLog
 
+## v1.67.3
+
+Followed the recording before any video in the play count
+
+### UiBundle
+
+- `ui-play-count` follows the `<audio>` before any `<video>` (14/10/2026)
+- Updated the readme and the skill (14/10/2026)
+
 ## v1.67.2
 
 Drew the back office with EasyAdmin 5.7 Twig components

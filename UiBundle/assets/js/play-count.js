@@ -16,7 +16,8 @@ export default class extends Controller {
     static END = 0.95;
 
     connect() {
-        this.media = this.element.querySelector("audio, video");
+        // The recording first: a reader may print a video page before its player, and a film alone is still followed
+        this.media = this.element.querySelector("audio") ?? this.element.querySelector("video");
         if (!this.media) {
             return;
         }

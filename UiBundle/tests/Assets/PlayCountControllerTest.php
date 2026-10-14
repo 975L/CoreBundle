@@ -46,6 +46,15 @@ class PlayCountControllerTest extends TestCase
         $this->assertStringContainsString('"Content-Type": "application/json"', $controller);
     }
 
+    // The recording before the film, so a video printed above the player is not the one followed
+    public function testTheAudioIsFollowedBeforeAnyVideo(): void
+    {
+        $controller = $this->read(self::CONTROLLER_JS);
+
+        $this->assertStringContainsString('this.element.querySelector("audio") ?? this.element.querySelector("video")', $controller);
+        $this->assertStringNotContainsString('querySelector("audio, video")', $controller);
+    }
+
     private function read(string $path): string
     {
         return (string) file_get_contents(\dirname(__DIR__, 2) . '/' . $path);
