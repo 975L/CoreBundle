@@ -718,6 +718,10 @@
                 <source>label.account_delete_email</source>
                 <target>Mon adresse e-mail</target>
             </trans-unit>
+            <trans-unit id="zLxdXwF">
+                <source>label.account_deletion</source>
+                <target>Suppression de mon compte</target>
+            </trans-unit>
             <trans-unit id="J5lcNHs">
                 <source>label.account_email_change_button</source>
                 <target>Confirmer ma nouvelle adresse</target>
@@ -2841,6 +2845,22 @@
             <trans-unit id="J4HpwMt">
                 <source>text.account_delete_personal_data</source>
                 <target>mon adresse e-mail, mon nom et mon mot de passe sont effacés, et plus personne ne peut se connecter à ce compte ;</target>
+            </trans-unit>
+            <trans-unit id="9WEo7_B">
+                <source>text.account_deletion_intro</source>
+                <target>Je peux supprimer mon compte %site% et les données qui y sont liées, depuis le site comme depuis son application, en trois étapes :</target>
+            </trans-unit>
+            <trans-unit id="P4takPA">
+                <source>text.account_deletion_step_confirm</source>
+                <target>je saisis à nouveau mon adresse e-mail pour confirmer.</target>
+            </trans-unit>
+            <trans-unit id="mwRaTJT">
+                <source>text.account_deletion_step_open</source>
+                <target>j'ouvre la page de suppression : le bouton ci-dessous, « Mon compte » sur le site ou « Supprimer mon compte » dans l'application ;</target>
+            </trans-unit>
+            <trans-unit id="W8XDvGS">
+                <source>text.account_deletion_step_sign_in</source>
+                <target>je me connecte à mon compte ;</target>
             </trans-unit>
             <trans-unit id="_FiPpZh">
                 <source>text.account_inactivity_deadline</source>

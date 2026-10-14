@@ -1,0 +1,11 @@
+{# What deleting the account erases and keeps - drawn by the deletion form and by the public page explaining it alike #}
+{% trans_default_domain 'config' %}
+<div class="alert alert-warning text">
+    <p>{{ 'text.account_delete_intro'|trans }}</p>
+    <ul>
+        <li>{{ 'text.account_delete_personal_data'|trans }}</li>
+        <li>{{ 'text.account_delete_accounting'|trans }}</li>
+        <li>{{ 'text.account_delete_content'|trans }}</li>
+    </ul>
+    <p>{{ 'text.account_delete_irreversible'|trans }}</p>
+</div>

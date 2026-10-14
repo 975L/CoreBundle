@@ -1,5 +1,15 @@
 [
     {
+        "date": "2026-10-14",
+        "description": [
+            {
+                "en": "The site now has a public page explaining how to delete an account, the address Google Play asks for.",
+                "fr": "Le site a désormais une page publique expliquant comment supprimer un compte, l'adresse que demande Google Play.",
+                "es": "El sitio tiene ahora una página pública que explica cómo eliminar una cuenta, la dirección que pide Google Play."
+            }
+        ]
+    },
+    {
         "date": "2026-10-13",
         "description": [
             {

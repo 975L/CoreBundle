@@ -1,5 +1,17 @@
 # ChangeLog
 
+## v1.68
+
+Added a public page explaining how to delete one's account
+
+### ConfigBundle
+
+- Added `/account/deletion`, open to anyone, the address Google Play asks for (14/10/2026)
+- Split what deleting erases and keeps into `_delete_effects.html.twig`, shared with the form (14/10/2026)
+- Added the `label.account_deletion` and `text.account_deletion_*` translations (14/10/2026)
+- Added `AccountDeletionControllerTest` (14/10/2026)
+- Updated the readme (14/10/2026)
+
 ## v1.67.3
 
 Followed the recording before any video in the play count

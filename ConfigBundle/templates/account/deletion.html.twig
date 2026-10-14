@@ -1,0 +1,20 @@
+{# Rendered by AccountDeletionController - the same layouts as the deletion page itself, whichever foundation is installed #}
+{% extends ['layout.html.twig', '@c975LSite/layout.html.twig', '@c975LUi/layout.html.twig'] %}
+{% trans_default_domain 'config' %}
+
+{% set title = 'label.account_deletion'|trans %}
+
+{% block content %}
+    <p class="text">{{ 'text.account_deletion_intro'|trans({'%site%': siteName}) }}</p>
+    <ol class="text">
+        <li>{{ 'text.account_deletion_step_sign_in'|trans }}</li>
+        <li>{{ 'text.account_deletion_step_open'|trans }}</li>
+        <li>{{ 'text.account_deletion_step_confirm'|trans }}</li>
+    </ol>
+
+    {{ include('@c975LConfig/account/_delete_effects.html.twig') }}
+
+    <a class="btn btn-large btn-danger" href="{{ path('config_account_delete') }}">
+        {{ 'label.account_delete_button'|trans }}
+    </a>
+{% endblock %}

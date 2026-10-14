@@ -718,6 +718,10 @@
                 <source>label.account_delete_email</source>
                 <target>Your email address</target>
             </trans-unit>
+            <trans-unit id="zLxdXwF">
+                <source>label.account_deletion</source>
+                <target>Deleting your account</target>
+            </trans-unit>
             <trans-unit id="J5lcNHs">
                 <source>label.account_email_change_button</source>
                 <target>Confirm my new address</target>
@@ -2841,6 +2845,22 @@
             <trans-unit id="J4HpwMt">
                 <source>text.account_delete_personal_data</source>
                 <target>your email address, your name and your password are erased, and nobody can log in to this account anymore;</target>
+            </trans-unit>
+            <trans-unit id="9WEo7_B">
+                <source>text.account_deletion_intro</source>
+                <target>You can delete your %site% account and the data linked to it, from the site as from its app, in three steps:</target>
+            </trans-unit>
+            <trans-unit id="P4takPA">
+                <source>text.account_deletion_step_confirm</source>
+                <target>type your email address again to confirm.</target>
+            </trans-unit>
+            <trans-unit id="mwRaTJT">
+                <source>text.account_deletion_step_open</source>
+                <target>open the deletion page: the button below, “My account” on the site or “Delete my account” in the app;</target>
+            </trans-unit>
+            <trans-unit id="W8XDvGS">
+                <source>text.account_deletion_step_sign_in</source>
+                <target>sign in to your account;</target>
             </trans-unit>
             <trans-unit id="_FiPpZh">
                 <source>text.account_inactivity_deadline</source>

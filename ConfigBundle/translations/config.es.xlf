@@ -718,6 +718,10 @@
                 <source>label.account_delete_email</source>
                 <target>Su dirección de correo electrónico</target>
             </trans-unit>
+            <trans-unit id="zLxdXwF">
+                <source>label.account_deletion</source>
+                <target>Eliminación de su cuenta</target>
+            </trans-unit>
             <trans-unit id="J5lcNHs">
                 <source>label.account_email_change_button</source>
                 <target>Confirmar mi nueva dirección</target>
@@ -2841,6 +2845,22 @@
             <trans-unit id="J4HpwMt">
                 <source>text.account_delete_personal_data</source>
                 <target>su dirección de correo electrónico, su nombre y su contraseña se borran, y nadie puede volver a conectarse a esta cuenta;</target>
+            </trans-unit>
+            <trans-unit id="9WEo7_B">
+                <source>text.account_deletion_intro</source>
+                <target>Puede eliminar su cuenta %site% y los datos vinculados a ella, desde el sitio o desde su aplicación, en tres pasos:</target>
+            </trans-unit>
+            <trans-unit id="P4takPA">
+                <source>text.account_deletion_step_confirm</source>
+                <target>vuelva a escribir su dirección de correo electrónico para confirmar.</target>
+            </trans-unit>
+            <trans-unit id="mwRaTJT">
+                <source>text.account_deletion_step_open</source>
+                <target>abra la página de eliminación: el botón de abajo, «Mi cuenta» en el sitio o «Eliminar mi cuenta» en la aplicación;</target>
+            </trans-unit>
+            <trans-unit id="W8XDvGS">
+                <source>text.account_deletion_step_sign_in</source>
+                <target>inicie sesión en su cuenta;</target>
             </trans-unit>
             <trans-unit id="_FiPpZh">
                 <source>text.account_inactivity_deadline</source>
