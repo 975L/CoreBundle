@@ -472,13 +472,11 @@ class ConfigCrudController extends AbstractCrudController
                 ->setEntityId($config->getId())
                 ->set(self::CONTENT_LOCALE_PARAM, $this->configTranslator->getTranslatableLocales()[0] ?? null)
                 ->generateUrl())
-            ->displayIf(fn (Config $config): bool => $this->configTranslator->translates($config))
-            ->addCssClass('btn btn-secondary');
+            ->displayIf(fn (Config $config): bool => $this->configTranslator->translates($config));
 
         // Lets the admin back out of an edit without saving - mirrors EasyAdmin's own built-in actions (linkToCrudAction targeting INDEX, same as Action::INDEX itself)
         $cancelAction = Action::new('cancel', $this->translator->trans('action.cancel', [], 'EasyAdminBundle'), 'fa fa-times')
-            ->linkToCrudAction(Action::INDEX)
-            ->addCssClass('btn btn-secondary');
+            ->linkToCrudAction(Action::INDEX);
 
         return $actions
             ->add(Crud::PAGE_INDEX, $exportGroup)

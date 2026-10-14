@@ -45,7 +45,7 @@
 
     {% if entities|length > 0 %}
         <div class="content-panel-footer without-padding without-border">
-            {{ include(ea.templatePath('crud/paginator'), {render_detailed_pagination: true}) }}
+            {{ include(ea().templatePath('crud/paginator'), {render_detailed_pagination: true}) }}
         </div>
     {% endif %}
 

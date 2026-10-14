@@ -110,13 +110,12 @@
                     {# Only where there is something to declare dealt with: an ok or unverifiable row is already out of the default view, and marking it would mean nothing. A button and a fetch rather than a form, this table also being rendered inside EasyAdmin's own edit form (see c975l/site-bundle's Page health check tab), where a nested <form> is invalid HTML #}
                     <td class="health-check-actions">
                         {% if result.id and (result.acknowledged or result.status in ['warning', 'error']) %}
-                            <button type="button" class="btn btn-sm btn-link health-check-acknowledge"
+                            <twig:ea:Button type="button" variant="link" size="sm" class="health-check-acknowledge"
+                                icon="fa {{ result.acknowledged ? 'fa-rotate-left' : 'fa-check' }}"
                                 data-action="health-check-table#acknowledge"
                                 data-health-check-acknowledge
                                 data-health-check-table-url-param="{{ path('management_health_check_acknowledge', {id: result.id}) }}"
-                                title="{{ (result.acknowledged ? 'label.health_check_acknowledge_undo' : 'label.health_check_acknowledge')|trans({}, 'config') }}">
-                                <i class="fa {{ result.acknowledged ? 'fa-rotate-left' : 'fa-check' }}"></i>
-                            </button>
+                                title="{{ (result.acknowledged ? 'label.health_check_acknowledge_undo' : 'label.health_check_acknowledge')|trans({}, 'config') }}" />
                         {% endif %}
                     </td>
                 </tr>

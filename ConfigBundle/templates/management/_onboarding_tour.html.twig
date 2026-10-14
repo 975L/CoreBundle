@@ -9,8 +9,8 @@
             close: 'label.onboarding_close'|trans({}, 'config'),
         }|json_encode }}"
     >
-        <button type="button" class="btn btn-secondary mb-3" data-action="click->onboarding-tour#start">
-            <i class="fa fa-route"></i> {{ 'label.onboarding_start'|trans({}, 'config') }}
-        </button>
+        <twig:ea:Button type="button" icon="fa fa-route" class="mb-3" data-action="click->onboarding-tour#start">
+            {{ 'label.onboarding_start'|trans({}, 'config') }}
+        </twig:ea:Button>
     </div>
 {% endif %}

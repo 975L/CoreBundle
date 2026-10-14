@@ -122,8 +122,7 @@ class SharedBlockCrudController extends AbstractCrudController
 
         // Lets the editor back out of a create/edit without saving, as on the other c975L screens
         $cancelAction = Action::new('cancel', $this->translator->trans('action.cancel', [], 'EasyAdminBundle'), 'fa fa-times')
-            ->linkToCrudAction(Action::INDEX)
-            ->addCssClass('btn btn-secondary');
+            ->linkToCrudAction(Action::INDEX);
 
         return $actions
             ->add(Crud::PAGE_NEW, $cancelAction)

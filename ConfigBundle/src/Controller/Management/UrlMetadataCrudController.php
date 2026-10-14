@@ -78,8 +78,7 @@ class UrlMetadataCrudController extends AbstractCrudController
     {
         // Lets the admin back out of an edit without saving - mirrors EasyAdmin's own built-in actions, same as RedirectCrudController does
         $cancelAction = Action::new('cancel', $this->translator->trans('action.cancel', [], 'EasyAdminBundle'), 'fa fa-times')
-            ->linkToCrudAction(Action::INDEX)
-            ->addCssClass('btn btn-secondary');
+            ->linkToCrudAction(Action::INDEX);
 
         return $actions
             ->add(Crud::PAGE_EDIT, $cancelAction)

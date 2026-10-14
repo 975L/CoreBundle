@@ -9,6 +9,6 @@
         <div class="mb-3">
             <input type="file" name="files[]" accept=".ttf,.woff,.woff2" multiple required class="form-control">
         </div>
-        <button type="submit" class="btn btn-primary">{{ ('action.font_bulk_import'|trans({}, 'ui')) }}</button>
+        <twig:ea:Button variant="primary">{{ ('action.font_bulk_import'|trans({}, 'ui')) }}</twig:ea:Button>
     </form>
 {% endblock main %}

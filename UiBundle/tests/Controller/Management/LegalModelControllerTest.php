@@ -205,7 +205,7 @@ class LegalModelControllerTest extends TestCase
         $template = (string) file_get_contents(\dirname(__DIR__, 3) . '/templates/management/legal_model_index.html.twig');
 
         $this->assertMatchesRegularExpression(
-            '/\{% if row\.known %\}\s*<a href="\{\{ path\(\'' . LegalModelController::CUSTOMIZE_ROUTE . '\'/',
+            '/\{% if row\.known %\}\s*<twig:ea:Button htmlElement="a" href="\{\{ path\(\'' . LegalModelController::CUSTOMIZE_ROUTE . '\'/',
             $template
         );
     }

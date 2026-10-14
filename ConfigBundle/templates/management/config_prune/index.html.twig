@@ -7,31 +7,31 @@
 
     {# Never offered for deletion: their bundle still declares them, this application just doesn't register it #}
     {% if unregistered is not empty %}
-        <div class="alert alert-info">
+        <twig:ea:Alert variant="info">
             {{ 'label.config_prune_unregistered'|trans({}, 'config') }}
             <ul>
                 {% for config in unregistered %}
                     <li>{{ config.slug }}</li>
                 {% endfor %}
             </ul>
-        </div>
+        </twig:ea:Alert>
     {% endif %}
 
     {% if not hasDeclarations %}
-        <div class="alert alert-danger">{{ 'label.config_prune_no_declaration'|trans({}, 'config') }}</div>
+        <twig:ea:Alert variant="danger">{{ 'label.config_prune_no_declaration'|trans({}, 'config') }}</twig:ea:Alert>
     {% elseif unreadableFiles is not empty %}
-        <div class="alert alert-danger">
+        <twig:ea:Alert variant="danger">
             {{ 'label.config_prune_unreadable'|trans({}, 'config') }}
             <ul>
                 {% for file in unreadableFiles %}
                     <li>{{ file }}</li>
                 {% endfor %}
             </ul>
-        </div>
+        </twig:ea:Alert>
     {% elseif orphans is empty %}
-        <div class="alert alert-success">{{ 'label.config_prune_none'|trans({}, 'config') }}</div>
+        <twig:ea:Alert variant="success">{{ 'label.config_prune_none'|trans({}, 'config') }}</twig:ea:Alert>
     {% else %}
-        <div class="alert alert-warning">{{ 'label.config_prune_irreversible'|trans({}, 'config') }}</div>
+        <twig:ea:Alert variant="warning">{{ 'label.config_prune_irreversible'|trans({}, 'config') }}</twig:ea:Alert>
 
         <form method="post" action="{{ path('management_config_prune_delete') }}">
             <input type="hidden" name="_token" value="{{ csrf_token('management_config_prune_delete') }}">
@@ -63,7 +63,7 @@
                 </tbody>
             </table>
 
-            <button type="submit" class="btn btn-danger" data-config-prune-delete>{{ 'action.config_prune_delete'|trans({}, 'config') }}</button>
+            <twig:ea:Button variant="danger" data-config-prune-delete>{{ 'action.config_prune_delete'|trans({}, 'config') }}</twig:ea:Button>
         </form>
     {% endif %}
 {% endblock main %}

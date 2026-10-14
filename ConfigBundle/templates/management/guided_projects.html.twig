@@ -12,9 +12,9 @@
             <ul class="list-unstyled">
                 {% for project in projects %}
                     <li class="mb-2">
-                        <button type="button" class="btn btn-sm btn-secondary" data-guided-project-slug="{{ project.slug }}">{{ 'label.guided_project_start'|trans({}, 'config') }}</button>
+                        <twig:ea:Button type="button" size="sm" data-guided-project-slug="{{ project.slug }}">{{ 'label.guided_project_start'|trans({}, 'config') }}</twig:ea:Button>
                         <strong>{{ project.label }}</strong>
-                        <span class="badge text-bg-success" data-guided-project-badge="{{ project.slug }}" hidden>{{ 'label.guided_project_done'|trans({}, 'config') }}</span>
+                        <twig:ea:Badge variant="success" data-guided-project-badge="{{ project.slug }}" hidden>{{ 'label.guided_project_done'|trans({}, 'config') }}</twig:ea:Badge>
                         {%- if project.description %} — <span class="text-muted small">{{ project.description }}</span>{% endif %}
                         {# A film of the site opens in this tab, as a click lets it start playing - a cold new tab gets its poster only #}
                         <a href="{{ project.film }}"{% if project.film starts with 'http' %} target="_blank" rel="noopener"{% endif %} class="small ms-1">{{ 'label.guided_project_film'|trans({}, 'config') }}</a>

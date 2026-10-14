@@ -27,7 +27,7 @@
                             {% if row.location %}
                                 {{ row.location.label }}
                                 {% if not row.location.published %}
-                                    <span class="badge badge-secondary">{{ ('label.not_published'|trans({}, 'ui')) }}</span>
+                                    <twig:ea:Badge>{{ ('label.not_published'|trans({}, 'ui')) }}</twig:ea:Badge>
                                 {% endif %}
                             {% else %}
                                 -
@@ -39,7 +39,7 @@
                         <td>{{ row.extra ?: '-' }}</td>
                         <td>
                             {% if row.drifted > 0 %}
-                                <span class="badge badge-info">{{ ('label.legal_drift_count'|trans({'%count%': row.drifted}, 'ui')) }}</span>
+                                <twig:ea:Badge variant="info">{{ ('label.legal_drift_count'|trans({'%count%': row.drifted}, 'ui')) }}</twig:ea:Badge>
                             {% else %}
                                 -
                             {% endif %}
@@ -47,11 +47,11 @@
                         <td class="text-nowrap">
                             {# A block whose model this bundle no longer ships has nothing to customize: the screen 404s on it, so it is named as such rather than linked #}
                             {% if row.known %}
-                                <a href="{{ path('management_ui_legal_model_customize', {block: row.block.id}) }}" class="btn btn-sm btn-outline-primary" data-legal-model-customize>
+                                <twig:ea:Button htmlElement="a" href="{{ path('management_ui_legal_model_customize', {block: row.block.id}) }}" variant="outline-primary" size="sm" data-legal-model-customize>
                                     {{ ('label.legal_customize'|trans({}, 'ui')) }}
-                                </a>
+                                </twig:ea:Button>
                             {% else %}
-                                <span class="badge badge-warning">{{ ('label.legal_model_unknown'|trans({}, 'ui')) }}</span>
+                                <twig:ea:Badge variant="warning">{{ ('label.legal_model_unknown'|trans({}, 'ui')) }}</twig:ea:Badge>
                             {% endif %}
                         </td>
                     </tr>

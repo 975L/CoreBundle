@@ -342,8 +342,7 @@ class FormCrudController extends AbstractCrudController
 
         // Lets the admin back out of a create/edit without saving - mirrors EasyAdmin's own built-in actions (linkToCrudAction targeting INDEX, same as Action::INDEX itself)
         $cancelAction = Action::new('cancel', $this->translator->trans('action.cancel', [], 'EasyAdminBundle'), 'fa fa-times')
-            ->linkToCrudAction(Action::INDEX)
-            ->addCssClass('btn btn-secondary');
+            ->linkToCrudAction(Action::INDEX);
 
         // Same "export selection" as PageCrudController::exportSelection() - a calculator is built and checked on one environment and read on another, and its formulas are the one kind of content no deployment carries
         $exportAction = Action::new('exportSelection', t('action.export_selection', [], 'ui'), 'fa fa-file-export')

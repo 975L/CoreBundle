@@ -66,9 +66,11 @@ export default class extends Controller {
 
         document.querySelectorAll('[data-guided-project-list] [data-guided-project-slug]').forEach((button) => {
             const slug = button.dataset.guidedProjectSlug;
-            if (state.active?.slug === slug) button.textContent = labels.resume;
-            else if (done.includes(slug)) button.textContent = labels.replay;
-            else button.textContent = labels.start;
+            // Written into EasyAdmin's label span when there is one, so the button keeps its own markup
+            const label = button.querySelector('.btn-label') ?? button;
+            if (state.active?.slug === slug) label.textContent = labels.resume;
+            else if (done.includes(slug)) label.textContent = labels.replay;
+            else label.textContent = labels.start;
         });
 
         document.querySelectorAll('[data-guided-project-list] [data-guided-project-badge]').forEach((badge) => {

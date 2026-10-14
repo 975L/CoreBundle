@@ -8,16 +8,16 @@
         <div class="d-flex justify-content-center gap-2">
             {{ include('@c975LConfig/management/_onboarding_tour.html.twig', { steps: onboardingSteps }) }}
             {% if hasGuidedProjects %}
-                <a href="{{ path('management_guided_projects_index') }}" class="btn btn-secondary mb-3">
-                    <i class="fa fa-list-check"></i> {{ 'label.guided_projects'|trans({}, 'config') }}
-                </a>
+                <twig:ea:Button htmlElement="a" href="{{ path('management_guided_projects_index') }}" icon="fa fa-list-check" class="mb-3">
+                    {{ 'label.guided_projects'|trans({}, 'config') }}
+                </twig:ea:Button>
             {% endif %}
-            <a href="{{ constant('c975L\\ConfigBundle\\Management\\EcosystemUrls::TUTORIALS') }}" target="_blank" rel="noopener" class="btn btn-secondary mb-3" title="{{ 'label.tutorials_help'|trans({}, 'config') }}">
-                <i class="fa fa-film"></i> {{ 'label.tutorials'|trans({}, 'config') }}
-            </a>
-            <a href="{{ constant('c975L\\ConfigBundle\\Management\\EcosystemUrls::BLOCK_SHOWCASE') }}" target="_blank" rel="noopener" class="btn btn-secondary mb-3" title="{{ 'label.block_showcase_help'|trans({}, 'config') }}">
-                <i class="fa fa-shapes"></i> {{ 'label.block_showcase'|trans({}, 'config') }}
-            </a>
+            <twig:ea:Button htmlElement="a" href="{{ constant('c975L\\ConfigBundle\\Management\\EcosystemUrls::TUTORIALS') }}" target="_blank" rel="noopener" icon="fa fa-film" class="mb-3" title="{{ 'label.tutorials_help'|trans({}, 'config') }}">
+                {{ 'label.tutorials'|trans({}, 'config') }}
+            </twig:ea:Button>
+            <twig:ea:Button htmlElement="a" href="{{ constant('c975L\\ConfigBundle\\Management\\EcosystemUrls::BLOCK_SHOWCASE') }}" target="_blank" rel="noopener" icon="fa fa-shapes" class="mb-3" title="{{ 'label.block_showcase_help'|trans({}, 'config') }}">
+                {{ 'label.block_showcase'|trans({}, 'config') }}
+            </twig:ea:Button>
         </div>
     </section>
 

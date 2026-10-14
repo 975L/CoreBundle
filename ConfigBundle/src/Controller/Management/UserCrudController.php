@@ -179,16 +179,14 @@ class UserCrudController extends AbstractCrudController
 
         // Lets the admin back out of an edit without saving - mirrors EasyAdmin's own built-in actions (linkToCrudAction targeting INDEX, same as Action::INDEX itself)
         $cancelAction = Action::new('cancel', $this->translator->trans('action.cancel', [], 'EasyAdminBundle'), 'fa fa-times')
-            ->linkToCrudAction(Action::INDEX)
-            ->addCssClass('btn btn-secondary');
+            ->linkToCrudAction(Action::INDEX);
 
         // Erases an account by hand (a bounced address, an erasure asked by email), exactly as its owner or c975l:config:users-cleanup would - built as a url rather than linked to the crud action, so the csrf token the action checks travels with it
         $anonymizeAction = Action::new('anonymize', t('action.anonymize', [], 'config'), 'fa fa-user-slash')
             ->linkToUrl(fn (object $user): string => $this->anonymizeUrl($user))
             ->displayIf(fn (object $user): bool => $this->isAnonymizable($user))
             ->askConfirmation(t('confirm.anonymize', [], 'config'))
-            ->asDangerAction()
-            ->addCssClass('btn btn-danger');
+            ->asDangerAction();
 
         return $actions
             ->disable(Action::NEW)

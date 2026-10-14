@@ -1,6 +1,6 @@
 ---
 name: c975l-management
-description: "Use this skill when a bundle or an application has to add anything to the /management dashboard of a c975L site — a menu entry, an alert, a shortcut, a widget, a page overlay, a guided project, a what's new note, an importmap entry, an admin procedure, an export or an import, a linkable route. Lists every contribution interface, the one wiring rule that makes them work, and the test that proves their targets still exist. Triggers on: MenuProviderInterface, FeedProviderInterface, getMenuSection, section icon, internal link, leavesTheAdmin, AlertProviderInterface, ShortcutProviderInterface, DashboardWidgetProviderInterface, PageOverlayProviderInterface, page overlay, GuidedProjectProviderInterface, WhatsNewProviderInterface, ImportmapProviderInterface, ProcedureProviderInterface, ExportProviderInterface, ImportProviderInterface, LinkableRouteProviderInterface, LinkableRouteCacheTagsInterface, getLinkableRouteCacheTags, LinkableRouteRegistry, cacheTags, EssentialActionProviderInterface, narration, highlight selector, creatable, UnusedFeatureBuilder, guided-project parameter, EcosystemUrls, guided project film, TutorialFilmUrlProviderInterface, getFilmUrl, management_guided_projects_index, guided projects page, BackOfficeAccessVoter, TaggedInterfacePass, TableExporter, ManagementTargetsTestCase, EasyAdmin dashboard, AbstractDashboardController, configureMenuItems, DashboardController, whatsnew.json."
+description: "Use this skill when a bundle or an application has to add anything to the /management dashboard of a c975L site — a menu entry, an alert, a shortcut, a widget, a page overlay, a guided project, a what's new note, an importmap entry, an admin procedure, an export or an import, a linkable route. Lists every contribution interface, the one wiring rule that makes them work, and the test that proves their targets still exist. Triggers on: twig:ea:Button, twig:ea:Alert, twig:ea:Badge, MenuProviderInterface, FeedProviderInterface, getMenuSection, section icon, internal link, leavesTheAdmin, AlertProviderInterface, ShortcutProviderInterface, DashboardWidgetProviderInterface, PageOverlayProviderInterface, page overlay, GuidedProjectProviderInterface, WhatsNewProviderInterface, ImportmapProviderInterface, ProcedureProviderInterface, ExportProviderInterface, ImportProviderInterface, LinkableRouteProviderInterface, LinkableRouteCacheTagsInterface, getLinkableRouteCacheTags, LinkableRouteRegistry, cacheTags, EssentialActionProviderInterface, narration, highlight selector, creatable, UnusedFeatureBuilder, guided-project parameter, EcosystemUrls, guided project film, TutorialFilmUrlProviderInterface, getFilmUrl, management_guided_projects_index, guided projects page, BackOfficeAccessVoter, TaggedInterfacePass, TableExporter, ManagementTargetsTestCase, EasyAdmin dashboard, AbstractDashboardController, configureMenuItems, DashboardController, whatsnew.json."
 ---
 
 # c975L ConfigBundle — contributing to /management
@@ -108,7 +108,7 @@ Two nuances that get lost:
   works too (UiBundle's Donovan renders one when an answer cites a parcours). The list has a page of its
   own, `management_guided_projects_index` (`/management/guided-projects`), one section per bundle named
   off the provider's namespace, the application's own under the site's name; only its buttons are
-  relabelled "Start"/"Resume"/"Replay". From outside the back office,
+  relabelled "Start"/"Resume"/"Replay", inside their `.btn-label` span when they carry one. From outside the back office,
   `/management?guided-project=<slug>` starts it once the page has loaded.
 - Each guided project carries a `film` url, `EcosystemUrls::TUTORIAL_FILM` followed by its slug,
   linked as "Watch the film" in the projects' list and beside Donovan's citation; nothing checks
@@ -214,4 +214,6 @@ and the container compilation of every production site breaks otherwise.
   swallows it. Pages sit at the root; only POST actions may live under `/config/`.
 - **Do not point a step's `highlight` at a structure rather than at a marker**, and do not keep a step
   whose action the screen may not draw — both light up nothing, which is what a guided tour must never do.
+- **Do not hand-write a back-office button, alert or badge** — use EasyAdmin's `<twig:ea:Button>`,
+  `<twig:ea:Alert>` and `<twig:ea:Badge>`, and add no `btn` classes to a custom `Action`.
 - **Do not leave a `TestCase` subclass inside a scanned `src/`.**

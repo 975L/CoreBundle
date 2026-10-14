@@ -10,6 +10,6 @@
         <div class="form-group">
             <input type="file" name="export" accept="application/zip,.zip" required data-content-import-file>
         </div>
-        <button type="submit" class="btn btn-primary" data-content-import-submit>{{ 'action.content_import'|trans({}, 'config') }}</button>
+        <twig:ea:Button variant="primary" data-content-import-submit>{{ 'action.content_import'|trans({}, 'config') }}</twig:ea:Button>
     </form>
 {% endblock main %}

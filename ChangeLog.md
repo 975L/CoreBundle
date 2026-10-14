@@ -1,5 +1,25 @@
 # ChangeLog
 
+## v1.67.2
+
+Drew the back office with EasyAdmin 5.7 Twig components
+
+- Requires `easycorp/easyadmin-bundle` ^5.7 (14/10/2026)
+
+### ConfigBundle
+
+- Back-office screens drawn with EasyAdmin Twig components (14/10/2026)
+- Custom actions no longer add the `btn` classes EasyAdmin already sets (14/10/2026)
+- Updated the skill (14/10/2026)
+
+### UiBundle
+
+- Back-office screens drawn with EasyAdmin Twig components (14/10/2026)
+- Custom actions no longer add the `btn` classes EasyAdmin already sets (14/10/2026)
+- `ea()` in place of the removed `ea` global in the media library (14/10/2026)
+- The title stands in for a missing `VideoObject` description (14/10/2026)
+- Updated the readme and the skills (14/10/2026)
+
 ## v1.67.1
 
 Let a provider call send images along with the prompt

@@ -8,9 +8,9 @@
         <div class="mb-3 d-flex flex-wrap gap-2 align-items-center">
             <span>{{ ('label.create_site_graphic'|trans({}, 'ui')) }}</span>
             {% for missing in missing_roles %}
-                <a href="{{ missing.url }}" class="btn btn-secondary">
-                    <i class="fa fa-plus"></i> {{ missing.label }}
-                </a>
+                <twig:ea:Button htmlElement="a" href="{{ missing.url }}" icon="fa fa-plus">
+                    {{ missing.label }}
+                </twig:ea:Button>
             {% endfor %}
         </div>
     {% endif %}

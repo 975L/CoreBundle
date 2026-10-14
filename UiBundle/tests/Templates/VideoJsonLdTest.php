@@ -37,6 +37,15 @@ class VideoJsonLdTest extends TestCase
         $this->assertStringNotContainsString('json_encode', $template);
     }
 
+    // Search Console flags a VideoObject with no description: the title stands in for it, on an uploaded video as on an embedded one
+    public function testTheTitleStandsInForAMissingDescription(): void
+    {
+        $fallback = "'description': (description|default('') ?: title)|json_ld_text,";
+
+        $this->assertStringContainsString($fallback, $this->read());
+        $this->assertStringContainsString($fallback, (string) file_get_contents(\dirname(__DIR__, 2) . '/templates/blocks/VideoIframe.html.twig'));
+    }
+
     private function read(): string
     {
         $path = \dirname(__DIR__, 2) . '/' . self::TEMPLATE;

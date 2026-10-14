@@ -340,8 +340,8 @@ class GuidedProjectBehaviourTest extends JsCase
             '<div data-controller="guided-project" data-guided-project-key-value="tester" data-guided-project-url-value="/management/guided-project/__SLUG__" data-guided-project-labels-value="%s"></div>
             <div data-guided-project-list>
                 <ul>
-                    <li><button type="button" data-guided-project-slug="pages">Commencer</button><span data-guided-project-badge="pages" hidden>Fait</span></li>
-                    <li><button type="button" data-guided-project-slug="menu">Commencer</button><span data-guided-project-badge="menu" hidden>Fait</span></li>
+                    <li><button type="button" data-guided-project-slug="pages"><span class="btn-label">Commencer</span></button><span data-guided-project-badge="pages" hidden>Fait</span></li>
+                    <li><button type="button" data-guided-project-slug="menu"><span class="btn-label">Commencer</span></button><span data-guided-project-badge="menu" hidden>Fait</span></li>
                 </ul>
             </div>
             <a id="cible" href="/management/page">La liste</a>',

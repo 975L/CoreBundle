@@ -62,7 +62,12 @@ export default class extends Controller {
         button.type = "button";
         button.className = "btn btn-sm btn-outline-danger";
         button.dataset.action = "legal-model#remove";
-        button.textContent = this.removeLabelValue;
+
+        // Same inner span as EasyAdmin's Button component renders on the stored sections
+        const label = document.createElement("span");
+        label.className = "btn-label";
+        label.textContent = this.removeLabelValue;
+        button.appendChild(label);
 
         return button;
     }

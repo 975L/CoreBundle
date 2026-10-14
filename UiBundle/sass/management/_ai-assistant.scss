@@ -73,8 +73,9 @@
     color: var(--bs-primary, #0d6efd);
 }
 
-// The shortcut, read by a keyboard user and hidden on a phone, which has none
+// The shortcut, read by a keyboard user and hidden on a phone, which has none. Its own margin, sitting inside EasyAdmin's label span where the trigger's gap no longer reaches
 .ai-assistant-trigger__shortcut {
+    margin-inline-start: .4rem;
     font-size: .7em;
     padding: 0 .3em;
     color: inherit;

@@ -369,7 +369,7 @@ language tabs (`ContentLocaleScreen`, blocks only, neither add nor delete) and b
 ## The video blocks' graph
 
 `video` and `video_iframe` publish a `VideoObject` only with a title, a cover and an upload date —
-never a date made up. A `video` is dated by its file; a `video_iframe` by its `uploadDate` field, which
+never a date made up, and with the title standing in for a missing description. A `video` is dated by its file; a `video_iframe` by its `uploadDate` field, which
 `c975l:ui:video-upload-dates` fills from YouTube, Vimeo or Dailymotion (`VideoUploadDateFetcher`), its
 `embedUrl` being the player's (`privacy_embed_url`).
 

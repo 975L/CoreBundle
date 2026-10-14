@@ -197,6 +197,7 @@
 }
 
 .ai-assistant-trigger__shortcut {
+  margin-inline-start: 0.4rem;
   font-size: 0.7em;
   padding: 0 0.3em;
   color: inherit;
