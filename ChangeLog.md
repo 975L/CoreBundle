@@ -1,5 +1,14 @@
 # ChangeLog
 
+## v1.69.1
+
+Added a shared cancel action for the Management CRUD controllers
+
+### ConfigBundle
+
+- Added `EasyAdminActionHelper::cancel()`, linking back to the index (15/10/2026)
+- Updated the management skill (15/10/2026)
+
 ## v1.69
 
 Added an image field to the form builder

@@ -37,4 +37,14 @@ class EasyAdminActionHelperTest extends TestCase
 
         $this->assertSame(['target' => '_blank', 'title' => 'Preview'], $result->getAsDto()->getHtmlAttributes());
     }
+
+    public function testCancelLinksBackToTheIndex(): void
+    {
+        $dto = EasyAdminActionHelper::cancel('Cancel')->getAsDto();
+
+        $this->assertSame('cancel', $dto->getName());
+        $this->assertSame('Cancel', $dto->getLabel());
+        $this->assertSame('fa fa-times', $dto->getIcon());
+        $this->assertSame(Action::INDEX, $dto->getCrudActionName());
+    }
 }
