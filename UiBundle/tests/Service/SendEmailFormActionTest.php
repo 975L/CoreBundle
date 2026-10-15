@@ -21,6 +21,7 @@ use c975L\UiBundle\Service\EmailTemplateRenderer;
 use c975L\UiBundle\Service\ExpressionEvaluator;
 use c975L\UiBundle\Service\SendEmailFormAction;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class SendEmailFormActionTest extends TestCase
@@ -134,6 +135,33 @@ class SendEmailFormActionTest extends TestCase
         $this->createAction($emailService)->handle($form, ['logo' => true, 'photos' => false]);
 
         $this->assertSame(['Logo' => 'label.yes', 'Photos' => 'label.no'], $captured->context['fields']);
+    }
+
+    // Photos sent through the form travel with the message, the table naming them
+    public function testHandleAttachesThePhotosOfAnImageField(): void
+    {
+        $captured = null;
+        $emailService = $this->createStub(EmailService::class);
+        $emailService->method('send')->willReturnCallback(function (EmailSendRequest $request) use (&$captured): bool {
+            $captured = $request;
+
+            return true;
+        });
+
+        $path = tempnam(sys_get_temp_dir(), 'photo');
+        file_put_contents($path, 'bytes');
+        $photo = new UploadedFile($path, 'plaque.jpg', 'image/jpeg', null, true);
+
+        $form = new Form()->setName('contact');
+        $form->addField(new FormField()->setName('photos')->setLabel('Photos')->setType(FormField::TYPE_IMAGE)->setMaxValue(3));
+
+        $this->createAction($emailService)->handle($form, ['photos' => [$photo]]);
+        unlink($path);
+
+        $this->assertSame(['Photos' => 'plaque.jpg'], $captured->context['fields']);
+        $this->assertCount(1, $captured->attachments);
+        $this->assertSame('plaque.jpg', $captured->attachments[0]->filename);
+        $this->assertSame('bytes', $captured->attachments[0]->content);
     }
 
     // The email names a field the way the page did, price included

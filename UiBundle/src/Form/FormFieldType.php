@@ -75,6 +75,7 @@ class FormFieldType extends AbstractType
             ])
             ->add('maxValue', NumberType::class, [
                 'label' => 'label.field_max',
+                'help' => 'label.field_max_help',
                 'required' => false,
                 'html5' => true,
                 'scale' => 4,
@@ -150,6 +151,7 @@ class FormFieldType extends AbstractType
             'label.field_type_date' => FormField::TYPE_DATE,
             'label.field_type_range' => FormField::TYPE_RANGE,
             'label.field_type_choice' => FormField::TYPE_CHOICE,
+            'label.field_type_image' => FormField::TYPE_IMAGE,
         ];
     }
 

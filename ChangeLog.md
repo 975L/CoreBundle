@@ -1,5 +1,16 @@
 # ChangeLog
 
+## v1.69
+
+Added an image field to the form builder
+
+### UiBundle
+
+- Added `FormField::TYPE_IMAGE`, taking up to `maxValue` photos (14/10/2026)
+- `SendEmailFormAction` names the photos in its table and attaches them (14/10/2026)
+- Added the `label.field_type_image` and `label.field_max_help` translations (14/10/2026)
+- Updated the readme and the skill (15/10/2026)
+
 ## v1.68
 
 Added a public page explaining how to delete one's account

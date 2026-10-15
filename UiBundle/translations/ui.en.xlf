@@ -2206,6 +2206,10 @@
                 <source>label.field_max</source>
                 <target>Maximum value</target>
             </trans-unit>
+            <trans-unit id="0IDePqC">
+                <source>label.field_max_help</source>
+                <target>For an Image(s) field: how many photos it takes (one when empty)</target>
+            </trans-unit>
             <trans-unit id="5SHbmeR">
                 <source>label.field_min</source>
                 <target>Minimum value</target>
@@ -2265,6 +2269,10 @@
             <trans-unit id="t1joywv">
                 <source>label.field_type_email</source>
                 <target>Email</target>
+            </trans-unit>
+            <trans-unit id="2J1wfuA">
+                <source>label.field_type_image</source>
+                <target>Image(s)</target>
             </trans-unit>
             <trans-unit id="QAHrzzP">
                 <source>label.field_type_number</source>

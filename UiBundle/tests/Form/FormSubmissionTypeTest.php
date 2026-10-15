@@ -25,6 +25,7 @@ use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\RangeType;
@@ -33,16 +34,23 @@ use Symfony\Component\Form\Extension\Core\Type\TelType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\UrlType;
+use Symfony\Component\Form\Extension\HttpFoundation\HttpFoundationExtension;
+use Symfony\Component\Form\Extension\Validator\ValidatorExtension;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Forms;
 use Symfony\Component\Form\PreloadedExtension;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
+use Symfony\Component\Validator\Constraints\All;
+use Symfony\Component\Validator\Constraints\Count;
 use Symfony\Component\Validator\Constraints\Email;
+use Symfony\Component\Validator\Constraints\Image;
 use Symfony\Component\Validator\Constraints\IsTrue;
 use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Validation;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -131,6 +139,51 @@ class FormSubmissionTypeTest extends TestCase
 
         $this->assertSame('Name', $added['name']['options']['label']);
         $this->assertSame('Your name', $added['name']['options']['attr']['placeholder']);
+    }
+
+    // A single photo is one file input weighed as an image, the browser offering only the types the server takes
+    public function testAnImageFieldTakesOnePhotoByDefault(): void
+    {
+        $added = $this->buildAddedFields([$this->buildField('photo', FormField::TYPE_IMAGE, true)]);
+        $options = $added['photo']['options'];
+
+        $this->assertSame(FileType::class, $added['photo']['type']);
+        $this->assertFalse($options['multiple']);
+        $this->assertSame('image/jpeg,image/png,image/webp', $options['attr']['accept']);
+        $this->assertInstanceOf(NotBlank::class, $options['constraints'][0]);
+        $this->assertInstanceOf(Image::class, $options['constraints'][1]);
+    }
+
+    // Its maximum set above one, the field takes several photos, each weighed alone and never more than the maximum
+    public function testAnImageFieldTakesAsManyPhotosAsItsMaximum(): void
+    {
+        $field = $this->buildField('photos', FormField::TYPE_IMAGE, false)->setMaxValue(10);
+        $options = $this->buildAddedFields([$field])['photos']['options'];
+
+        $this->assertTrue($options['multiple']);
+        $this->assertInstanceOf(Count::class, $options['constraints'][0]);
+        $this->assertSame(10, $options['constraints'][0]->max);
+        $this->assertInstanceOf(All::class, $options['constraints'][1]);
+        $this->assertInstanceOf(Image::class, $options['constraints'][1]->constraints[0]);
+    }
+
+    // The photos reach the action as they were sent, FormController handing it nothing but the form's own data
+    public function testTheSentPhotosReachTheSubmittedData(): void
+    {
+        $path = tempnam(sys_get_temp_dir(), 'photo');
+        $photo = new UploadedFile($path, 'plaque.jpg', 'image/jpeg', null, true);
+        $field = $this->buildField('photos', FormField::TYPE_IMAGE, false)->setMaxValue(10);
+
+        $form = Forms::createFormFactoryBuilder()
+            ->addExtension(new PreloadedExtension([$this->createType()], []))
+            ->addExtension(new ValidatorExtension(Validation::createValidator()))
+            ->addExtension(new HttpFoundationExtension())
+            ->getFormFactory()
+            ->create(FormSubmissionType::class, null, ['fields' => [$field], 'protections' => false]);
+        $form->submit(['photos' => [$photo]]);
+        unlink($path);
+
+        $this->assertSame([$photo], $form->getData()['photos']);
     }
 
     public function testEachFieldTypeMapsToItsSymfonyFormType(): void

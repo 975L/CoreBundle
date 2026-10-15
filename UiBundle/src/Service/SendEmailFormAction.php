@@ -14,8 +14,10 @@ use c975L\UiBundle\Contract\FormActionInterface;
 use c975L\UiBundle\Entity\Form;
 use c975L\UiBundle\Entity\FormField;
 use c975L\UiBundle\Form\FormSubmissionType;
+use c975L\UiBundle\Model\EmailAttachment;
 use c975L\UiBundle\Model\EmailSendRequest;
 use c975L\UiBundle\Repository\EmailTemplateRepository;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 // Built-in FormActionInterface provider (key "send_email"), so a Form built entirely through the admin - no custom bundle/code - can still notify someone by email on submit. Configured via Form::$actionConfig: "to"/"toName"/"from"/"fromName"/"replyTo"/"replyToName"/"subject" (all optional, EmailService/ConfigService fill in the rest), "senderEmailField" (name of the submitted field holding the visitor's own email, used as replyTo) and "offerReceiveCopy" (shows a "receive a copy" checkbox, see FormSubmissionType - the visitor's own answer, not a fixed admin choice, decides whether a copy is actually sent). The email body is either "emailTemplate" (the name of an EmailTemplate, rendered by EmailTemplateRenderer with the submitted fields available to a TYPE_FIELDS_TABLE block - see UiBundle Readme) or, failing that/its lookup, the legacy "template" Twig path (defaults to DEFAULT_TEMPLATE)
@@ -66,6 +68,7 @@ class SendEmailFormAction implements FormActionInterface
             copyToEmail: (!empty($submittedData['receiveCopy']) && null !== $senderEmail) ? $senderEmail : null,
             // The default body in the site's layout; a "template" of the site's own stays the whole document it always was
             wrapLayout: null === $html && !isset($config['template']),
+            attachments: $this->attachments($form, $submittedData),
         );
 
         return $this->emailService->send($request);
@@ -144,11 +147,39 @@ class SendEmailFormAction implements FormActionInterface
         return $pairs;
     }
 
+    // The photos of every TYPE_IMAGE field, travelling with the message since nothing else keeps them once the request is over
+    private function attachments(Form $form, array $submittedData): array
+    {
+        $attachments = [];
+        foreach ($form->getFields() as $field) {
+            if (FormField::TYPE_IMAGE !== $field->getType()) {
+                continue;
+            }
+            foreach ($this->uploadedFiles($submittedData[$field->getName()] ?? null) as $file) {
+                $attachments[] = new EmailAttachment($file->getClientOriginalName(), (string) file_get_contents($file->getPathname()), (string) $file->getMimeType());
+            }
+        }
+
+        return $attachments;
+    }
+
+    // A TYPE_IMAGE value as a list, whether the field takes one photo or several
+    /** @return UploadedFile[] */
+    private function uploadedFiles(mixed $value): array
+    {
+        return array_values(array_filter(is_array($value) ? $value : [$value], static fn (mixed $file): bool => $file instanceof UploadedFile));
+    }
+
     // A choice's submitted value is what a formula reads, its label what the visitor picked - the value itself when no option matches it any more. A checkbox reads as a translated yes/no rather than a bare 1 or nothing
     private function readableValue(FormField $field, mixed $value): mixed
     {
         if (FormField::TYPE_CHECKBOX === $field->getType()) {
             return $this->translator->trans(filter_var($value, FILTER_VALIDATE_BOOLEAN) ? 'label.yes' : 'label.no', [], 'ui');
+        }
+
+        // Photos read by their names, the files themselves being attached (see attachments())
+        if (FormField::TYPE_IMAGE === $field->getType()) {
+            return implode(', ', array_map(static fn (UploadedFile $file): string => $file->getClientOriginalName(), $this->uploadedFiles($value)));
         }
 
         if (FormField::TYPE_CHOICE !== $field->getType() || null === $value) {

@@ -35,6 +35,14 @@ class FormField implements \Stringable
     public const TYPE_DATE = 'date';
     public const TYPE_RANGE = 'range';
     public const TYPE_CHOICE = 'choice';
+    // Photos sent with the form, "maxValue" saying how many at most (one when unset) - see FormSubmissionType for what is accepted
+    public const TYPE_IMAGE = 'image';
+
+    // The image types a TYPE_IMAGE field accepts, read alike by the browser's file picker and by the server
+    public const IMAGE_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+
+    // The weight of each image a TYPE_IMAGE field accepts, a phone's photo staying well under it
+    public const IMAGE_MAX_SIZE = '20M';
 
     // Types carrying a numeric value, hence usable as a variable in a FormOutput expression - see ExpressionEvaluator/CalculatorController. A checkbox reads 1 when ticked and 0 otherwise, a yes/no switch where a two-option choice used to stand
     public const NUMERIC_TYPES = [
@@ -57,6 +65,7 @@ class FormField implements \Stringable
         self::TYPE_DATE,
         self::TYPE_RANGE,
         self::TYPE_CHOICE,
+        self::TYPE_IMAGE,
     ];
 
     #[ORM\Id]
@@ -97,7 +106,7 @@ class FormField implements \Stringable
     #[ORM\Column(options: ['default' => false])]
     private bool $restricted = false;
 
-    // Bounds and increment of a number/range field, ignored by every other type - a range with no min/max would render a slider going nowhere, so FormSubmissionType falls back to 0/100 rather than emitting a broken input
+    // Bounds and increment of a number/range field, "maxValue" being also how many photos a TYPE_IMAGE field takes, ignored by every other type - a range with no min/max would render a slider going nowhere, so FormSubmissionType falls back to 0/100 rather than emitting a broken input
     #[ORM\Column(nullable: true)]
     private ?float $minValue = null;
 
@@ -354,6 +363,12 @@ class FormField implements \Stringable
         }
 
         return $this->setOptions($options);
+    }
+
+    // How many images a TYPE_IMAGE field takes at most, one unless the admin set more
+    public function getMaxFiles(): int
+    {
+        return max(1, (int) $this->maxValue);
     }
 
     // Whether this field's submitted value can feed a FormOutput expression

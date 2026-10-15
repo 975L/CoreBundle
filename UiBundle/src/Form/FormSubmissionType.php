@@ -22,6 +22,7 @@ use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\RangeType;
@@ -33,7 +34,10 @@ use Symfony\Component\Form\Extension\Core\Type\UrlType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\All;
+use Symfony\Component\Validator\Constraints\Count;
 use Symfony\Component\Validator\Constraints\Email;
+use Symfony\Component\Validator\Constraints\Image;
 use Symfony\Component\Validator\Constraints\IsTrue;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -132,6 +136,12 @@ class FormSubmissionType extends AbstractType
             $constraints[] = new DnsEmail();
         }
 
+        // Each image weighed and typed by the server, the browser's "accept" being only a hint, and never more of them than the field takes
+        if (FormField::TYPE_IMAGE === $field->getType()) {
+            $image = new Image(maxSize: FormField::IMAGE_MAX_SIZE, mimeTypes: FormField::IMAGE_MIME_TYPES);
+            $constraints = [...$constraints, ...($field->getMaxFiles() > 1 ? [new Count(max: $field->getMaxFiles()), new All([$image])] : [$image])];
+        }
+
         return $constraints;
     }
 
@@ -179,6 +189,12 @@ class FormSubmissionType extends AbstractType
                 $fieldOptions['choices'][$this->priceFormatter->optionLabel($field, (string) $option['label'], (string) $option['value'], $this->translator->getLocale())] = $option['value'];
             }
             $fieldOptions['placeholder'] = false;
+        }
+
+        // Several photos at once when the field takes more than one - no "capture" attribute, which opens the camera for a single shot where a phone otherwise offers the camera and the gallery alike
+        if (FormField::TYPE_IMAGE === $field->getType()) {
+            $fieldOptions['multiple'] = $field->getMaxFiles() > 1;
+            $fieldOptions['attr']['accept'] = implode(',', FormField::IMAGE_MIME_TYPES);
         }
 
         // A single HTML5 date input, not Symfony's default 3-select widget
@@ -268,6 +284,7 @@ class FormSubmissionType extends AbstractType
             FormField::TYPE_DATE => DateType::class,
             FormField::TYPE_RANGE => RangeType::class,
             FormField::TYPE_CHOICE => ChoiceType::class,
+            FormField::TYPE_IMAGE => FileType::class,
             default => TextType::class,
         };
     }
