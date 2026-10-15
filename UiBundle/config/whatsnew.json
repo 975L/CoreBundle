@@ -1,5 +1,15 @@
 [
     {
+        "date": "2026-10-15",
+        "description": [
+            {
+                "en": "Slider images can now be enlarged over the page with a click, in high resolution when one exists.",
+                "fr": "Les images d'un diaporama peuvent désormais s'agrandir d'un clic par-dessus la page, en haute résolution quand elle existe.",
+                "es": "Las imágenes de un carrusel ahora pueden ampliarse con un clic sobre la página, en alta resolución cuando existe."
+            }
+        ]
+    },
+    {
         "date": "2026-10-14",
         "description": [
             {

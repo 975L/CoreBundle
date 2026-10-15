@@ -90,8 +90,8 @@ class DrawableMediaInterfaceTest extends TestCase
         $template = __DIR__ . '/../../templates/components/' . $component;
         $this->assertFileExists($template, 'A component this contract answers for has moved or is gone, and the guard would pass by reading nothing.');
 
-        // "media.x" and "slide.image.x", the two names a media reaches these templates under
-        preg_match_all('/(?:\bmedia|\bslide\.image)\.([a-zA-Z]+)/', (string) file_get_contents($template), $matches);
+        // "media.x" and "slide.image.x", the two names a media reaches these templates under - a "media.x is defined" probe (the slider's zoom asking for VichMultiSizeImageInterface) reads what another contract declares, not this one
+        preg_match_all('/(?:\bmedia|\bslide\.image)\.([a-zA-Z]+)\b(?! is defined)/', (string) file_get_contents($template), $matches);
 
         return array_values(array_unique($matches[1]));
     }

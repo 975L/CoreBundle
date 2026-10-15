@@ -10,6 +10,7 @@
 
 namespace c975L\UiBundle\Tests\Templates;
 
+use c975L\UiBundle\Twig\BoolExtension;
 use PHPUnit\Framework\TestCase;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
@@ -95,6 +96,7 @@ class SliderSingleMediaCreditsTest extends TestCase
     {
         $twig = new Environment(new FilesystemLoader(dirname(__DIR__, 2) . '/templates'));
         $twig->addFilter(new TwigFilter('trans', static fn (?string $key): string => (string) $key));
+        $twig->addFilter(new TwigFilter('to_bool', new BoolExtension()->toBool(...)));
         $twig->addFunction(new TwigFunction('vich_uploader_asset', static fn (mixed $value): string => '/medias/insigne.webp'));
         $twig->addFunction(new TwigFunction('asset', static fn (string $path): string => '/' . $path));
 

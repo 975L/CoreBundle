@@ -2119,7 +2119,7 @@ Block templates are thin adapters around a set of Symfony UX Twig components liv
 | `<twig:c975LUi:Image:Icon>` | Small icon image |
 | `<twig:c975LUi:Image:Image>` | Responsive image |
 | `<twig:c975LUi:Image:Link>` | Image wrapped in a link |
-| `<twig:c975LUi:Image:Zoom>` | Image whose high resolution opens over the page |
+| `<twig:c975LUi:Image:Zoom>` | Image whose high resolution opens over the page, falling back on the shown file when the `-highres.webp` is missing on disk; `linkClass` adds a class to its link |
 | `<twig:c975LUi:Portfolio:Grid>` | Grid of project cards sourced from a block's own medias |
 | `<twig:c975LUi:Process:Steps>` | Section title followed by numbered steps |
 | `<twig:c975LUi:Progress:Bar>` | Progress bar |
@@ -2128,7 +2128,7 @@ Block templates are thin adapters around a set of Symfony UX Twig components liv
 | `<twig:c975LUi:Search:Busy>` | The sign a live search gives while it is fetching, dropped inside the component whose field it watches |
 | `<twig:c975LUi:Section:Cards>` | Section title followed by a stack of full Card blocks (`.cards` row) |
 | `<twig:c975LUi:Section:Features>` | Section title followed by a grid of features (icon/title/text) |
-| `<twig:c975LUi:Slider:Slider>` | Image/media slider, dispatching `slider:changed` (`detail.page` counted from 1) on every slide change |
+| `<twig:c975LUi:Slider:Slider>` | Image/media slider, dispatching `slider:changed` (`detail.page` counted from 1) on every slide change; `zoom="true"` opens the clicked image over the page through `Image:Zoom`'s dialog |
 | `<twig:c975LUi:Text:Hook>` | Lead-in paragraph, set apart from the text it introduces |
 | `<twig:c975LUi:Text:Readmore>` | Collapsible "read more" text block |
 | `<twig:c975LUi:Text:Section>` | Text section with optional image |

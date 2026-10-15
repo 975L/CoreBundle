@@ -20,7 +20,7 @@ class ImageZoomBehaviourTest extends JsCase
 {
     // The picture the page shows, the file the zoom opens, and the arrangement Zoom.html.twig lays them out in
     private const string MARKUP = '<div class="image-zoom" data-controller="imageZoom">
-            <a href="/medias/photo-highres.webp" class="image-zoom__link" data-action="imageZoom#open" aria-label="Voir en haute résolution">
+            <a href="/medias/photo-highres.webp" class="image-zoom__link" data-action="imageZoom#open touchstart->imageZoom#touchStart:passive touchend->imageZoom#touchEnd:passive" aria-label="Voir en haute résolution">
                 <img src="data:image/gif;base64,R0lGODlhAQABAAAAACw=" alt="Une photo">
             </a>
             <dialog class="image-zoom__dialog" data-imageZoom-target="dialog" data-action="click->imageZoom#close"></dialog>
@@ -28,7 +28,7 @@ class ImageZoomBehaviourTest extends JsCase
 
     // What a browser makes of the component written inside a <p>: <dialog> closes the paragraph implicitly, and both the dialog and everything after it are lifted out of the element carrying the controller
     private const string MARKUP_HOISTED = '<div class="image-zoom" data-controller="imageZoom">
-            <a href="/medias/photo-highres.webp" class="image-zoom__link" data-action="imageZoom#open" aria-label="Voir en haute résolution">
+            <a href="/medias/photo-highres.webp" class="image-zoom__link" data-action="imageZoom#open touchstart->imageZoom#touchStart:passive touchend->imageZoom#touchEnd:passive" aria-label="Voir en haute résolution">
                 <img src="data:image/gif;base64,R0lGODlhAQABAAAAACw=" alt="Une photo">
             </a>
         </div>
@@ -131,6 +131,55 @@ class ImageZoomBehaviourTest extends JsCase
 
         $this->assertFalse($answered['prevented'], 'The click is prevented although the dialog sits outside the controller element, which leaves the visitor with a link that does nothing at all.');
         $this->assertFalse($answered['open'], 'A dialog outside the controller element is opened, so the target was found where it cannot be.');
+    }
+
+    // A swipe through a slider, or a long press pausing it, ends on the link: the click the browser may still send after it must neither open the picture nor leave for the file
+    public function testTheClickAfterASwipeIsIgnored(): void
+    {
+        $answered = $this->zoom(
+            'const touch = (type, x) => link().dispatchEvent(new TouchEvent(type, { bubbles: true, cancelable: true, touches: "touchstart" === type ? [new Touch({ identifier: 1, target: link(), clientX: x, clientY: 0 })] : [], changedTouches: [new Touch({ identifier: 1, target: link(), clientX: x, clientY: 0 })] }));
+             let prevented = false;
+             link().addEventListener("click", (event) => { prevented = event.defaultPrevented; });
+             touch("touchstart", 200);
+             touch("touchend", 80);
+             link().click();
+
+             return { prevented, open: dialog().open };'
+        );
+
+        $this->assertTrue($answered['prevented'], 'The click following a swipe is left to the browser, which leaves the page for the file.');
+        $this->assertFalse($answered['open'], 'A swipe opens the zoom over the slide it just moved away from.');
+    }
+
+    // A tap is a click like any other
+    public function testATapOpensIt(): void
+    {
+        $this->assertTrue(
+            (bool) $this->zoom(
+                'const touch = (type) => link().dispatchEvent(new TouchEvent(type, { bubbles: true, cancelable: true, touches: "touchstart" === type ? [new Touch({ identifier: 1, target: link(), clientX: 100, clientY: 0 })] : [], changedTouches: [new Touch({ identifier: 1, target: link(), clientX: 100, clientY: 0 })] }));
+                 touch("touchstart");
+                 touch("touchend");
+                 link().click();
+
+                 return dialog().open;'
+            ),
+            'A tap on the picture no longer opens the zoom.'
+        );
+    }
+
+    // Both files failing: the broken image is dropped, so the next opening builds it again rather than showing it each time
+    public function testADoubleFailureIsRebuiltOnTheNextOpening(): void
+    {
+        $this->assertFalse(
+            (bool) $this->zoom(
+                'link().querySelector("img").src = "/nowhere/shown.webp";
+                 link().click();
+                 await new Promise((resolve) => setTimeout(resolve, 300));
+
+                 return null !== image();'
+            ),
+            'The image stays in the dialog after both its file and its fallback failed, broken at every opening.'
+        );
     }
 
     private function zoom(string $probe, string $markup = self::MARKUP): mixed

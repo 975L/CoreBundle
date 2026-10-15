@@ -94,6 +94,11 @@ It also takes optional `width`/`height`, emitted on the `<img>` so a grid reserv
 with no `-highres` sibling hands the same file twice** — `Media` does not implement
 `VichMultiSizeImageInterface` — and the link is then announced `label.enlarge_image` rather than
 `label.see_high_resolution`, which would promise a resolution that is not coming.
+**A `highres` missing on disk** (checked with `asset_exists()`) is replaced by `src`, so the link never
+leads to a 404; `linkClass` adds a class to the `<a>`, and the click following a swipe or a long press
+on it is ignored. `<twig:c975LUi:Slider:Slider zoom="true">` hands each image to `Image:Zoom`, naming
+the `-highres.webp` of a `VichMultiSizeImageInterface` media and the stored file of any other one; an
+image already linking to `slide.url` keeps its link, and a caption stays outside the zoom's link.
 
 **The thumbnail keeps the image's proportions**, the longest side capped — it is square only for a
 square original. A grid wanting square tiles uses `object-fit: cover`, which stays reversible where a

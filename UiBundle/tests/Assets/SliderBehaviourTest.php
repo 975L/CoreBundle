@@ -141,6 +141,24 @@ class SliderBehaviourTest extends JsCase
         $this->assertStringContainsString('Start', (string) $stopped['label'], 'The button goes on announcing itself as a stop button after stopping the slider.');
     }
 
+    // An open zoom keeps its slide: hidden under it, the dialog would vanish while the page stays inert. Opened without showModal(), whose focus move would pause the slider through another path
+    public function testAnOpenZoomKeepsItsSlide(): void
+    {
+        $this->assertSame(
+            0,
+            $this->slider(
+                'const dialog = document.createElement("dialog");
+                 root.querySelector(".slider-item").append(dialog);
+                 dialog.setAttribute("open", "");
+                 await new Promise((r) => setTimeout(r, 260));
+
+                 return state();',
+                120
+            )['active'],
+            'The autoplay went on under an open zoom, hiding the slide its dialog belongs to.'
+        );
+    }
+
     // Turbo caches the page as it stands: an interval left running would go on changing a slider nobody is looking at any more
     public function testThePlayingIntervalDoesNotOutliveTheSlider(): void
     {

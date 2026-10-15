@@ -1,5 +1,21 @@
 # ChangeLog
 
+## v1.70.0
+
+Added a zoom option to the slider
+
+### UiBundle
+
+- Added `zoom="true"` to `Slider`, rendering each image through `Image:Zoom` (15/10/2026)
+- Kept a single slide's caption outside the zoom's link (15/10/2026)
+- Ignored swipes and autoplay ticks while the zoom's dialog is open (15/10/2026)
+- `Image:Zoom` falls back on `src` when the `-highres.webp` is missing on disk (15/10/2026)
+- Added `linkClass` to `Image:Zoom` (15/10/2026)
+- `imageZoom` ignores the click following a swipe or a long press (15/10/2026)
+- `imageZoom` rebuilds the image after its fallback fails too (15/10/2026)
+- Updated the readme and the media skill (15/10/2026)
+- Added `SliderZoomTest` and `ImageZoomHighresTest` (15/10/2026)
+
 ## v1.69.1
 
 Added a shared cancel action for the Management CRUD controllers

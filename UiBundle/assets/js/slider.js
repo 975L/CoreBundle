@@ -123,8 +123,15 @@ export default class extends Controller {
             let longPressTimer = null;
             let isLongPress = false;
             let isSwipe = false;
+            let inDialog = false;
 
             item.addEventListener("touchstart", (e) => {
+                // A gesture made on the zoom's open dialog belongs to the picture shown over the page, not to the slides behind it
+                inDialog = null !== e.target.closest("dialog");
+                if (inDialog) {
+                    return;
+                }
+
                 const touch = e.touches[0];
                 startX = touch.clientX;
                 startY = touch.clientY;
@@ -138,6 +145,10 @@ export default class extends Controller {
             }, { passive: true });
 
             item.addEventListener("touchmove", (e) => {
+                if (inDialog) {
+                    return;
+                }
+
                 const touch = e.touches[0];
                 const deltaX = touch.clientX - startX;
                 const deltaY = touch.clientY - startY;
@@ -154,6 +165,9 @@ export default class extends Controller {
 
             item.addEventListener("touchend", (e) => {
                 clearTimeout(longPressTimer);
+                if (inDialog) {
+                    return;
+                }
 
                 if (isSwipe) {
                     e.preventDefault();
@@ -194,8 +208,15 @@ export default class extends Controller {
         let startIndex = 1;
         let decided = false;
         let isSwipe = false;
+        let inDialog = false;
 
         list.addEventListener("touchstart", (e) => {
+            // A gesture made on the zoom's open dialog belongs to the picture shown over the page, not to the slides behind it
+            inDialog = null !== e.target.closest("dialog");
+            if (inDialog) {
+                return;
+            }
+
             const touch = e.touches[0];
             startX = touch.clientX;
             startY = touch.clientY;
@@ -208,6 +229,10 @@ export default class extends Controller {
         }, { passive: true });
 
         list.addEventListener("touchmove", (e) => {
+            if (inDialog) {
+                return;
+            }
+
             const touch = e.touches[0];
             const deltaX = touch.clientX - startX;
             const deltaY = touch.clientY - startY;
@@ -228,6 +253,10 @@ export default class extends Controller {
         }, { passive: false });
 
         const endGesture = (e) => {
+            if (inDialog) {
+                return;
+            }
+
             if (isSwipe) {
                 const slides = document.querySelectorAll(`#${sliderId} .slider-item`);
                 const deltaX = (e.changedTouches?.[0]?.clientX ?? startX) - startX;
@@ -345,11 +374,11 @@ export default class extends Controller {
             this.displaySlide(sliderId, ++this.slideIndex, "next");
         });
 
-        // Click on slide to go next, unless the click is on a link (title/text/image linking to slide.url) or on a video's native controls (play/pause/volume/seek)
+        // Click on slide to go next, unless the click is on a link (title/text/image linking to slide.url, or the zoom), inside the zoom's dialog (the click that closes it bubbles up to the slide) or on a video's native controls (play/pause/volume/seek)
         const slides = document.querySelectorAll(`#${sliderId} .slider-item`);
         slides.forEach((slide) => {
             slide.addEventListener("click", (e) => {
-                if (e.target.closest("a") || e.target.tagName === "VIDEO" || Date.now() - (this.swipedAt || 0) < 500) {
+                if (e.target.closest("a, dialog") || e.target.tagName === "VIDEO" || Date.now() - (this.swipedAt || 0) < 500) {
                     return;
                 }
                 this.displaySlide(sliderId, ++this.slideIndex, "next");
@@ -605,6 +634,11 @@ export default class extends Controller {
         this.isPlaying = true;
 
         this.autoPlayInterval = setInterval(() => {
+            // An open zoom keeps its slide: hidden under it, the dialog would vanish while the page stays inert
+            if (this.element.querySelector("dialog[open]")) {
+                return;
+            }
+
             this.slideIndex++;
             this.displaySlide(sliderId, this.slideIndex, "next", true);
         }, duration);

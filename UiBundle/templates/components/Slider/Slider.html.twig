@@ -2,6 +2,7 @@
 {# Rich usage (clickable title/text per slide) : <twig:c975LUi:Slider:Slider slides="{{ [{image: media, title: '', text: '', url: ''}, ...] }}" id="id" duration="5000" /> #}
 {# Add imageLinksToUrl="true" to also make the image itself link to slide.url instead of advancing to the next slide #}
 {# Add layout="freeflow" for a full-bleed carousel: every slide stays visible side by side and overflows past the viewport's left/right edges, no horizontal scrollbar #}
+{# Add zoom="true" to open the clicked image over the page (see Image/Zoom.html.twig) instead of advancing to the next slide - arrows, dots and swipes still navigate. A media implementing VichMultiSizeImageInterface opens its "-highres.webp", any other one its own file #}
 {% set label = label|default("label.pages_gallery"|trans({}, "ui")) %}
 {# What a slide is described as when its own media carries nothing: the caller names what the gallery shows ("fallbackAlt"), and a media whose alternative text was typed in the back-office always wins over it. Without it a gallery of a hundred pages publishes a hundred empty alt attributes - invisible to Google Images, and silent to a screen reader #}
 {% set fallbackAlt = fallbackAlt|default('') %}
@@ -10,12 +11,25 @@
 {% set layout = layout|default("default") %}
 {% set slides = slides|default([]) %}
 {% set imageLinksToUrl = imageLinksToUrl|default(false) %}
+{% set zoom = zoom is defined ? zoom|to_bool : false %}
 {% set mediaList = slides|length > 0 ? slides|map(slide => slide.image) : media|default([]) %}
 {% if mediaList|length == 1 %}
     {% set media = mediaList[0] %}
     {% set mediaAlt = media.alt ?: fallbackAlt %}
     {% set slide = slides[0]|default(null) %}
     {% set isVideo = media.mimeType starts with 'video' %}
+    {# The zoom wraps the bare image only: Image:Image's <p> would hoist the dialog out of the controller's element, and a caption holding a link would end up nested in the zoom's own #}
+    {% if zoom and not isVideo %}
+        {% set src = vich_uploader_asset(media) %}
+        {% set zoomClass = slide and (slide.title or slide.text) ? 'img-rounded box-shadow' : ('img-rounded box-shadow ' ~ class ~ ' ' ~ media.cssClasses|join(' '))|trim %}
+        {% set zoomedMedia %}
+            {% if media.above and media.label %}<p class="text-center"><span class="img-above">{{ media.label|raw }}</span></p>{% endif %}
+            <div class="text-center">
+                <twig:c975LUi:Image:Zoom src="{{ src }}" highres="{{ media.highresWidth is defined and src ends with '.webp' ? src|slice(0, -5) ~ '-highres.webp' : src }}" alt="{{ mediaAlt }}" class="{{ zoomClass }}" width="{{ media.width }}" height="{{ media.height }}" :priority="false" />
+            </div>
+            {% if not media.above and media.label %}<p class="text-center"><span class="img-below">{{ media.label|raw }}</span></p>{% endif %}
+        {% endset %}
+    {% endif %}
     {# The credits and the rights mention are laid over the media, so a media shown on its own needs a containing block of its own: without one they would anchor to whatever positioned ancestor the page happens to carry. Sized to its content, so the band spans the media and not the column - a portrait scan in a wide column would otherwise wear a band twice its width #}
     <div class="slider-single-media">
     {% if slide and (slide.title or slide.text) %}
@@ -29,6 +43,8 @@
             {% endset %}
             {% if imageLinksToUrl and slide.url and not isVideo %}
                 <a href="{{ slide.url }}" class="slider-img-link">{{ mediaTag|raw }}</a>
+            {% elseif zoom and not isVideo %}
+                {{ zoomedMedia|raw }}
             {% else %}
                 {{ mediaTag|raw }}
             {% endif %}
@@ -37,6 +53,8 @@
         </div>
     {% elseif isVideo %}
         <video class="{{ ('img-responsive img-rounded box-shadow ' ~ class ~ ' ' ~ media.cssClasses|join(' '))|trim }}" controls muted loop playsinline preload="metadata" aria-label="{{ mediaAlt }}"><source src="{{ vich_uploader_asset(media) }}" type="{{ media.mimeType }}"></video>
+    {% elseif zoom %}
+        {{ zoomedMedia|raw }}
     {% else %}
         <twig:c975LUi:Image:Image imgSrc="{{ vich_uploader_asset(media) }}" alt="{{ mediaAlt }}" label="{{ media.label }}" class="{{ ('img-responsive img-rounded box-shadow ' ~ class ~ ' ' ~ media.cssClasses|join(' '))|trim }}" width="{{ media.width }}" height="{{ media.height }}" above="{{ media.above }}" />
     {% endif %}
@@ -66,7 +84,7 @@
                         <img src="{{ vich_uploader_asset(slideMedia) }}" alt="{{ slideAlt }}" class="slider-img img img-responsive img-rounded box-shadow {{ slideMedia.cssClasses|join(' ') }}" width="{{ slideMedia.width }}" height="{{ slideMedia.height }}" loading="{{ isEager ? "eager" : "lazy" }}">
                     {% endif %}
                 {% endset %}
-                {% if imageLinksToUrl and slide and slide.url and not isVideo %}<a href="{{ slide.url }}" class="slider-img-link">{{ img|raw }}</a>{% else %}{{ img|raw }}{% endif %}
+                {% if imageLinksToUrl and slide and slide.url and not isVideo %}<a href="{{ slide.url }}" class="slider-img-link">{{ img|raw }}</a>{% elseif zoom and not isVideo %}{% set slideSrc = vich_uploader_asset(slideMedia) %}<twig:c975LUi:Image:Zoom src="{{ slideSrc }}" highres="{{ slideMedia.highresWidth is defined and slideSrc ends with '.webp' ? slideSrc|slice(0, -5) ~ '-highres.webp' : slideSrc }}" alt="{{ slideAlt }}" class="slider-img img-rounded box-shadow {{ slideMedia.cssClasses|join(' ') }}" linkClass="slider-img-link" width="{{ slideMedia.width }}" height="{{ slideMedia.height }}" :priority="isEager" />{% else %}{{ img|raw }}{% endif %}
                 {% if slide and slide.title %}
                     <p class="slider-title">{% if slide.url %}<a href="{{ slide.url }}">{{ slide.title }}</a>{% else %}{{ slide.title }}{% endif %}</p>
                 {% endif %}

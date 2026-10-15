@@ -1,7 +1,9 @@
-{# <twig:c975LUi:Image:Zoom src="path/to/medium.webp" highres="path/to/highres.webp" [alt=""] [label=""] [class=""] [priority=true] [width=""] [height=""]/> #}
+{# <twig:c975LUi:Image:Zoom src="path/to/medium.webp" highres="path/to/highres.webp" [alt=""] [label=""] [class=""] [priority=true] [width=""] [height=""] [linkClass=""]/> #}
 {# The picture a page displays, opening its own high resolution over the page rather than on a page of its own: a listing keeps browsing the stored (medium) files, and the heavy one is only fetched the moment a visitor asks to see it #}
 {# "src" is what the page shows, "highres" the file the zoom opens - an entity implementing VichMultiSizeImageInterface has both, the second being the "-highres.webp" its upload produced beside the first #}
 {% set alt = alt|default('') %}
+{# A "-highres.webp" missing on disk (a media uploaded before its entity produced one) opens the stored file instead: without javascript, or on a Ctrl+click, the link would otherwise lead to a 404 #}
+{% set highres = highres|default('') is not empty and highres != src|default('') and not asset_exists(highres) ? src : highres|default('') %}
 {# The words the link is announced with. Told apart by the two files themselves: a caller handing the same file twice has no bigger one to promise - what the click does is open the picture over the page, and saying "haute résolution" there would announce a resolution that is not coming #}
 {% set label = label|default('') is not empty ? label : (highres|default('') == src|default('') ? 'label.enlarge_image' : 'label.see_high_resolution')|trans({}, 'ui') %}
 {# "priority": the picture a page is built around is above the fold, so it opts out of lazy-loading by default here, unlike Image.html.twig - pass false for one further down #}
@@ -14,7 +16,7 @@
 {% if zoomable %}<div class="image-zoom" data-controller="imageZoom">{% endif %}
     {# The markup is written out rather than delegated to c975LUi:Image:Link: that component lets nothing through onto the <a> itself, and both the Stimulus action and the class belong there #}
     {# A real link, pointing at the file: without javascript the high resolution stays reachable, and the zoom is operable from the keyboard for free #}
-    {% if zoomable %}<a href="{{ asset(highres) }}" class="image-zoom__link" data-action="imageZoom#open" aria-label="{{ label }}">{% endif %}
+    {% if zoomable %}<a href="{{ asset(highres) }}" class="{{ ('image-zoom__link ' ~ linkClass|default(''))|trim }}" data-action="imageZoom#open touchstart->imageZoom#touchStart:passive touchend->imageZoom#touchEnd:passive" aria-label="{{ label }}">{% endif %}
         {# aria-hidden doubles the empty alt so checkers read it as decorative, not as a missing alternative - the same rule as Image.html.twig #}
         {# The pixel size, when the caller knows it: a picture in a grid reserves its own box so the row doesn't reflow as each file lands #}
         <img src="{{ asset(src) }}" class="img img-responsive {{ class|default('') }}" alt="{{ alt }}"{% if alt is empty %} aria-hidden="true"{% endif %}{% if width|default('') %} width="{{ width }}"{% endif %}{% if height|default('') %} height="{{ height }}"{% endif %}{% if priority %} loading="eager" fetchpriority="high"{% else %} loading="lazy"{% endif %}>
