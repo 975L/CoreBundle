@@ -80,12 +80,11 @@ class AiSearchAnswerCrudController extends AbstractCrudController
     #[\Override]
     public function configureActions(Actions $actions): Actions
     {
+        // EasyAdmin's own Delete as an icon on the list, its label kept as the title
+        EasyAdminActionHelper::iconOnlyDefaults($actions, $this->translator, [Action::DELETE]);
+
         return $actions
             ->add(Crud::PAGE_INDEX, Action::DETAIL)
-            ->update(Crud::PAGE_INDEX, Action::DELETE, fn (Action $action) => EasyAdminActionHelper::toIconOnly(
-                $action,
-                $this->translator->trans('action.delete', [], 'EasyAdminBundle'),
-            ))
             ->update(Crud::PAGE_INDEX, Action::DETAIL, fn (Action $action) => EasyAdminActionHelper::toIconOnly(
                 $action,
                 $this->translator->trans('action.detail', [], 'EasyAdminBundle'),

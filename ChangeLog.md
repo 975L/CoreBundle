@@ -1,5 +1,19 @@
 # ChangeLog
 
+## v1.72.2
+
+Fixed a slider's width and shared the icon-only row actions
+
+### ConfigBundle
+
+- Added `EasyAdminActionHelper::iconOnlyDefaults()` to make EasyAdmin's index Edit and Delete icon-only (21/10/2026)
+- Used it in the Config, NotFound, Redirect, UrlMetadata and User CRUD controllers (21/10/2026)
+
+### UiBundle
+
+- Fixed the "width-*" class picked on a slider block, which the reading measure overrode (21/10/2026)
+- Used `iconOnlyDefaults()` in the AiSearchAnswer, Font, SharedBlock and SiteGraphic CRUD controllers (21/10/2026)
+
 ## v1.72.1
 
 Made the remaining row actions icon-only

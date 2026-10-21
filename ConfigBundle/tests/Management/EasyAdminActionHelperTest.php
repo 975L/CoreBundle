@@ -12,7 +12,10 @@ namespace c975L\ConfigBundle\Tests\Management;
 
 use c975L\ConfigBundle\Management\EasyAdminActionHelper;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use PHPUnit\Framework\TestCase;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class EasyAdminActionHelperTest extends TestCase
 {
@@ -46,5 +49,35 @@ class EasyAdminActionHelperTest extends TestCase
         $this->assertSame('Cancel', $dto->getLabel());
         $this->assertSame('fa fa-times', $dto->getIcon());
         $this->assertSame(Action::INDEX, $dto->getCrudActionName());
+    }
+
+    public function testIconOnlyDefaultsTurnsEditAndDeleteIntoIcons(): void
+    {
+        $translator = $this->createStub(TranslatorInterface::class);
+        $translator->method('trans')->willReturnArgument(0);
+        $actions = Actions::new()
+            ->add(Crud::PAGE_INDEX, Action::EDIT)
+            ->add(Crud::PAGE_INDEX, Action::DELETE);
+
+        $index = EasyAdminActionHelper::iconOnlyDefaults($actions, $translator)->getAsDto(Crud::PAGE_INDEX);
+
+        foreach ([Action::EDIT, Action::DELETE] as $name) {
+            $action = $index->getAction(Crud::PAGE_INDEX, $name);
+            $this->assertFalse($action->getLabel(), $name);
+            $this->assertSame('action.' . $name, $action->getHtmlAttributes()['title'], $name);
+        }
+    }
+
+    public function testIconOnlyDefaultsLeavesTheOthersAlone(): void
+    {
+        $translator = $this->createStub(TranslatorInterface::class);
+        $actions = Actions::new()
+            ->add(Crud::PAGE_INDEX, Action::EDIT)
+            ->add(Crud::PAGE_INDEX, Action::DELETE);
+
+        $index = EasyAdminActionHelper::iconOnlyDefaults($actions, $translator, [Action::DELETE])->getAsDto(Crud::PAGE_INDEX);
+
+        $this->assertNotFalse($index->getAction(Crud::PAGE_INDEX, Action::EDIT)->getLabel());
+        $this->assertFalse($index->getAction(Crud::PAGE_INDEX, Action::DELETE)->getLabel());
     }
 }

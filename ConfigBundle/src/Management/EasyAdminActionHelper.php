@@ -12,6 +12,9 @@ namespace c975L\ConfigBundle\Management;
 
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\ActionGroup;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 // Shared EasyAdmin actions and action tweaks for the Management CRUD controllers
 class EasyAdminActionHelper
@@ -29,5 +32,19 @@ class EasyAdminActionHelper
         $htmlAttributes = $action->getAsDto()->getHtmlAttributes();
 
         return $action->setLabel(false)->setHtmlAttributes([...$htmlAttributes, 'title' => $title]);
+    }
+
+    // Turns EasyAdmin's own row actions of the index (Edit and Delete by default) into icon-only, titled by EasyAdmin's label - each one must be on the index, as EasyAdmin's update() requires
+    /** @param list<string> $names */
+    public static function iconOnlyDefaults(Actions $actions, TranslatorInterface $translator, array $names = [Action::EDIT, Action::DELETE]): Actions
+    {
+        foreach ($names as $name) {
+            $actions->update(Crud::PAGE_INDEX, $name, static fn (Action $action) => self::toIconOnly(
+                $action,
+                $translator->trans('action.' . $name, [], 'EasyAdminBundle'),
+            ));
+        }
+
+        return $actions;
     }
 }

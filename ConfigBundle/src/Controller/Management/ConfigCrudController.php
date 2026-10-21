@@ -478,16 +478,15 @@ class ConfigCrudController extends AbstractCrudController
         $cancelAction = Action::new('cancel', $this->translator->trans('action.cancel', [], 'EasyAdminBundle'), 'fa fa-times')
             ->linkToCrudAction(Action::INDEX);
 
+        // EasyAdmin's own Edit as an icon on the list, its label kept as the title
+        EasyAdminActionHelper::iconOnlyDefaults($actions, $this->translator, [Action::EDIT]);
+
         return $actions
             ->add(Crud::PAGE_INDEX, $exportGroup)
             ->add(Crud::PAGE_INDEX, $toggleAction)
             ->add(Crud::PAGE_INDEX, $backToGroupsAction)
             ->add(Crud::PAGE_INDEX, $translateAction)
             ->add(Crud::PAGE_EDIT, $cancelAction)
-            ->update(Crud::PAGE_INDEX, Action::EDIT, fn (Action $action) => EasyAdminActionHelper::toIconOnly(
-                $action,
-                $this->translator->trans('action.edit', [], 'EasyAdminBundle'),
-            ))
             ->update(Crud::PAGE_INDEX, 'translate', fn (Action $action) => EasyAdminActionHelper::toIconOnly(
                 $action,
                 $this->translator->trans('action.translate', [], 'config'),

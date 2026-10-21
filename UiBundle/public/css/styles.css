@@ -5564,9 +5564,12 @@ span {
 .slider {
   position: relative;
   width: 100%;
-  max-width: var(--reading-max-width, min(75ch, 90vw));
   margin: var(--slider-margin-block, 3em) auto;
   aspect-ratio: 16/9;
+}
+
+.slider:not([class*=" width-"]) {
+  max-width: var(--reading-max-width, min(75ch, 90vw));
 }
 
 .slider-single-media {

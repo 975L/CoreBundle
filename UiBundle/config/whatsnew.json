@@ -6,6 +6,11 @@
                 "en": "Legal pages can now be customized in each language: the sections you rewrite or add are kept per language, switch the back-office's language to write the other one.",
                 "fr": "Les pages légales se personnalisent désormais dans chaque langue : les sections réécrites ou ajoutées sont gardées par langue, changez la langue du back-office pour écrire l'autre.",
                 "es": "Las páginas legales ahora se personalizan en cada idioma: las secciones reescritas o añadidas se guardan por idioma, cambie el idioma del back-office para escribir el otro."
+            },
+            {
+                "en": "The width chosen for a slider is now applied, instead of being capped to the text's width.",
+                "fr": "La largeur choisie pour un diaporama est désormais appliquée, au lieu d'être limitée à celle du texte.",
+                "es": "El ancho elegido para un carrusel ahora se aplica, en lugar de limitarse al del texto."
             }
         ]
     },

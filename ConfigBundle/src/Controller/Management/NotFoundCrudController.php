@@ -80,12 +80,11 @@ class NotFoundCrudController extends AbstractCrudController
                 ->generateUrl())
         ;
 
+        // EasyAdmin's own Delete as an icon on the list, its label kept as the title
+        EasyAdminActionHelper::iconOnlyDefaults($actions, $this->translator, [Action::DELETE]);
+
         return $actions
             ->add(Crud::PAGE_INDEX, $createRedirect)
-            ->update(Crud::PAGE_INDEX, Action::DELETE, fn (Action $action) => EasyAdminActionHelper::toIconOnly(
-                $action,
-                $this->translator->trans('action.delete', [], 'EasyAdminBundle'),
-            ))
             ->update(Crud::PAGE_INDEX, 'createRedirect', fn (Action $action) => EasyAdminActionHelper::toIconOnly(
                 $action,
                 $this->translator->trans('label.create_redirect', [], 'config'),

@@ -17,10 +17,14 @@
     position: relative;
     // Stated, and not left to "auto": the controller sets the slider a height, and the ratio below then derived a width from it - the measure below only capped that width, so in a column narrower than it the slider overflowed onto whatever sat beside it. A width of its own is what the ratio no longer has to invent
     width: 100%;
-    max-width: var(--reading-max-width, min(75ch, 90vw));
     margin: var(--slider-margin-block, 3em) auto;
     // Fallback so the slider never collapses to 0 height, its content being absolutely positioned
     aspect-ratio: 16 / 9;
+}
+
+// The measure caps a slider only when the block picked no width of its own (see _sizes.scss): written after it, it beat the "width-*" class the slider form offers, which then did nothing
+.slider:not([class*=" width-"]) {
+    max-width: var(--reading-max-width, min(75ch, 90vw));
 }
 
 // The containing block of a media shown on its own: the credits and the rights mention are absolutely positioned, and a slide gets that box from .slider-item while a single media had none at all

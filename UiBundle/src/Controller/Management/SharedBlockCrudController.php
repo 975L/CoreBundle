@@ -124,13 +124,12 @@ class SharedBlockCrudController extends AbstractCrudController
         $cancelAction = Action::new('cancel', $this->translator->trans('action.cancel', [], 'EasyAdminBundle'), 'fa fa-times')
             ->linkToCrudAction(Action::INDEX);
 
+        // EasyAdmin's own Edit as an icon on the list, its label kept as the title
+        EasyAdminActionHelper::iconOnlyDefaults($actions, $this->translator, [Action::EDIT]);
+
         return $actions
             ->add(Crud::PAGE_NEW, $cancelAction)
             ->add(Crud::PAGE_EDIT, $cancelAction)
-            ->update(Crud::PAGE_INDEX, Action::EDIT, fn (Action $action) => EasyAdminActionHelper::toIconOnly(
-                $action,
-                $this->translator->trans('action.edit', [], 'EasyAdminBundle'),
-            ))
             // Offered only when no page shows it: delete() refuses the others anyway, the button would only lead to that refusal
             ->update(Crud::PAGE_INDEX, Action::DELETE, fn (Action $action) => EasyAdminActionHelper::toIconOnly(
                 $action->displayIf(fn (SharedBlock $sharedBlock): bool => 0 === $this->usageCount($sharedBlock)),

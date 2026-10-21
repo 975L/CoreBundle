@@ -188,6 +188,9 @@ class UserCrudController extends AbstractCrudController
             ->askConfirmation(t('confirm.anonymize', [], 'config'))
             ->asDangerAction();
 
+        // EasyAdmin's own Edit and Delete as icons on the list, their label kept as the title
+        EasyAdminActionHelper::iconOnlyDefaults($actions, $this->translator);
+
         return $actions
             ->disable(Action::NEW)
             ->disable(Action::DETAIL)
@@ -195,14 +198,6 @@ class UserCrudController extends AbstractCrudController
             ->add(Crud::PAGE_INDEX, $anonymizeAction)
             ->add(Crud::PAGE_EDIT, $anonymizeAction)
             ->add(Crud::PAGE_EDIT, $cancelAction)
-            ->update(Crud::PAGE_INDEX, Action::EDIT, fn (Action $action) => EasyAdminActionHelper::toIconOnly(
-                $action,
-                $this->translator->trans('action.edit', [], 'EasyAdminBundle'),
-            ))
-            ->update(Crud::PAGE_INDEX, Action::DELETE, fn (Action $action) => EasyAdminActionHelper::toIconOnly(
-                $action,
-                $this->translator->trans('action.delete', [], 'EasyAdminBundle'),
-            ))
             ->update(Crud::PAGE_INDEX, 'anonymize', fn (Action $action) => EasyAdminActionHelper::toIconOnly(
                 $action,
                 $this->translator->trans('action.anonymize', [], 'config'),
