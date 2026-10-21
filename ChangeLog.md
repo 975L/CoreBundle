@@ -1,5 +1,14 @@
 # ChangeLog
 
+## v1.72.6
+
+Listed the LocalizedUrlGenerator fix missing from v1.72.5
+
+### ConfigBundle
+
+- Listed the `LocalizedUrlGenerator::path()` fix shipped untold in v1.72.5 (21/10/2026)
+- Fixed `EasyAdminActionHelper::iconOnlyDefaults()` breaking a `reorder()` made after it (21/10/2026)
+
 ## v1.72.5
 
 Skipped a removed action in iconOnlyDefaults()
@@ -7,6 +16,7 @@ Skipped a removed action in iconOnlyDefaults()
 ### ConfigBundle
 
 - Made `EasyAdminActionHelper::iconOnlyDefaults()` skip an action the app took off the index (21/10/2026)
+- Made `LocalizedUrlGenerator::path()` read the language a bare url with a localised twin negotiated (21/10/2026)
 
 ## v1.72.4
 

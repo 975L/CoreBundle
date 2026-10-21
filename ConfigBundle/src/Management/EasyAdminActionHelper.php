@@ -39,7 +39,8 @@ class EasyAdminActionHelper
     public static function iconOnlyDefaults(Actions $actions, TranslatorInterface $translator, array $names = [Action::EDIT, Action::DELETE]): Actions
     {
         foreach ($names as $name) {
-            if (null === $actions->getAsDto(Crud::PAGE_INDEX)->getAction(Crud::PAGE_INDEX, $name)) {
+            // Read through getAsDto(null): naming a page there pins the dto to it, and a reorder() made afterwards no longer finds its pages
+            if (null === $actions->getAsDto(null)->getAction(Crud::PAGE_INDEX, $name)) {
                 continue;
             }
 

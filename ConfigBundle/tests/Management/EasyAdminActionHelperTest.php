@@ -91,4 +91,14 @@ class EasyAdminActionHelperTest extends TestCase
         $this->assertFalse($index->getAction(Crud::PAGE_INDEX, Action::EDIT)->getLabel());
         $this->assertNull($index->getAction(Crud::PAGE_INDEX, Action::DELETE));
     }
+
+    // The app goes on configuring after it: a reorder() reads every page of the dto
+    public function testIconOnlyDefaultsLeavesTheActionsReorderable(): void
+    {
+        $actions = Actions::new()->add(Crud::PAGE_INDEX, Action::EDIT)->add(Crud::PAGE_INDEX, Action::DELETE);
+
+        EasyAdminActionHelper::iconOnlyDefaults($actions, $this->createStub(TranslatorInterface::class))->reorder(Crud::PAGE_INDEX, [Action::DELETE, Action::EDIT]);
+
+        $this->assertSame([Action::DELETE, Action::EDIT], array_keys($actions->getAsDto(null)->getActions()[Crud::PAGE_INDEX]));
+    }
 }
