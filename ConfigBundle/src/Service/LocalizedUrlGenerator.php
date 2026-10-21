@@ -28,7 +28,7 @@ class LocalizedUrlGenerator
     ) {
     }
 
-    // The route's own url, or its localised twin's when there is one and the language being read answers for it: "$locales" names the languages the target really answers in, for a twin that exists but 404s where a row is not translated yet, and left null the twin is taken whenever it exists. "$locale" is the language being read where no route says it - a bare url answering in the language it negotiated - the route's own otherwise
+    // The route's own url, or its localised twin's when there is one and the language being read answers for it: "$locales" names the languages the target really answers in, for a twin that exists but 404s where a row is not translated yet, and left null the twin is taken whenever it exists. "$locale" overrides the language being read
     /**
      * @param array<string, mixed> $parameters
      * @param list<string>|null    $locales
@@ -124,11 +124,30 @@ class LocalizedUrlGenerator
         return \count(array_unique($languages)) > 1 ? $languages : [];
     }
 
-    // The language being read, when it is one the site declares besides the one it was written in. The one asked, else the route attribute rather than getLocale(), which a controller switches back for the duration of the render
+    // The language being read, when it is one the site declares besides the one it was written in. The one asked, else the route attribute rather than getLocale(), which a controller switches back for the duration of the render, else the language a bare url negotiated (see negotiatedLocale())
     private function readingLocale(?string $asked): ?string
     {
-        $locale = $asked ?? $this->requestStack->getCurrentRequest()?->attributes->get('_locale');
+        $request = $this->requestStack->getCurrentRequest();
+        $locale = $asked ?? $request?->attributes->get('_locale') ?? (null === $request ? null : $this->negotiatedLocale($request));
 
         return \is_string($locale) && '' !== $locale && $locale !== $this->siteLocales->getDefaultLocale() ? $locale : null;
+    }
+
+    // getLocale() of a bare url whose localised twin answers in that language: one that redirects or stays has it put back to the writing language (see LocalizedRouteNegotiator::redirectToAskedLanguage), so only a bare url answering in the language it negotiated - a JSON feed - reaches the probe
+    private function negotiatedLocale(Request $request): ?string
+    {
+        $locale = $request->getLocale();
+        $route = $request->attributes->get('_route');
+        if ($locale === $this->siteLocales->getDefaultLocale() || !\is_string($route) || '' === $route || str_ends_with($route, self::LOCALIZED_SUFFIX)) {
+            return null;
+        }
+
+        try {
+            $this->urlGenerator->generate($route . self::LOCALIZED_SUFFIX, (array) $request->attributes->get('_route_params') + ['_locale' => $locale]);
+        } catch (RoutingExceptionInterface) {
+            return null;
+        }
+
+        return $locale;
     }
 }

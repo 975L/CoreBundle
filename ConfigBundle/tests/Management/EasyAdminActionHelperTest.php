@@ -80,4 +80,15 @@ class EasyAdminActionHelperTest extends TestCase
         $this->assertNotFalse($index->getAction(Crud::PAGE_INDEX, Action::EDIT)->getLabel());
         $this->assertFalse($index->getAction(Crud::PAGE_INDEX, Action::DELETE)->getLabel());
     }
+
+    public function testIconOnlyDefaultsSkipsAnActionMissingFromTheIndex(): void
+    {
+        $translator = $this->createStub(TranslatorInterface::class);
+        $actions = Actions::new()->add(Crud::PAGE_INDEX, Action::EDIT);
+
+        $index = EasyAdminActionHelper::iconOnlyDefaults($actions, $translator)->getAsDto(Crud::PAGE_INDEX);
+
+        $this->assertFalse($index->getAction(Crud::PAGE_INDEX, Action::EDIT)->getLabel());
+        $this->assertNull($index->getAction(Crud::PAGE_INDEX, Action::DELETE));
+    }
 }

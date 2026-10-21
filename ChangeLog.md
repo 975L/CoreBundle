@@ -1,5 +1,13 @@
 # ChangeLog
 
+## v1.72.5
+
+Skipped a removed action in iconOnlyDefaults()
+
+### ConfigBundle
+
+- Made `EasyAdminActionHelper::iconOnlyDefaults()` skip an action the app took off the index (21/10/2026)
+
 ## v1.72.4
 
 Let LocalizedUrlGenerator::path() take the language being read

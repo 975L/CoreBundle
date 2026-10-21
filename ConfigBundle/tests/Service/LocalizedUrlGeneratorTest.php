@@ -62,6 +62,20 @@ class LocalizedUrlGeneratorTest extends TestCase
         $this->assertSame('/shop', $this->generator('en')->path('shop_index', locale: 'fr'));
     }
 
+    // A bare url answering in the language it negotiated, a JSON feed, links in that language with nothing to pass: its twin says it answers in it
+    public function testABareUrlLinksInTheLanguageItNegotiated(): void
+    {
+        $this->assertSame('/en/shop/products/table-basse', $this->generator(null, 'shop_index', negotiatedLocale: 'en')->path('product_display', ['slug' => 'table-basse']));
+        $this->assertSame('/shop/products/table-basse', $this->generator(null, 'shop_index', negotiatedLocale: 'fr')->path('product_display', ['slug' => 'table-basse']));
+    }
+
+    // A bare url with no twin says nothing of its language, nor does the route attribute leave room for the negotiated one
+    public function testOnlyABareUrlWithATwinReadsTheNegotiatedLanguage(): void
+    {
+        $this->assertSame('/shop', $this->generator(null, 'basket_display', negotiatedLocale: 'en')->path('shop_index'));
+        $this->assertSame('/shop', $this->generator('fr', 'shop_index_localized', negotiatedLocale: 'en')->path('shop_index'));
+    }
+
     // A language menu on a screen with no Page behind it: the same screen offered in each language the site declares, through the bare url that keeps the choice
     public function testAScreenIsOfferedInEveryLanguageTheSiteDeclares(): void
     {
@@ -119,9 +133,10 @@ class LocalizedUrlGeneratorTest extends TestCase
      * @param array<string, mixed> $routeParams
      * @param list<string>         $enabledLocales
      */
-    private function generator(?string $readingLocale, ?string $route = null, array $routeParams = [], array $enabledLocales = ['fr', 'en'], ?string $canonicalRoute = null): LocalizedUrlGenerator
+    private function generator(?string $readingLocale, ?string $route = null, array $routeParams = [], array $enabledLocales = ['fr', 'en'], ?string $canonicalRoute = null, string $negotiatedLocale = 'fr'): LocalizedUrlGenerator
     {
         $request = Request::create('/');
+        $request->setLocale($negotiatedLocale);
         if (null !== $readingLocale) {
             $request->attributes->set('_locale', $readingLocale);
         }
