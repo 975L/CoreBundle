@@ -27,7 +27,7 @@ class EasyAdminActionHelperTest extends TestCase
 
         $this->assertSame($action, $result);
         $this->assertFalse($result->getAsDto()->getLabel());
-        $this->assertSame(['title' => 'Edit'], $result->getAsDto()->getHtmlAttributes());
+        $this->assertSame(['title' => 'Edit', 'aria-label' => 'Edit'], $result->getAsDto()->getHtmlAttributes());
     }
 
     public function testToIconOnlyKeepsExistingHtmlAttributes(): void
@@ -38,7 +38,7 @@ class EasyAdminActionHelperTest extends TestCase
 
         $result = EasyAdminActionHelper::toIconOnly($action, 'Preview');
 
-        $this->assertSame(['target' => '_blank', 'title' => 'Preview'], $result->getAsDto()->getHtmlAttributes());
+        $this->assertSame(['target' => '_blank', 'title' => 'Preview', 'aria-label' => 'Preview'], $result->getAsDto()->getHtmlAttributes());
     }
 
     public function testCancelLinksBackToTheIndex(): void

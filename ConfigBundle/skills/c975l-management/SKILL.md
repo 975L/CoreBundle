@@ -217,6 +217,6 @@ and the container compilation of every production site breaks otherwise.
 - **Do not hand-write a back-office button, alert or badge** — use EasyAdmin's `<twig:ea:Button>`,
   `<twig:ea:Alert>` and `<twig:ea:Badge>`, and add no `btn` classes to a custom `Action`.
 - **Do not rebuild a create/edit "cancel" action** — use `EasyAdminActionHelper::cancel($label)`, chaining
-  `linkToUrl()` when it must lead elsewhere than the index; `toIconOnly()` turns a row action icon-only, and
+  `linkToUrl()` when it must lead elsewhere than the index; `toIconOnly()` turns a row action icon-only (its label becoming `title` and `aria-label`), and
   `iconOnlyDefaults($actions, $translator)` does it for EasyAdmin's own Edit and Delete of the index.
 - **Do not leave a `TestCase` subclass inside a scanned `src/`.**

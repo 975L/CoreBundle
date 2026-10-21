@@ -25,13 +25,13 @@ class EasyAdminActionHelper
         return Action::new('cancel', $label, 'fa fa-times')->linkToCrudAction(Action::INDEX);
     }
 
-    // Turns an EasyAdmin action button into icon-only, the label becoming its hover "title"
+    // Turns an EasyAdmin action button into icon-only, the label becoming its hover "title" and its accessible name
     public static function toIconOnly(Action | ActionGroup $action, string $title): Action | ActionGroup
     {
         // Merges with existing attributes (eg. target) instead of overwriting them
         $htmlAttributes = $action->getAsDto()->getHtmlAttributes();
 
-        return $action->setLabel(false)->setHtmlAttributes([...$htmlAttributes, 'title' => $title]);
+        return $action->setLabel(false)->setHtmlAttributes([...$htmlAttributes, 'title' => $title, 'aria-label' => $title]);
     }
 
     // Turns EasyAdmin's own row actions of the index (Edit and Delete by default) into icon-only, titled by EasyAdmin's label - each one must be on the index, as EasyAdmin's update() requires

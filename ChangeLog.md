@@ -1,5 +1,13 @@
 # ChangeLog
 
+## v1.72.3
+
+Gave the icon-only actions an accessible name
+
+### ConfigBundle
+
+- Added an `aria-label` to the actions made icon-only by `EasyAdminActionHelper::toIconOnly()` (21/10/2026)
+
 ## v1.72.2
 
 Fixed a slider's width and shared the icon-only row actions
