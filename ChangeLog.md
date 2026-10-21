@@ -1,5 +1,14 @@
 # ChangeLog
 
+## v1.70.1
+
+Added a GTIN to the catalog's product items
+
+### UiBundle
+
+- `CatalogProductItem` takes an optional `gtin` (21/10/2026)
+- Updated the readme (21/10/2026)
+
 ## v1.70.0
 
 Added a zoom option to the slider

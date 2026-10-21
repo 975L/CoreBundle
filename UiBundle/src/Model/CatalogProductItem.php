@@ -28,6 +28,8 @@ final class CatalogProductItem
         public readonly ?string $productTitle = null,
         // What the item's sheet says of the file, locale => text: the shop's default locale written on the row, the others as its translations, its title for want of one
         public readonly array $description = [],
+        // The barcode number of what is sold (an ISBN-13 for a book), null leaving the shop's own as it is
+        public readonly ?string $gtin = null,
     ) {
     }
 }
