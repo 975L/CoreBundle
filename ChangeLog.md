@@ -1,5 +1,14 @@
 # ChangeLog
 
+## v1.70.2
+
+Added a language to the catalog's products
+
+### UiBundle
+
+- `CatalogProduct` takes an optional `language` (21/10/2026)
+- Updated the readme (21/10/2026)
+
 ## v1.70.1
 
 Added a GTIN to the catalog's product items

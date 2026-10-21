@@ -21,6 +21,8 @@ final class CatalogProduct
         public readonly array $items,
         // The absolute path of the picture the product gets when it is created, null for none
         public readonly ?string $coverPath = null,
+        // The language the product is written in (an ISO 639-1 code), null leaving the shop's own as it is
+        public readonly ?string $language = null,
     ) {
     }
 }
