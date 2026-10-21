@@ -1,5 +1,18 @@
 # ChangeLog
 
+## v1.72.1
+
+Made the remaining row actions icon-only
+
+### ConfigBundle
+
+- Made the config index's "translate" action icon-only (21/10/2026)
+- Made the not-found index's "create redirect" action icon-only (21/10/2026)
+
+### UiBundle
+
+- Made the AI search answers index's "detail" action icon-only (21/10/2026)
+
 ## v1.72.0
 
 Legal models customized per language

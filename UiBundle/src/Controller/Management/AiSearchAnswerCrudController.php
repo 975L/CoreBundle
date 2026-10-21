@@ -86,6 +86,10 @@ class AiSearchAnswerCrudController extends AbstractCrudController
                 $action,
                 $this->translator->trans('action.delete', [], 'EasyAdminBundle'),
             ))
+            ->update(Crud::PAGE_INDEX, Action::DETAIL, fn (Action $action) => EasyAdminActionHelper::toIconOnly(
+                $action,
+                $this->translator->trans('action.detail', [], 'EasyAdminBundle'),
+            ))
             ->setPermission(Action::INDEX, $this->configService->get('site-role-editor'))
             ->setPermission(Action::DETAIL, $this->configService->get('site-role-editor'))
             ->setPermission(Action::DELETE, $this->configService->get('site-role-admin'))

@@ -86,6 +86,10 @@ class NotFoundCrudController extends AbstractCrudController
                 $action,
                 $this->translator->trans('action.delete', [], 'EasyAdminBundle'),
             ))
+            ->update(Crud::PAGE_INDEX, 'createRedirect', fn (Action $action) => EasyAdminActionHelper::toIconOnly(
+                $action,
+                $this->translator->trans('label.create_redirect', [], 'config'),
+            ))
             ->setPermission(Action::INDEX, $this->configService->get('site-role-editor'))
             ->setPermission('createRedirect', $this->configService->get('site-role-editor'))
             // Dismissing a row says the link is dealt with, the same call as removing the redirect that answers it

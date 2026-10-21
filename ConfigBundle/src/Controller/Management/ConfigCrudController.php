@@ -488,6 +488,10 @@ class ConfigCrudController extends AbstractCrudController
                 $action,
                 $this->translator->trans('action.edit', [], 'EasyAdminBundle'),
             ))
+            ->update(Crud::PAGE_INDEX, 'translate', fn (Action $action) => EasyAdminActionHelper::toIconOnly(
+                $action,
+                $this->translator->trans('action.translate', [], 'config'),
+            ))
             // Stated rather than left open: the screen used to be unreachable for want of a menu entry, the dashboard being admin-only - it now renders for an editor, who has no business reading the site's own settings
             ->setPermission(Action::INDEX, $this->configService->get('site-role-admin'))
             ->setPermission(Action::EDIT, $this->configService->get('site-role-admin'))
