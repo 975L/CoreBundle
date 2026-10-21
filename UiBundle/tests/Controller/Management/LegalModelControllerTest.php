@@ -252,14 +252,16 @@ class LegalModelControllerTest extends TestCase
             'extra' => [],
         ]);
 
-        $response = $this->createController([], true, $form)->customize($block, new Request());
+        $request = new Request();
+        $request->setLocale('fr');
+        $response = $this->createController([], true, $form)->customize($block, $request);
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertSame('/management/ui/legal-models/1', $response->getTargetUrl());
         $this->assertSame(['one'], $block->getData()['customization']['hidden']);
-        $this->assertSame('<p>Rewritten lead</p>', $block->getData()['customization']['overrides']['two']['content']);
+        $this->assertSame('<p>Rewritten lead</p>', $block->getData()['customization']['overrides']['fr']['two']['content']);
         // Untouched rows produce no override at all, which is what keeps them on the updatable path
-        $this->assertArrayNotHasKey('intro', $block->getData()['customization']['overrides']);
+        $this->assertArrayNotHasKey('intro', $block->getData()['customization']['overrides']['fr']);
         $this->assertSame('2026-01-01', $block->getData()['latestUpdate']);
         $this->assertSame(['flash.legal_model_customized'], $this->session->getFlashBag()->get('success'));
     }

@@ -1,5 +1,14 @@
 # ChangeLog
 
+## v1.72.0
+
+Legal models customized per language
+
+### UiBundle
+
+- Kept the rewritten and the added sections of a legal model per language, hiding and order staying common to all of them; a delta stored before is read as the language it was written in (21/10/2026)
+- Said on the customization screen that its texts are those of the back-office's language (21/10/2026)
+
 ## v1.71.0
 
 Added an event when an account becomes usable

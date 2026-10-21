@@ -177,6 +177,35 @@ class LegalModelRendererTest extends TestCase
         $this->assertStringContainsString('<h3>Sub</h3>', substr($sectionTwo, 0, (int) strpos($sectionTwo, '</section>')));
     }
 
+    // Wording is per language: an English rewrite stays off the French page, which keeps the bundle's text
+    public function testAnOverrideAppliesInItsOwnLocaleOnly(): void
+    {
+        $customization = ['overrides' => ['en' => ['one' => ['content' => '<p>Ours in English</p>']]]];
+
+        $this->assertStringNotContainsString('Ours in English', $this->renderer()->render(self::MODEL, null, $customization, 'fr'));
+        $this->assertStringContainsString('Ours in English', $this->renderer()->render(self::MODEL, null, $customization, 'en'));
+    }
+
+    // An added section shows its own locale's text, else the French one rather than nothing
+    public function testAddedSectionIsShownInTheLocaleItIsRenderedIn(): void
+    {
+        $customization = ['extra' => [['id' => 'x1', 'parent' => '', 'title' => ['fr' => 'Appli', 'en' => 'App'], 'content' => ['fr' => '<p>Texte</p>']]]];
+
+        $english = $this->renderer()->render(self::MODEL, null, $customization, 'en');
+        $this->assertStringContainsString('<h2>App</h2>', $english);
+        $this->assertStringContainsString('<p>Texte</p>', $english);
+        $this->assertStringContainsString('<h2>Appli</h2>', $this->renderer()->render(self::MODEL, null, $customization, 'fr'));
+    }
+
+    // Stored before the split by language, an override carries the locale it was written in
+    public function testAPreviousOverrideAppliesToTheLocaleItWasWrittenIn(): void
+    {
+        $customization = ['overrides' => ['one' => ['content' => '<p>Nôtre</p>', 'baseLocale' => 'fr']]];
+
+        $this->assertStringContainsString('Nôtre', $this->renderer()->render(self::MODEL, null, $customization, 'fr'));
+        $this->assertStringNotContainsString('Nôtre', $this->renderer()->render(self::MODEL, null, $customization, 'en'));
+    }
+
     // A headingless <section> is invalid HTML, so an addition with no title is wrapped in a <div>
     public function testAddedSectionWithoutATitleIsADiv(): void
     {

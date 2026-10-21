@@ -1,5 +1,15 @@
 [
     {
+        "date": "2026-10-21",
+        "description": [
+            {
+                "en": "Legal pages can now be customized in each language: the sections you rewrite or add are kept per language, switch the back-office's language to write the other one.",
+                "fr": "Les pages légales se personnalisent désormais dans chaque langue : les sections réécrites ou ajoutées sont gardées par langue, changez la langue du back-office pour écrire l'autre.",
+                "es": "Las páginas legales ahora se personalizan en cada idioma: las secciones reescritas o añadidas se guardan por idioma, cambie el idioma del back-office para escribir el otro."
+            }
+        ]
+    },
+    {
         "date": "2026-10-15",
         "description": [
             {

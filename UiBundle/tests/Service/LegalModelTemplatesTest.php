@@ -133,7 +133,7 @@ class LegalModelTemplatesTest extends TestCase
             $first = $units[0]['id'];
             $html = $renderer->render($model, '2026-01-01', [
                 'hidden' => [$first],
-                'overrides' => [$units[1]['id'] => ['content' => '<p>Ours</p>']],
+                'overrides' => [$locale => [$units[1]['id'] => ['content' => '<p>Ours</p>']]],
             ], $locale);
 
             $this->assertStringNotContainsString(sprintf('data-legal-id="%s"', $first), $html);

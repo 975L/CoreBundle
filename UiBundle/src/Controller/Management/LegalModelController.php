@@ -73,7 +73,7 @@ class LegalModelController extends AbstractController
                 'known' => $this->catalog->has($model),
                 'label' => $this->catalog->label($model),
                 'hidden' => \count((array) ($customization['hidden'] ?? [])),
-                'overridden' => \count((array) ($customization['overrides'] ?? [])),
+                'overridden' => $this->customizer->overriddenCount($customization),
                 'extra' => \count((array) ($customization['extra'] ?? [])),
                 'drifted' => \count($this->customizer->drifted($model, $customization)),
             ];
@@ -108,7 +108,7 @@ class LegalModelController extends AbstractController
 
         $form = $this->createForm(
             LegalModelCustomizationType::class,
-            $this->customizer->toFormData($units, $customization),
+            $this->customizer->toFormData($units, $customization, $locale),
             ['sections' => $this->sectionChoices($units)],
         );
         $form->handleRequest($request);
@@ -116,7 +116,7 @@ class LegalModelController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $block->setData($this->customizer->apply(
                 $data,
-                $this->customizer->toCustomization($form->getData(), $units, $locale),
+                $this->customizer->toCustomization($form->getData(), $units, $locale, $customization),
             ));
             $this->manager->flush();
             // The rendered block is cached per (block, locale) and the delta changes what it renders
@@ -132,7 +132,7 @@ class LegalModelController extends AbstractController
             'block' => $block,
             'label' => $this->catalog->label($model),
             'tree' => $this->tree($this->customizer->ordered($units, (array) ($customization['positions'] ?? []))),
-            'drifted' => $this->customizer->drifted($model, $customization),
+            'drifted' => $this->customizer->drifted($model, $customization, $locale),
             'placeholders' => $this->placeholders->slugs(),
         ]);
     }

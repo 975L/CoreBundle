@@ -43,7 +43,7 @@ class LegalModelCustomizerTest extends TestCase
     public function testFormRowsArePrefilledWithTheBundleText(): void
     {
         $customizer = $this->customizer(self::TEMPLATE);
-        $rows = $customizer->toFormData($customizer->units(self::MODEL, 'fr'), []);
+        $rows = $customizer->toFormData($customizer->units(self::MODEL, 'fr'), [], 'fr');
 
         $this->assertSame('One', $rows['units'][0]['title']);
         $this->assertSame('<div class="text text-justify">Body one</div>', $rows['units'][0]['content']);
@@ -55,7 +55,7 @@ class LegalModelCustomizerTest extends TestCase
         $customizer = $this->customizer(self::TEMPLATE);
         $rows = $customizer->toFormData($customizer->units(self::MODEL, 'fr'), [
             'overrides' => ['one' => ['title' => 'Renamed', 'content' => '<p>Ours</p>']],
-        ]);
+        ], 'fr');
 
         $this->assertSame('Renamed', $rows['units'][0]['title']);
         $this->assertSame('<p>Ours</p>', $rows['units'][0]['content']);
@@ -67,7 +67,7 @@ class LegalModelCustomizerTest extends TestCase
         $customizer = $this->customizer(self::TEMPLATE);
         $units = $customizer->units(self::MODEL, 'fr');
 
-        $this->assertSame([], $customizer->toCustomization($customizer->toFormData($units, []), $units, 'fr'));
+        $this->assertSame([], $customizer->toCustomization($customizer->toFormData($units, [], 'fr'), $units, 'fr'));
     }
 
     // The one that decides whether any of this works: Trix hands back its own serialization, class attributes dropped. Taking that for a rewrite would freeze every section of every model on its first save.
@@ -94,10 +94,10 @@ class LegalModelCustomizerTest extends TestCase
             'units' => [['id' => 'one', 'position' => 0, 'title' => 'One', 'content' => '<div>Ours instead</div>']],
         ], $units, 'fr');
 
-        $this->assertSame(['one'], array_keys($delta['overrides']));
-        $this->assertSame('<div>Ours instead</div>', $delta['overrides']['one']['content']);
-        $this->assertSame(LegalModelRenderer::hash('<div class="text text-justify">Body one</div>'), $delta['overrides']['one']['baseHash']);
-        $this->assertSame('fr', $delta['overrides']['one']['baseLocale']);
+        $this->assertSame(['one'], array_keys($delta['overrides']['fr']));
+        $this->assertSame('<div>Ours instead</div>', $delta['overrides']['fr']['one']['content']);
+        $this->assertSame(LegalModelRenderer::hash('<div class="text text-justify">Body one</div>'), $delta['overrides']['fr']['one']['baseHash']);
+        $this->assertSame('fr', $delta['overrides']['fr']['one']['baseLocale']);
     }
 
     public function testRetitlingAloneIsStoredToo(): void
@@ -109,7 +109,7 @@ class LegalModelCustomizerTest extends TestCase
             'units' => [['id' => 'one', 'position' => 0, 'title' => 'Renamed', 'content' => '<div>Body one</div>']],
         ], $units, 'fr');
 
-        $this->assertSame('Renamed', $delta['overrides']['one']['title']);
+        $this->assertSame('Renamed', $delta['overrides']['fr']['one']['title']);
     }
 
     public function testHidingAUnitIsStoredWithoutMakingItAnOverride(): void
@@ -272,6 +272,74 @@ class LegalModelCustomizerTest extends TestCase
         $customization = ['hidden' => ['one'], 'positions' => ['two' => 5]];
 
         $this->assertSame([], $this->customizer(self::TEMPLATE_REVISED)->drifted(self::MODEL, $customization));
+    }
+
+    // The screen shows one locale: saving it in English keeps the French wording, and files the English one beside it
+    public function testWordingIsKeptPerLocale(): void
+    {
+        $customizer = $this->customizer(self::TEMPLATE);
+        $units = $customizer->units(self::MODEL, 'fr');
+        $french = $customizer->toCustomization([
+            'units' => [['id' => 'one', 'position' => 0, 'title' => 'Un', 'content' => '<p>Nôtre</p>']],
+            'extra' => [['id' => 'x1', 'parent' => '', 'title' => 'Appli', 'content' => '<p>Texte</p>']],
+        ], $units, 'fr');
+
+        $both = $customizer->toCustomization([
+            'units' => [['id' => 'one', 'position' => 0, 'title' => 'Ours', 'content' => '<p>Ours</p>']],
+            'extra' => [['id' => 'x1', 'parent' => '', 'title' => 'App', 'content' => '<p>Text</p>']],
+        ], $units, 'en', $french);
+
+        $this->assertSame(['fr', 'en'], array_keys($both['overrides']));
+        $this->assertSame('Un', $both['overrides']['fr']['one']['title']);
+        $this->assertSame('Ours', $both['overrides']['en']['one']['title']);
+        $this->assertSame(['fr' => 'Appli', 'en' => 'App'], $both['extra'][0]['title']);
+        $this->assertSame('Ours', $customizer->toFormData($units, $both, 'en')['units'][0]['title']);
+        $this->assertSame('Appli', $customizer->toFormData($units, $both, 'fr')['extra'][0]['title']);
+    }
+
+    // A locale with no text of its own is shown the French one: saving it untouched is no translation
+    public function testAnUntranslatedSectionSavedAsShownStoresNothingForThatLocale(): void
+    {
+        $customizer = $this->customizer(self::TEMPLATE);
+        $units = $customizer->units(self::MODEL, 'fr');
+        $french = ['extra' => [['id' => 'x1', 'parent' => '', 'title' => ['fr' => 'Appli'], 'content' => ['fr' => '<p>Texte</p>']]]];
+
+        $rows = $customizer->toFormData($units, $french, 'en');
+        $this->assertSame('Appli', $rows['extra'][0]['title']);
+
+        $delta = $customizer->toCustomization(['units' => [], 'extra' => $rows['extra']], $units, 'en', $french);
+
+        $this->assertSame(['fr' => 'Appli'], $delta['extra'][0]['title']);
+    }
+
+    // Stored before wording was split by language: the override is filed under the locale it was written in, the added section's text read as French
+    public function testAPreviousDeltaIsReadAsTheLocaleItWasWrittenIn(): void
+    {
+        $customizer = $this->customizer(self::TEMPLATE);
+        $units = $customizer->units(self::MODEL, 'fr');
+        $previous = [
+            'overrides' => ['one' => ['title' => 'Un', 'content' => '<p>Nôtre</p>', 'baseLocale' => 'fr']],
+            'extra' => [['id' => 'x1', 'parent' => '', 'title' => 'Appli', 'content' => '<p>Texte</p>']],
+        ];
+
+        $this->assertSame('Un', $customizer->toFormData($units, $previous, 'fr')['units'][0]['title']);
+        $this->assertSame('One', $customizer->toFormData($units, $previous, 'en')['units'][0]['title']);
+        $this->assertSame('Appli', $customizer->toFormData($units, $previous, 'en')['extra'][0]['title']);
+        $this->assertSame(1, $customizer->overriddenCount($previous));
+    }
+
+    // The screen reports the drift of the locale it shows
+    public function testDriftIsReportedForTheLocaleAsked(): void
+    {
+        $before = $this->customizer(self::TEMPLATE);
+        $delta = $before->toCustomization([
+            'units' => [['id' => 'one', 'position' => 0, 'title' => 'One', 'content' => '<p>Ours</p>']],
+        ], $before->units(self::MODEL, 'fr'), 'fr');
+
+        $revised = $this->customizer(self::TEMPLATE_REVISED);
+
+        $this->assertSame(['one'], array_keys($revised->drifted(self::MODEL, $delta, 'fr')));
+        $this->assertSame([], $revised->drifted(self::MODEL, $delta, 'en'));
     }
 
     private function customizer(string $template): LegalModelCustomizer

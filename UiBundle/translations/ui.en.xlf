@@ -536,7 +536,7 @@
             </trans-unit>
             <trans-unit id="emqi7.W">
                 <source>description.legal_customize</source>
-                <target>The texts below are the bundle's own: edit them in place. As long as you leave a section alone it keeps being updated along with the bundle; the moment you change it, it becomes yours and you take responsibility for it. Drag a card by its header to reorder. The content of these pages is your editorial and legal responsibility either way.</target>
+                <target>The texts below are the bundle's own: edit them in place. As long as you leave a section alone it keeps being updated along with the bundle; the moment you change it, it becomes yours and you take responsibility for it. Drag a card by its header to reorder. The content of these pages is your editorial and legal responsibility either way. The texts are those of the back-office's language: switch it to write them in another one. Hiding a section or changing the order applies to every language.</target>
             </trans-unit>
             <trans-unit id="YgzofbB">
                 <source>description.legal_drift</source>

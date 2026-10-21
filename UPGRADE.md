@@ -1,5 +1,9 @@
 # UPGRADE
 
+## v1.72.0
+
+**A legal model's rewritten sections now apply to the language they were written in only.** A site that rewrote a clause on its French page saw that French text on the English page too; the English page now shows the bundle's English text until the clause is rewritten there, on the customization screen with the back-office in English. Added sections keep showing their text in every language until translated. Nothing to migrate: the stored delta is read as before.
+
 ## v1.62
 
 **A migration is needed** for the shared blocks (`site_shared_block`, `site_shared_block_blocks`): run `php bin/console make:migration` then `php bin/console doctrine:migrations:migrate`. **Constructors:** `BlockCacheTagResolver` takes an optional `SharedBlockRepository`, `BlockEditUrlRegistry` an optional `SharedBlockEditUrl`. Nothing to do with autowiring.

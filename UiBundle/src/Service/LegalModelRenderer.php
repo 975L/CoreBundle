@@ -31,11 +31,72 @@ class LegalModelRenderer
     {
         $html = $this->renderModel($model, $latestUpdate, $locale);
 
+        $customization = $this->forLocale($customization, $locale);
         if ('' !== $html && $this->isCustomized($customization)) {
             $html = $this->customize($html, $customization);
         }
 
         return $this->placeholders->substitute($html);
+    }
+
+    // The delta as one locale renders it. Hiding and reordering are about what the document holds, so they apply in every language; wording is per language, a clause rewritten or added in French having no business on the English page
+    public function forLocale(array $customization, string $locale): array
+    {
+        $customization['overrides'] = self::overridesByLocale((array) ($customization['overrides'] ?? []))[$locale] ?? [];
+
+        $extra = [];
+        foreach ((array) ($customization['extra'] ?? []) as $section) {
+            if (\is_array($section)) {
+                $extra[] = [
+                    ...$section,
+                    'title' => self::textFor(self::textsOf($section['title'] ?? ''), $locale),
+                    'content' => self::textFor(self::textsOf($section['content'] ?? ''), $locale),
+                ];
+            }
+        }
+        $customization['extra'] = $extra;
+
+        return $customization;
+    }
+
+    // The overrides as [locale => [unit id => override]]. One stored before wording was split by language is the override itself, filed under the locale it was written in
+    public static function overridesByLocale(array $overrides): array
+    {
+        $byLocale = [];
+        foreach ($overrides as $key => $value) {
+            if (!\is_array($value)) {
+                continue;
+            }
+
+            if (array_any(['title', 'content', 'baseHash'], fn ($field) => \array_key_exists($field, $value))) {
+                $byLocale[(string) ($value['baseLocale'] ?? LegalModelCatalog::FALLBACK_LOCALE)][(string) $key] = $value;
+                continue;
+            }
+
+            foreach ($value as $id => $override) {
+                if (\is_array($override)) {
+                    $byLocale[(string) $key][(string) $id] = $override;
+                }
+            }
+        }
+
+        return $byLocale;
+    }
+
+    // An added section's title or content as [locale => text]. A plain string, stored before wording was split by language, is read as the fallback locale's
+    public static function textsOf(mixed $text): array
+    {
+        if (\is_array($text)) {
+            return array_filter(array_map(strval(...), $text), static fn (string $value): bool => '' !== trim($value));
+        }
+
+        return '' === trim((string) $text) ? [] : [LegalModelCatalog::FALLBACK_LOCALE => (string) $text];
+    }
+
+    // An added section's text in a locale: its own, else the fallback locale's, else whichever it was written in - a clause the client added is shown untranslated rather than dropped
+    public static function textFor(array $texts, string $locale): string
+    {
+        return $texts[$locale] ?? $texts[LegalModelCatalog::FALLBACK_LOCALE] ?? (string) (reset($texts) ?: '');
     }
 
     // The model's units as the bundle currently ships them, in document order - what the customization screen lists and what the drift check hashes. Markers left unresolved on purpose: a hash must not move just because the site was renamed.

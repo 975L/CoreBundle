@@ -28,9 +28,10 @@ class LegalModelCustomizer
         return $this->units[$model . '.' . $locale] ??= $this->renderer->units($model, $locale);
     }
 
-    // One form row per unit the bundle ships, pre-filled with the text as it currently stands: the client's own version where they wrote one, ours everywhere else
-    public function toFormData(array $units, array $customization): array
+    // One form row per unit the bundle ships, pre-filled with the text as it currently stands in this locale: the client's own version where they wrote one, ours everywhere else
+    public function toFormData(array $units, array $customization, string $locale): array
     {
+        $customization = $this->renderer->forLocale($customization, $locale);
         $hidden = array_flip((array) ($customization['hidden'] ?? []));
         $positions = (array) ($customization['positions'] ?? []);
         $overrides = (array) ($customization['overrides'] ?? []);
@@ -69,18 +70,21 @@ class LegalModelCustomizer
         ];
     }
 
-    // The submitted screen boiled back down to a delta: only what actually differs from the bundle is kept
-    public function toCustomization(array $formData, array $units, string $locale): array
+    // The submitted screen boiled back down to a delta: only what actually differs from the bundle is kept. The screen shows one locale's wording, so the other locales' are carried over from the current delta untouched
+    public function toCustomization(array $formData, array $units, string $locale, array $current = []): array
     {
         $byId = array_combine(array_column($units, 'id'), $units);
 
-        [$hidden, $overrides, $submitted] = $this->submittedUnits($formData, $byId, $locale);
+        [$hidden, $localOverrides, $submitted] = $this->submittedUnits($formData, $byId, $locale);
+
+        $overrides = LegalModelRenderer::overridesByLocale((array) ($current['overrides'] ?? []));
+        $overrides[$locale] = $localOverrides;
 
         return array_filter([
             'hidden' => $hidden,
             'positions' => $this->reorderedScopes($units, $submitted),
-            'overrides' => $overrides,
-            'extra' => $this->submittedExtra($formData),
+            'overrides' => array_filter($overrides),
+            'extra' => $this->submittedExtra($formData, (array) ($current['extra'] ?? []), $locale),
         ]);
     }
 
@@ -133,27 +137,51 @@ class LegalModelCustomizer
         ];
     }
 
-    // The sections the client added of their own, a row left blank on both counts adding nothing
-    private function submittedExtra(array $formData): array
+    // The sections the client added of their own, their wording kept per locale. A row left without text in any locale adds nothing
+    private function submittedExtra(array $formData, array $current, string $locale): array
     {
-        $extra = [];
+        $previous = array_column(array_filter($current, \is_array(...)), null, 'id');
 
+        $extra = [];
         foreach ((array) ($formData['extra'] ?? []) as $section) {
-            $title = trim((string) ($section['title'] ?? ''));
-            $content = trim((string) ($section['content'] ?? ''));
-            if ('' === $title && '' === $content) {
+            $id = $this->extraId($section);
+            [$titles, $contents] = $this->localizedTexts((array) ($previous[$id] ?? []), $section, $locale);
+
+            if ([] === $titles && [] === $contents) {
                 continue;
             }
 
             $extra[] = [
-                'id' => $this->extraId($section),
+                'id' => $id,
                 'parent' => (string) ($section['parent'] ?? ''),
-                'title' => $title,
-                'content' => $content,
+                'title' => $titles,
+                'content' => $contents,
             ];
         }
 
         return $extra;
+    }
+
+    // One added section's titles and contents per locale once this locale's row is taken in. A locale with no text of its own is shown another's: saved as it was shown, that is no translation, and nothing is stored for it
+    /** @return array{0: array<string, string>, 1: array<string, string>} */
+    private function localizedTexts(array $previous, array $row, string $locale): array
+    {
+        $titles = LegalModelRenderer::textsOf($previous['title'] ?? '');
+        $contents = LegalModelRenderer::textsOf($previous['content'] ?? '');
+        $title = trim((string) ($row['title'] ?? ''));
+        $content = trim((string) ($row['content'] ?? ''));
+
+        $untranslated = !isset($titles[$locale]) && !isset($contents[$locale])
+            && $title === trim(LegalModelRenderer::textFor($titles, $locale))
+            && LegalModelRenderer::comparable($content) === LegalModelRenderer::comparable(LegalModelRenderer::textFor($contents, $locale));
+        if ($untranslated) {
+            return [$titles, $contents];
+        }
+
+        return [
+            LegalModelRenderer::textsOf([...$titles, $locale => $title]),
+            LegalModelRenderer::textsOf([...$contents, $locale => $content]),
+        ];
     }
 
     // The identifier an added section keeps across saves, minted on the first one - the screen posts none for a row that has just been typed
@@ -176,25 +204,37 @@ class LegalModelCustomizer
         return [...$data, 'customization' => $customization];
     }
 
-    // Overrides whose bundle text has changed since they were written, as [id => the model's current unit].
-    // Nothing is applied automatically: only the client can decide whether a reworded clause of ours belongs in a text they took responsibility for
-    public function drifted(string $model, array $customization): array
+    // Overrides whose bundle text has changed since they were written, as [id => the model's current unit], in one locale or, without one, in all of them. Nothing is applied automatically: only the client can decide whether a reworded clause of ours belongs in a text they took responsibility for
+    public function drifted(string $model, array $customization, ?string $locale = null): array
     {
         $drifted = [];
 
-        foreach ((array) ($customization['overrides'] ?? []) as $id => $override) {
-            $units = $this->units($model, (string) ($override['baseLocale'] ?? LegalModelCatalog::FALLBACK_LOCALE));
-            $current = array_combine(array_column($units, 'id'), $units)[$id] ?? null;
-
-            // A unit that disappeared from the model is not drift - the override simply has nothing left to apply to, and the renderer ignores it
-            if (null === $current || ($override['baseHash'] ?? '') === $current['hash']) {
+        foreach (LegalModelRenderer::overridesByLocale((array) ($customization['overrides'] ?? [])) as $overridesLocale => $overrides) {
+            if (null !== $locale && $locale !== $overridesLocale) {
                 continue;
             }
 
-            $drifted[$id] = $current;
+            $units = $this->units($model, (string) $overridesLocale);
+            $byId = array_combine(array_column($units, 'id'), $units);
+            foreach ($overrides as $id => $override) {
+                $current = $byId[$id] ?? null;
+
+                // A unit that disappeared from the model is not drift - the override simply has nothing left to apply to, and the renderer ignores it
+                if (null === $current || ($override['baseHash'] ?? '') === $current['hash']) {
+                    continue;
+                }
+
+                $drifted[$id] = $current;
+            }
         }
 
         return $drifted;
+    }
+
+    // How many units carry an override, every locale counted
+    public function overriddenCount(array $customization): int
+    {
+        return array_sum(array_map(\count(...), LegalModelRenderer::overridesByLocale((array) ($customization['overrides'] ?? []))));
     }
 
     // True when what came back is, to the character that matters, still the bundle's own text

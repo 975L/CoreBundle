@@ -421,6 +421,12 @@ are **this bundle's**: the `legal_model` block renders them and the **Legal mode
 them section by section. A site running a shop with no page management needs them just as much. **Do
 not write legal text into a template**, and do not duplicate the models in a satellite bundle.
 
+The customization is a delta stored in the block's `customization`: hiding and reordering apply in every
+language, wording does not — a rewrite lives under `overrides.{locale}.{id}`, an added section keeps one
+`title`/`content` per locale and falls back to the French one where a language has none.
+`LegalModelRenderer::forLocale()` is the one place the delta is read for a locale (older, unsplit deltas
+included); go through it rather than reading `overrides` or `extra` directly.
+
 A model states only the processing the site actually does: `site-has-accounts` (bool, `true` by
 default) drops the account, password and login-identifier passages of the privacy policy on a site
 holding no accounts, a text describing processing that does not exist being worse than a short one.

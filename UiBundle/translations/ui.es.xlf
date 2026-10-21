@@ -536,7 +536,7 @@
             </trans-unit>
             <trans-unit id="emqi7.W">
                 <source>description.legal_customize</source>
-                <target>Los textos siguientes son los del bundle: modifíquelos directamente. Mientras no toque una sección, esta sigue actualizándose con el bundle; en cuanto la modifica, pasa a ser suya y usted asume la responsabilidad. Arrastre una tarjeta por su encabezado para cambiar el orden. En cualquier caso, el contenido de estas páginas es su responsabilidad editorial y jurídica.</target>
+                <target>Los textos siguientes son los del bundle: modifíquelos directamente. Mientras no toque una sección, esta sigue actualizándose con el bundle; en cuanto la modifica, pasa a ser suya y usted asume la responsabilidad. Arrastre una tarjeta por su encabezado para cambiar el orden. En cualquier caso, el contenido de estas páginas es su responsabilidad editorial y jurídica. Los textos son los del idioma del back-office: cámbielo para escribirlos en otro. Ocultar una sección o cambiar el orden vale para todos los idiomas.</target>
             </trans-unit>
             <trans-unit id="YgzofbB">
                 <source>description.legal_drift</source>

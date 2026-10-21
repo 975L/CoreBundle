@@ -2034,6 +2034,14 @@ being rendered from the bundle's own template, which means **it keeps arriving w
 A block with no delta at all skips the DOM pass entirely and renders exactly what it rendered before this
 existed — nothing to migrate, on any existing site.
 
+**Wording is per language, structure is not.** The screen shows the back-office's language - switch it to
+write another one. Hiding and moving a section apply in every language; a rewrite is stored under
+`customization.overrides.{locale}.{id}`, and an added section keeps one `title` and one `content` per locale
+(`{"fr": …, "en": …}`), shown in the French one where a language has none yet rather than dropped. Saving a
+language whose added section was shown that fallback text untouched stores no translation for it. A delta
+written before v1.72.0 is read as it was meant: an override under the `baseLocale` it carries, an added section's
+plain text as French (`LegalModelRenderer::forLocale()`, the one place either is read).
+
 The granularity is the `<section>` and, inside it, the `<h3>`: a section's own body is what sits between its
 heading and its first sub-section, so rewriting a section leaves its sub-sections alone, and vice versa.
 
