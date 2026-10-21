@@ -2155,6 +2155,24 @@ div:has(> input[type=date]:is(.success, :is([required], [pattern], [minlength], 
   overflow: hidden;
 }
 
+.oauth-login {
+  width: min(var(--form-width), 100%);
+  margin: 2em auto 0 auto;
+}
+
+.oauth-login-separator {
+  display: flex;
+  align-items: center;
+  gap: 1em;
+  margin: 0 0 1.5em 0;
+  color: color-mix(in srgb, var(--text) 60%, var(--background));
+}
+.oauth-login-separator::before, .oauth-login-separator::after {
+  content: "";
+  flex: 1;
+  border-top: 1px solid var(--border-color);
+}
+
 iframe {
   width: 95vw;
   max-width: 400px;

@@ -303,3 +303,24 @@ div:has(#{text-inputs($valid-state, '> ')})::after {
     height: 1px;
     overflow: hidden;
 }
+
+// The provider buttons under a login or register form, kept at a distance from its submit button behind an "or" rule: right under it, they took the clicks meant for it
+.oauth-login {
+    width: min(var(--form-width), 100%);
+    margin: 2em auto 0 auto;
+}
+
+.oauth-login-separator {
+    display: flex;
+    align-items: center;
+    gap: 1em;
+    margin: 0 0 1.5em 0;
+    color: color-mix(in srgb, var(--text) 60%, var(--background));
+
+    &::before,
+    &::after {
+        content: '';
+        flex: 1;
+        border-top: 1px solid var(--border-color);
+    }
+}

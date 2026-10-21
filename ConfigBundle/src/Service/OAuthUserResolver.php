@@ -11,11 +11,13 @@
 namespace c975L\ConfigBundle\Service;
 
 use App\Entity\User;
+use c975L\ConfigBundle\Event\UserCreatedEvent;
 use c975L\ConfigBundle\Model\OAuthIdentity;
 use c975L\ConfigBundle\Model\OAuthResolution;
 use c975L\UiBundle\Entity\Form;
 use c975L\UiBundle\Repository\FormRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 // Turns "the provider says this address just signed in" into the account to log in - creating it, accepting it, or taking it over, and refusing outright when the address wasn't vouched for.
@@ -30,6 +32,7 @@ class OAuthUserResolver
         private readonly UserPasswordHasherInterface $passwordHasher,
         private readonly UserCreationNotifier $userCreationNotifier,
         private readonly FormRepository $formRepository,
+        private readonly EventDispatcherInterface $eventDispatcher,
     ) {
     }
 
@@ -76,6 +79,9 @@ class OAuthUserResolver
 
         $this->entityManager->flush();
 
+        // The real owner arrives here, the account becoming usable only now: the squatter who created it never had a welcome to be given
+        $this->eventDispatcher->dispatch(new UserCreatedEvent($user));
+
         return $user;
     }
 
@@ -97,6 +103,9 @@ class OAuthUserResolver
 
         // Same notification any registration sends (see UserRegistrar): an account is an account whichever door it came through, and the owner has as much reason to hear about this one. Its result is dropped on purpose, a notification the visitor knows nothing about having no business turning their sign-in into a failure
         $this->userCreationNotifier->notify($user);
+
+        // Last, so a listener that throws can't keep the notification from going out
+        $this->eventDispatcher->dispatch(new UserCreatedEvent($user));
 
         return $user;
     }

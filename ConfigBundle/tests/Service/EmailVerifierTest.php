@@ -10,6 +10,7 @@
 
 namespace c975L\ConfigBundle\Tests\Service;
 
+use c975L\ConfigBundle\Event\UserCreatedEvent;
 use c975L\ConfigBundle\Service\EmailVerifier;
 use c975L\ConfigBundle\Tests\Fixtures\UserStub;
 use c975L\UiBundle\Model\EmailSendRequest;
@@ -18,6 +19,7 @@ use c975L\UiBundle\Service\EmailTemplateRenderer;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -33,6 +35,19 @@ class EmailVerifierTest extends TestCase
         $translator->method('trans')->willReturnCallback(static fn (string $id): string => $id);
 
         return $translator;
+    }
+
+    // Keeps what it was handed, in the same list the caller may log other calls into, so a test can tell what came first
+    private function createEventDispatcher(?array &$dispatched = null): EventDispatcherInterface
+    {
+        $eventDispatcher = $this->createStub(EventDispatcherInterface::class);
+        $eventDispatcher->method('dispatch')->willReturnCallback(static function (object $event) use (&$dispatched): object {
+            $dispatched[] = $event;
+
+            return $event;
+        });
+
+        return $eventDispatcher;
     }
 
     // The body comes from the admin-editable "account_validation" EmailTemplate, already wrapped in whichever email layout is registered - so it goes out as pre-rendered html, never as a Twig path this bundle would have to own
@@ -70,7 +85,7 @@ class EmailVerifierTest extends TestCase
 
         $entityManager = $this->createStub(EntityManagerInterface::class);
 
-        $emailVerifier = new EmailVerifier($verifyEmailHelper, $emailService, $emailTemplateRenderer, $this->createTranslator(), $entityManager, new ArrayAdapter());
+        $emailVerifier = new EmailVerifier($verifyEmailHelper, $emailService, $emailTemplateRenderer, $this->createTranslator(), $entityManager, new ArrayAdapter(), $this->createEventDispatcher());
         $result = $emailVerifier->sendEmailConfirmation('app_verify_email', $user, 'Confirm your email', 'user@example.test');
 
         $this->assertTrue($result);
@@ -94,7 +109,7 @@ class EmailVerifierTest extends TestCase
         $emailService = $this->createMock(EmailService::class);
         $emailService->expects($this->never())->method('send');
 
-        $emailVerifier = new EmailVerifier($verifyEmailHelper, $emailService, $emailTemplateRenderer, $this->createTranslator(), $this->createStub(EntityManagerInterface::class), new ArrayAdapter());
+        $emailVerifier = new EmailVerifier($verifyEmailHelper, $emailService, $emailTemplateRenderer, $this->createTranslator(), $this->createStub(EntityManagerInterface::class), new ArrayAdapter(), $this->createEventDispatcher());
 
         $this->assertFalse($emailVerifier->sendEmailConfirmation('app_verify_email', $user, 'Confirm your email', 'user@example.test'));
     }
@@ -151,6 +166,7 @@ class EmailVerifierTest extends TestCase
             $this->createTranslator(),
             $this->createStub(EntityManagerInterface::class),
             new ArrayAdapter(),
+            $this->createEventDispatcher(),
         );
 
         $this->assertFalse($emailVerifier->sendEmailConfirmation('app_verify_email', new UserStub('user@example.test')->withId(42), 'Confirm your email', 'user@example.test'));
@@ -182,16 +198,14 @@ class EmailVerifierTest extends TestCase
             $this->createTranslator(),
             $this->createStub(EntityManagerInterface::class),
             new ArrayAdapter(),
+            $this->createEventDispatcher(),
         );
     }
 
-    public function testHandleEmailConfirmationMarksUserAsVerifiedAndEnabled(): void
+    // validateEmailConfirmationFromRequest() is only documented via @method on the interface (it lives on the final VerifyEmailHelper class), so PHPUnit's mock generator can't stub it from the interface alone. A hand-written stub can.
+    private function createValidatingHelper(Request $request, UserStub $user): VerifyEmailHelperInterface
     {
-        $user = new UserStub('user@example.test');
-        $request = Request::create('/verification/email?id=42');
-
-        // validateEmailConfirmationFromRequest() is only documented via @method on the interface (it lives on the final VerifyEmailHelper class), so PHPUnit's mock generator can't stub it from the interface alone. A hand-written stub can.
-        $verifyEmailHelper = new class ($request, $user) implements VerifyEmailHelperInterface {
+        return new class ($request, $user) implements VerifyEmailHelperInterface {
             public int $calls = 0;
 
             public function __construct(
@@ -219,18 +233,47 @@ class EmailVerifierTest extends TestCase
                 ++$this->calls;
             }
         };
+    }
+
+    public function testHandleEmailConfirmationMarksUserAsVerifiedAndEnabled(): void
+    {
+        $user = new UserStub('user@example.test');
+        $request = Request::create('/verification/email?id=42');
+        $verifyEmailHelper = $this->createValidatingHelper($request, $user);
 
         $emailService = $this->createStub(EmailService::class);
 
+        $log = [];
         $entityManager = $this->createMock(EntityManagerInterface::class);
         $entityManager->expects($this->once())->method('persist')->with($user);
-        $entityManager->expects($this->once())->method('flush');
+        $entityManager->expects($this->once())->method('flush')->willReturnCallback(static function () use (&$log): void {
+            $log[] = 'flush';
+        });
 
-        $emailVerifier = new EmailVerifier($verifyEmailHelper, $emailService, $this->createStub(EmailTemplateRenderer::class), $this->createTranslator(), $entityManager, new ArrayAdapter());
+        $emailVerifier = new EmailVerifier($verifyEmailHelper, $emailService, $this->createStub(EmailTemplateRenderer::class), $this->createTranslator(), $entityManager, new ArrayAdapter(), $this->createEventDispatcher($log));
         $emailVerifier->handleEmailConfirmation($request, $user);
 
         $this->assertSame(1, $verifyEmailHelper->calls);
         $this->assertTrue($user->isVerified());
         $this->assertTrue($user->isEnabled());
+
+        // The account becomes usable here, so this is where the app welcomes it (see UserCreatedEvent) - once it is flushed, a listener reading it back finding it confirmed
+        $this->assertCount(2, $log);
+        $this->assertSame('flush', $log[0]);
+        $this->assertInstanceOf(UserCreatedEvent::class, $log[1]);
+        $this->assertSame($user, $log[1]->user);
+    }
+
+    // A link clicked twice confirms nothing new, and must not welcome the same member twice
+    public function testHandleEmailConfirmationOfAnAlreadyVerifiedAccountDispatchesNothing(): void
+    {
+        $user = new UserStub('user@example.test')->setIsVerified(true);
+        $request = Request::create('/verification/email?id=42');
+
+        $dispatched = [];
+        $emailVerifier = new EmailVerifier($this->createValidatingHelper($request, $user), $this->createStub(EmailService::class), $this->createStub(EmailTemplateRenderer::class), $this->createTranslator(), $this->createStub(EntityManagerInterface::class), new ArrayAdapter(), $this->createEventDispatcher($dispatched));
+        $emailVerifier->handleEmailConfirmation($request, $user);
+
+        $this->assertSame([], $dispatched);
     }
 }

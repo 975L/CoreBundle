@@ -1,5 +1,15 @@
 [
     {
+        "date": "2026-10-21",
+        "description": [
+            {
+                "en": "The Google sign-in button is now set apart from the login and registration forms by an \"or\", so it is no longer clicked by mistake.",
+                "fr": "Le bouton de connexion Google est désormais séparé des formulaires de connexion et d'inscription par un « ou », pour ne plus être cliqué par erreur.",
+                "es": "El botón de inicio de sesión con Google ahora está separado de los formularios de acceso y registro por un «o», para que ya no se pulse por error."
+            }
+        ]
+    },
+    {
         "date": "2026-10-14",
         "description": [
             {

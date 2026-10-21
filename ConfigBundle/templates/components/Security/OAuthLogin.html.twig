@@ -6,7 +6,9 @@
 {% set providers = oauth_login_providers() %}
 
 {% if providers is not empty %}
-    <div class="text text-center">
+    {# Set apart from the form above it, its submit button having drawn the clicks meant for the providers when they stood right under it #}
+    <div class="text text-center oauth-login">
+        <p class="oauth-login-separator">{{ 'label.or'|trans({}, 'config') }}</p>
         {% for provider in providers %}
             <a class="btn btn-large btn-secondary" href="{{ path('config_oauth_connect', redirect ? {provider: provider.key, redirect: redirect} : {provider: provider.key}) }}" rel="nofollow">
                 {# Inlined rather than served as an asset: a provider's mark is part of this button and of nothing else, and an <img> would be one more file to install in every site plus one more source to allow through the CSP #}

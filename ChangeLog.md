@@ -1,5 +1,20 @@
 # ChangeLog
 
+## v1.71.0
+
+Added an event when an account becomes usable
+
+### ConfigBundle
+
+- Added `UserCreatedEvent`, dispatched once an account becomes usable (21/10/2026)
+- Set the OAuth buttons apart from the form behind an "or" separator (21/10/2026)
+- Updated the readme and the `c975l-users` skill (21/10/2026)
+
+### UiBundle
+
+- Added the styles of the OAuth "or" separator (21/10/2026)
+- The copyright model credits Font Awesome Free (CC BY 4.0) for the icons (21/10/2026)
+
 ## v1.70.2
 
 Added a language to the catalog's products

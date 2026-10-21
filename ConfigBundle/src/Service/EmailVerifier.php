@@ -10,11 +10,13 @@
 
 namespace c975L\ConfigBundle\Service;
 
+use c975L\ConfigBundle\Event\UserCreatedEvent;
 use c975L\UiBundle\Model\EmailSendRequest;
 use c975L\UiBundle\Service\EmailService;
 use c975L\UiBundle\Service\EmailTemplateRenderer;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Cache\CacheItemPoolInterface;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -36,6 +38,7 @@ class EmailVerifier
         private readonly TranslatorInterface $translator,
         private readonly EntityManagerInterface $entityManager,
         private readonly CacheItemPoolInterface $cache,
+        private readonly EventDispatcherInterface $eventDispatcher,
     ) {
     }
 
@@ -107,9 +110,12 @@ class EmailVerifier
         return 'c975l_email_confirmation_' . hash('xxh128', mb_strtolower(trim($to)));
     }
 
+    // Confirms the address from the signed link, and dispatches UserCreatedEvent the first time only: the account becomes usable here, so a link clicked twice welcomes nobody twice and an address never confirmed was never welcomed
     public function handleEmailConfirmation(Request $request, UserInterface $user): void
     {
         $this->verifyEmailHelper->validateEmailConfirmationFromRequest($request, (string) $this->getUserId($user), $user->getUserIdentifier());
+
+        $wasVerified = method_exists($user, 'isVerified') && $user->isVerified();
 
         if (method_exists($user, 'setIsVerified')) {
             $user->setIsVerified(true);
@@ -120,6 +126,10 @@ class EmailVerifier
 
         $this->entityManager->persist($user);
         $this->entityManager->flush();
+
+        if (!$wasVerified) {
+            $this->eventDispatcher->dispatch(new UserCreatedEvent($user));
+        }
     }
 
     // App\Entity\User (app-space, this bundle can't reference it directly) is expected to expose getId() - duck-typed since it's not part of any Security interface

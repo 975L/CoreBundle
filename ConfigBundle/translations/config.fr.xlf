@@ -2522,6 +2522,10 @@
                 <source>label.onboarding_start</source>
                 <target>Visite guidée</target>
             </trans-unit>
+            <trans-unit id="c.FxBmU">
+                <source>label.or</source>
+                <target>ou</target>
+            </trans-unit>
             <trans-unit id="yaiKGee">
                 <source>label.password</source>
                 <target>Mot de passe</target>

@@ -766,6 +766,10 @@ security:
 
 A call carrying no token goes through as a visitor, which is what lets UiBundle's `AppLibraryController` hold an app's favorites and plays under the device's own token until the member connects. The tokens live in `site_app_token` (**needs db update**), hashed, and are deleted with the account or when it is anonymized.
 
+### Welcoming new accounts
+
+`UserCreatedEvent` is dispatched once a visitor's account becomes usable: when its address is confirmed from the registration email (`EmailVerifier::handleEmailConfirmation`, the first time only), or on a first OAuth sign-in creating the account or taking over one never confirmed (`OAuthUserResolver`). An account registered and never confirmed doesn't dispatch it, so a bot posting addresses at the form is handed nothing. It is the counterpart of `UserAnonymizedEvent`. An app gives its new members something there (a gift, a first item...) with a `#[AsEventListener]` on it; its `user` is the account just made usable. The accounts created from the console don't dispatch it.
+
 ### Being notified of new accounts
 
 Every account created through `UserRegistrar` also sends a short plain-text notification to the site itself, so the owner knows their site is being signed up to without having to watch the User screen. It goes to the site-wide `email-to` address (the one every other c975L email already goes to, see UiBundle's `EmailService`) — there's no separate address to keep in sync — and it's written in `kernel.default_locale`, not in whatever language the visitor was browsing in.
