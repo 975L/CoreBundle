@@ -55,6 +55,13 @@ class LocalizedUrlGeneratorTest extends TestCase
         $this->assertSame('/en/shop/products/table-basse', $generator->path('product_display', ['slug' => 'table-basse'], ['fr', 'en']));
     }
 
+    // A bare url answering in the language it negotiated says it to the generator, no route attribute carrying it - and the writing language asked keeps the bare url
+    public function testTheLanguageAskedOverridesTheRoutesOwn(): void
+    {
+        $this->assertSame('/en/shop', $this->generator(null)->path('shop_index', locale: 'en'));
+        $this->assertSame('/shop', $this->generator('en')->path('shop_index', locale: 'fr'));
+    }
+
     // A language menu on a screen with no Page behind it: the same screen offered in each language the site declares, through the bare url that keeps the choice
     public function testAScreenIsOfferedInEveryLanguageTheSiteDeclares(): void
     {

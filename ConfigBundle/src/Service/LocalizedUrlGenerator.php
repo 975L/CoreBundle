@@ -28,14 +28,14 @@ class LocalizedUrlGenerator
     ) {
     }
 
-    // The route's own url, or its localised twin's when there is one and the language being read answers for it: "$locales" names the languages the target really answers in, for a twin that exists but 404s where a row is not translated yet, and left null the twin is taken whenever it exists
+    // The route's own url, or its localised twin's when there is one and the language being read answers for it: "$locales" names the languages the target really answers in, for a twin that exists but 404s where a row is not translated yet, and left null the twin is taken whenever it exists. "$locale" is the language being read where no route says it - a bare url answering in the language it negotiated - the route's own otherwise
     /**
      * @param array<string, mixed> $parameters
      * @param list<string>|null    $locales
      */
-    public function path(string $route, array $parameters = [], ?array $locales = null): string
+    public function path(string $route, array $parameters = [], ?array $locales = null, ?string $locale = null): string
     {
-        $locale = $this->readingLocale();
+        $locale = $this->readingLocale($locale);
         if (null === $locale || (null !== $locales && !\in_array($locale, $locales, true))) {
             return $this->urlGenerator->generate($route, $parameters);
         }
@@ -124,10 +124,10 @@ class LocalizedUrlGenerator
         return \count(array_unique($languages)) > 1 ? $languages : [];
     }
 
-    // The language being read, when it is one the site declares besides the one it was written in. The route attribute rather than getLocale(), which a controller switches back for the duration of the render
-    private function readingLocale(): ?string
+    // The language being read, when it is one the site declares besides the one it was written in. The one asked, else the route attribute rather than getLocale(), which a controller switches back for the duration of the render
+    private function readingLocale(?string $asked): ?string
     {
-        $locale = $this->requestStack->getCurrentRequest()?->attributes->get('_locale');
+        $locale = $asked ?? $this->requestStack->getCurrentRequest()?->attributes->get('_locale');
 
         return \is_string($locale) && '' !== $locale && $locale !== $this->siteLocales->getDefaultLocale() ? $locale : null;
     }

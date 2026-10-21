@@ -216,7 +216,8 @@ a product is something else again:
 
 `Service\LocalizedUrlGenerator` is the other half, so a link follows the language being read rather
 than sending the visitor back into the writing language at the first click: `path()` takes the
-localised twin where the target answers in that language, and `screenLanguages()` (the
+localised twin where the target answers in that language — its `$locale` argument naming that language
+where no route attribute does, a bare url answering in the language it negotiated — and `screenLanguages()` (the
 `screen_languages()` Twig function) offers the screen being read in each language, as bare urls
 carrying `?_locale=xx`. A route with no twin whose own path holds `{_locale}` is offered in each
 language it accepts, through `sameRouteIn()` — never a route whose `_locale` is only a default, which

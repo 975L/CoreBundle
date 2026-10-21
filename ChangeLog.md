@@ -1,5 +1,13 @@
 # ChangeLog
 
+## v1.72.4
+
+Let LocalizedUrlGenerator::path() take the language being read
+
+### ConfigBundle
+
+- Added a `$locale` argument to `LocalizedUrlGenerator::path()` for a bare url answering in a negotiated language (21/10/2026)
+
 ## v1.72.3
 
 Gave the icon-only actions an accessible name
