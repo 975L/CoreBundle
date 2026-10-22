@@ -13,8 +13,8 @@
         <p>{{ 'text.app_connect_password'|trans }}</p>
     </div>
 
-    {# Posted to the very address the app opened, which carries what it asked for #}
-    <form method="post">
+    {# Posted to the very address the app opened, which carries what it asked for. Left to the browser rather than Turbo: its fetch() would follow the redirection to the app under "connect-src", which no app scheme is in #}
+    <form method="post" data-turbo="false">
         <input type="hidden" name="_token" value="{{ csrf_token('app_connect') }}">
         <button class="btn btn-large btn-primary" type="submit">
             {{ 'label.app_connect_button'|trans }}

@@ -1,5 +1,13 @@
 # ChangeLog
 
+## v1.72.8
+
+Kept Turbo off the app connect form
+
+### ConfigBundle
+
+- Posted the `/app/connect` agreement form without Turbo, whose `fetch()` blocked the redirection to the app (22/10/2026)
+
 ## v1.72.7
 
 Let the app connect page redirect to the app under a strict CSP

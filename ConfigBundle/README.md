@@ -764,7 +764,7 @@ security:
                 token_handler: c975L\ConfigBundle\Security\AppTokenHandler
 ```
 
-On `/app/connect` only, the schemes are added to the `form-action` of the site's Content-Security-Policy when it declares one, the agreement being answered by a redirection to the app that a policy limited to `'self'` would stop silently.
+On `/app/connect` only, the schemes are added to the `form-action` of the site's Content-Security-Policy when it declares one, the agreement being answered by a redirection to the app that a policy limited to `'self'` would stop silently. The agreement form is posted with `data-turbo="false"`, Turbo's `fetch()` following that redirection under `connect-src` instead: keep it if you override `@c975LConfig/app/connect.html.twig`.
 
 A call carrying no token goes through as a visitor, which is what lets UiBundle's `AppLibraryController` hold an app's favorites and plays under the device's own token until the member connects. The tokens live in `site_app_token` (**needs db update**), hashed, and are deleted with the account or when it is anonymized.
 

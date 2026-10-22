@@ -264,6 +264,8 @@ goes through as a visitor. Tokens cascade with the account, and `AppTokenSubscri
 `UserAnonymizedEvent`.
 `AppConnectCspSubscriber` adds the schemes to the policy's `form-action` on `config_app_connect` only,
 through `CspFormAction::widen()`; a policy without `form-action` is left alone.
+The agreement form carries `data-turbo="false"`: Turbo's `fetch()` would follow the redirection to the
+app under `connect-src`, which no app scheme is in, so an override of `app/connect.html.twig` keeps it.
 
 ## Tutorial account
 
