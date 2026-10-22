@@ -1,5 +1,15 @@
 [
     {
+        "date": "2026-10-22",
+        "description": [
+            {
+                "en": "When connecting the site's mobile app to an account, the agreement button now does send you back to the app.",
+                "fr": "Lors de la connexion de l'application mobile du site à un compte, le bouton d'accord renvoie désormais bien vers l'application.",
+                "es": "Al conectar la aplicación móvil del sitio a una cuenta, el botón de aceptación ahora sí devuelve a la aplicación."
+            }
+        ]
+    },
+    {
         "date": "2026-10-21",
         "description": [
             {

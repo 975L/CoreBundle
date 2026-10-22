@@ -1,5 +1,14 @@
 # ChangeLog
 
+## v1.72.7
+
+Let the app connect page redirect to the app under a strict CSP
+
+### ConfigBundle
+
+- Added `AppConnectCspSubscriber` adding the app schemes to `form-action` on `/app/connect` (22/10/2026)
+- Added `CspFormAction` to widen a response's `form-action` (22/10/2026)
+
 ## v1.72.6
 
 Listed the LocalizedUrlGenerator fix missing from v1.72.5
