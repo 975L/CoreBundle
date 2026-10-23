@@ -1,5 +1,15 @@
 # ChangeLog
 
+## v1.73.0
+
+One social status column for every bundle's list
+
+### UiBundle
+
+- Added `Controller\Management\Trait\SocialStatusCrudTrait`, the "Réseaux sociaux" column a CRUD controller gets by naming its source type and translation domain, moved up from BookBundle (23/10/2026)
+- Read the column's date in the site's time zone (23/10/2026)
+- Gave the column a `<type>-social` class for a guided project (23/10/2026)
+
 ## v1.72.9
 
 Declared the pages' videos in the sitemaps

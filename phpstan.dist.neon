@@ -29,9 +29,10 @@ parameters:
         # EasyAdmin declares its fluent setters on the concrete fields, not on FieldInterface
         - '#Call to an undefined method EasyCorp\\Bundle\\EasyAdminBundle\\Contracts\\Field\\FieldInterface::#'
 
-        # A trait a bundle ships is used by the consuming application's own entities, never by the bundle itself
+        # A trait a bundle ships is used by the consuming application's own entities, or by the satellite bundles' CRUD controllers, never by the bundle itself
         -
             identifier: trait.unused
             paths:
                 - */src/Entity/Trait/*
+                - */src/Controller/Management/Trait/*
 
