@@ -1,5 +1,13 @@
 # ChangeLog
 
+## v1.76.2
+
+Larger slider arrows
+
+### UiBundle
+
+- Slider arrows drawn at 40px instead of 24px, an easier target (23/10/2026)
+
 ## v1.76.1
 
 Counted plays of a thing whose length cannot be read

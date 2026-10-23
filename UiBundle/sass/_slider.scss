@@ -243,6 +243,7 @@
 .slider-button {
     background: none;
     border: none;
+    // A target a hand finds without aiming: 40px of chevron in 56px of button, past WCAG's 44px minimum
     padding: 8px;
     cursor: pointer;
     pointer-events: auto;
@@ -254,8 +255,8 @@
 }
 
 .slider-button img {
-    width: 24px;
-    height: 24px;
+    width: 40px;
+    height: 40px;
     display: block;
 }
 
