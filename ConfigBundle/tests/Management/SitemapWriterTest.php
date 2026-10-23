@@ -15,6 +15,7 @@ use c975L\ConfigBundle\Management\SitemapWriter;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use PHPUnit\Framework\TestCase;
 use Twig\Environment;
+use Twig\Loader\FilesystemLoader;
 
 class SitemapWriterTest extends TestCase
 {
@@ -265,6 +266,39 @@ class SitemapWriterTest extends TestCase
         ])])->write();
 
         $this->assertSame([], $this->renderedUrls('site')[0]['alternates']);
+    }
+
+    // A page's videos reach the template as the provider declared them, an incomplete one dropped: Google rejects a <video:video> missing any of its four required fields
+    public function testWriteKeepsOnlyTheCompleteVideosAProviderDeclares(): void
+    {
+        $video = ['name' => 'Le film', 'description' => 'Une histoire', 'thumbnailUrl' => 'https://i.ytimg.com/vi/abc/hqdefault.jpg', 'embedUrl' => 'https://www.youtube-nocookie.com/embed/abc'];
+
+        $this->createWriter([$this->createRawProvider('site', [
+            ['loc' => 'https://example.com/a', 'videos' => [$video, ['name' => 'Sans miniature', 'description' => 'x', 'embedUrl' => 'https://example.com/e']]],
+            ['loc' => 'https://example.com/b'],
+        ])])->write();
+
+        $urls = $this->renderedUrls('site');
+        $this->assertSame([$video], $urls[0]['videos']);
+        $this->assertSame([], $urls[1]['videos']);
+    }
+
+    // The real template, so the <video:video> block is checked as the XML a crawler reads, namespace included
+    public function testTheTemplateWritesAVideoAsAVideoElement(): void
+    {
+        $loader = new FilesystemLoader();
+        $loader->addPath(\dirname(__DIR__, 2) . '/templates', 'c975LConfig');
+        $xml = new Environment($loader)->render('@c975LConfig/sitemaps/sitemap.xml.twig', ['urls' => [[
+            'loc' => 'https://example.com/a', 'lastmod' => '2026-01-15', 'changefreq' => 'weekly', 'priority' => 0.5, 'alternates' => [],
+            'videos' => [['name' => 'Tom & Jerry', 'description' => 'Une histoire', 'thumbnailUrl' => 'https://i.ytimg.com/vi/abc/hqdefault.jpg', 'embedUrl' => 'https://www.youtube-nocookie.com/embed/abc', 'uploadDate' => '2026-01-15']],
+        ]]]);
+
+        $document = new \DOMDocument();
+        $this->assertTrue($document->loadXML($xml));
+        $video = $document->getElementsByTagNameNS('http://www.google.com/schemas/sitemap-video/1.1', 'video')->item(0);
+        $this->assertNotNull($video);
+        $this->assertSame('Tom & Jerry', $video->getElementsByTagNameNS('http://www.google.com/schemas/sitemap-video/1.1', 'title')->item(0)?->textContent);
+        $this->assertSame('2026-01-15', $video->getElementsByTagNameNS('http://www.google.com/schemas/sitemap-video/1.1', 'publication_date')->item(0)?->textContent);
     }
 
     // Providers declare a priority on the admin's 0-10 scale, the protocol only accepts 0.0-1.0 - converted here, once, rather than by every provider

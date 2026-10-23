@@ -1376,6 +1376,8 @@ Return `[]` when there's nothing to declare (a bundle installed but with nothing
 
 A site offering several languages may add an **`alternates`** key, a `hreflang => absolute url` map for the same page in its other languages, written out as `<xhtml:link rel="alternate">`. Include the url's own language in the map: a group is read as a whole, so a page naming only its neighbours declares a group no engine keeps. A provider declaring nothing gets nothing written, which is every single-language site.
 
+A page playing videos may add a **`videos`** key: the schema.org `VideoObject`s its own JSON-LD carries (`name`, `description`, `thumbnailUrl`, `embedUrl`, optional `uploadDate`), written out as `<video:video>`. One missing any of the first four is dropped, Google rejecting an incomplete entry whole.
+
 Two more keys are accepted and ignored by the sitemap itself, `title` and `description`: they are what the site's `llms.txt` is built from, one section per provider — see [robots.txt, humans.txt and llms.txt](#robotstxt-humanstxt-and-llmstxt) below.
 
 Point Google Search Console at `sitemap-index.xml` only, never at the sub-sitemaps — installing or removing a bundle then changes what's crawled with nothing to update on Google's side. Both templates are overridable: `@c975LConfig/sitemaps/sitemap.xml.twig` (a sub-sitemap, gets `urls`) and `@c975LConfig/sitemaps/sitemap-index.xml.twig` (the index, gets `sitemaps`).

@@ -1,5 +1,14 @@
 # ChangeLog
 
+## v1.72.9
+
+Declared the pages' videos in the sitemaps
+
+### ConfigBundle
+
+- Added an optional `videos` key to `SitemapProviderInterface` urls, written as `<video:video>` (23/10/2026)
+- Dropped the videos missing a field Google requires from the sitemap (23/10/2026)
+
 ## v1.72.8
 
 Kept Turbo off the app connect form

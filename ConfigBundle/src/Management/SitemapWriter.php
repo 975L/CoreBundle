@@ -23,6 +23,8 @@ class SitemapWriter
     // On the providers' own 0-10 scale, so 5 ends up as the 0.5 the protocol gets
     private const int DEFAULT_PRIORITY = 5;
     private const int PRIORITY_SCALE = 10;
+    // What a <video:video> cannot go without, named as the VideoObject a provider hands over names it
+    private const array VIDEO_REQUIRED_FIELDS = ['name', 'description', 'thumbnailUrl', 'embedUrl'];
 
     private readonly string $sitemapFolder;
 
@@ -135,6 +137,19 @@ class SitemapWriter
             'priority' => min(1.0, max(0.0, (float) ($url['priority'] ?? self::DEFAULT_PRIORITY) / self::PRIORITY_SCALE)),
             // The other languages of the same page when the provider declares any, the key not even existing on a single-language site (see SitePageSitemapProvider)
             'alternates' => \is_array($url['alternates'] ?? null) ? $url['alternates'] : [],
+            'videos' => $this->normalizeVideos($url['videos'] ?? null),
         ], $urls);
+    }
+
+    // The videos the page plays, as schema.org VideoObjects - only those carrying the four fields a <video:video> cannot go without, an incomplete one being an entry Google rejects whole (see SitemapProviderInterface)
+    private function normalizeVideos(mixed $videos): array
+    {
+        return array_values(array_filter(
+            \is_array($videos) ? $videos : [],
+            static fn (mixed $video): bool => \is_array($video) && [] === array_filter(
+                self::VIDEO_REQUIRED_FIELDS,
+                static fn (string $field): bool => '' === (string) ($video[$field] ?? ''),
+            ),
+        ));
     }
 }

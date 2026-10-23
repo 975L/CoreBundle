@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-{# The xhtml namespace is only there for the "alternate" links: a sitemap with no translated page carries it unused, which stays valid and spares the writer a second header form #}
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+{# The xhtml and video namespaces are only there for the "alternate" links and the videos: a sitemap with neither carries them unused, which stays valid and spares the writer a second header form #}
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">
 {% for url in urls %}
     <url>
         <loc>{{ url.loc }}</loc>
@@ -10,6 +10,18 @@
 {# The other languages of this same page, itself included: a group is read whole, and a page naming only its neighbours would declare a group no engine keeps #}
 {% for hreflang, alternate in url.alternates|default({}) %}
         <xhtml:link rel="alternate" hreflang="{{ hreflang }}" href="{{ alternate }}"/>
+{% endfor %}
+{# The videos the page plays, read off the VideoObjects the provider handed over - the same ones the page's JSON-LD carries. 2048 characters is the most Google reads of a description #}
+{% for video in url.videos|default([]) %}
+        <video:video>
+            <video:thumbnail_loc>{{ video.thumbnailUrl }}</video:thumbnail_loc>
+            <video:title>{{ video.name }}</video:title>
+            <video:description>{{ video.description|slice(0, 2048) }}</video:description>
+            <video:player_loc>{{ video.embedUrl }}</video:player_loc>
+{% if video.uploadDate|default('') %}
+            <video:publication_date>{{ video.uploadDate }}</video:publication_date>
+{% endif %}
+        </video:video>
 {% endfor %}
     </url>
 {% endfor %}

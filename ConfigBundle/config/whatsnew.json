@@ -1,5 +1,15 @@
 [
     {
+        "date": "2026-10-23",
+        "description": [
+            {
+                "en": "The videos played on your pages are now declared to search engines, so they can show up in video results.",
+                "fr": "Les vidéos lues sur vos pages sont désormais déclarées aux moteurs de recherche, pour pouvoir apparaître dans leurs résultats vidéo.",
+                "es": "Los vídeos que se reproducen en sus páginas se declaran ahora a los buscadores, para que puedan aparecer en sus resultados de vídeo."
+            }
+        ]
+    },
+    {
         "date": "2026-10-22",
         "description": [
             {
