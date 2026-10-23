@@ -14,19 +14,20 @@ use c975L\UiBundle\Controller\PlayController;
 use c975L\UiBundle\Registry\FavoriteItemRegistry;
 use c975L\UiBundle\Service\FavoriteService;
 use c975L\UiBundle\Service\PlayService;
+use c975L\UiBundle\Service\PlayTicket;
 use c975L\UiBundle\Service\RateLimiterGuard;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-// A page of the site counts what it played to its end, under its holder when there is one, and only for its own pages and things it can show
+// A page of the site counts what it played, on a ticket enough of it went by on, under its holder when there is one, and only for its own pages and things it can show
 class PlayControllerTest extends TestCase
 {
     /** @var list<string> the plays written down, with their holder */
     private array $plays = [];
 
-    private function createController(?string $holder = null, bool $known = true, bool $accepted = true): PlayController
+    private function createController(?string $holder = null, bool $known = true, bool $accepted = true, bool $heard = true, bool $fresh = true): PlayController
     {
         $playService = $this->createStub(PlayService::class);
         $playService->method('record')->willReturnCallback(function (string $ownerType, int $ownerId, ?string $holder): array {
@@ -44,15 +45,45 @@ class PlayControllerTest extends TestCase
         $guard = $this->createStub(RateLimiterGuard::class);
         $guard->method('isAcceptedForIp')->willReturn($accepted);
 
-        $controller = new PlayController($playService, $favoriteService, $registry, $guard);
+        $playTicket = $this->createStub(PlayTicket::class);
+        $playTicket->method('issue')->willReturnCallback(static fn (string $ownerType, int $ownerId, ?string $holder): string => 'ticket-' . ($holder ?? 'nobody'));
+        $playTicket->method('ratio')->willReturn(0.7);
+        $playTicket->method('isHeard')->willReturn($heard);
+        $playTicket->method('spend')->willReturn($fresh);
+
+        $controller = new PlayController($playService, $playTicket, $favoriteService, $registry, $guard);
         $controller->setContainer(new Container());
 
         return $controller;
     }
 
-    private function request(string $origin = 'https://example.com'): Request
+    private function request(string $origin = 'https://example.com', string $content = '{"ticket":"t"}'): Request
     {
-        return Request::create('https://example.com/play/book/12', 'POST', server: ['CONTENT_TYPE' => 'application/json', 'HTTP_ORIGIN' => $origin, 'REMOTE_ADDR' => '203.0.113.7'], content: '{}');
+        return Request::create('https://example.com/play/book/12', 'POST', server: ['CONTENT_TYPE' => 'application/json', 'HTTP_ORIGIN' => $origin, 'REMOTE_ADDR' => '203.0.113.7'], content: $content);
+    }
+
+    // A playthrough starting is handed its ticket, bound to its holder, and the part to be played
+    public function testAStartIsHandedItsTicket(): void
+    {
+        $response = $this->createController(holder: 'u42')->start('book', 12, $this->request(content: '{}'));
+
+        $this->assertSame(['ticket' => 'ticket-u42', 'ratio' => 0.7], json_decode((string) $response->getContent(), true));
+        $this->assertSame([], $this->plays);
+    }
+
+    // The start answers to the same checks as the play
+    public function testAStartFromAnotherOriginIsTurnedDown(): void
+    {
+        $this->assertSame(403, $this->createController()->start('book', 12, $this->request('https://elsewhere.example'))->getStatusCode());
+    }
+
+    // No ticket, too little played, or a ticket already counted: nothing
+    public function testAPlayWithoutAGoodTicketIsNotCounted(): void
+    {
+        $this->assertSame(422, $this->createController()->play('book', 12, $this->request(content: '{}'))->getStatusCode());
+        $this->assertSame(422, $this->createController(heard: false)->play('book', 12, $this->request())->getStatusCode());
+        $this->assertSame(422, $this->createController(fresh: false)->play('book', 12, $this->request())->getStatusCode());
+        $this->assertSame([], $this->plays);
     }
 
     // A listener nobody knows is counted all the same

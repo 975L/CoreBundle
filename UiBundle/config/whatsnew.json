@@ -1,5 +1,15 @@
 [
     {
+        "date": "2026-10-23",
+        "description": [
+            {
+                "en": "A listen now counts once the part set in the settings (70% by default) has really been played: jumping straight to the end no longer counts.",
+                "fr": "Une écoute compte désormais une fois réellement jouée la part fixée dans les réglages (70 % par défaut) : avancer directement à la fin ne compte plus.",
+                "es": "Una escucha cuenta ahora una vez reproducida realmente la parte fijada en los ajustes (70 % por defecto): saltar directamente al final ya no cuenta."
+            }
+        ]
+    },
+    {
         "date": "2026-10-21",
         "description": [
             {

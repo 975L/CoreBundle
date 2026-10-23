@@ -1,5 +1,24 @@
 # ChangeLog
 
+## v1.76.0
+
+Plays counted on a ticket the server times
+
+### ConfigBundle
+
+- Fixed the app connect button doing nothing when reached from the login form through Turbo (23/10/2026)
+- Documented the app connect page's Turbo reload in the `c975l-users` skill (23/10/2026)
+
+### UiBundle
+
+- Added `ui_play_start`, handing out a play ticket as the media starts (23/10/2026)
+- Added `Service\PlayTicket`, signed and timed by the server (23/10/2026)
+- `ui_play` counts only on that ticket, once, when enough time went by (23/10/2026) [BC-Break]
+- Added the `ui-play-ratio` config, 70% by default (23/10/2026)
+- Added `PlayDurationProviderInterface`, how long a kind of thing plays (23/10/2026)
+- `ui-play-count` takes a `start-url` value and counts at `ui-play-ratio` instead of 95% (23/10/2026)
+- `ui-play-count` dispatches `ui-play-count:counted` with its ticket (23/10/2026)
+
 ## v1.75.0
 
 Sign in with Apple

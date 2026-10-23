@@ -158,6 +158,10 @@
                 <source>description.ui_pdf_weasyprint_path</source>
                 <target>Déjelo vacío si el comando «weasyprint» se encuentra tal cual. En alojamientos compartidos o gestionados suele instalarse en un entorno Python propio: indique entonces su ruta completa, por ejemplo /home/clients/xxx/venv/bin/weasyprint.</target>
             </trans-unit>
+            <trans-unit id="K94kmDh">
+                <source>description.ui_play_ratio</source>
+                <target>Porcentaje de una historia o película que debe haberse reproducido realmente, medido por el servidor, para contar una escucha (y ganar lo que el sitio da por ella). Saltar directamente al final no cuenta nada</target>
+            </trans-unit>
             <trans-unit id="FX2LelG">
                 <source>description.ui_pwa_android_fingerprint</source>
                 <target>Huella SHA-256 de la clave de firma de la aplicación Android, tal como la muestra Play Console (Integridad de la aplicación); varias separadas por comas. Publicada en /.well-known/assetlinks.json con el nombre del paquete</target>
@@ -369,6 +373,10 @@
             <trans-unit id="KQWPYr_">
                 <source>label.ui_pdf_weasyprint_path</source>
                 <target>Ruta del comando WeasyPrint</target>
+            </trans-unit>
+            <trans-unit id="wYWrBBa">
+                <source>label.ui_play_ratio</source>
+                <target>Parte escuchada para contar una escucha</target>
             </trans-unit>
             <trans-unit id="KVl4cje">
                 <source>label.ui_pwa_android_fingerprint</source>

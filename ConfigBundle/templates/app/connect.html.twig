@@ -7,6 +7,12 @@
 {# A page of one account alone, as the login page: nothing to offer a search result #}
 {% set robots = 'noindex, follow' %}
 
+{# Loaded whole even when Turbo brings the visitor here from the login form: a page Turbo swaps in keeps the policy of the one before, whose "form-action" lacks the app's scheme (see AppConnectCspSubscriber), and the button then does nothing #}
+{% block meta %}
+    {{ parent() }}
+    <meta name="turbo-visit-control" content="reload">
+{% endblock %}
+
 {% block content %}
     <div class="alert alert-info text">
         <p>{{ 'text.app_connect_intro'|trans({'%identifier%': app.user.userIdentifier}) }}</p>

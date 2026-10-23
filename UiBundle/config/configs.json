@@ -606,5 +606,16 @@
         "group": "ui",
         "severity": null,
         "description": "description.ui_map_google_api_key"
+    },
+    {
+        "label": "label.ui_play_ratio",
+        "slug": "ui-play-ratio",
+        "sensitive": false,
+        "restricted": false,
+        "value": "70",
+        "kind": "int",
+        "group": "ui",
+        "severity": null,
+        "description": "description.ui_play_ratio"
     }
 ]

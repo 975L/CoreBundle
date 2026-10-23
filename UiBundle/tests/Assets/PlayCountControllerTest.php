@@ -12,7 +12,7 @@ namespace c975L\UiBundle\Tests\Assets;
 
 use PHPUnit\Framework\TestCase;
 
-// A page counts what it played to its end under the token its browser already holds, never one it makes up
+// A page counts what it played on the ticket it took when it started, under the token its browser already holds, never one it makes up
 class PlayCountControllerTest extends TestCase
 {
     private const string CONTROLLER_JS = 'assets/js/play-count.js';
@@ -37,13 +37,23 @@ class PlayCountControllerTest extends TestCase
         $this->assertStringNotContainsString('write(', $controller);
     }
 
-    // Posted as json, which is what the route's same-origin check expects
-    public function testThePlayIsPostedAsJsonToTheUrlValue(): void
+    // Posted as json, which is what the routes' same-origin check expects: the start for its ticket, then the play handing it back
+    public function testTheStartAndThePlayArePostedAsJson(): void
     {
         $controller = $this->read(self::CONTROLLER_JS);
 
-        $this->assertStringContainsString('fetch(this.urlValue, {', $controller);
+        $this->assertStringContainsString('fetch(this.startUrlValue, this.post({}))', $controller);
+        $this->assertStringContainsString('fetch(this.urlValue, this.post({ ticket }))', $controller);
         $this->assertStringContainsString('"Content-Type": "application/json"', $controller);
+    }
+
+    // Counted at the part the site sets, as the start answered it, and said to the page for whatever else a play gives
+    public function testThePlayIsSentAtTheRatioAndAnnounced(): void
+    {
+        $controller = $this->read(self::CONTROLLER_JS);
+
+        $this->assertStringContainsString('currentTime >= duration * this.ratio', $controller);
+        $this->assertStringContainsString('this.dispatch("counted", { detail: { ticket } });', $controller);
     }
 
     // The recording before the film, so a video printed above the player is not the one followed

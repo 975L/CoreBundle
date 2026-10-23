@@ -158,6 +158,10 @@
                 <source>description.ui_pdf_weasyprint_path</source>
                 <target>Leave empty if the “weasyprint” command is found as it stands. On shared or managed hosting it is commonly installed in a Python environment of its own: state its full path then, for instance /home/clients/xxx/venv/bin/weasyprint.</target>
             </trans-unit>
+            <trans-unit id="K94kmDh">
+                <source>description.ui_play_ratio</source>
+                <target>Percentage of a story or film that must really have played, measured by the server, for a play to count (and earn whatever the site gives for it). Jumping straight to the end counts nothing</target>
+            </trans-unit>
             <trans-unit id="FX2LelG">
                 <source>description.ui_pwa_android_fingerprint</source>
                 <target>SHA-256 fingerprint of the Android app's signing key, as the Play Console shows it (App integrity); several separated by commas. Published in /.well-known/assetlinks.json with the package name</target>
@@ -369,6 +373,10 @@
             <trans-unit id="KQWPYr_">
                 <source>label.ui_pdf_weasyprint_path</source>
                 <target>WeasyPrint command path</target>
+            </trans-unit>
+            <trans-unit id="wYWrBBa">
+                <source>label.ui_play_ratio</source>
+                <target>Part played to count a play</target>
             </trans-unit>
             <trans-unit id="KVl4cje">
                 <source>label.ui_pwa_android_fingerprint</source>

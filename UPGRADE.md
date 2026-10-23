@@ -1,5 +1,9 @@
 # UPGRADE
 
+## v1.76.0
+
+**`ui_play` now counts only on a ticket**: an element carrying `data-controller="ui-play-count"` also needs `data-ui-play-count-start-url-value="{{ path('ui_play_start', {ownerType: …, ownerId: …}) }}"`, or nothing it plays is counted any more. BookBundle's listening page carries it from v2.24.0. A kind of thing whose length the server should check implements `PlayDurationProviderInterface`; without one, a play counts on the ticket alone. `PlayController` takes a `PlayTicket`: nothing to do with autowiring.
+
 ## v1.75.0
 
 **`OAuthLoginProviderInterface` changed**, for "Sign in with Apple": `getClientIdSlug()` and `getClientSecretSlug()` give way to `getClientId(): ?string` and `getClientSecret(): ?string`, the provider reading its own credentials (`OAuthCredentialTrait` does it for a config slug); `getAuthorizationParameters(): array` is new (return `[]`); `fetchIdentity()` receives the token endpoint's whole answer (`array $token`, the access token in `$token['access_token']`). `OAuthLoginClient` no longer takes a `ConfigServiceInterface`, and `exchangeCodeForAccessToken()` is now `exchangeCodeForToken()`, returning that answer. Nothing to do on a site using the bundle's Google login alone: autowiring takes care of it.
