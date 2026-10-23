@@ -73,12 +73,14 @@ class PlayTicketTest extends TestCase
         $this->assertTrue($tickets->isHeard($tickets->issue('book', 12, null, 1000), 'book', 12, null, 1500));
     }
 
-    // A recording whose length cannot be read never counts
-    public function testAThingOfUnknownLengthIsNeverHeard(): void
+    // A recording whose length cannot be read counts on the ticket alone, as a kind nobody measures
+    public function testAThingOfUnknownLengthCountsOnTheTicket(): void
     {
         $tickets = $this->tickets(duration: null);
+        $ticket = $tickets->issue('book', 12, null, 1000);
 
-        $this->assertFalse($tickets->isHeard($tickets->issue('book', 12, null, 1000), 'book', 12, null, 1500));
+        $this->assertTrue($tickets->isHeard($ticket, 'book', 12, null, 1001));
+        $this->assertFalse($tickets->isHeard($ticket, 'book', 12, null, 1000 + 86401));
     }
 
     // A kind no provider measures counts on the ticket alone

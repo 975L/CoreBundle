@@ -64,14 +64,13 @@ class PlayTicket
         }
         $elapsed = ($now ?? time()) - $startedAt;
 
-        $provider = $this->durationProvider($ownerType);
-        if (null === $provider) {
+        // A kind no provider measures, or a thing whose length cannot be read, counts on the ticket alone: a file the server cannot measure must not freeze its counter
+        $duration = $this->durationProvider($ownerType)?->getPlayDuration($ownerType, $ownerId);
+        if (null === $duration || $duration <= 0) {
             return $elapsed >= 0 && $elapsed <= self::MAX_AGE;
         }
-        $duration = $provider->getPlayDuration($ownerType, $ownerId);
 
-        return null !== $duration && $duration > 0
-            && $elapsed + self::SLACK >= $duration * $this->ratio()
+        return $elapsed + self::SLACK >= $duration * $this->ratio()
             && $elapsed <= 3 * $duration + self::MAX_PAUSE;
     }
 

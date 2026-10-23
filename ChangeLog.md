@@ -1,5 +1,13 @@
 # ChangeLog
 
+## v1.76.1
+
+Counted plays of a thing whose length cannot be read
+
+### UiBundle
+
+- `PlayTicket` counts a thing of unreadable length on the ticket alone instead of never (23/10/2026)
+
 ## v1.76.0
 
 Plays counted on a ticket the server times

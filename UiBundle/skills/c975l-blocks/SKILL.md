@@ -621,8 +621,8 @@ The same terms as the ratings above, for a thing a visitor puts *aside*: `Entity
   `ui_play_start` hands it out as the media starts (signed, holding its start time and holder), `ui_play`
   takes it back once `ui-play-ratio` (70% by default) of the media is reached, and counts it once
   (`PlayTicket::spend()`) if that much time went by on the server's clock - the length coming from a
-  `PlayDurationProviderInterface` (tag `c975l.play_duration_provider`; a kind none supports counts on the
-  ticket alone). The controller then dispatches `ui-play-count:counted` with the ticket, for a site giving
+  `PlayDurationProviderInterface` (tag `c975l.play_duration_provider`; a kind none supports, or a thing whose length
+  cannot be read, counts on the ticket alone). The controller then dispatches `ui-play-count:counted` with the ticket, for a site giving
   something for a play to check it with `PlayTicket::isHeard()`. `ui_app_play` takes no ticket: an app
   counts listens made offline too.
   The account side is ConfigBundle's `AppConnectController`.

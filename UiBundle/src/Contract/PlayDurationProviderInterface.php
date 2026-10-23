@@ -19,6 +19,6 @@ interface PlayDurationProviderInterface
     // The short stable string the plays of this kind are counted under ("book"...), the same one its favourites use
     public function supports(string $ownerType): bool;
 
-    // In seconds, null for a thing with no recording, or one that cannot be read: such a play is never counted
+    // In seconds, null for a thing with no recording, or one that cannot be read: such a play is counted on the ticket alone, with no time asked for
     public function getPlayDuration(string $ownerType, int $ownerId): ?int;
 }
