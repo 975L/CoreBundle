@@ -26,10 +26,14 @@ export default class extends Controller {
 
         this.boundOnItemAdded = this.onItemAdded.bind(this);
         document.addEventListener('ea.collection.item-added', this.boundOnItemAdded);
+
+        this.boundOnItemRemoved = this.onItemRemoved.bind(this);
+        document.addEventListener('ea.collection.item-removed', this.boundOnItemRemoved);
     }
 
     disconnect() {
         document.removeEventListener('ea.collection.item-added', this.boundOnItemAdded);
+        document.removeEventListener('ea.collection.item-removed', this.boundOnItemRemoved);
     }
 
     initField(field) {
@@ -230,13 +234,24 @@ export default class extends Controller {
         }, { offset: -Infinity }).element;
     }
 
+    // The rows of the field itself, not those of a field nested in one of them
+    ownItems(field) {
+        return [...field.querySelectorAll('.field-collection-item')]
+            .filter(item => item.closest('[data-ea-collection-field]') === field);
+    }
+
     updatePositions(field) {
-        [...field.querySelectorAll('.field-collection-item')]
-            .filter(item => item.closest('[data-ea-collection-field]') === field)
-            .forEach((item, i) => {
-                const pos = item.querySelector('[name$="[position]"]');
-                if (pos) pos.value = i;
-            });
+        this.ownItems(field).forEach((item, i) => {
+            const pos = item.querySelector('[name$="[position]"]');
+            if (pos) pos.value = i;
+        });
+
+        this.notifyReordered(field);
+    }
+
+    // Lets a screen follow the new order, a preview reordering its own items (see SocialBundle's social-links-preview.js)
+    notifyReordered(field) {
+        field.dispatchEvent(new CustomEvent('ui.collection.reordered', { bubbles: true }));
     }
 
     // Persisted server-side rather than renamed in the form: a resubmit would delete the Block and recreate it empty, losing its media
@@ -307,15 +322,31 @@ export default class extends Controller {
         if (newElement) {
             this.addHandle(newElement);
             const field = newElement.closest('[data-ea-collection-field]');
-            if (field) {
-                const pos = newElement.querySelector('[name$="[position]"]');
-                if (pos) {
-                    const siblings = [...field.querySelectorAll('.field-collection-item')]
-                        .filter(item => item.closest('[data-ea-collection-field]') === field);
-                    pos.value = siblings.length - 1;
-                }
-            }
+            const pos = newElement.querySelector('[name$="[position]"]');
+            if (field && pos) this.positionNewRow(field, newElement, pos);
         }
         this.element.querySelectorAll('[data-ea-collection-field]').forEach(field => { this.initField(field); });
+    }
+
+    // The new row placed after the highest position, the others left as stored; the whole field renumbered instead when two of them tie or one has none, the new row would otherwise sort among them
+    positionNewRow(field, newElement, pos) {
+        const values = this.ownItems(field)
+            .filter(item => item !== newElement)
+            .map(item => item.querySelector('[name$="[position]"]')?.value ?? '');
+        const numbers = values.filter(value => '' !== value.trim() && !Number.isNaN(Number(value))).map(Number);
+
+        if (numbers.length < values.length || new Set(numbers).size < numbers.length) {
+            this.updatePositions(field);
+            return;
+        }
+
+        pos.value = numbers.length ? Math.max(...numbers) + 1 : 0;
+        this.notifyReordered(field);
+    }
+
+    // A removed row leaves no gap behind, and a screen following the order hears of it
+    onItemRemoved(e) {
+        const field = e.detail?.collection;
+        if (field && this.isSortable(field)) this.updatePositions(field);
     }
 }

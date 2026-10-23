@@ -83,6 +83,52 @@ class EaSortableBehaviourTest extends JsCase
         $this->assertFalse($state['after'], 'The dragged row keeps its drag styling after the drop.');
     }
 
+    // A removed row leaves no gap behind, and a screen following the order hears of it
+    public function testARemovalRenumbersThePositionsAndSaysSo(): void
+    {
+        $state = $this->observe(
+            $this->mounted($this->field('sortable', 3)),
+            ['eaSortable' => 'ea-sortable'],
+            'const field = root.querySelector("#sortable");
+             let heard = 0;
+             field.addEventListener("ui.collection.reordered", () => { ++heard; });
+             root.querySelector("#row-0").remove();
+             document.dispatchEvent(new CustomEvent("ea.collection.item-removed", { detail: { collection: field } }));
+
+             return { positions: [...field.querySelectorAll("[name$=\'[position]\']")].map((input) => input.value), heard };'
+        );
+
+        $this->assertSame(['0', '1'], $state['positions'], 'A removal left a gap in the positions.');
+        $this->assertSame(1, $state['heard'], 'A removal did not dispatch ui.collection.reordered.');
+    }
+
+    // An added row lands after the highest position, the others left as stored; two rows tying are what renumbers the whole field
+    public function testAnAddedRowTakesTheNextPositionUnlessTwoRowsTie(): void
+    {
+        $state = $this->observe(
+            $this->mounted($this->field('sortable', 3)),
+            ['eaSortable' => 'ea-sortable'],
+            'const field = root.querySelector("#sortable");
+             const inputs = () => [...field.querySelectorAll("[name$=\'[position]\']")];
+             const add = (values) => {
+                 inputs().forEach((input, i) => { input.value = values[i]; });
+                 field.querySelector(".ea-form-collection-items").insertAdjacentHTML("beforeend", "<div class=\"field-collection-item\"><div class=\"accordion-header\"></div><input name=\"f[sortable][9][position]\" value=\"\"></div>");
+                 const rows = field.querySelectorAll(".field-collection-item");
+                 document.dispatchEvent(new CustomEvent("ea.collection.item-added", { detail: { newElement: rows[rows.length - 1], collection: field } }));
+
+                 return inputs().map((input) => input.value);
+             };
+             const gapped = add(["0", "5", "9"]);
+             field.querySelector(".field-collection-item:last-child").remove();
+             const tied = add(["0", "1", "1"]);
+
+             return { gapped, tied };'
+        );
+
+        $this->assertSame(['0', '5', '9', '10'], $state['gapped'], 'An added row did not take the next position, or the stored ones were rewritten.');
+        $this->assertSame(['0', '1', '2', '3'], $state['tied'], 'An added row next to two tying rows did not renumber the field.');
+    }
+
     // Two fields exchange rows only when both name the same group; a field naming none stays single-field, which is every sortable that never asked for more
     public function testOnlyFieldsOfTheSameGroupAreOfferedAsDropTargets(): void
     {

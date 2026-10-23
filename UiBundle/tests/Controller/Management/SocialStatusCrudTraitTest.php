@@ -73,6 +73,34 @@ class SocialStatusCrudTraitTest extends TestCase
         }
     }
 
+    // A row its bundle leaves out, a hidden product for one, is neither asked about nor badged
+    public function testARowLeftOutIsNeitherAskedAboutNorBadged(): void
+    {
+        $statuses = $this->createMock(SocialContentStatusProviderInterface::class);
+        $statuses->expects($this->once())->method('getStatuses')->with('product', ['2'])->willReturn([
+            '2' => new SocialContentStatus(SocialContentStatus::PUBLISHED, new \DateTimeImmutable('2026-10-09 12:00')),
+        ]);
+        [$first, $second] = [$this->row(1), $this->row(2)];
+
+        $this->controller($statuses, [$first, $second], rowsLeftOut: [1])->index($this->context());
+
+        $this->assertNull($this->badge($first));
+        $this->assertSame('<span class="badge badge-success">shop:label.product_social_published 10/09</span>', $this->badge($second));
+    }
+
+    // A page whose every row is left out asks nothing, as an empty one
+    public function testAPageOfRowsAllLeftOutAsksNothing(): void
+    {
+        $statuses = $this->createMock(SocialContentStatusProviderInterface::class);
+        $statuses->expects($this->never())->method('getStatuses');
+        [$first, $second] = [$this->row(1), $this->row(2)];
+
+        $this->controller($statuses, [$first, $second], rowsLeftOut: [1, 2])->index($this->context());
+
+        $this->assertNull($this->badge($first));
+        $this->assertNull($this->badge($second));
+    }
+
     // An empty page asks nothing
     public function testAnEmptyPageAsksNothing(): void
     {
@@ -112,12 +140,12 @@ class SocialStatusCrudTraitTest extends TestCase
     }
 
     // A controller using the trait over a parent answering the given rows, as EasyAdmin's index() hands them over - its translator naming the domain before the key
-    private function controller(?SocialContentStatusProviderInterface $socialStatuses, array $rows, bool $columnShown = true): SocialStatusCrudTraitTestController
+    private function controller(?SocialContentStatusProviderInterface $socialStatuses, array $rows, bool $columnShown = true, array $rowsLeftOut = []): SocialStatusCrudTraitTestController
     {
         $translator = $this->createStub(TranslatorInterface::class);
         $translator->method('trans')->willReturnCallback(static fn (string $id, array $parameters = [], ?string $domain = null): string => str_ends_with($id, '_date_format') ? 'm/d' : trim($domain . ':' . $id . ' ' . implode(' ', $parameters)));
 
-        return new SocialStatusCrudTraitTestController($socialStatuses, $translator, KeyValueStore::new(['entities' => new EntityCollection($rows)]), $columnShown);
+        return new SocialStatusCrudTraitTestController($socialStatuses, $translator, KeyValueStore::new(['entities' => new EntityCollection($rows)]), $columnShown, $rowsLeftOut);
     }
 
     // A listed row carrying the badge column, as EasyAdmin has processed it
@@ -176,6 +204,7 @@ class SocialStatusCrudTraitTestController extends SocialStatusCrudTraitTestParen
         private readonly TranslatorInterface $translator,
         KeyValueStore $responseParameters,
         private readonly bool $columnShown,
+        private readonly array $rowsLeftOut,
     ) {
         parent::__construct($responseParameters);
     }
@@ -198,5 +227,10 @@ class SocialStatusCrudTraitTestController extends SocialStatusCrudTraitTestParen
     private function socialStatusColumnShown(): bool
     {
         return $this->columnShown;
+    }
+
+    private function socialStatusRowShown(object $entity): bool
+    {
+        return !in_array($entity->id, $this->rowsLeftOut, true);
     }
 }

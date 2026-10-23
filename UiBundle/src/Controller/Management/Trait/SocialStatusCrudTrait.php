@@ -15,6 +15,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Collection\EntityCollection;
 use EasyCorp\Bundle\EasyAdminBundle\Config\KeyValueStore;
 use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
 use EasyCorp\Bundle\EasyAdminBundle\Contracts\Field\FieldInterface;
+use EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -34,6 +35,12 @@ trait SocialStatusCrudTrait
 
     // Whether the list shown has the column at all, a trash or a list of templates holding nothing a post could
     private function socialStatusColumnShown(): bool
+    {
+        return true;
+    }
+
+    // Whether a row of the page is asked about, a hidden or scheduled one being left without a badge where its bundle says so
+    private function socialStatusRowShown(object $entity): bool
     {
         return true;
     }
@@ -69,21 +76,37 @@ trait SocialStatusCrudTrait
             return $responseParameters;
         }
 
+        $shown = [];
         $ids = [];
         foreach ($entities as $entity) {
-            $ids[] = (string) $entity->getPrimaryKeyValue();
-        }
-        $statuses = $this->socialStatuses->getStatuses($this->socialSourceType(), $ids);
-
-        foreach ($entities as $entity) {
-            foreach ($entity->getFields() ?? [] as $field) {
-                if (true === $field->getCustomOption(self::SOCIAL_STATUS_OPTION)) {
-                    $field->setFormattedValue($this->socialStatusBadge($statuses[(string) $entity->getPrimaryKeyValue()] ?? null));
-                }
+            $instance = $entity->getInstance();
+            if (null !== $instance && $this->socialStatusRowShown($instance)) {
+                $shown[] = $entity;
+                $ids[] = (string) $entity->getPrimaryKeyValue();
             }
         }
 
+        // A page whose every row is left out asks nothing, as an empty one
+        if ([] === $ids) {
+            return $responseParameters;
+        }
+
+        $statuses = $this->socialStatuses->getStatuses($this->socialSourceType(), $ids);
+        foreach ($shown as $entity) {
+            $this->socialStatusFormat($entity, $statuses[(string) $entity->getPrimaryKeyValue()] ?? null);
+        }
+
         return $responseParameters;
+    }
+
+    // The row's column given its badge
+    private function socialStatusFormat(EntityDto $entity, ?SocialContentStatus $status): void
+    {
+        foreach ($entity->getFields() ?? [] as $field) {
+            if (true === $field->getCustomOption(self::SOCIAL_STATUS_OPTION)) {
+                $field->setFormattedValue($this->socialStatusBadge($status));
+            }
+        }
     }
 
     // The badge of the post holding the row, empty when none does

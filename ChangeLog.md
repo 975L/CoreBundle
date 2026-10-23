@@ -1,5 +1,16 @@
 # ChangeLog
 
+## v1.74.0
+
+Sorted plain-array collections, and let bundles leave rows unbadged
+
+### UiBundle
+
+- Added `SocialStatusCrudTrait::socialStatusRowShown()`, leaving a row unasked and unbadged (23/10/2026)
+- Added `Form\Util\PositionSorter`, storing a sortable plain-array collection (a Block's JSON data) in its dragged order (23/10/2026)
+- Added the `ui.collection.reordered` event, dispatched by `ea-sortable.js` on a drop, a removal and an added row (23/10/2026)
+- Renumbered a sortable field at a removal, and at an added row tying with another (23/10/2026)
+
 ## v1.73.0
 
 One social status column for every bundle's list
