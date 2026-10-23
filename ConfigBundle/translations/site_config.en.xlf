@@ -42,6 +42,22 @@
                 <source>description.login_admin_code</source>
                 <target>An admin logging in with a password from an unknown browser receives a 6-digit code by email, to type before reaching the site. The browser is then recognized for 30 days, or until the next password change. If the email cannot be sent, the login goes through without a code.</target>
             </trans-unit>
+            <trans-unit id="BVOrYVr">
+                <source>description.login_apple_key_id</source>
+                <target>Key ID of the "Sign in with Apple" key created for this site, 10 characters.</target>
+            </trans-unit>
+            <trans-unit id="dLQIqCr">
+                <source>description.login_apple_private_key</source>
+                <target>Whole content of that key's .p8 file, which Apple lets you download only once. Never share it: on its own it lets anyone pass for this site with Apple.</target>
+            </trans-unit>
+            <trans-unit id="bda6nmG">
+                <source>description.login_apple_services_id</source>
+                <target>Services ID created for this site in the Apple Developer account: with the next three settings, it enables the "Continue with Apple" button on the login page, which Apple requires of an iPhone app offering Google. See the "Connect Apple login" procedure. Leave empty not to offer Apple login.</target>
+            </trans-unit>
+            <trans-unit id="ZOqqE0c">
+                <source>description.login_apple_team_id</source>
+                <target>Team ID of the Apple Developer account, 10 characters, shown on its "Membership details" page.</target>
+            </trans-unit>
             <trans-unit id="qsbLUOC">
                 <source>description.login_google_oauth_client_id</source>
                 <target>Client id ("OAuth client ID") of this site's Google project, which enables the "Continue with Google" button on the login page. See the "Connect Google login" procedure. Leave empty not to offer Google login.</target>
@@ -321,6 +337,22 @@
             <trans-unit id="1Tzf4Z_">
                 <source>label.login_admin_code</source>
                 <target>Email code for admins on a new device</target>
+            </trans-unit>
+            <trans-unit id="qwXEFkc">
+                <source>label.login_apple_key_id</source>
+                <target>Apple Key ID (login)</target>
+            </trans-unit>
+            <trans-unit id="2kyI489">
+                <source>label.login_apple_private_key</source>
+                <target>Apple private key, .p8 file (login)</target>
+            </trans-unit>
+            <trans-unit id="t4cOOxN">
+                <source>label.login_apple_services_id</source>
+                <target>Apple Services ID (login)</target>
+            </trans-unit>
+            <trans-unit id="wwutQzw">
+                <source>label.login_apple_team_id</source>
+                <target>Apple Team ID (login)</target>
             </trans-unit>
             <trans-unit id=".GtjiDJ">
                 <source>label.login_google_oauth_client_id</source>

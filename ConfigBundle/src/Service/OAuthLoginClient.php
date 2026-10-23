@@ -13,37 +13,35 @@ namespace c975L\ConfigBundle\Service;
 use c975L\ConfigBundle\Security\OAuthLoginProviderInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-// The authorization code flow, written once for every provider - same shape as SocialBundle's GoogleOAuthClient, which connects a site to its Google Business Profile.
-//
-// Simpler than that one on purpose: a login needs the access token for the few seconds it takes to read an email address back, so nothing asks for offline access, nothing stores a refresh token, and nothing is cached. What the provider says is used and dropped.
+// The authorization code flow, written once for every provider: a login needs the provider's tokens for a few seconds, so nothing asks for offline access, stores a refresh token or caches anything
 class OAuthLoginClient
 {
     public function __construct(
         private readonly HttpClientInterface $httpClient,
-        private readonly ConfigServiceInterface $configService,
     ) {
     }
 
     // Whether this site holds the credentials this provider needs - which is also what decides that its button is displayed at all (see OAuthLoginProviderRegistry::enabled())
     public function isConfigured(OAuthLoginProviderInterface $provider): bool
     {
-        return null !== $this->clientId($provider) && null !== $this->clientSecret($provider);
+        return null !== $provider->getClientId() && null !== $provider->getClientSecret();
     }
 
     // Where the visitor is sent to consent. No "access_type=offline" and no forced prompt: a login wants the account, not a durable authorization to act for it later
     public function getAuthorizationUrl(OAuthLoginProviderInterface $provider, string $redirectUri, string $state): string
     {
         return $provider->getAuthorizationEndpoint() . '?' . http_build_query([
-            'client_id' => $this->clientId($provider),
+            'client_id' => $provider->getClientId(),
             'redirect_uri' => $redirectUri,
             'response_type' => 'code',
             'scope' => $provider->getScope(),
             'state' => $state,
-        ]);
+        ] + $provider->getAuthorizationParameters());
     }
 
-    // Trades the code the callback received for the short-lived token that reads the identity back. The redirect uri travels again, unchanged: providers check it matches the one the code was issued for
-    public function exchangeCodeForAccessToken(OAuthLoginProviderInterface $provider, string $code, string $redirectUri): ?string
+    // Trades the code for the provider's tokens, handed whole to the provider. The redirect uri travels again, unchanged: providers check it matches the one the code was issued for
+    /** @return array<string, mixed>|null */
+    public function exchangeCodeForToken(OAuthLoginProviderInterface $provider, string $code, string $redirectUri): ?array
     {
         try {
             $response = $this->httpClient->request('POST', $provider->getTokenEndpoint(), [
@@ -51,8 +49,8 @@ class OAuthLoginClient
                     'code' => $code,
                     'redirect_uri' => $redirectUri,
                     'grant_type' => 'authorization_code',
-                    'client_id' => (string) $this->clientId($provider),
-                    'client_secret' => (string) $this->clientSecret($provider),
+                    'client_id' => (string) $provider->getClientId(),
+                    'client_secret' => (string) $provider->getClientSecret(),
                 ],
                 'timeout' => 15,
             ]);
@@ -63,34 +61,11 @@ class OAuthLoginClient
             return null;
         }
 
-        if (!is_array($token) || !isset($token['access_token']) || !is_string($token['access_token'])) {
+        // A refusal comes back as an "error" body, with a 400 or even a 200: neither carries a token
+        if (!is_array($token) || isset($token['error']) || (!isset($token['access_token']) && !isset($token['id_token']))) {
             return null;
         }
 
-        return $token['access_token'];
-    }
-
-    private function clientId(OAuthLoginProviderInterface $provider): ?string
-    {
-        return $this->trimmedConfig($provider->getClientIdSlug());
-    }
-
-    private function clientSecret(OAuthLoginProviderInterface $provider): ?string
-    {
-        return $this->trimmedConfig($provider->getClientSecretSlug());
-    }
-
-    // A credential pasted from a console carries whatever whitespace came with it, and an empty string is not a value
-    private function trimmedConfig(string $slug): ?string
-    {
-        $value = $this->configService->get($slug);
-
-        if (!is_string($value)) {
-            return null;
-        }
-
-        $value = trim($value);
-
-        return '' !== $value ? $value : null;
+        return $token;
     }
 }

@@ -42,6 +42,22 @@
                 <source>description.login_admin_code</source>
                 <target>Un admin que inicia sesión con contraseña desde un navegador desconocido recibe un código de 6 cifras por email, que debe introducir antes de acceder al sitio. El navegador se reconoce después durante 30 días, o hasta el próximo cambio de contraseña. Si el email no puede enviarse, el inicio de sesión se completa sin código.</target>
             </trans-unit>
+            <trans-unit id="BVOrYVr">
+                <source>description.login_apple_key_id</source>
+                <target>Identificador («Key ID») de la clave «Sign in with Apple» creada para este sitio, 10 caracteres.</target>
+            </trans-unit>
+            <trans-unit id="dLQIqCr">
+                <source>description.login_apple_private_key</source>
+                <target>Contenido completo del archivo .p8 de esa clave, que Apple solo deja descargar una vez. No compartirlo nunca: por sí solo permite hacerse pasar por este sitio ante Apple.</target>
+            </trans-unit>
+            <trans-unit id="bda6nmG">
+                <source>description.login_apple_services_id</source>
+                <target>Identificador de servicios («Services ID») creado para este sitio en la cuenta Apple Developer: con los tres ajustes siguientes, activa el botón «Continuar con Apple» en la página de inicio de sesión, que Apple exige a una app de iPhone que ofrezca Google. Ver el procedimiento «Conectar el inicio de sesión con Apple». Dejar vacío para no ofrecer el inicio de sesión con Apple.</target>
+            </trans-unit>
+            <trans-unit id="ZOqqE0c">
+                <source>description.login_apple_team_id</source>
+                <target>Identificador de equipo («Team ID») de la cuenta Apple Developer, 10 caracteres, visible en su página «Membership details».</target>
+            </trans-unit>
             <trans-unit id="qsbLUOC">
                 <source>description.login_google_oauth_client_id</source>
                 <target>Identificador de cliente («ID de cliente de OAuth») del proyecto de Google de este sitio, que activa el botón «Continuar con Google» en la página de inicio de sesión. Véase el procedimiento «Conectar el inicio de sesión con Google». Dejar vacío para no ofrecer el inicio de sesión con Google.</target>
@@ -321,6 +337,22 @@
             <trans-unit id="1Tzf4Z_">
                 <source>label.login_admin_code</source>
                 <target>Código por email para los admins en un nuevo dispositivo</target>
+            </trans-unit>
+            <trans-unit id="qwXEFkc">
+                <source>label.login_apple_key_id</source>
+                <target>Key ID de Apple (inicio de sesión)</target>
+            </trans-unit>
+            <trans-unit id="2kyI489">
+                <source>label.login_apple_private_key</source>
+                <target>Clave privada de Apple, archivo .p8 (inicio de sesión)</target>
+            </trans-unit>
+            <trans-unit id="t4cOOxN">
+                <source>label.login_apple_services_id</source>
+                <target>Services ID de Apple (inicio de sesión)</target>
+            </trans-unit>
+            <trans-unit id="wwutQzw">
+                <source>label.login_apple_team_id</source>
+                <target>Team ID de Apple (inicio de sesión)</target>
             </trans-unit>
             <trans-unit id=".GtjiDJ">
                 <source>label.login_google_oauth_client_id</source>

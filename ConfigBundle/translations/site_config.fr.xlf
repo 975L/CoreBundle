@@ -42,6 +42,22 @@
                 <source>description.login_admin_code</source>
                 <target>Un admin qui se connecte par mot de passe depuis un navigateur inconnu reçoit un code à 6 chiffres par email, à saisir avant d'accéder au site. Le navigateur est ensuite reconnu 30 jours, ou jusqu'au prochain changement de mot de passe. Si l'email ne part pas, la connexion passe sans code.</target>
             </trans-unit>
+            <trans-unit id="BVOrYVr">
+                <source>description.login_apple_key_id</source>
+                <target>Identifiant (« Key ID ») de la clé « Sign in with Apple » créée pour ce site, 10 caractères.</target>
+            </trans-unit>
+            <trans-unit id="dLQIqCr">
+                <source>description.login_apple_private_key</source>
+                <target>Contenu entier du fichier .p8 de cette clé, qu'Apple ne laisse télécharger qu'une fois. À ne jamais diffuser : il permet à lui seul de se faire passer pour ce site auprès d'Apple.</target>
+            </trans-unit>
+            <trans-unit id="bda6nmG">
+                <source>description.login_apple_services_id</source>
+                <target>Identifiant de services (« Services ID ») créé pour ce site dans le compte Apple Developer : avec les trois réglages suivants, il active le bouton « Continuer avec Apple » sur la page de connexion, qu'Apple impose à une appli iPhone proposant Google. Voir la procédure « Connecter la connexion Apple ». Laisser vide pour ne pas proposer la connexion Apple.</target>
+            </trans-unit>
+            <trans-unit id="ZOqqE0c">
+                <source>description.login_apple_team_id</source>
+                <target>Identifiant d'équipe (« Team ID ») du compte Apple Developer, 10 caractères, affiché sur sa page « Membership details ».</target>
+            </trans-unit>
             <trans-unit id="qsbLUOC">
                 <source>description.login_google_oauth_client_id</source>
                 <target>Identifiant client (« ID client OAuth ») du projet Google de ce site, qui active le bouton « Continuer avec Google » sur la page de connexion. Voir la procédure « Connecter la connexion Google ». Laisser vide pour ne pas proposer la connexion Google.</target>
@@ -321,6 +337,22 @@
             <trans-unit id="1Tzf4Z_">
                 <source>label.login_admin_code</source>
                 <target>Code par email pour les admins sur un nouvel appareil</target>
+            </trans-unit>
+            <trans-unit id="qwXEFkc">
+                <source>label.login_apple_key_id</source>
+                <target>Key ID Apple (connexion)</target>
+            </trans-unit>
+            <trans-unit id="2kyI489">
+                <source>label.login_apple_private_key</source>
+                <target>Clé privée Apple, fichier .p8 (connexion)</target>
+            </trans-unit>
+            <trans-unit id="t4cOOxN">
+                <source>label.login_apple_services_id</source>
+                <target>Services ID Apple (connexion)</target>
+            </trans-unit>
+            <trans-unit id="wwutQzw">
+                <source>label.login_apple_team_id</source>
+                <target>Team ID Apple (connexion)</target>
             </trans-unit>
             <trans-unit id=".GtjiDJ">
                 <source>label.login_google_oauth_client_id</source>

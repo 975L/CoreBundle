@@ -10,6 +10,7 @@
 
 namespace c975L\ConfigBundle\Tests\Service;
 
+use c975L\ConfigBundle\Security\AppleOAuthLoginProvider;
 use c975L\ConfigBundle\Security\GoogleOAuthLoginProvider;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\ConfigBundle\Service\OAuthLoginClient;
@@ -30,9 +31,9 @@ class OAuthLoginClientTest extends TestCase
         return $configService;
     }
 
-    private function createProvider(): GoogleOAuthLoginProvider
+    private function createProvider(?array $configs = null): GoogleOAuthLoginProvider
     {
-        return new GoogleOAuthLoginProvider(new MockHttpClient());
+        return new GoogleOAuthLoginProvider(new MockHttpClient(), $this->createConfigService($configs ?? $this->credentials()));
     }
 
     private function credentials(): array
@@ -45,29 +46,27 @@ class OAuthLoginClientTest extends TestCase
 
     public function testAProviderIsConfiguredOnlyWhenBothCredentialsAreFilled(): void
     {
-        $provider = $this->createProvider();
+        $client = new OAuthLoginClient(new MockHttpClient());
 
-        $this->assertTrue(new OAuthLoginClient(new MockHttpClient(), $this->createConfigService($this->credentials()))->isConfigured($provider));
-        $this->assertFalse(new OAuthLoginClient(new MockHttpClient(), $this->createConfigService([]))->isConfigured($provider));
-        $this->assertFalse(new OAuthLoginClient(new MockHttpClient(), $this->createConfigService([
+        $this->assertTrue($client->isConfigured($this->createProvider()));
+        $this->assertFalse($client->isConfigured($this->createProvider([])));
+        $this->assertFalse($client->isConfigured($this->createProvider([
             'login-google-oauth-client-id' => 'an-id.apps.googleusercontent.com',
-        ]))->isConfigured($provider));
+        ])));
     }
 
     // A credential pasted from a console carries whatever whitespace came with it, and an empty string is not a value
     public function testABlankCredentialCountsAsNoCredential(): void
     {
-        $client = new OAuthLoginClient(new MockHttpClient(), $this->createConfigService([
+        $this->assertFalse(new OAuthLoginClient(new MockHttpClient())->isConfigured($this->createProvider([
             'login-google-oauth-client-id' => '  ',
             'login-google-oauth-client-secret' => 'a-secret',
-        ]));
-
-        $this->assertFalse($client->isConfigured($this->createProvider()));
+        ])));
     }
 
     public function testTheAuthorizationUrlCarriesTheStateAndTheScopeTheProviderAsksFor(): void
     {
-        $client = new OAuthLoginClient(new MockHttpClient(), $this->createConfigService($this->credentials()));
+        $client = new OAuthLoginClient(new MockHttpClient());
 
         $url = $client->getAuthorizationUrl($this->createProvider(), 'https://example.test/connect/google/check', 'a-state');
 
@@ -82,19 +81,32 @@ class OAuthLoginClientTest extends TestCase
         $this->assertArrayNotHasKey('access_type', $query);
     }
 
-    public function testACodeIsTradedForItsAccessToken(): void
+    // What a provider adds of its own goes into the url too: Apple asking for its answer to be posted back
+    public function testTheAuthorizationUrlCarriesTheProvidersOwnParameters(): void
+    {
+        $provider = new AppleOAuthLoginProvider($this->createConfigService(['login-apple-services-id' => 'com.example.login']));
+
+        $url = new OAuthLoginClient(new MockHttpClient())->getAuthorizationUrl($provider, 'https://example.test/connect/apple/check', 'a-state');
+
+        parse_str(parse_url($url, PHP_URL_QUERY), $query);
+        $this->assertSame('form_post', $query['response_mode']);
+        $this->assertSame('com.example.login', $query['client_id']);
+    }
+
+    public function testACodeIsTradedForTheProvidersTokens(): void
     {
         $sent = [];
         $httpClient = new MockHttpClient(static function (string $method, string $url, array $options) use (&$sent): MockResponse {
             $sent = ['method' => $method, 'url' => $url, 'body' => $options['body'] ?? ''];
 
-            return new MockResponse(json_encode(['access_token' => 'an-access-token']), ['http_code' => 200]);
+            return new MockResponse(json_encode(['access_token' => 'an-access-token', 'id_token' => 'an-id-token']), ['http_code' => 200]);
         });
 
-        $token = new OAuthLoginClient($httpClient, $this->createConfigService($this->credentials()))
-            ->exchangeCodeForAccessToken($this->createProvider(), 'a-code', 'https://example.test/connect/google/check');
+        $token = new OAuthLoginClient($httpClient)
+            ->exchangeCodeForToken($this->createProvider(), 'a-code', 'https://example.test/connect/google/check');
 
-        $this->assertSame('an-access-token', $token);
+        // Handed whole to the provider: Apple reads the id_token, Google the access token
+        $this->assertSame(['access_token' => 'an-access-token', 'id_token' => 'an-id-token'], $token);
         $this->assertSame('POST', $sent['method']);
         $this->assertSame(GoogleOAuthLoginProvider::TOKEN_ENDPOINT, $sent['url']);
         parse_str($sent['body'], $body);
@@ -108,12 +120,13 @@ class OAuthLoginClientTest extends TestCase
     // A replayed code, a revoked authorization, a provider that is down: none of them is worth an exception reaching the visitor, the callback turning a null into "the sign-in didn't complete"
     public function testARefusedOrUnreadableTokenRequestReturnsNothing(): void
     {
-        $configService = $this->createConfigService($this->credentials());
-
         $refused = new MockHttpClient(static fn (): MockResponse => new MockResponse(json_encode(['error' => 'invalid_grant']), ['http_code' => 400]));
-        $this->assertNull(new OAuthLoginClient($refused, $configService)->exchangeCodeForAccessToken($this->createProvider(), 'a-code', 'https://example.test/check'));
+        $this->assertNull(new OAuthLoginClient($refused)->exchangeCodeForToken($this->createProvider(), 'a-code', 'https://example.test/check'));
 
         $garbled = new MockHttpClient(static fn (): MockResponse => new MockResponse('<html>gateway timeout</html>', ['http_code' => 200]));
-        $this->assertNull(new OAuthLoginClient($garbled, $configService)->exchangeCodeForAccessToken($this->createProvider(), 'a-code', 'https://example.test/check'));
+        $this->assertNull(new OAuthLoginClient($garbled)->exchangeCodeForToken($this->createProvider(), 'a-code', 'https://example.test/check'));
+
+        $tokenless = new MockHttpClient(static fn (): MockResponse => new MockResponse(json_encode(['token_type' => 'Bearer']), ['http_code' => 200]));
+        $this->assertNull(new OAuthLoginClient($tokenless)->exchangeCodeForToken($this->createProvider(), 'a-code', 'https://example.test/check'));
     }
 }

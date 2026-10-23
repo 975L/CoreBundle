@@ -825,6 +825,51 @@
         "description": "description.login_google_oauth_client_secret"
     },
     {
+        "label": "label.login_apple_services_id",
+        "slug": "login-apple-services-id",
+        "feature": true,
+        "sensitive": false,
+        "restricted": true,
+        "value": null,
+        "kind": "text",
+        "group": "security",
+        "severity": null,
+        "description": "description.login_apple_services_id"
+    },
+    {
+        "label": "label.login_apple_team_id",
+        "slug": "login-apple-team-id",
+        "sensitive": false,
+        "restricted": true,
+        "value": null,
+        "kind": "text",
+        "group": "security",
+        "severity": null,
+        "description": "description.login_apple_team_id"
+    },
+    {
+        "label": "label.login_apple_key_id",
+        "slug": "login-apple-key-id",
+        "sensitive": false,
+        "restricted": true,
+        "value": null,
+        "kind": "text",
+        "group": "security",
+        "severity": null,
+        "description": "description.login_apple_key_id"
+    },
+    {
+        "label": "label.login_apple_private_key",
+        "slug": "login-apple-private-key",
+        "sensitive": true,
+        "restricted": true,
+        "value": null,
+        "kind": "textarea",
+        "group": "security",
+        "severity": "info",
+        "description": "description.login_apple_private_key"
+    },
+    {
         "label": "label.app_connect_schemes",
         "slug": "app-connect-schemes",
         "feature": true,

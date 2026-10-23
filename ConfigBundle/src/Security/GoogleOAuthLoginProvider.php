@@ -11,6 +11,7 @@
 namespace c975L\ConfigBundle\Security;
 
 use c975L\ConfigBundle\Model\OAuthIdentity;
+use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
@@ -19,6 +20,8 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 // Its credentials are the site's own (see the "login-google-oauth-*" configs and the "connecter-google" procedure): one Google project per site, so the consent screen carries the site's name rather than the agency's.
 class GoogleOAuthLoginProvider implements OAuthLoginProviderInterface
 {
+    use OAuthCredentialTrait;
+
     public const string AUTHORIZATION_ENDPOINT = 'https://accounts.google.com/o/oauth2/v2/auth';
 
     public const string TOKEN_ENDPOINT = 'https://oauth2.googleapis.com/token';
@@ -31,6 +34,7 @@ class GoogleOAuthLoginProvider implements OAuthLoginProviderInterface
     // The logger is optional: an app without Monolog leaves it null and everything else works the same, only the refusals go unrecorded
     public function __construct(
         private readonly HttpClientInterface $httpClient,
+        private readonly ConfigServiceInterface $configService,
         private readonly ?LoggerInterface $logger = null,
     ) {
     }
@@ -50,6 +54,11 @@ class GoogleOAuthLoginProvider implements OAuthLoginProviderInterface
         return self::AUTHORIZATION_ENDPOINT;
     }
 
+    public function getAuthorizationParameters(): array
+    {
+        return [];
+    }
+
     public function getTokenEndpoint(): string
     {
         return self::TOKEN_ENDPOINT;
@@ -60,21 +69,24 @@ class GoogleOAuthLoginProvider implements OAuthLoginProviderInterface
         return self::SCOPE;
     }
 
-    public function getClientIdSlug(): string
+    public function getClientId(): ?string
     {
-        return 'login-google-oauth-client-id';
+        return $this->credential('login-google-oauth-client-id');
     }
 
-    public function getClientSecretSlug(): string
+    public function getClientSecret(): ?string
     {
-        return 'login-google-oauth-client-secret';
+        return $this->credential('login-google-oauth-client-secret');
     }
 
-    // Asks the standard OpenID Connect userinfo endpoint rather than reading the id_token that came with the access token: both say the same thing here, and one http call is cheaper to hold than a JWT parser.
-    //
-    // Nothing is trusted from the answer beyond those two fields - and an address Google itself doesn't mark as verified is reported as such, leaving OAuthUserResolver to refuse it
-    public function fetchIdentity(string $accessToken): ?OAuthIdentity
+    // Asks the standard OpenID Connect userinfo endpoint rather than reading the id_token, trusting nothing beyond the address and whether Google marks it verified
+    public function fetchIdentity(array $token): ?OAuthIdentity
     {
+        $accessToken = $token['access_token'] ?? null;
+        if (!is_string($accessToken)) {
+            return null;
+        }
+
         try {
             $response = $this->httpClient->request('GET', self::USERINFO_ENDPOINT, [
                 'auth_bearer' => $accessToken,

@@ -10,6 +10,7 @@
 
 namespace c975L\ConfigBundle\Tests\Security;
 
+use c975L\ConfigBundle\Security\AppleOAuthLoginProvider;
 use c975L\ConfigBundle\Security\GoogleOAuthLoginProvider;
 use c975L\ConfigBundle\Security\OAuthLoginProviderRegistry;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
@@ -28,8 +29,8 @@ class OAuthLoginProviderRegistryTest extends TestCase
         $configService->method('get')->willReturnCallback(static fn (string $slug): mixed => $configs[$slug] ?? null);
 
         return new OAuthLoginProviderRegistry(
-            [new GoogleOAuthLoginProvider(new MockHttpClient())],
-            new OAuthLoginClient(new MockHttpClient(), $configService),
+            [new GoogleOAuthLoginProvider(new MockHttpClient(), $configService), new AppleOAuthLoginProvider($configService)],
+            new OAuthLoginClient(new MockHttpClient()),
         );
     }
 
@@ -54,8 +55,10 @@ class OAuthLoginProviderRegistryTest extends TestCase
     {
         $registry = $this->createRegistry($this->credentials());
 
+        // Google alone, Apple's four values being left empty
         $this->assertCount(1, $registry->enabled());
         $this->assertInstanceOf(GoogleOAuthLoginProvider::class, $registry->get('google'));
+        $this->assertNull($registry->get('apple'));
     }
 
     // An url guessed for a provider this site never enabled says no more than a typo does - both end as the same 404

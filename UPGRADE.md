@@ -1,5 +1,9 @@
 # UPGRADE
 
+## v1.75.0
+
+**`OAuthLoginProviderInterface` changed**, for "Sign in with Apple": `getClientIdSlug()` and `getClientSecretSlug()` give way to `getClientId(): ?string` and `getClientSecret(): ?string`, the provider reading its own credentials (`OAuthCredentialTrait` does it for a config slug); `getAuthorizationParameters(): array` is new (return `[]`); `fetchIdentity()` receives the token endpoint's whole answer (`array $token`, the access token in `$token['access_token']`). `OAuthLoginClient` no longer takes a `ConfigServiceInterface`, and `exchangeCodeForAccessToken()` is now `exchangeCodeForToken()`, returning that answer. Nothing to do on a site using the bundle's Google login alone: autowiring takes care of it.
+
 ## v1.72.0
 
 **A legal model's rewritten sections now apply to the language they were written in only.** A site that rewrote a clause on its French page saw that French text on the English page too; the English page now shows the bundle's English text until the clause is rewritten there, on the customization screen with the back-office in English. Added sections keep showing their text in every language until translated. Nothing to migrate: the stored delta is read as before.

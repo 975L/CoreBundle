@@ -3,6 +3,11 @@
         "date": "2026-10-23",
         "description": [
             {
+                "en": "Visitors can now sign in with their Apple account, once its four settings are filled in (see the \"Connect Apple login\" procedure). Apple requires it of an iPhone app that offers Google sign-in.",
+                "fr": "Les visiteurs peuvent désormais se connecter avec leur compte Apple, une fois ses quatre réglages remplis (voir la procédure « Connecter la connexion Apple »). Apple l'impose à une appli iPhone qui propose la connexion Google.",
+                "es": "Los visitantes ya pueden iniciar sesión con su cuenta de Apple, una vez rellenados sus cuatro ajustes (ver el procedimiento «Conectar el inicio de sesión con Apple»). Apple lo exige a una app de iPhone que ofrezca el inicio de sesión con Google."
+            },
+            {
                 "en": "The videos played on your pages are now declared to search engines, so they can show up in video results.",
                 "fr": "Les vidéos lues sur vos pages sont désormais déclarées aux moteurs de recherche, pour pouvoir apparaître dans leurs résultats vidéo.",
                 "es": "Los vídeos que se reproducen en sus páginas se declaran ahora a los buscadores, para que puedan aparecer en sus resultados de vídeo."

@@ -1,5 +1,23 @@
 # ChangeLog
 
+## v1.75.0
+
+Sign in with Apple
+
+### ConfigBundle
+
+- Added `AppleOAuthLoginProvider`, "Continue with Apple" once its four `login-apple-*` configs are filled (23/10/2026)
+- Added the `connecter-apple` procedure (23/10/2026)
+- Changed `OAuthLoginProviderInterface`: `getClientId()`/`getClientSecret()` replace the slug getters, `getAuthorizationParameters()` added, `fetchIdentity(array $token)` (23/10/2026) [BC-Break]
+- Added `OAuthCredentialTrait`, a provider reading its credential from a config slug (23/10/2026)
+- Renamed `OAuthLoginClient::exchangeCodeForAccessToken()` to `exchangeCodeForToken()`, returning the whole answer (23/10/2026) [BC-Break]
+- Accepted a posted answer at `/connect/{provider}/check`, sent on as a GET (23/10/2026)
+- Documented the OAuth providers in the `c975l-users` skill (23/10/2026)
+
+### UiBundle
+
+- Added `.oauth-login-apple`, Apple's black button (23/10/2026)
+
 ## v1.74.0
 
 Sorted plain-array collections, and let bundles leave rows unbadged

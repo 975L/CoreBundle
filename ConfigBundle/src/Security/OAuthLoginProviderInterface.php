@@ -12,9 +12,7 @@ namespace c975L\ConfigBundle\Security;
 
 use c975L\ConfigBundle\Model\OAuthIdentity;
 
-// One "sign in with X" button, described. The authorization code flow itself is written once in OAuthLoginClient and never here: what changes from a provider to the next is a handful of endpoints, and the one call that reads back who signed in.
-//
-// Implement it anywhere - this bundle, another c975L bundle, an application - and it's collected on its own (TaggedInterfacePass, see c975LConfigBundle::build()): no list to edit here, and /connect/{provider} routes it by getKey() the day it appears.
+// One "sign in with X" button, described - the flow itself lives in OAuthLoginClient, and an implementation anywhere is collected on its own (TaggedInterfacePass) and routed by getKey()
 interface OAuthLoginProviderInterface
 {
     // Identifies the provider in the url (/connect/google) and names its icon: lowercase, no space
@@ -26,17 +24,22 @@ interface OAuthLoginProviderInterface
     // Where the visitor is sent to consent
     public function getAuthorizationEndpoint(): string;
 
-    // Where the code they come back with is traded for an access token
+    // What the consent url carries beyond the parameters every provider takes - Apple's "response_mode", say
+    /** @return array<string, string> */
+    public function getAuthorizationParameters(): array;
+
+    // Where the code they come back with is traded for the provider's tokens
     public function getTokenEndpoint(): string;
 
     // Kept to what a login needs and nothing more: the wider the scope, the more likely the provider asks for a review before letting the application out of test mode
     public function getScope(): string;
 
-    // The config slugs holding this site's credentials - declared by whoever ships the provider, in their own configs.json, rather than derived from getKey() here: a provider added by another bundle owns its keys the way SocialBundle owns "social-google-oauth-client-id"
-    public function getClientIdSlug(): string;
+    // This site's credentials, read by the provider itself from configs it declares in its own configs.json, null while one is missing: a value pasted as is for most providers, a secret Apple wants signed afresh by the site. Both filled is what displays the button (see OAuthLoginProviderRegistry::enabled())
+    public function getClientId(): ?string;
 
-    public function getClientSecretSlug(): string;
+    public function getClientSecret(): ?string;
 
-    // Reads back who just signed in. The one place providers genuinely diverge - Google answers a standard userinfo endpoint, Facebook wants its fields listed, Apple says it in the id_token instead of answering anything - so each one does it its own way. Returns null when the answer can't be trusted (no email in it, provider refusing the token), the login being refused rather than guessed
-    public function fetchIdentity(string $accessToken): ?OAuthIdentity;
+    // Reads back who just signed in from the token endpoint's whole answer, the one step each provider does its own way, null when the answer can't be trusted
+    /** @param array<string, mixed> $token */
+    public function fetchIdentity(array $token): ?OAuthIdentity;
 }

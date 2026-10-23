@@ -23,9 +23,7 @@ use Symfony\Component\Routing\Exception\RouteNotFoundException;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-// "Sign in with Google" and where it comes back to, for every provider this site enabled - one pair of routes whatever their number, {provider} being resolved against what OAuthLoginProviderRegistry holds.
-//
-// No custom authenticator and nothing to declare in an application's security.yaml: the account is logged in programmatically once the provider answered, which is what lets this ship without touching a single file in the sites that install it. Security::login() runs the firewall's own user checker on the way, so an account disabled in the back office is refused here exactly as it is on the login form - said in its own words before that, see OAuthUserResolver.
+// "Sign in with Google" or Apple and where it comes back to, one pair of routes for every provider OAuthLoginProviderRegistry holds. No custom authenticator: the account is logged in programmatically through Security::login(), which runs the firewall's own user checker on the way.
 class OAuthLoginController extends AbstractController
 {
     private const string SESSION_STATE_PREFIX = 'config_oauth_state_';
@@ -96,13 +94,13 @@ class OAuthLoginController extends AbstractController
             return $this->refuse('flash.oauth_login_failed');
         }
 
-        $accessToken = $this->oauthLoginClient->exchangeCodeForAccessToken(
+        $token = $this->oauthLoginClient->exchangeCodeForToken(
             $oauthProvider,
             $code,
             $this->redirectUri($oauthProvider->getKey()),
         );
 
-        $identity = null === $accessToken ? null : $oauthProvider->fetchIdentity($accessToken);
+        $identity = null === $token ? null : $oauthProvider->fetchIdentity($token);
 
         if (null === $identity) {
             return $this->refuse('flash.oauth_login_failed');
@@ -134,6 +132,17 @@ class OAuthLoginController extends AbstractController
 
         // Whatever the success handler decided, the home page standing in when it has nothing to say
         return $response ?? $this->redirect($this->afterLoginUrl());
+    }
+
+    // Apple posts its answer from its own site, which brings no session cookie along (SameSite=Lax): it's sent straight on to this same address as a GET, a top-level navigation that carries the cookie and the state to check. Nothing here may touch the session, which would start a new one over the visitor's own
+    #[Route('/connect/{provider}/check', name: 'config_oauth_check_posted', methods: ['POST'])]
+    public function checkPosted(Request $request, string $provider): Response
+    {
+        return $this->redirectToRoute('config_oauth_check', ['provider' => $provider] + array_filter([
+            'code' => $request->request->get('code'),
+            'state' => $request->request->get('state'),
+            'error' => $request->request->get('error'),
+        ], is_string(...)), Response::HTTP_SEE_OTHER);
     }
 
     // The url the provider was told to come back to, which travels twice: providers check the code is traded for the very uri it was issued for
