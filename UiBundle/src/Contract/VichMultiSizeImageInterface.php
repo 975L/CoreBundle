@@ -14,7 +14,7 @@ namespace c975L\UiBundle\Contract;
 interface VichMultiSizeImageInterface extends VichImageResizableInterface
 {
     /**
-     * @return int the longest side in pixels of the "-thumb.webp" derivative, which keeps the image's own proportions - a square tile is then a "object-fit: cover" away, where a file cropped square could never give the cut pixels back
+     * @return int the longest side in pixels of the "-thumb.webp" derivative, which keeps the image's own proportions - a square tile is then a "object-fit: cover" away, where a file cropped square could never give the cut pixels back; 0 for an entity no grid shows, which then gets no thumbnail at all
      */
     public function getThumbnailSize(): int;
 

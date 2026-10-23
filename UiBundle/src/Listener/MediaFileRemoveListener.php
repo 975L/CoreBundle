@@ -11,6 +11,7 @@
 namespace c975L\UiBundle\Listener;
 
 use c975L\UiBundle\Contract\VichMediaNamableInterface;
+use c975L\UiBundle\Contract\VichMultiSizeImageInterface;
 use c975L\UiBundle\Entity\Media;
 use c975L\UiBundle\Storage\PrivateDirectory;
 use Doctrine\Bundle\DoctrineBundle\Attribute\AsDoctrineListener;
@@ -22,13 +23,16 @@ use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Vich\UploaderBundle\Mapping\PropertyMappingFactoryInterface;
 
-// Generic file cleanup for any bundle's media entity - each satellite bundle (Shop, Crowdfunding...) only needs its own Media hierarchy to implement VichMediaNamableInterface, no per-entity listener of its own. Only needed for the private-file case below - Vich's own delete_on_remove/delete_on_update already clean up any file still under its original public mapping destination, which a private one is not. Priority 100 on preUpdate runs this before Vich's own "clean" listener (priority 50, see VichUploaderExtension::registerListeners) has a chance to erase the old filename, so the mapping here still reads the file being replaced. The actual deletion is deferred to postFlush so a failed flush never removes a file its row still points at. #[AsDoctrineListener] only reads the class-level attribute (TARGET_CLASS) - Doctrine then calls whichever method matches each tagged event's name, hence one attribute per event here rather than per method.
+// Generic file cleanup for any bundle's media entity - each satellite bundle (Shop, Crowdfunding...) only needs its own Media hierarchy to implement VichMediaNamableInterface, no per-entity listener of its own. Only needed for what Vich cannot see - its own delete_on_remove/delete_on_update already clean up any file still under its original public mapping destination, which a private one is not, and know nothing of the -highres/-thumb siblings a multi-size image carries (see VichImageResizeListener::processMultiSizeDerivatives). Priority 100 on preUpdate runs this before Vich's own "clean" listener (priority 50, see VichUploaderExtension::registerListeners) has a chance to erase the old filename, so the mapping here still reads the file being replaced. The actual deletion is deferred to postFlush so a failed flush never removes a file its row still points at. #[AsDoctrineListener] only reads the class-level attribute (TARGET_CLASS) - Doctrine then calls whichever method matches each tagged event's name, hence one attribute per event here rather than per method.
 #[AsDoctrineListener(event: Events::preUpdate, priority: 100)]
 #[AsDoctrineListener(event: Events::preRemove)]
 #[AsDoctrineListener(event: Events::postFlush)]
 class MediaFileRemoveListener
 {
     private const string PUBLIC_DIRECTORY = 'public';
+
+    // The siblings VichImageResizeListener writes next to the stored file, always as webp
+    private const array DERIVATIVE_SUFFIXES = ['-highres', '-thumb'];
 
     /** @var string[] */
     private array $pendingRemovals = [];
@@ -39,12 +43,13 @@ class MediaFileRemoveListener
     ) {
     }
 
-    // The file a new upload replaces, private only: a public one is still where the mapping says, so Vich's own delete_on_update removes it
+    // The file a new upload replaces, private only: a public one is still where the mapping says, so Vich's own delete_on_update removes it - its derivatives, though, are no one's but this listener's
     public function preUpdate(PreUpdateEventArgs $args): void
     {
         $entity = $args->getObject();
         $directory = $this->replacedFileDirectory($entity, $args);
-        if (null === $directory) {
+        $multiSize = $entity instanceof VichMultiSizeImageInterface;
+        if (null === $directory && !$multiSize) {
             return;
         }
 
@@ -55,7 +60,13 @@ class MediaFileRemoveListener
             return;
         }
 
-        $this->queue($directory, $mapping->getFileName($entity));
+        $name = $mapping->getFileName($entity);
+        if (null !== $directory) {
+            $this->queue($directory, $name);
+        }
+        if ($multiSize) {
+            $this->queueDerivatives($name);
+        }
     }
 
     public function preRemove(PreRemoveEventArgs $args): void
@@ -66,7 +77,11 @@ class MediaFileRemoveListener
         }
 
         // Reads the field actually configured as fileNameProperty on the entity's own mapping (e.g. "name" for VichMediaTrait users, "filename" for UiBundle's own Media/GalleryPhoto) instead of assuming a fixed getName()/getFilename() accessor, which differs per entity
-        $this->queue(PrivateDirectory::resolve($entity) ?? self::PUBLIC_DIRECTORY, $this->propertyMappingFactory->fromField($entity, 'file')?->getFileName($entity));
+        $name = $this->propertyMappingFactory->fromField($entity, 'file')?->getFileName($entity);
+        $this->queue(PrivateDirectory::resolve($entity) ?? self::PUBLIC_DIRECTORY, $name);
+        if ($entity instanceof VichMultiSizeImageInterface) {
+            $this->queueDerivatives($name);
+        }
     }
 
     // Where the file being replaced sits, which the entity alone may no longer say: a media whose "members only" box changes in the same submit as its upload already carries the new flag, while its old file is still where the old flag put it. The name is still the old file's at this priority, so isPdf() reads the file being replaced
@@ -87,6 +102,19 @@ class MediaFileRemoveListener
 
         // A private file (a paid download, a media reserved to members) was moved out of public/ by VichImageResizeListener::moveFileToPrivate() or MediaMembersOnlyListener - it must be looked up there, not under public/
         $this->pendingRemovals[] = $this->kernel->getProjectDir() . '/' . $directory . '/' . $name;
+    }
+
+    // Named after the stored file as VichImageResizeListener names them, and always under public/ where it writes them - a thumbnail an entity never asked for is simply not found
+    private function queueDerivatives(?string $name): void
+    {
+        if (null === $name || '' === $name) {
+            return;
+        }
+
+        $base = (string) preg_replace('/\.[^.\/]+$/', '', $name);
+        foreach (self::DERIVATIVE_SUFFIXES as $suffix) {
+            $this->queue(self::PUBLIC_DIRECTORY, $base . $suffix . '.webp');
+        }
     }
 
     public function postFlush(PostFlushEventArgs $args): void

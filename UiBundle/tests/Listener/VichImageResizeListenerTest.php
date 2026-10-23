@@ -318,6 +318,18 @@ class VichImageResizeListenerTest extends TestCase
         $this->assertSame(400, $highres[1]);
     }
 
+    // An image no grid shows asks for no thumbnail, and gets its highres all the same
+    public function testOnPostUploadCutsNoThumbnailForASizeOfZero(): void
+    {
+        $pngPath = $this->projectDir . '/public/multi-size.png';
+        imagepng(imagecreatetruecolor(1200, 800), $pngPath);
+
+        $this->createListener()->onPostUpload(new Event(new MultiSizeImageStub($pngPath, 0), $this->createMapping()));
+
+        $this->assertFileDoesNotExist($this->projectDir . '/public/multi-size-thumb.webp');
+        $this->assertFileExists($this->projectDir . '/public/multi-size-highres.webp');
+    }
+
     // --- kept originals ------------------------------------------------------------------------------------
 
     // The stored file is named .webp whatever was uploaded (see UiMediaNamer), so only its bytes can say what the original is - and the copy has to be taken before processImage() overwrites them
@@ -548,8 +560,8 @@ class VichImageResizeListenerTest extends TestCase
         $this->assertSame($before, file_get_contents($path));
     }
 
-    // Its derivatives were cut from an upload that is gone, so a multi-size entity is converted at its own width and never resized
-    public function testOptimizeStoredImageOnlyConvertsAMultiSizeImage(): void
+    // Its derivatives were cut from an upload that is gone, so a multi-size entity has its stored file brought down to its width and its siblings left as they are, never cut again from a smaller file
+    public function testOptimizeStoredImageResizesAMultiSizeImageWithoutItsDerivatives(): void
     {
         $path = $this->projectDir . '/public/multi-size.webp';
         imagepng(imagecreatetruecolor(1200, 800), $path);
@@ -558,16 +570,39 @@ class VichImageResizeListenerTest extends TestCase
 
         $size = getimagesize($path);
         $this->assertSame(IMAGETYPE_WEBP, $size[2]);
-        $this->assertSame(1200, $size[0]);
+        $this->assertSame(400, $size[0]);
         $this->assertFileDoesNotExist($this->projectDir . '/public/multi-size-thumb.webp');
+        $this->assertFileDoesNotExist($this->projectDir . '/public/multi-size-highres.webp');
     }
 
-    public function testOptimizeStoredImageLeavesAMultiSizeWebpAloneWhateverItsWidth(): void
+    public function testOptimizeStoredImageResizesAMultiSizeWebpStoredWide(): void
     {
         $path = $this->projectDir . '/public/multi-size.webp';
         imagewebp(imagecreatetruecolor(1200, 800), $path);
 
-        $this->assertFalse($this->createListener()->optimizeStoredImage(new MultiSizeImageStub($path), $path));
+        $this->assertTrue($this->createListener()->optimizeStoredImage(new MultiSizeImageStub($path), $path));
+        $this->assertSame(400, getimagesize($path)[0]);
+    }
+
+    // Its signature was laid on the upload at a share of its width, so a watermarked entity is converted at its own width and never resized
+    public function testOptimizeStoredImageOnlyConvertsAWatermarkedImage(): void
+    {
+        $path = $this->projectDir . '/public/signed.webp';
+        imagepng(imagecreatetruecolor(1200, 800), $path);
+
+        $this->assertTrue($this->createListener()->optimizeStoredImage(new WatermarkedMultiSizeImageStub($path), $path));
+
+        $size = getimagesize($path);
+        $this->assertSame(IMAGETYPE_WEBP, $size[2]);
+        $this->assertSame(1200, $size[0]);
+    }
+
+    public function testOptimizeStoredImageLeavesAWatermarkedWebpAloneWhateverItsWidth(): void
+    {
+        $path = $this->projectDir . '/public/signed.webp';
+        imagewebp(imagecreatetruecolor(1200, 800), $path);
+
+        $this->assertFalse($this->createListener()->optimizeStoredImage(new WatermarkedMultiSizeImageStub($path), $path));
     }
 
     // A fixed icon keeps the format its role asks for
@@ -810,8 +845,10 @@ class OriginalKeepableImageStub implements VichMultiSizeImageInterface, VichOrig
 // Nothing in this bundle implements VichMultiSizeImageInterface (its consumers are satellite bundles, e.g. GalleryBundle's GalleryMedia), so the derivatives it opts into need an entity of their own to be tested at all
 class MultiSizeImageStub implements VichMultiSizeImageInterface
 {
-    public function __construct(private readonly string $path)
-    {
+    public function __construct(
+        private readonly string $path,
+        private readonly int $thumbnailSize = 200,
+    ) {
     }
 
     public function getImageWidth(): int
@@ -821,7 +858,7 @@ class MultiSizeImageStub implements VichMultiSizeImageInterface
 
     public function getThumbnailSize(): int
     {
-        return 200;
+        return $this->thumbnailSize;
     }
 
     public function getHighresWidth(): int

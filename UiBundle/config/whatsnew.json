@@ -11,6 +11,16 @@
                 "en": "The slider's arrows are larger, so they are easier to click.",
                 "fr": "Les flèches des diaporamas sont plus grandes, donc plus faciles à cliquer.",
                 "es": "Las flechas de los carruseles son más grandes, así que son más fáciles de pulsar."
+            },
+            {
+                "en": "Book covers, products and photo collections now show at the same size everywhere, two to a row on a phone.",
+                "fr": "Les couvertures de livres, les produits et les collections de photos s'affichent désormais à la même taille partout, deux par ligne sur téléphone.",
+                "es": "Las portadas de libros, los productos y las colecciones de fotos se muestran ahora con el mismo tamaño en todas partes, dos por fila en el teléfono."
+            },
+            {
+                "en": "Deleting or replacing a picture now also deletes its smaller copies, so they no longer take up space.",
+                "fr": "Supprimer ou remplacer une image supprime désormais aussi ses copies réduites, qui n'occupent plus de place.",
+                "es": "Eliminar o sustituir una imagen ahora elimina también sus copias reducidas, que ya no ocupan espacio."
             }
         ]
     },

@@ -11,6 +11,7 @@
 namespace c975L\UiBundle\Tests\Listener;
 
 use c975L\UiBundle\Contract\VichMediaNamableInterface;
+use c975L\UiBundle\Contract\VichMultiSizeImageInterface;
 use c975L\UiBundle\Contract\VichPrivateFileInterface;
 use c975L\UiBundle\Entity\Media;
 use c975L\UiBundle\Listener\MediaFileRemoveListener;
@@ -238,6 +239,55 @@ class MediaFileRemoveListenerTest extends TestCase
         $this->assertFileExists($this->projectDir . '/public/medias/site/logo.webp');
     }
 
+    // Vich removes the stored file and nothing else, so the -highres/-thumb siblings VichImageResizeListener wrote beside it go here
+    public function testPreRemoveDeletesTheDerivativesOfAMultiSizeImage(): void
+    {
+        mkdir($this->projectDir . '/public/medias/book', 0777, true);
+        foreach (['page.webp', 'page-highres.webp', 'page-thumb.webp'] as $file) {
+            file_put_contents($this->projectDir . '/public/medias/book/' . $file, 'content');
+        }
+
+        $listener = $this->createListener();
+        $listener->preRemove($this->createEventArgs(new MediaFileRemoveListenerTestMultiSizeFixture('medias/book/page.webp')));
+        $listener->postFlush($this->createPostFlushEventArgs());
+
+        $this->assertFileDoesNotExist($this->projectDir . '/public/medias/book/page-highres.webp');
+        $this->assertFileDoesNotExist($this->projectDir . '/public/medias/book/page-thumb.webp');
+    }
+
+    // A replacing upload gets a new name, so the old file's siblings would otherwise stay behind for good - the old file itself is still Vich's
+    public function testPreUpdateDeletesTheReplacedDerivativesAndLeavesThePublicFileToVich(): void
+    {
+        mkdir($this->projectDir . '/public/medias/book', 0777, true);
+        foreach (['page.webp', 'page-highres.webp', 'page-thumb.webp'] as $file) {
+            file_put_contents($this->projectDir . '/public/medias/book/' . $file, 'content');
+        }
+        file_put_contents($this->projectDir . '/new-upload.png', 'content');
+
+        $entity = new MediaFileRemoveListenerTestMultiSizeFixture('medias/book/page.webp');
+        $entity->setFile(new File($this->projectDir . '/new-upload.png'));
+
+        $listener = $this->createListener();
+        $listener->preUpdate($this->createUpdateEventArgs($entity));
+        $listener->postFlush($this->createPostFlushEventArgs());
+
+        $this->assertFileExists($this->projectDir . '/public/medias/book/page.webp');
+        $this->assertFileDoesNotExist($this->projectDir . '/public/medias/book/page-highres.webp');
+        $this->assertFileDoesNotExist($this->projectDir . '/public/medias/book/page-thumb.webp');
+    }
+
+    public function testPreUpdateKeepsTheDerivativesWhenNoNewFileIsBeingUploaded(): void
+    {
+        mkdir($this->projectDir . '/public/medias/book', 0777, true);
+        file_put_contents($this->projectDir . '/public/medias/book/page-highres.webp', 'content');
+
+        $listener = $this->createListener();
+        $listener->preUpdate($this->createUpdateEventArgs(new MediaFileRemoveListenerTestMultiSizeFixture('medias/book/page.webp')));
+        $listener->postFlush($this->createPostFlushEventArgs());
+
+        $this->assertFileExists($this->projectDir . '/public/medias/book/page-highres.webp');
+    }
+
     // A media reserved to members was moved out of public/ (see Media::MEMBERS_ONLY_DIRECTORY) - its file is removed from there
     public function testPreRemoveDeletesAMediaReservedToMembersFromItsDirectory(): void
     {
@@ -353,5 +403,54 @@ class MediaFileRemoveListenerTestPrivateFixture implements VichMediaNamableInter
     public function getPrivateDirectory(): string
     {
         return 'private/downloads';
+    }
+}
+
+// A satellite bundle's image carrying the three sizes, as BookBundle's BookMedia and GalleryBundle's GalleryMedia are
+#[Vich\Uploadable]
+class MediaFileRemoveListenerTestMultiSizeFixture implements VichMediaNamableInterface, VichMultiSizeImageInterface
+{
+    #[Vich\UploadableField(mapping: 'test', fileNameProperty: 'name')]
+    protected ?File $file = null;
+
+    public function __construct(private readonly ?string $name)
+    {
+    }
+
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
+
+    public function getFile(): ?File
+    {
+        return $this->file;
+    }
+
+    public function setFile(?File $file): static
+    {
+        $this->file = $file;
+
+        return $this;
+    }
+
+    public function getVichMediaPath(): string
+    {
+        return 'medias/book/fixture';
+    }
+
+    public function getImageWidth(): int
+    {
+        return 1200;
+    }
+
+    public function getThumbnailSize(): int
+    {
+        return 400;
+    }
+
+    public function getHighresWidth(): int
+    {
+        return 1600;
     }
 }

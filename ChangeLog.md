@@ -1,5 +1,16 @@
 # ChangeLog
 
+## v1.77.0
+
+One picture grid size, derivatives removed with their image
+
+### UiBundle
+
+- Added `--card-grid-min` and `--card-grid-gap` tokens, the shared track and gap of picture grids (23/10/2026)
+- `MediaFileRemoveListener` removes a multi-size image's `-highres`/`-thumb` siblings on delete and replacing upload (23/10/2026)
+- `getThumbnailSize()` returning `0` cuts no thumbnail (23/10/2026)
+- `c975l:ui:media-optimize` resizes a multi-size image, leaving its derivatives alone (23/10/2026)
+
 ## v1.76.2
 
 Larger slider arrows

@@ -87,6 +87,8 @@
     --card-header-aside-size: 0.75em;
     --card-header-aside-opacity: 0.8;
     --cards-gap: 20px;
+    --card-grid-gap: 12px;
+    --card-grid-min: min(150px, calc(50% - var(--card-grid-gap) / 2));
     --card-width: min(90vw, 380px, calc((var(--section-wrap-max-width, var(--body-max-width, 1440px)) - 2 * var(--section-wrap-gutter, clamp(20px, 5vw, 64px)) - 40px) / 3));
     --viewport-width: 100vw;
     --card-width-compact: min(calc((var(--viewport-width) - 2 * var(--section-wrap-gutter, clamp(20px, 5vw, 64px)) - var(--cards-gap)) / 2), 190px, calc((var(--section-wrap-max-width, var(--body-max-width, 1440px)) - 2 * var(--section-wrap-gutter, clamp(20px, 5vw, 64px)) - 100px) / 6));
@@ -160,6 +162,12 @@
     /* Where the bar comes to rest - the same height a fixed header covers, which is what --scroll-offset already says. A site whose header scrolls away with the page sets this to 0 */
     --toc-sticky-top: var(--scroll-offset, 80px);
     --white: #fff;
+  }
+  @media (min-width: 1024px) {
+    :root, [data-theme] {
+      --card-grid-gap: 20px;
+      --card-grid-min: 215px;
+    }
   }
 }
 /* ALERTS */

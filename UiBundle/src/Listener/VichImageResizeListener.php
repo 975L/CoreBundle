@@ -110,7 +110,7 @@ class VichImageResizeListener
         }
     }
 
-    // Brings a stored file back in line with what an upload of it would give today, true once rewritten (or, with "$write" off, once it would be). A fixed icon is left alone, a multi-size or watermarked entity only converted, never resized, its derivatives having been cut from the upload
+    // Brings a stored file back in line with what an upload of it would give today, true once rewritten (or, with "$write" off, once it would be). A fixed icon is left alone, a watermarked entity only converted, never resized, its signature having been laid on the upload; a multi-size one resized alone, the derivatives cut from the upload left as they are
     public function optimizeStoredImage(VichImageResizableInterface $entity, string $absolutePath, bool $write = true): bool
     {
         if (($entity instanceof Media && null !== $entity->getFixedIconSpec()) || !$this->isReadable($absolutePath)) {
@@ -123,7 +123,7 @@ class VichImageResizeListener
             return false;
         }
 
-        $convertOnly = $entity instanceof VichMultiSizeImageInterface || $entity instanceof VichWatermarkableInterface;
+        $convertOnly = $entity instanceof VichWatermarkableInterface;
         if (($convertOnly && $isWebp) || !$write) {
             return !($convertOnly && $isWebp);
         }
@@ -131,7 +131,7 @@ class VichImageResizeListener
         if ($convertOnly) {
             new Imagine()->open($absolutePath)->save($absolutePath, ['format' => 'webp', 'webp_quality' => 90]);
         } else {
-            $this->processImage($entity, $absolutePath);
+            $this->processImage($entity, $absolutePath, false);
         }
 
         $this->storeDimensions($entity, $absolutePath);
@@ -170,7 +170,8 @@ class VichImageResizeListener
         return false !== $size && in_array($size[2], self::READABLE_IMAGE_TYPES, true);
     }
 
-    private function processImage(VichImageResizableInterface $entity, string $absolutePath): void
+    // "$withDerivatives" off for a stored file being brought back in line: its siblings were cut from an upload that is gone, and cutting them again from the stored file would only lower their resolution
+    private function processImage(VichImageResizableInterface $entity, string $absolutePath, bool $withDerivatives = true): void
     {
         $imagine = new Imagine();
         $media = $imagine->open($absolutePath);
@@ -185,7 +186,7 @@ class VichImageResizeListener
 
         // The sibling derivatives first, and the largest of them comes back to be cut down into the stored file below rather than the upload being resampled a third time. A 24-megapixel photo costs 4.5 seconds to resample three times over and 2 seconds to resample once and work from the 2048-pixel result, for derivatives of the very same dimensions - which is how a batch of twenty photos went from timing out to fitting in a request
         $carriesWatermark = false;
-        if ($entity instanceof VichMultiSizeImageInterface) {
+        if ($withDerivatives && $entity instanceof VichMultiSizeImageInterface) {
             $media = $this->processMultiSizeDerivatives($entity, $media, $absolutePath, $watermark);
             $carriesWatermark = true;
         }
@@ -274,10 +275,13 @@ class VichImageResizeListener
 
         $highres->save($base . '-highres.webp', ['format' => 'webp', 'webp_quality' => 90]);
 
+        // An entity no screen shows as a grid asks for no thumbnail at all (see VichMultiSizeImageInterface::getThumbnailSize)
         $thumbnailSize = $entity->getThumbnailSize();
-        $highres->copy()
-            ->thumbnail(new Box($thumbnailSize, $thumbnailSize), ImageInterface::THUMBNAIL_INSET)
-            ->save($base . '-thumb.webp', ['format' => 'webp', 'webp_quality' => 90]);
+        if ($thumbnailSize > 0) {
+            $highres->copy()
+                ->thumbnail(new Box($thumbnailSize, $thumbnailSize), ImageInterface::THUMBNAIL_INSET)
+                ->save($base . '-thumb.webp', ['format' => 'webp', 'webp_quality' => 90]);
+        }
 
         return $highres;
     }

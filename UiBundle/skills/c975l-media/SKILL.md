@@ -104,8 +104,9 @@ image already linking to `slide.url` keeps its link, and a caption stays outside
 square original. A grid wanting square tiles uses `object-fit: cover`, which stays reversible where a
 file cropped square could never give the pixels back.
 
-The derivatives are plain files Vich knows nothing about, so **removing them is the consuming bundle's
-own business** — a `postRemove` listener of yours.
+The derivatives are plain files Vich knows nothing about, so **`MediaFileRemoveListener` removes them**
+with the stored file, on a delete as on a replacing upload — never write a listener of your own for
+them. `getThumbnailSize()` returning `0` asks for no thumbnail at all, for an image no grid shows.
 
 A photo is straightened from its EXIF orientation tag once, before anything is measured, and
 everything written is webp, a format saved without EXIF, so nothing downstream rotates it twice.
@@ -114,7 +115,7 @@ everything written is webp, a format saved without EXIF, so nothing downstream r
 other keeps its own extension. A file stored before its entity opted in, or copied by an import, is
 brought back in line by `c975l:ui:media-optimize [--dry-run]`, which runs
 `VichImageResizeListener::optimizeStoredImage()` over every resizable entity: converted and resized in
-place, under the same name, a multi-size or watermarked one only converted, a fixed icon left alone.
+place, under the same name, a multi-size one resized without touching its derivatives, a watermarked one only converted, a fixed icon left alone.
 
 ## Keeping the original, and signing it
 

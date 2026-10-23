@@ -1028,6 +1028,8 @@ Consecutive `card` and `flip_card` blocks are wrapped in one `.cards` flex row (
 
 **What the row puts between two cards is a token too.** `--cards-gap` (`20px` by default) is declared in the token layer like every other one, read by `.cards` and read back by the three widths above, which take two of those gaps off, or five, or one. Widening it in a theme widens the row's gutters and narrows its cards in the same breath, where the two used to be a `20px` on the row and a hand-copied `40px` / `100px` / `20px` in the widths, free to drift apart.
 
+**A grid of pictures shares one track and one gap.** `--card-grid-min` and `--card-grid-gap` are the smallest track and the gap of every picture grid — BookBundle's covers, ShopBundle's products, a site's own collections — so they all show the same size and an app's grid can match it with `repeat(auto-fill, minmax(min(100%, var(--card-grid-min)), 1fr))`. A phone and a tablet get a `12px` gap and a track keeping two to the row on the narrowest phone, capped at `150px`; from `1024px` up, `215px` and `20px`.
+
 The three caps are one series rather than three values: `380 × 3`, `190 × 6` and `570 × 2` are the same `1140px` of cards. `CardMeasureTest` locks each one to its count, and that none of them carries a floor — a floor is what made a card overflow its own wrap under a `420px` viewport, where `90vw` is already less than it.
 
 What is read there is the measure the *page* declares, which says nothing about the box a given row sits in — a `.cards` nested in a `flex_columns` cell, in a panel or in a modal is narrower than that. `max-width: 100%` on `.card` is what closes it: the token is what a card asks for, that is what it never exceeds. It also ends the overflow a phone under `420px` used to show, where the old `clamp()`'s `300px` floor won over its own `90vw` ceiling.
@@ -2904,7 +2906,7 @@ An entity showing the same image in a grid, on a page and in a zoom implements `
 | `getThumbnailSize()` | `-thumb.webp`, next to it | grids |
 | `getHighresWidth()` | `-highres.webp`, next to it | zoom |
 
-`Listener\VichImageResizeListener` generates the two siblings on `vich_uploader.post_upload`, both from the untouched original rather than from the already-downscaled stored file, and neither is ever upscaled past it. The entity reads their names back from its own stored filename (`preg_replace` on the extension - see GalleryBundle's `GalleryMedia::getThumbnailFilename()`); nothing is stored in the database for them, and `MediaFileRemoveListener` knows nothing about them either, so removing them is the consuming bundle's own business (see GalleryBundle's `GalleryMediaDerivativeCleanupListener`).
+`Listener\VichImageResizeListener` generates the two siblings on `vich_uploader.post_upload`, both from the untouched original rather than from the already-downscaled stored file, and neither is ever upscaled past it. The entity reads their names back from its own stored filename (`preg_replace` on the extension - see GalleryBundle's `GalleryMedia::getThumbnailFilename()`); nothing is stored in the database for them. `MediaFileRemoveListener` removes both with the stored file, on a delete as on a replacing upload; a kept original stays the consuming bundle's own business (see GalleryBundle's `GalleryMediaDerivativeCleanupListener`).
 
 **The thumbnail keeps the image's proportions**, `getThumbnailSize()` capping its longest side: it is only square for a square original. A grid wanting square tiles gets them with `object-fit: cover` over a square box, which is a display decision that stays reversible - a file cropped square here could never give the cut pixels back.
 
@@ -2914,7 +2916,7 @@ An entity showing the same image in a grid, on a page and in a zoom implements `
 php bin/console c975l:ui:media-optimize [--dry-run]
 ```
 
-It goes through every concrete entity implementing `VichImageResizableInterface`, whatever its bundle, and calls `VichImageResizeListener::optimizeStoredImage()`: converted to webp and resized to `getImageWidth()`, a multi-size or watermarked entity only converted, a fixed icon left alone. The file keeps its name, so no row or link changes, and the block cache is invalidated afterwards. `--dry-run` lists the files without touching them; re-running it leaves the files already in line alone.
+It goes through every concrete entity implementing `VichImageResizableInterface`, whatever its bundle, and calls `VichImageResizeListener::optimizeStoredImage()`: converted to webp and resized to `getImageWidth()`, a multi-size entity resized without touching its derivatives, a watermarked one only converted, a fixed icon left alone. The file keeps its name, so no row or link changes, and the block cache is invalidated afterwards. `--dry-run` lists the files without touching them; re-running it leaves the files already in line alone.
 
 ### Keeping the untouched upload
 

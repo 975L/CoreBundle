@@ -21,6 +21,9 @@ class TokenDefaultsTest extends TestCase
     // Written by JS on the element itself, never read off :root - a default would apply to nothing
     private const array RUNTIME_ONLY = ['--image-compare-position', '--slider-freeflow-vw'];
 
+    // Held here for the satellites' picture grids (BookBundle's covers, ShopBundle's products), which read it - nothing in this bundle does
+    private const array READ_BY_SATELLITES = ['--card-grid-min'];
+
     public function testEveryTokenReadHasADefaultOrAnInlineFallback(): void
     {
         $declared = array_keys($this->tokenDefaults());
@@ -78,7 +81,7 @@ class TokenDefaultsTest extends TestCase
         $orphans = [];
         foreach ($this->tokenDefaults() as $token => $value) {
             // A token only referenced by another default's value is still needed, e.g. --button-background-primary behind --primary
-            if (!\in_array($token, $read, true) && !$this->referencedByAnotherDefault($token)) {
+            if (!\in_array($token, $read, true) && !\in_array($token, self::READ_BY_SATELLITES, true) && !$this->referencedByAnotherDefault($token)) {
                 $orphans[] = $token;
             }
         }
