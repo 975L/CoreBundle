@@ -145,20 +145,7 @@ class BackupCommand extends Command
             mkdir($this->finalFolder, 0755, true);
         }
 
-        $this->credentialsFile = $this->createTempCredentialsFile();
-        try {
-            foreach ($this->databases() as $database) {
-                $this->backupMySql($database);
-            }
-            $this->reportMissingTables();
-            $this->backupFiles();
-            $this->writeManifest();
-            $this->cleanup();
-            $this->purgeOldBackups();
-            $this->sendArchivesOffsite();
-        } finally {
-            unlink($this->credentialsFile);
-        }
+        $this->backupAll();
 
         // A long mysqldump may outlast wait_timeout, so the connection is forced back up first
         $this->connection->close();
@@ -183,6 +170,25 @@ class BackupCommand extends Command
         $io->success('Backup completed.');
 
         return $reportSent ? Command::SUCCESS : Command::FAILURE;
+    }
+
+    // Every step of the backup, the temporary credentials file removed whatever happens
+    private function backupAll(): void
+    {
+        $this->credentialsFile = $this->createTempCredentialsFile();
+        try {
+            foreach ($this->databases() as $database) {
+                $this->backupMySql($database);
+            }
+            $this->reportMissingTables();
+            $this->backupFiles();
+            $this->writeManifest();
+            $this->cleanup();
+            $this->purgeOldBackups();
+            $this->sendArchivesOffsite();
+        } finally {
+            unlink($this->credentialsFile);
+        }
     }
 
     // The site's database, then the other ones it relies on (a statistics tool installed beside the site, typically), dumped with the same credentials - the account has to be granted on every one of them, which a host's main database account usually is

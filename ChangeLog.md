@@ -1,5 +1,13 @@
 # ChangeLog
 
+## v1.78.1
+
+Backup steps extracted from the backup command's execute
+
+### ConfigBundle
+
+- Extracted the backup steps of `c975l:config:backup` into `backupAll()` (25/10/2026)
+
 ## v1.78
 
 Backup of the extra databases a site relies on
