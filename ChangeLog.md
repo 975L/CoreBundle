@@ -1,5 +1,13 @@
 # ChangeLog
 
+## v1.79.1
+
+Lizard takes its latest release in the CI
+
+### The package
+
+- The CI and `bin/ci.sh` install the latest lizard instead of 1.17.31 (25/10/2026)
+
 ## v1.79
 
 Social contents carry the language they are written in

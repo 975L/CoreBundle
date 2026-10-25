@@ -49,9 +49,9 @@ for Package in squizlabs/php_codesniffer friendsofphp/php-cs-fixer rector/rector
     PATH="$Directory/vendor/bin:$PATH"
 done
 
-# Lizard is a Python tool, and it is pinned where the four above take their latest release: its counting changed between versions and this is the one Codacy runs, which the thresholds composer.json hands it are read against
+# Lizard is a Python tool taking its latest release like the four above, as the CI and the local one do: pinning one side alone lets the counts drift apart
 python3 -m venv "$TOOLS/lizard"
-"$TOOLS/lizard/bin/pip" install --quiet lizard==1.17.31
+"$TOOLS/lizard/bin/pip" install --quiet lizard
 PATH="$TOOLS/lizard/bin:$PATH"
 export PATH
 
