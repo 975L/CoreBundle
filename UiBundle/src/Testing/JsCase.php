@@ -249,7 +249,7 @@ abstract class JsCase extends TestCase
                     // Answered last, so nothing is read back before the scenario has finished clearing up after itself
                     window.__out = JSON.stringify(answer);
                 }
-            })();',
+            })(); void 0;',
             (string) ($options['before'] ?? ''),
             json_encode((string) ($options['css'] ?? '')),
             json_encode($html),
@@ -262,7 +262,7 @@ abstract class JsCase extends TestCase
         );
     }
 
-    // The probe answers on window rather than through a returned promise, which is the one shape that behaves the same whatever the scenario awaits inside
+    // The probe answers on window rather than through a returned promise, and the scenario ends on void 0 so chrome-php doesn't await it within its own 5s, which would leave the loop below and its failure message never reached
     private function evaluate(string $js): array
     {
         $page = $this->page();

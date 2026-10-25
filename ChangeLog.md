@@ -1,5 +1,14 @@
 # ChangeLog
 
+## v1.78.2
+
+Browser scenarios time out with the harness's own message
+
+### UiBundle
+
+- `JsCase` no longer lets chrome-php await the scenario it evaluates (25/10/2026)
+- Added `JsCaseTimeoutTest` (25/10/2026)
+
 ## v1.78.1
 
 Backup steps extracted from the backup command's execute
