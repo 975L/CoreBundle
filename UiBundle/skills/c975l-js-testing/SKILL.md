@@ -1,6 +1,6 @@
 ---
 name: c975l-js-testing
-description: "Use this skill when a bundle's javascript has to be tested in a Symfony application built on the c975L ecosystem — running a Stimulus controller or a plain module in a real browser and reading back what it made of the DOM, rather than asserting on the text of the file. Covers the harness UiBundle ships for every bundle depending on it, what a satellite declares, what a scenario is given back clean, and what still belongs to a textual test. Triggers on: JsCase, browser test, behaviour test, BehaviourTest, observe, probe, bundleRoot, shipped, tab, openPage, serve, reopen, TargetDestroyed, The session is destroyed, Group('browser'), exclude-group browser, chrome-php/chrome, BrowserFactory, headless Chrome, stimulus.js, vendor-assets.json, scope tests, docroot, settle, keepBody, fresh, modules, before, css option, scripts option, styles option, JsCaseRecoveryTest, JsCaseGuardTest, StylesheetCascade, jsdom, node test runner, package.json, DOM emulation, scrollHeight, matchMedia stub, window.__out, window.__storage, window.__globals, navigator.webdriver, vanilla-cookieconsent hideFromBots."
+description: "Use this skill when a bundle's javascript has to be tested in a Symfony application built on the c975L ecosystem — running a Stimulus controller or a plain module in a real browser and reading back what it made of the DOM, rather than asserting on the text of the file. Covers the harness UiBundle ships for every bundle depending on it, what a satellite declares, what a scenario is given back clean, and what still belongs to a textual test. Triggers on: JsCase, browser test, behaviour test, BehaviourTest, observe, probe, bundleRoot, shipped, tab, openPage, serve, reopen, TargetDestroyed, The session is destroyed, Group('browser'), exclude-group browser, chrome-php/chrome, BrowserFactory, headless Chrome, stimulus.js, vendor-assets.json, scope tests, docroot, settle, keepBody, timeout, JsCaseTimeoutTest, fresh, modules, before, css option, scripts option, styles option, JsCaseRecoveryTest, JsCaseGuardTest, StylesheetCascade, jsdom, node test runner, package.json, DOM emulation, scrollHeight, matchMedia stub, window.__out, window.__storage, window.__globals, navigator.webdriver, vanilla-cookieconsent hideFromBots."
 ---
 
 # c975L UiBundle — javascript run rather than read
@@ -84,6 +84,7 @@ class ReadmoreBehaviourTest extends JsCase
 | `modules` | `name => module`, plain modules handed to the probe as its `mod` argument |
 | `fresh` | asks for a copy of the module under a url of its own, for a scenario describing what it does the *first* time |
 | `keepBody` | leaves what the scenario appended to `<body>` in place, for a library that owns a root of its own |
+| `timeout` | milliseconds the scenario is given to answer instead of the default, for a long animation on a busy machine |
 
 `JsCase::url()` gives the url a file is served from, for a controller taking one as a value.
 `JsCase::shipped()` reads a file the bundle under test ships, for an assertion on what it contains
@@ -103,6 +104,7 @@ any of these itself:
 | A global stood in for | `matchMedia`, `fetch`, `XMLHttpRequest` and `open` are snapshotted when the page opens and put back between scenarios |
 | A library stood in for | A scenario handed a stub of its own leaves it on the global, so a `scripts` entry is put back for every scenario that asks for it rather than once for the page |
 | Anything appended to the body | Removed unless `keepBody` says otherwise, the body's own children being noted before the scenario runs |
+| A scenario given up on | It goes on running and would answer late into the next one, so the page is reopened when a scenario times out |
 
 `navigator.webdriver` is denied on the page: vanilla-cookieconsent hides itself from bots by default, so
 its banner never rendered. The flag is what the page has to lie about — never this bundle's own

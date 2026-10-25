@@ -1,5 +1,15 @@
 # ChangeLog
 
+## v1.79
+
+Social contents carry the language they are written in
+
+### UiBundle
+
+- Added the optional `locale` to `SocialContent` (25/10/2026)
+- A browser scenario given up on no longer hands its late answer to the next one, the page being reopened on timeout (25/10/2026)
+- Added the `timeout` option to `JsCase::observe()` (25/10/2026)
+
 ## v1.78.2
 
 Browser scenarios time out with the harness's own message

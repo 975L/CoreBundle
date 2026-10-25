@@ -3490,7 +3490,7 @@ One is a contract rather than a helper: **`Contract\SocialContentSourceInterface
 | `getNextContent(array $excludedIds)` | the next content to post among those not posted yet, `null` when none is left — the ids already posted are the publisher's to know |
 | `getContent(string $sourceId)` | one content read again, `null` once it is gone — a post reviewed tomorrow goes out with the image as it then is |
 
-Each content is a **`Model\SocialContent`**: `sourceId`, `title`, `url`, the image both ways because the networks differ — `imagePath` read from disk for Bluesky, which wants the bytes uploaded, and `imageUrl` for Meta, which downloads a public url itself — its `imageAlt`, and `variables`, the other `{name}` placeholders the site's post template may carry (`category`, `description`…).
+Each content is a **`Model\SocialContent`**: `sourceId`, `title`, `url`, the image both ways because the networks differ — `imagePath` read from disk for Bluesky, which wants the bytes uploaded, and `imageUrl` for Meta, which downloads a public url itself — its `imageAlt`, and `variables`, the other `{name}` placeholders the site's post template may carry (`category`, `description`…), and its `locale`, the language it is written in, `null` meaning the site's default one.
 
 A source whose contents fall into groups — a gallery's categories — may also implement **`Contract\ScopedSocialContentSourceInterface`**, so a SocialBundle series can be narrowed to some of them: `getScopes()` lists the groups (labels keyed by id), `getNextScopedContent(array $excludedIds, array $scopeIds)` picks only among those given, an empty list meaning every group. It extends the base interface rather than adding to it, so a source without groups has nothing to change.
 

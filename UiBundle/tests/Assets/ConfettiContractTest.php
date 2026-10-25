@@ -36,7 +36,9 @@ class ConfettiContractTest extends JsCase
              const drawing = document.querySelectorAll("canvas").length;
              await done;
 
-             return { promised, drawing };'
+             return { promised, drawing };',
+            // The animation runs about 200 frames, which a machine busy with the rest of the push gate stretches past the default
+            ['timeout' => 15000]
         );
 
         $this->assertTrue($drawn['promised'], 'canvas-confetti no longer answers a promise, so nothing can tell when the animation is over.');
@@ -44,8 +46,8 @@ class ConfettiContractTest extends JsCase
     }
 
     // The library keeps the canvas it made for as long as the page lives, so taking it away leaves it drawing on something detached (see JsCase, and the dialog block-picker owns the same way)
-    private function fire(string $probe): mixed
+    private function fire(string $probe, array $options = []): mixed
     {
-        return $this->observe('<div></div>', [], $probe, ['scripts' => [self::LIBRARY], 'keepBody' => true]);
+        return $this->observe('<div></div>', [], $probe, ['scripts' => [self::LIBRARY], 'keepBody' => true, ...$options]);
     }
 }

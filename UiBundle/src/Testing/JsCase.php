@@ -61,11 +61,10 @@ abstract class JsCase extends TestCase
         }
     }
 
+    // Mounts the fixture, starts the named controllers over it, runs the probe against it and returns what the probe answered
     /**
-     * Mounts the fixture, starts the named controllers over it, runs the probe against it and returns what the probe answered.
-     *
      * @param array<string, string> $controllers identifier => module, bare for this bundle's assets/js, path from the repository root otherwise
-     * @param array<string, mixed>  $options     scripts, styles, css and settle
+     * @param array<string, mixed>  $options     scripts, styles, css, settle and timeout
      */
     protected function observe(string $html, array $controllers, string $probe, array $options = []): mixed
     {
@@ -90,7 +89,7 @@ abstract class JsCase extends TestCase
     {
         $this->preload($options);
 
-        return $this->evaluate($this->scenario($html, $probe, $controllers, $options));
+        return $this->evaluate($this->scenario($html, $probe, $controllers, $options), (int) ($options['timeout'] ?? self::TIMEOUT_MS));
     }
 
     // Classic scripts and stylesheets belong to the page rather than to the scenario: they are the vendored libraries, they define globals, and loading one per scenario would be the only slow thing here
@@ -263,12 +262,12 @@ abstract class JsCase extends TestCase
     }
 
     // The probe answers on window rather than through a returned promise, and the scenario ends on void 0 so chrome-php doesn't await it within its own 5s, which would leave the loop below and its failure message never reached
-    private function evaluate(string $js): array
+    private function evaluate(string $js, int $timeout): array
     {
         $page = $this->page();
         $page->evaluate($js)->getReturnValue();
 
-        $deadline = microtime(true) + self::TIMEOUT_MS / 1000;
+        $deadline = microtime(true) + $timeout / 1000;
         while (microtime(true) < $deadline) {
             $out = $page->evaluate('window.__out')->getReturnValue();
 
@@ -279,7 +278,10 @@ abstract class JsCase extends TestCase
             usleep(2000);
         }
 
-        return ['ok' => false, 'error' => sprintf('The scenario never answered within %d ms - something it awaits never settles.', self::TIMEOUT_MS)];
+        // The scenario keeps running on the shared page: its late answer would be read back by the next one, and its clean-up would take away what the next one put in the body
+        $this->reopen();
+
+        return ['ok' => false, 'error' => sprintf('The scenario never answered within %d ms - something it awaits never settles.', $timeout)];
     }
 
     // A vendored library put on the page and awaited there: appending a script only queues it, and a scenario reading its global before it ran would fail on the ordering rather than on the library

@@ -26,4 +26,17 @@ class JsCaseTimeoutTest extends JsCase
 
         $this->observe('<p>hanging</p>', [], 'root.replaceChildren(); await new Promise(() => {});');
     }
+
+    // A scenario given up on still answers once it settles, and the next scenario must not read that answer as its own
+    public function testALateAnswerNeverReachesTheNextScenario(): void
+    {
+        try {
+            $this->observe('<p>late</p>', [], 'await new Promise((r) => setTimeout(r, 300)); return "late";', ['timeout' => 100]);
+            $this->fail('The scenario answered within its timeout, so this proves nothing.');
+        } catch (AssertionFailedError $error) {
+            $this->assertStringContainsString('never answered within 100 ms', $error->getMessage());
+        }
+
+        $this->assertSame('own', $this->observe('<p>own</p>', [], 'await new Promise((r) => setTimeout(r, 500)); return "own";'));
+    }
 }

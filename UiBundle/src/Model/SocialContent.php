@@ -15,6 +15,7 @@ final class SocialContent
 {
     /**
      * @param array<string, string> $variables What the post text may carry beside title and url ("category", "description"...), each one replacing its "{name}" in the site's template
+     * @param ?string               $locale    The language the content is written in ("fr", "en"), null when the source does not know it - the site's default language then
      */
     public function __construct(
         public readonly string $sourceId,
@@ -24,6 +25,7 @@ final class SocialContent
         public readonly ?string $imageUrl = null,
         public readonly ?string $imageAlt = null,
         public readonly array $variables = [],
+        public readonly ?string $locale = null,
     ) {
     }
 }
