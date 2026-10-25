@@ -56,6 +56,20 @@
     color: var(--button-secondary-color);
 }
 
+// Apple dictates its button: black, the mark and the words in white, whatever the site's theme. Classes doubled for the same reason as .btn-secondary above
+.btn.btn-apple,
+.btn.btn-apple:visited {
+    background-color: #000;
+    color: #fff;
+}
+
+.btn.btn-apple:hover,
+.btn.btn-apple:visited:hover,
+.btn.btn-apple:focus-visible {
+    background-color: #333;
+    color: #fff;
+}
+
 .btn-success {
     background-color: var(--button-background-success);
 }

@@ -643,6 +643,19 @@ blockquote.pull-right .small::after {
   color: var(--button-secondary-color);
 }
 
+.btn.btn-apple,
+.btn.btn-apple:visited {
+  background-color: #000;
+  color: #fff;
+}
+
+.btn.btn-apple:hover,
+.btn.btn-apple:visited:hover,
+.btn.btn-apple:focus-visible {
+  background-color: #333;
+  color: #fff;
+}
+
 .btn-success {
   background-color: var(--button-background-success);
 }
@@ -2167,16 +2180,8 @@ div:has(> input[type=date]:is(.success, :is([required], [pattern], [minlength], 
   width: min(var(--form-width), 100%);
   margin: 2em auto 0 auto;
 }
-
-.oauth-login-apple {
-  background: #000;
-  border-color: #000;
-  color: #fff;
-}
-.oauth-login-apple:hover, .oauth-login-apple:focus-visible {
-  background: #333;
-  border-color: #333;
-  color: #fff;
+.oauth-login .btn + .btn {
+  margin-top: 1em;
 }
 
 .oauth-login-separator {

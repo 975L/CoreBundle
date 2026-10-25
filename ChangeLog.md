@@ -1,5 +1,18 @@
 # ChangeLog
 
+## v1.77.1
+
+Apple sign-in button as a `.btn-apple` variant
+
+### ConfigBundle
+
+- `OAuthLogin` gives Apple's button `.btn-apple` instead of `.btn-secondary` (25/10/2026)
+
+### UiBundle
+
+- Replaced `.oauth-login-apple` with the `.btn-apple` button variant (25/10/2026)
+- Spaced the stacked OAuth login buttons (25/10/2026)
+
 ## v1.77.0
 
 One picture grid size, derivatives removed with their image

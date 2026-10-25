@@ -308,19 +308,10 @@ div:has(#{text-inputs($valid-state, '> ')})::after {
 .oauth-login {
     width: min(var(--form-width), 100%);
     margin: 2em auto 0 auto;
-}
 
-// Apple dictates its button: black, the mark and the words in white, whatever the site's theme
-.oauth-login-apple {
-    background: #000;
-    border-color: #000;
-    color: #fff;
-
-    &:hover,
-    &:focus-visible {
-        background: #333;
-        border-color: #333;
-        color: #fff;
+    // "a.btn" drops every margin, which left the providers' buttons touching one another
+    .btn + .btn {
+        margin-top: 1em;
     }
 }
 
