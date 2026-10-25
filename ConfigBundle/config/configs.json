@@ -165,6 +165,17 @@
         "description": "description.site_backup_database"
     },
     {
+        "label": "label.site_backup_extra_databases",
+        "slug": "site-backup-extra-databases",
+        "sensitive": false,
+        "restricted": true,
+        "value": "",
+        "kind": "text",
+        "group": "backup",
+        "severity": null,
+        "description": "description.site_backup_extra_databases"
+    },
+    {
         "label": "label.site_backup_mailto",
         "slug": "site-backup-mailto",
         "sensitive": false,

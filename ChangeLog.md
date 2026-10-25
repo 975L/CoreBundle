@@ -1,5 +1,15 @@
 # ChangeLog
 
+## v1.78
+
+Backup of the extra databases a site relies on
+
+### ConfigBundle
+
+- Added the `site-backup-extra-databases` config entry (25/10/2026)
+- `c975l:config:backup` dumps each extra database into its own archive (25/10/2026)
+- `c975l:config:backup` refuses an invalid database name before querying it (25/10/2026)
+
 ## v1.77.1
 
 Apple sign-in button as a `.btn-apple` variant

@@ -409,6 +409,27 @@ class BackupCommandTest extends TestCase
         $this->assertStringContainsString('The error report could not be sent', $tester->getDisplay());
     }
 
+    // The databases a site relies on besides its own are backed up in the same run, each under its own name, the main one counted once however often it is listed
+    public function testTheExtraDatabasesAreBackedUpAfterTheMainOne(): void
+    {
+        $report = $this->runAndCaptureReport(['site-backup-extra-databases' => ' stats_db, test_db,,']);
+
+        $this->assertSame(1, substr_count($report, 'MySQL backup for "test_db"'));
+        $this->assertStringContainsString('MySQL backup for "stats_db"', $report);
+        $this->assertLessThan(strpos($report, '"stats_db"'), strpos($report, '"test_db"'));
+        $this->assertStringContainsString('MySQL table list failed for stats_db', implode("\n", $this->recorded['errors']));
+    }
+
+    // A back-office entry ends up inside an SQL string literal, so a name that could close it is refused before mysql is ever run
+    public function testAnInvalidDatabaseNameIsRefused(): void
+    {
+        $this->runAndCaptureReport(['site-backup-extra-databases' => "x' OR '1'='1"]);
+
+        $errors = implode("\n", $this->recorded['errors']);
+        $this->assertStringContainsString('Database name "x\' OR \'1\'=\'1" is not valid', $errors);
+        $this->assertStringNotContainsString("MySQL table list failed for x'", $errors);
+    }
+
     // A stub whose send() succeeds, $captured keeping the request it was given
     private function createCapturingEmailService(?EmailSendRequest &$captured): EmailService
     {

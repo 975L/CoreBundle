@@ -134,6 +134,10 @@
                 <source>description.site_backup_db_user</source>
                 <target>Utilisateur MySQL pour les sauvegardes</target>
             </trans-unit>
+            <trans-unit id="s8xrKIC">
+                <source>description.site_backup_extra_databases</source>
+                <target>Autres bases MySQL dont le site dépend (un outil de statistiques installé à côté, par exemple), séparées par des virgules. Elles sont sauvegardées avec les mêmes identifiants que la base principale, une archive par base : le compte doit donc avoir accès à chacune. Vide, seule la base principale est sauvegardée</target>
+            </trans-unit>
             <trans-unit id="3_4rjYZ">
                 <source>description.site_backup_mailto</source>
                 <target>Adresse email pour les rapports de sauvegarde et erreurs</target>
@@ -429,6 +433,10 @@
             <trans-unit id="gKIoJD1">
                 <source>label.site_backup_db_user</source>
                 <target>Utilisateur de la base de données de sauvegarde</target>
+            </trans-unit>
+            <trans-unit id="TdumJya">
+                <source>label.site_backup_extra_databases</source>
+                <target>Bases supplémentaires à sauvegarder</target>
             </trans-unit>
             <trans-unit id="GvaXwxi">
                 <source>label.site_backup_mailto</source>

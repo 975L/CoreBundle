@@ -1,5 +1,15 @@
 [
     {
+        "date": "2026-10-25",
+        "description": [
+            {
+                "en": "The backup can now also save the other databases your site relies on, such as a statistics tool installed beside it: list them in the \"Additional databases to back up\" setting.",
+                "fr": "La sauvegarde peut désormais aussi enregistrer les autres bases dont votre site dépend, comme un outil de statistiques installé à côté : indiquez-les dans le réglage « Bases supplémentaires à sauvegarder ».",
+                "es": "La copia de seguridad ahora también puede guardar las otras bases de datos de las que depende su sitio, como una herramienta de estadísticas instalada al lado: indíquelas en el ajuste «Bases de datos adicionales a respaldar»."
+            }
+        ]
+    },
+    {
         "date": "2026-10-23",
         "description": [
             {

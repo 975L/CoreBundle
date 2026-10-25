@@ -2092,7 +2092,9 @@ php bin/console c975l:config:backup:digest --days=30 # any other window
 php bin/console c975l:config:backup:digest --dry-run # print the digest, send nothing
 ```
 
-Everything is configured through the `backup` config group (all `restricted`, see [Restricting configs to ROLE_SUPER_ADMIN](#restricting-configs-to-role_super_admin)): `site-backup-database`, `site-backup-db-host`/`-db-user`/`-db-password`, `site-backup-mailto`, `site-backup-retention-days`, `site-backup-max-age-hours`, and the three offsite entries covered [below](#the-offsite-copy). The emails also read `email-from` — declared here rather than in SiteBundle, an install having backups to report whichever satellite bundles it happens to have — and fall back to `site-backup-mailto` when it's empty, rather than failing to send at all.
+Everything is configured through the `backup` config group (all `restricted`, see [Restricting configs to ROLE_SUPER_ADMIN](#restricting-configs-to-role_super_admin)): `site-backup-database`, `site-backup-extra-databases`, `site-backup-db-host`/`-db-user`/`-db-password`, `site-backup-mailto`, `site-backup-retention-days`, `site-backup-max-age-hours`, and the three offsite entries covered [below](#the-offsite-copy). The emails also read `email-from` — declared here rather than in SiteBundle, an install having backups to report whichever satellite bundles it happens to have — and fall back to `site-backup-mailto` when it's empty, rather than failing to send at all.
+
+**Other databases.** A site that relies on a second database — a statistics tool installed beside it, typically, whose data no other backup holds — lists it in `site-backup-extra-databases`, comma-separated. Each one is dumped table by table in the same run and gets its own `MYSQL_-_<database>_-_…_Tables.sql.tar.bz2`, sent offsite with the rest. They are read with the `site-backup-db-*` credentials, so that account has to be granted on every one of them, which a host's main database account usually is. Each name is checked against letters, digits, `_`, `$` and `-` before it reaches the `INFORMATION_SCHEMA` query: a name that can't be bound as a parameter is refused and reported, never run.
 
 ### What is backed up, and what deliberately isn't
 
@@ -2101,7 +2103,7 @@ Three kinds of state, three treatments — and the third is the one that decides
 | State | Treatment |
 | --- | --- |
 | Code, templates, asset sources | **Nothing.** It's in git and comes back with a clone plus `composer install` |
-| Configuration, content | Covered by the database dump, `site_config` included |
+| Configuration, content | Covered by the database dump, `site_config` included — plus, one archive each, the other databases listed in `site-backup-extra-databases` |
 | Files neither in git nor in the database | Declared through `BackupPathProviderInterface`, in one of two modes |
 
 A `BackupPath` is declared in `archive` mode or in `mirror` mode:

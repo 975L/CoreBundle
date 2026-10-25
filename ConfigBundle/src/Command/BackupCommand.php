@@ -36,7 +36,7 @@ use Symfony\Component\Process\Process;
  * Console command to back up what no git clone and no rebuild can bring back.
  *
  * Usage:
- *   php bin/console c975l:config:backup           # database table by table, plus the files declared
+ *   php bin/console c975l:config:backup           # database table by table (plus site-backup-extra-databases), plus the files declared
  *                                                  # in "archive" mode, then both sent offsite
  *   php bin/console c975l:config:backup --report  # also send a summary email after backup
  *
@@ -71,6 +71,9 @@ class BackupCommand extends Command
 
     // How much of a failed mirror's message the row carries. rclone names every file it couldn't move, which runs to a thousand characters of log for a single cause - enough of it to say which folder and why, the whole of it being one SSH session away in var/backup/.offsite.json
     private const int OFFSITE_ERROR_LENGTH = 200;
+
+    // A database name as it is allowed into the INFORMATION_SCHEMA query below - letters, digits and the separators hosts use, so a mistyped or malicious back-office entry can never close the string literal it is placed in
+    private const string DATABASE_PATTERN = '/^[A-Za-z0-9_$-]+$/';
 
     private string $projectDir;
     private string $credentialsFile; // path to the runtime-generated temp file
@@ -144,7 +147,10 @@ class BackupCommand extends Command
 
         $this->credentialsFile = $this->createTempCredentialsFile();
         try {
-            $this->backupMySql();
+            foreach ($this->databases() as $database) {
+                $this->backupMySql($database);
+            }
+            $this->reportMissingTables();
             $this->backupFiles();
             $this->writeManifest();
             $this->cleanup();
@@ -179,24 +185,39 @@ class BackupCommand extends Command
         return $reportSent ? Command::SUCCESS : Command::FAILURE;
     }
 
-    private function backupMySql(): void
+    // The site's database, then the other ones it relies on (a statistics tool installed beside the site, typically), dumped with the same credentials - the account has to be granted on every one of them, which a host's main database account usually is
+    private function databases(): array
     {
-        $db = $this->database;
+        $extras = array_map(trim(...), explode(',', (string) $this->configService->get('site-backup-extra-databases')));
+
+        return array_values(array_unique(array_filter([$this->database, ...$extras], static fn (string $database): bool => '' !== $database)));
+    }
+
+    // One archive per database, its name carrying the database so a restore finds it the way it finds the site's own
+    private function backupMySql(string $db): void
+    {
         $dateTime = $this->startedAt->format('Y-m-d_-_H-i');
 
         $this->report .= sprintf("\nMySQL backup for \"%s\": %s\n", $db, $this->startedAt->format('Y-m-d H:i:s'));
 
+        if (1 !== preg_match(self::DATABASE_PATTERN, $db)) {
+            $this->errors[] = sprintf('Database name "%s" is not valid, it was not backed up.', $db);
+            $this->report .= "- FAILED: invalid database name\n";
+
+            return;
+        }
+
         $tables = $this->getMySqlTableList(
+            $db,
             "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = '{$db}' AND TABLE_TYPE != 'VIEW'"
         );
-        $this->tables['expected'] = \count($tables);
+        $this->tables['expected'] += \count($tables);
 
         foreach ($tables as $table) {
             $this->dumpTable($db, $table, $this->finalFolder . "/{$db}_-_{$table}.sql");
         }
 
-        $this->reportMissingTables();
-        $this->sqlBytes = $this->compressSqlFiles("MYSQL_-_{$db}_-_{$dateTime}_-_Tables.sql.tar.bz2");
+        $this->sqlBytes += $this->compressSqlFiles("MYSQL_-_{$db}_-_{$dateTime}_-_Tables.sql.tar.bz2");
     }
 
     private function createTempCredentialsFile(): string
@@ -212,12 +233,12 @@ class BackupCommand extends Command
         return $tmpFile;
     }
 
-    private function getMySqlTableList(string $query): array
+    private function getMySqlTableList(string $db, string $query): array
     {
         $process = new Process([
             'mysql',
             '--defaults-extra-file=' . $this->credentialsFile,
-            '--database=' . $this->database,
+            '--database=' . $db,
             '--silent', '--raw',
             '--execute=' . $query,
         ]);
@@ -225,7 +246,7 @@ class BackupCommand extends Command
         $process->run();
 
         if (!$process->isSuccessful()) {
-            $this->errors[] = 'MySQL table list failed: ' . $process->getErrorOutput();
+            $this->errors[] = "MySQL table list failed for {$db}: " . $process->getErrorOutput();
 
             return [];
         }

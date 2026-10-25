@@ -134,6 +134,10 @@
                 <source>description.site_backup_db_user</source>
                 <target>MySQL user for backups</target>
             </trans-unit>
+            <trans-unit id="s8xrKIC">
+                <source>description.site_backup_extra_databases</source>
+                <target>Other MySQL databases the site relies on (a statistics tool installed beside it, for instance), comma-separated. They are backed up with the same credentials as the main database, one archive per database: the account must therefore be granted on each of them. Empty, only the main database is backed up</target>
+            </trans-unit>
             <trans-unit id="3_4rjYZ">
                 <source>description.site_backup_mailto</source>
                 <target>Email address for backup reports and errors</target>
@@ -429,6 +433,10 @@
             <trans-unit id="gKIoJD1">
                 <source>label.site_backup_db_user</source>
                 <target>Backup DB User</target>
+            </trans-unit>
+            <trans-unit id="TdumJya">
+                <source>label.site_backup_extra_databases</source>
+                <target>Additional databases to back up</target>
             </trans-unit>
             <trans-unit id="GvaXwxi">
                 <source>label.site_backup_mailto</source>

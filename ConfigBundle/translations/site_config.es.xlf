@@ -134,6 +134,10 @@
                 <source>description.site_backup_db_user</source>
                 <target>Usuario MySQL para las copias de seguridad</target>
             </trans-unit>
+            <trans-unit id="s8xrKIC">
+                <source>description.site_backup_extra_databases</source>
+                <target>Otras bases de datos MySQL de las que depende el sitio (una herramienta de estadísticas instalada al lado, por ejemplo), separadas por comas. Se respaldan con las mismas credenciales que la base principal, un archivo por base: la cuenta debe tener acceso a cada una. Vacío, solo se respalda la base principal</target>
+            </trans-unit>
             <trans-unit id="3_4rjYZ">
                 <source>description.site_backup_mailto</source>
                 <target>Correo para los informes de copia de seguridad y errores</target>
@@ -429,6 +433,10 @@
             <trans-unit id="gKIoJD1">
                 <source>label.site_backup_db_user</source>
                 <target>Usuario de la base de datos de copia de seguridad</target>
+            </trans-unit>
+            <trans-unit id="TdumJya">
+                <source>label.site_backup_extra_databases</source>
+                <target>Bases de datos adicionales a respaldar</target>
             </trans-unit>
             <trans-unit id="GvaXwxi">
                 <source>label.site_backup_mailto</source>
