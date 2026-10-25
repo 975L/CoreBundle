@@ -1228,6 +1228,36 @@
   margin-top: 0.1875rem;
 }
 
+.image-zoom {
+  display: contents;
+}
+
+.image-zoom__link {
+  display: block;
+  cursor: zoom-in;
+}
+
+.image-zoom__dialog {
+  max-width: var(--image-zoom-max-width, 95vw);
+  max-height: var(--image-zoom-max-height, 95vh);
+  padding: 0;
+  border: 0;
+  background: transparent;
+  overflow: hidden;
+}
+
+.image-zoom__dialog::backdrop {
+  background: var(--image-zoom-backdrop, rgba(0, 0, 0, 0.9));
+}
+
+.image-zoom__image {
+  display: block;
+  box-sizing: border-box;
+  max-width: 100%;
+  max-height: var(--image-zoom-max-height, 95vh);
+  cursor: zoom-out;
+}
+
 /* BLOCK PICKER (assets/js/block-picker.js) - the visual kind palette that stands in front of the block's <select>. The silhouettes it shows are not here: they are drawn in sass/_block-thumbs.scss, which the public block showcase of a site needs just as much as this picker does. */
 /* Written mobile-first: the bare rules are the phone (one full-height sheet, two columns, thumb-sized targets), the min-width queries below turn it into a centered desktop modal. Composing a page from a phone is the case that has to work, not the one that gets what's left over */
 /* Set by the script on the kind row once its trigger is in place, so without JavaScript the <select> stays exactly where it was. A site turning EasyAdmin's autocomplete on for this field gets TomSelect, which wraps that select in a widget of its own on a listener whose timing the script can't count on - hiding both from CSS covers whichever is there */

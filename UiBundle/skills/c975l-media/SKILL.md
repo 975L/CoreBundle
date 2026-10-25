@@ -99,6 +99,8 @@ leads to a 404; `linkClass` adds a class to the `<a>`, and the click following a
 on it is ignored. `<twig:c975LUi:Slider:Slider zoom="true">` hands each image to `Image:Zoom`, naming
 the `-highres.webp` of a `VichMultiSizeImageInterface` media and the stored file of any other one; an
 image already linking to `slide.url` keeps its link, and a caption stays outside the zoom's link.
+**It works in the back office too**: `controllers-admin.js` registers `imageZoom` and `management.css`
+carries its styles, so a management screen uses the same component rather than a lightbox of its own.
 
 **The thumbnail keeps the image's proportions**, the longest side capped — it is square only for a
 square original. A grid wanting square tiles uses `object-fit: cover`, which stays reversible where a

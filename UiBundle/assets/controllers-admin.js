@@ -12,6 +12,7 @@ import EaSortableController from './js/ea-sortable.js';
 import FieldFocusController from './js/field-focus.js';
 import FormFieldTemplateController from './js/form-field-template.js';
 import FormulaVariablesController from './js/formula-variables.js';
+import ImageZoomController from './js/image-zoom.js';
 import LegalModelController from './js/legal-model.js';
 import TitleConfirmController from './js/title-confirm.js';
 import UploadProgressController from './js/upload-progress.js';
@@ -37,6 +38,8 @@ app.register('eaSortable', EaSortableController);
 app.register('fieldFocus', FieldFocusController);
 app.register('formFieldTemplate', FormFieldTemplateController);
 app.register('formulaVariables', FormulaVariablesController);
+// The front's lightbox, opened from a back-office screen too (SocialBundle's calendar panel) - controllers.js, which registers it on the front, is not loaded here
+app.register('imageZoom', ImageZoomController);
 // Kebab-case on purpose: the identifier is what Stimulus derives data-legal-model-target/-value from, and a camelCase one would look for data-legalModel-* instead
 app.register('legal-model', LegalModelController);
 // Same kebab-case reasoning, the message being read from data-title-confirm-message-value

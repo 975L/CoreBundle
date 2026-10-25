@@ -1,5 +1,14 @@
 # ChangeLog
 
+## v1.79.2
+
+Image zoom available in the back office
+
+### UiBundle
+
+- Registered the `imageZoom` controller in `controllers-admin.js` (25/10/2026)
+- Added the image zoom styles to `management.css` (25/10/2026)
+
 ## v1.79.1
 
 Lizard takes its latest release in the CI

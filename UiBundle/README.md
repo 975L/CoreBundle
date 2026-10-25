@@ -105,7 +105,7 @@ php bin/console doctrine:migrations:migrate
 
 ### Register Stimulus controllers
 
-`controllers.js` (front-end) and `controllers-admin.js` (back-office: `block`, `eaSortable`, `title-confirm`, Trix editor integration) each start their own Stimulus app and are loaded as their own `<script type="module">` tag — auto-discovered and injected into the layout/dashboard, nothing to wire by hand there.
+`controllers.js` (front-end) and `controllers-admin.js` (back-office: `block`, `eaSortable`, `title-confirm`, `imageZoom`, Trix editor integration) each start their own Stimulus app and are loaded as their own `<script type="module">` tag — auto-discovered and injected into the layout/dashboard, nothing to wire by hand there.
 
 Only `animateScroll` and `menu` are imported eagerly. `blockEditOverlay`, `captcha`, `confetti`, `heroVideo`, `imageCompare`, `infiniteScroll`, `mediaPreload`, `password`, `scrollButtons`, `slider` and `videoIframe` are imported dynamically, and registered only when the current document actually contains a matching `data-controller` — AssetMapper treats a dynamic `import()` as lazy, so they get an importmap entry but no `<link rel="modulepreload">`, and a page carrying none of them downloads none of them. The check is re-run on `turbo:load`, so a page reached by Turbo navigation gets its own controllers too. Registering a new front-end controller means adding it to `LAZY_CONTROLLERS` rather than to the imports at the top of the file, unless it genuinely runs on every page.
 
