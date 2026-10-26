@@ -1167,6 +1167,11 @@ main :is(.blocks, #{$block-wrappers}) > :is(#{$block-wrappers}):has(#{$flat-next
     color: color-mix(in srgb, var(--button-color) 80%, transparent);
 }
 
+// The theme's "a:hover" outranks the rule above and would lay the primary color on the band's own primary
+.cta-band__text a:hover {
+    color: var(--button-color);
+}
+
 .cta-band .section-btn {
     background: var(--card-background);
     color: var(--primary-ink);

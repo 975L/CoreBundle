@@ -1,5 +1,13 @@
 # ChangeLog
 
+## v1.79.3
+
+Call-to-action band links keep their color on hover
+
+### UiBundle
+
+- A link in a `cta-band` text keeps the button color on hover (26/10/2026)
+
 ## v1.79.2
 
 Image zoom available in the back office

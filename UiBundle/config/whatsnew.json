@@ -1,5 +1,15 @@
 [
     {
+        "date": "2026-10-26",
+        "description": [
+            {
+                "en": "A link inside a call-to-action band stays readable when hovered.",
+                "fr": "Un lien dans un bandeau d'appel à l'action reste lisible au survol.",
+                "es": "Un enlace dentro de una banda de llamada a la acción sigue legible al pasar el ratón."
+            }
+        ]
+    },
+    {
         "date": "2026-10-23",
         "description": [
             {

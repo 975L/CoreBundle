@@ -3950,6 +3950,10 @@ main :is(.blocks, .block-animation, .block-editable) > :is(.block-animation, .bl
   color: color-mix(in srgb, var(--button-color) 80%, transparent);
 }
 
+.cta-band__text a:hover {
+  color: var(--button-color);
+}
+
 .cta-band .section-btn {
   background: var(--card-background);
   color: var(--primary-ink);
