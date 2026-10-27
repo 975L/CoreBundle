@@ -1,5 +1,13 @@
 # ChangeLog
 
+## v1.79.4
+
+Search shortcut hint hidden on touch screens
+
+### UiBundle
+
+- The AI search trigger hides its keyboard shortcut on devices without hover (27/10/2026)
+
 ## v1.79.3
 
 Call-to-action band links keep their color on hover

@@ -258,7 +258,7 @@
     opacity: 0.7;
 }
 
-// The navbar's magnifier (components/AiSearch/Trigger.html.twig): the ink of the bar it sits in, the shortcut beside it on a screen wide enough to have a keyboard
+// The navbar's magnifier (components/AiSearch/Trigger.html.twig): the ink of the bar it sits in, the shortcut beside it on a screen wide enough to have a keyboard and a pointer to hover with - a tablet is as wide as a laptop and has no Ctrl key
 .ai-search-trigger {
     display: inline-flex;
     align-items: center;
@@ -292,7 +292,7 @@
     font-size: 0.7rem;
     opacity: 0.6;
 
-    @media (max-width: 768px) {
+    @media (max-width: 768px), (hover: none) {
         display: none;
     }
 }

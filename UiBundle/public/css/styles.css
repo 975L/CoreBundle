@@ -5037,7 +5037,7 @@ main :is(.blocks, .block-animation, .block-editable) > :is(.block-animation, .bl
   font-size: 0.7rem;
   opacity: 0.6;
 }
-@media (max-width: 768px) {
+@media (max-width: 768px), (hover: none) {
   .ai-search-trigger__shortcut {
     display: none;
   }
