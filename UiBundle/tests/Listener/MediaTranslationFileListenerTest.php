@@ -18,6 +18,7 @@ use c975L\UiBundle\Service\MediaTranslator;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Event\PostFlushEventArgs;
 use Doctrine\ORM\Event\PreRemoveEventArgs;
+use Doctrine\ORM\Event\PreUpdateEventArgs;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\File\File;
 
@@ -113,6 +114,42 @@ class MediaTranslationFileListenerTest extends TestCase
         $listener->postFlush($this->createStub(PostFlushEventArgs::class));
 
         $this->assertFileDoesNotExist($file);
+    }
+
+    // A new picture on the media takes back every language's own, made for the one being replaced: no language goes on sharing a banner nobody shows anymore
+    public function testANewPictureTakesTheLanguagesFilesBack(): void
+    {
+        $file = $this->createPublicFile('block-hero-12-es-1a2b3c4d.webp');
+        $repository = $this->createStub(TranslationRepository::class);
+        $repository->method('findByOwner')->willReturn([
+            'es' => ['filename' => 'medias/site/block-hero-12-es-1a2b3c4d.webp'],
+            'en' => ['alt' => 'The shop'],
+        ]);
+        $repository->method('isValueUsedElsewhere')->willReturn(false);
+        $translator = $this->createTranslator(['filename' => 'medias/site/block-hero-12-es-1a2b3c4d.webp']);
+        $listener = new MediaTranslationFileListener($translator, $repository, $this->projectDir);
+        $media = $this->createMedia();
+        $media->setFile(new File(__FILE__));
+        $changeSet = [];
+
+        $listener->preUpdate(new PreUpdateEventArgs($media, $this->createStub(EntityManagerInterface::class), $changeSet));
+
+        $this->assertSame([[null, null, 'medias/site/block-hero-12-es-1a2b3c4d.webp', self::MEDIA_ID, 'es']], $translator->takePendingFiles(), 'Only the language holding a file is taken back.');
+
+        $translator->stageFile($media, 'es', null, true);
+        $listener->postFlush($this->createStub(PostFlushEventArgs::class));
+        $this->assertFileDoesNotExist($file);
+    }
+
+    // An edit of the media's texts or settings leaves the languages' pictures alone
+    public function testAnEditWithoutANewPictureKeepsTheLanguagesFiles(): void
+    {
+        $translator = $this->createTranslator(['filename' => 'medias/site/block-hero-12-es-1a2b3c4d.webp']);
+        $changeSet = [];
+
+        $this->createListener($translator, false)->preUpdate(new PreUpdateEventArgs($this->createMedia(), $this->createStub(EntityManagerInterface::class), $changeSet));
+
+        $this->assertSame([], $translator->takePendingFiles());
     }
 
     // A path read back from a row an import wrote is never trusted to stay under public/

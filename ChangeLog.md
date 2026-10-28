@@ -1,5 +1,16 @@
 # ChangeLog
 
+## v1.79.5
+
+A new picture takes back the languages' own files
+
+### UiBundle
+
+- A media given a new picture drops the file each language had of its own (28/10/2026)
+- A media's intrinsic dimensions are unknown while a language shows its own file (28/10/2026)
+- Added `MediaTranslator::stageSubmitted()` staging a language screen's media field at once (28/10/2026)
+- Added the `og_image` option to `MediaTranslationType`, accepting only JPEG, PNG or WebP under 2 MB (28/10/2026)
+
 ## v1.79.4
 
 Search shortcut hint hidden on touch screens

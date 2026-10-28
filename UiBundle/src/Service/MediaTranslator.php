@@ -139,6 +139,15 @@ class MediaTranslator
         }
     }
 
+    // What a language screen's media field sent, texts and file together, the way every screen offering one hands it over (see MediaTranslationType)
+    /** @param array<string, mixed> $submitted */
+    public function stageSubmitted(Media $media, string $locale, array $submitted): void
+    {
+        $this->stage($media, $locale, $submitted);
+        $file = $submitted['file'] ?? null;
+        $this->stageFile($media, $locale, $file instanceof File ? $file : null, true === ($submitted['removeFile'] ?? false));
+    }
+
     // Whether a path read back from a row or an archive stays under public/, the only place a media's file ever lives
     public static function isPublicPath(mixed $path): bool
     {

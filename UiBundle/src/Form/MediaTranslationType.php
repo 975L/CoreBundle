@@ -31,6 +31,9 @@ class MediaTranslationType extends AbstractType
         'alt' => 'label.alt_text',
     ];
 
+    // What a share image's language file may be, SVG being ignored by Facebook, LinkedIn and X alike
+    public const array OG_IMAGE_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $media = $options['media'];
@@ -64,13 +67,18 @@ class MediaTranslationType extends AbstractType
             return;
         }
 
+        // A share image goes out as it is dropped, never through the conversion its own form gives it (see VichImageResizeListener): only the formats every network reads, and nothing heavy enough to be refused by one
+        $constraint = $options['og_image']
+            ? new FileConstraint(maxSize: '2M', mimeTypes: self::OG_IMAGE_MIME_TYPES)
+            : new FileConstraint(mimeTypes: ['image/*']);
+
         $builder->add('file', FileType::class, [
             'label' => 'label.translated_file',
             'help' => 'text.translated_file',
             'translation_domain' => 'ui',
             'required' => false,
-            'constraints' => [new FileConstraint(mimeTypes: ['image/*'])],
-            'attr' => ['accept' => 'image/*'],
+            'constraints' => [$constraint],
+            'attr' => ['accept' => $options['og_image'] ? implode(',', self::OG_IMAGE_MIME_TYPES) : 'image/*'],
         ]);
 
         if (null !== $options['translated_file']) {
@@ -85,9 +93,10 @@ class MediaTranslationType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver
-            // The file this language already shows, if any: what the box taking it back is offered for
-            ->setDefaults(['data_class' => null, 'translated_file' => null])
+            // The file this language already shows, if any: what the box taking it back is offered for. og_image is said by the caller, a Media read back from the database no longer knowing it is one (see Media::markAsOgImage())
+            ->setDefaults(['data_class' => null, 'translated_file' => null, 'og_image' => false])
             ->setAllowedTypes('translated_file', ['null', 'string'])
+            ->setAllowedTypes('og_image', 'bool')
             ->setRequired('media')
             ->setAllowedTypes('media', Media::class);
     }

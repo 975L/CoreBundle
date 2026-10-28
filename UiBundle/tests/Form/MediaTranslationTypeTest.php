@@ -13,8 +13,10 @@ namespace c975L\UiBundle\Tests\Form;
 use c975L\UiBundle\Entity\Media;
 use c975L\UiBundle\Form\MediaTranslationType;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Form\Extension\Validator\ValidatorExtension;
 use Symfony\Component\Form\Forms;
 use Symfony\Component\OptionsResolver\Exception\MissingOptionsException;
+use Symfony\Component\Validator\Validation;
 
 // The three texts of one media, on a real form rather than a builder stub: what the screen opens on, and what comes back from it
 class MediaTranslationTypeTest extends TestCase
@@ -57,6 +59,23 @@ class MediaTranslationTypeTest extends TestCase
             ['label' => 'La tienda de demostración', 'description' => '[Un catalogue et ses filtres.]'],
             $form->getData(),
         );
+    }
+
+    // A share image's own file is never converted the way its main form converts it: the type itself turns away an SVG or a file too heavy to be read
+    public function testAShareImageTakesOnlyTheFormatsEveryNetworkReads(): void
+    {
+        $media = $this->createMedia(null, null, 'La boutique')->setMimeType('image/webp');
+
+        $factory = Forms::createFormFactoryBuilder()->addExtension(new ValidatorExtension(Validation::createValidator()))->getFormFactory();
+
+        $plain = $factory->create(MediaTranslationType::class, [], ['media' => $media])->get('file');
+        $shared = $factory->create(MediaTranslationType::class, [], ['media' => $media, 'og_image' => true])->get('file');
+
+        $this->assertSame(['image/*'], $plain->getConfig()->getOption('constraints')[0]->mimeTypes);
+        $constraint = $shared->getConfig()->getOption('constraints')[0];
+        $this->assertSame(MediaTranslationType::OG_IMAGE_MIME_TYPES, $constraint->mimeTypes);
+        $this->assertSame(2000000, $constraint->maxSize);
+        $this->assertSame('image/jpeg,image/png,image/webp', $shared->getConfig()->getOption('attr')['accept']);
     }
 
     private function createMedia(?string $label, ?string $description, ?string $alt): Media

@@ -16,11 +16,14 @@ use c975L\UiBundle\Service\MediaTranslator;
 use Doctrine\Bundle\DoctrineBundle\Attribute\AsDoctrineListener;
 use Doctrine\ORM\Event\PostFlushEventArgs;
 use Doctrine\ORM\Event\PreRemoveEventArgs;
+use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Events;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Component\HttpFoundation\File\File;
 
-// The files a media shows in another language (see MediaTranslator::stageFile), which Vich knows nothing of: written once the flush saving their block goes through, taken off the disk with the media or when a language is given another one, unless another media still shows it (see TranslationRepository::isValueUsedElsewhere). Its postFlush runs after TranslationCopyListener's, so a reimport putting a file back at the path its old media leaves is seen by that guard (an order no unit test can pin)
+// The files a media shows in another language (see MediaTranslator::stageFile), which Vich knows nothing of: written once the flush saving their block goes through, taken off the disk with the media, when the media is given a new picture or when a language is given another one, unless another media still shows it (see TranslationRepository::isValueUsedElsewhere). Its postFlush runs after TranslationCopyListener's, so a reimport putting a file back at the path its old media leaves is seen by that guard (an order no unit test can pin). Its preUpdate runs ahead of Vich's own upload (priority 0), while the media still carries the name its languages' files were made after
 #[AsDoctrineListener(event: Events::preRemove)]
+#[AsDoctrineListener(event: Events::preUpdate, priority: 100)]
 #[AsDoctrineListener(event: Events::postFlush, priority: -10)]
 class MediaTranslationFileListener
 {
@@ -47,6 +50,21 @@ class MediaTranslationFileListener
             $path = $fields[MediaTranslator::FILE] ?? null;
             if (null !== $path) {
                 $this->removed[] = [$path, $media->getId(), $locale];
+            }
+        }
+    }
+
+    // A new picture put on the media takes each language's own file back with it: made for the picture being replaced, it would otherwise go on being shown, and shared, in that language
+    public function preUpdate(PreUpdateEventArgs $args): void
+    {
+        $media = $args->getObject();
+        if (!$media instanceof Media || null === $media->getId() || !$media->getFile() instanceof File) {
+            return;
+        }
+
+        foreach ($this->repository->findByOwner(MediaTranslator::OWNER, $media->getId()) as $locale => $fields) {
+            if (null !== ($fields[MediaTranslator::FILE] ?? null)) {
+                $this->mediaTranslator->stageFile($media, $locale, null, true);
             }
         }
     }

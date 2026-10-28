@@ -199,6 +199,21 @@ class MediaTranslatorTest extends TestCase
         $this->assertSame([], $translator->takePendingFiles());
     }
 
+    // What a language screen's media field sends, texts and file at once, staged the way each of the two would be on its own
+    public function testWhatAScreenSentIsStagedTextsAndFileTogether(): void
+    {
+        $contentTranslator = $this->createMock(ContentTranslator::class);
+        $contentTranslator->method('values')->willReturn(['filename' => 'medias/site/block-portfolio_grid-12-en.webp']);
+        $contentTranslator->expects($this->exactly(2))->method('stage')->willReturnCallback(function (string $owner, int $id, string $locale, array $values): void {
+            $this->assertContains($values, [['label' => 'The demonstration shop'], ['filename' => null]]);
+        });
+        $translator = new MediaTranslator($contentTranslator);
+
+        $translator->stageSubmitted($this->createMedia(), 'en', ['label' => 'The demonstration shop', 'file' => null, 'removeFile' => true]);
+
+        $this->assertSame([[null, null, 'medias/site/block-portfolio_grid-12-en.webp', self::MEDIA_ID, 'en']], $translator->takePendingFiles());
+    }
+
     private function createPng(): File
     {
         $path = tempnam(sys_get_temp_dir(), 'c975l-media-translator-');

@@ -35,7 +35,6 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\Form\FormInterface;
-use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -534,9 +533,7 @@ class BlockType extends AbstractType
 
             $submitted = $form->get($name)->getData();
             if (is_array($submitted)) {
-                $this->mediaTranslator->stage($media, $locale, $submitted);
-                $file = $submitted['file'] ?? null;
-                $this->mediaTranslator->stageFile($media, $locale, $file instanceof File ? $file : null, true === ($submitted['removeFile'] ?? false));
+                $this->mediaTranslator->stageSubmitted($media, $locale, $submitted);
             }
         }
     }

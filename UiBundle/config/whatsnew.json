@@ -1,5 +1,15 @@
 [
     {
+        "date": "2026-10-28",
+        "description": [
+            {
+                "en": "Replacing an image also removes the versions made for other languages, so no language keeps showing the old picture.",
+                "fr": "Remplacer une image retire aussi les versions faites pour les autres langues : aucune langue ne continue d'afficher l'ancienne.",
+                "es": "Sustituir una imagen retira también las versiones hechas para los demás idiomas: ningún idioma sigue mostrando la antigua."
+            }
+        ]
+    },
+    {
         "date": "2026-10-26",
         "description": [
             {

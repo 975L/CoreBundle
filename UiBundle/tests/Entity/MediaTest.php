@@ -123,6 +123,20 @@ class MediaTest extends TestCase
         $this->assertNull($media->getIntrinsicHeight());
     }
 
+    // A language's own file was never measured: the original's dimensions would announce a square picture as a banner
+    public function testGetIntrinsicDimensionsReturnNullWhileALanguageShowsItsOwnFile(): void
+    {
+        $media = new Media()->setWidth('600')->setHeight('315');
+        $media->setTranslated(['filename' => 'medias/site/og-image-es-1a2b3c4d.webp', 'alt' => 'La tienda']);
+
+        $this->assertNull($media->getIntrinsicWidth());
+        $this->assertNull($media->getIntrinsicHeight());
+
+        $media->setTranslated(['alt' => 'La tienda']);
+
+        $this->assertSame(600, $media->getIntrinsicWidth(), 'A translated text alone leaves the file, and its dimensions, as they are.');
+    }
+
     // Read off the stored name, whatever case its extension was typed in
     public function testIsPdfReadsTheStoredExtensionWhateverItsCase(): void
     {
