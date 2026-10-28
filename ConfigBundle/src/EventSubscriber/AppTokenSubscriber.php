@@ -12,21 +12,17 @@ namespace c975L\ConfigBundle\EventSubscriber;
 
 use c975L\ConfigBundle\Event\UserAnonymizedEvent;
 use c975L\ConfigBundle\Repository\AppTokenRepository;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 
 // An account anonymized keeps its row, so the "CASCADE" of AppToken never fires: its apps are signed out here instead, an erased account answering to no device
-class AppTokenSubscriber implements EventSubscriberInterface
+class AppTokenSubscriber
 {
     public function __construct(
         private readonly AppTokenRepository $appTokenRepository,
     ) {
     }
 
-    public static function getSubscribedEvents(): array
-    {
-        return [UserAnonymizedEvent::class => 'onUserAnonymized'];
-    }
-
+    #[AsEventListener(event: UserAnonymizedEvent::class)]
     public function onUserAnonymized(UserAnonymizedEvent $event): void
     {
         $this->appTokenRepository->deleteOfUser($event->user);

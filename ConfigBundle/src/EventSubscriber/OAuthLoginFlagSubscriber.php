@@ -11,17 +11,13 @@
 namespace c975L\ConfigBundle\EventSubscriber;
 
 use c975L\ConfigBundle\Controller\OAuthLoginController;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\Security\Http\Event\LoginSuccessEvent;
 
 // Clears the flag of a session opened through a provider on every login, so a form login in the same session gets its password change back. OAuthLoginController sets it again right after its own login, which dispatches this event first
-class OAuthLoginFlagSubscriber implements EventSubscriberInterface
+class OAuthLoginFlagSubscriber
 {
-    public static function getSubscribedEvents(): array
-    {
-        return [LoginSuccessEvent::class => 'onLoginSuccess'];
-    }
-
+    #[AsEventListener(event: LoginSuccessEvent::class)]
     public function onLoginSuccess(LoginSuccessEvent $event): void
     {
         $request = $event->getRequest();

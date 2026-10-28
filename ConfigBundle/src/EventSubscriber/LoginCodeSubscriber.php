@@ -13,7 +13,7 @@ namespace c975L\ConfigBundle\EventSubscriber;
 use c975L\ConfigBundle\Controller\LoginCodeController;
 use c975L\ConfigBundle\Security\LoginCode;
 use c975L\ConfigBundle\Security\TrustedDevice;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
@@ -22,7 +22,7 @@ use Symfony\Component\Security\Http\Authenticator\Passport\Badge\RememberMeBadge
 use Symfony\Component\Security\Http\Event\LoginSuccessEvent;
 
 // Holds an admin's password login from an unknown browser on the code page until the emailed code is typed, every other page redirecting there meanwhile
-class LoginCodeSubscriber implements EventSubscriberInterface
+class LoginCodeSubscriber
 {
     // The password form only: Google's login, remember-me and the other programmatic ones never reach it
     private const string LOGIN_ROUTE = 'app_login';
@@ -37,16 +37,8 @@ class LoginCodeSubscriber implements EventSubscriberInterface
     ) {
     }
 
-    public static function getSubscribedEvents(): array
-    {
-        // Priority 7 runs after the firewall (8), the session being the only thing read
-        return [
-            LoginSuccessEvent::class => 'onLoginSuccess',
-            KernelEvents::REQUEST => ['onKernelRequest', 7],
-        ];
-    }
-
     // Parks the login and sends the code, the page the firewall was heading to kept for afterwards
+    #[AsEventListener(event: LoginSuccessEvent::class)]
     public function onLoginSuccess(LoginSuccessEvent $event): void
     {
         $request = $event->getRequest();
@@ -66,7 +58,8 @@ class LoginCodeSubscriber implements EventSubscriberInterface
         }
     }
 
-    // Any other page sends back to the code while it is awaited, the profiler's own routes aside
+    // Any other page sends back to the code while it is awaited, the profiler's own routes aside. Priority 7 runs after the firewall (8), the session being the only thing read
+    #[AsEventListener(event: KernelEvents::REQUEST, priority: 7)]
     public function onKernelRequest(RequestEvent $event): void
     {
         $request = $event->getRequest();

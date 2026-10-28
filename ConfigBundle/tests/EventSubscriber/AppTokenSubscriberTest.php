@@ -15,6 +15,7 @@ use c975L\ConfigBundle\Event\UserAnonymizedEvent;
 use c975L\ConfigBundle\EventSubscriber\AppTokenSubscriber;
 use c975L\ConfigBundle\Repository\AppTokenRepository;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 
 class AppTokenSubscriberTest extends TestCase
 {
@@ -25,7 +26,7 @@ class AppTokenSubscriberTest extends TestCase
         $repository = $this->createMock(AppTokenRepository::class);
         $repository->expects($this->once())->method('deleteOfUser')->with($user);
 
-        $this->assertSame([UserAnonymizedEvent::class => 'onUserAnonymized'], AppTokenSubscriber::getSubscribedEvents());
+        $this->assertSame(UserAnonymizedEvent::class, new \ReflectionMethod(AppTokenSubscriber::class, 'onUserAnonymized')->getAttributes(AsEventListener::class)[0]->newInstance()->event);
 
         new AppTokenSubscriber($repository)->onUserAnonymized(new UserAnonymizedEvent($user));
     }

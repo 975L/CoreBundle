@@ -13,6 +13,7 @@ namespace c975L\ConfigBundle\Tests\EventSubscriber;
 use c975L\ConfigBundle\EventSubscriber\CspNonceCookieSubscriber;
 use c975L\ConfigBundle\EventSubscriber\ProfilerNonceSubscriber;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\ResponseEvent;
@@ -25,7 +26,8 @@ class ProfilerNonceSubscriberTest extends TestCase
     // Behind ProfilerListener (-1024), which sets the X-Debug-Token this reads, and ahead of WebDebugToolbarListener (-2048), which reads what this writes
     public function testSubscribesBetweenTheProfilerAndItsToolbar(): void
     {
-        $this->assertSame(['onKernelResponse', -1500], ProfilerNonceSubscriber::getSubscribedEvents()[KernelEvents::RESPONSE]);
+        $listener = new \ReflectionMethod(ProfilerNonceSubscriber::class, 'onKernelResponse')->getAttributes(AsEventListener::class)[0]->newInstance();
+        $this->assertSame([KernelEvents::RESPONSE, -1500], [$listener->event, $listener->priority]);
     }
 
     // The nonce the visit already carries, so the toolbar's inline scripts pass the CSP of the document Turbo keeps

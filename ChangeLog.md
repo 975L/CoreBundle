@@ -1,5 +1,17 @@
 # ChangeLog
 
+## v1.79.6
+
+Event subscribers registered through `#[AsEventListener]`
+
+### ConfigBundle
+
+- The `EventSubscriber/` classes declare their events with `#[AsEventListener]` instead of `EventSubscriberInterface` (28/10/2026)
+
+### UiBundle
+
+- `VideoPosterImporter` declares its `kernel.terminate` listener with `#[AsEventListener]` (28/10/2026)
+
 ## v1.79.5
 
 A new picture takes back the languages' own files

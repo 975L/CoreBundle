@@ -11,26 +11,22 @@
 namespace c975L\ConfigBundle\EventSubscriber;
 
 use Symfony\Component\DependencyInjection\Attribute\When;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\HttpKernel\Event\ResponseEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 
 // Hands the web debug toolbar the visit's own nonce, so it still runs after a Turbo navigation. The toolbar nonces its two inline scripts with a nonce of its own, freshly generated on every response, and a Turbo visit re-executes them into the already-loaded document - whose CSP only ever knows the nonces of the very first response. The toolbar was therefore blocked on every page reached without a full reload, which is every page of a site running Turbo.
 // The same fix as CookieNonceGenerator's, applied to the one nonce that generator does not mint: WebProfilerBundle reuses the value named by these two headers instead of generating any (see ContentSecurityPolicyHandler::getNonces), and removes them from the response on its way out
 #[When('dev')]
-class ProfilerNonceSubscriber implements EventSubscriberInterface
+class ProfilerNonceSubscriber
 {
     // The two names WebProfilerBundle reads a ready-made nonce off, one for the toolbar's scripts and one for its stylesheet
     private const string SCRIPT_HEADER = 'X-SymfonyProfiler-Script-Nonce';
 
     private const string STYLE_HEADER = 'X-SymfonyProfiler-Style-Nonce';
 
-    public static function getSubscribedEvents(): array
-    {
-        // Between ProfilerListener (-1024), whose X-Debug-Token says the profiler is on this response, and WebDebugToolbarListener (-2048), which reads these headers back off it
-        return [KernelEvents::RESPONSE => ['onKernelResponse', -1500]];
-    }
-
+    // Between ProfilerListener (-1024), whose X-Debug-Token says the profiler is on this response, and WebDebugToolbarListener (-2048), which reads these headers back off it
+    #[AsEventListener(event: KernelEvents::RESPONSE, priority: -1500)]
     public function onKernelResponse(ResponseEvent $event): void
     {
         if (!$event->isMainRequest()) {

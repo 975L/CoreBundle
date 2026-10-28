@@ -12,7 +12,7 @@ namespace c975L\ConfigBundle\EventSubscriber;
 
 use c975L\ConfigBundle\Entity\Redirect;
 use c975L\ConfigBundle\Repository\RedirectRepository;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\Exception\GoneHttpException;
@@ -20,7 +20,7 @@ use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
-class RedirectSubscriber implements EventSubscriberInterface
+class RedirectSubscriber
 {
     // The tag the rows are cached under, emptied by CacheTagListener when one is written or removed
     public const string CACHE_TAG = 'config_redirects';
@@ -34,12 +34,8 @@ class RedirectSubscriber implements EventSubscriberInterface
     ) {
     }
 
-    public static function getSubscribedEvents(): array
-    {
-        // Priority 33 runs before RouterListener (priority 32)
-        return [KernelEvents::REQUEST => ['onKernelRequest', 33]];
-    }
-
+    // Priority 33 runs before RouterListener (priority 32)
+    #[AsEventListener(event: KernelEvents::REQUEST, priority: 33)]
     public function onKernelRequest(RequestEvent $event): void
     {
         if (!$event->isMainRequest()) {

@@ -16,6 +16,7 @@ use c975L\ConfigBundle\Service\AppTokenManager;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\ResponseEvent;
@@ -30,7 +31,8 @@ class AppConnectCspSubscriberTest extends TestCase
     // Behind NelmioSecurityBundle's listener and the WebProfiler's, which both write the policy
     public function testSubscribesBehindThePolicyWriters(): void
     {
-        $this->assertSame(['onKernelResponse', -1000], AppConnectCspSubscriber::getSubscribedEvents()[KernelEvents::RESPONSE]);
+        $listener = new \ReflectionMethod(AppConnectCspSubscriber::class, 'onKernelResponse')->getAttributes(AsEventListener::class)[0]->newInstance();
+        $this->assertSame([KernelEvents::RESPONSE, -1000], [$listener->event, $listener->priority]);
     }
 
     // The connect page lets its form redirect to the app, on every policy header, the rest of the policy untouched

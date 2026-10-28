@@ -12,6 +12,7 @@ namespace c975L\ConfigBundle\Tests\EventSubscriber;
 
 use c975L\ConfigBundle\EventSubscriber\CspNonceCookieSubscriber;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -24,7 +25,8 @@ class CspNonceCookieSubscriberTest extends TestCase
     // Runs ahead of NelmioSecurityBundle's SignedCookieListener, which signs on this same event at priority -10000
     public function testSubscribesAheadOfTheSigningListener(): void
     {
-        $this->assertSame(['onKernelResponse', 10], CspNonceCookieSubscriber::getSubscribedEvents()[\Symfony\Component\HttpKernel\KernelEvents::RESPONSE]);
+        $listener = new \ReflectionMethod(CspNonceCookieSubscriber::class, 'onKernelResponse')->getAttributes(AsEventListener::class)[0]->newInstance();
+        $this->assertSame([\Symfony\Component\HttpKernel\KernelEvents::RESPONSE, 10], [$listener->event, $listener->priority]);
     }
 
     // The nonce the generator had to create is sent, so the rest of the visit reuses it

@@ -12,22 +12,18 @@ namespace c975L\ConfigBundle\EventSubscriber;
 
 use c975L\ConfigBundle\Contract\InactivityAwareInterface;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\Security\Http\Event\LoginSuccessEvent;
 
 // Records every successful login, which restarts the inactivity clock of c975l:config:users-cleanup and withdraws a notice already sent
-class LastLoginSubscriber implements EventSubscriberInterface
+class LastLoginSubscriber
 {
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
     ) {
     }
 
-    public static function getSubscribedEvents(): array
-    {
-        return [LoginSuccessEvent::class => 'onLoginSuccess'];
-    }
-
+    #[AsEventListener(event: LoginSuccessEvent::class)]
     public function onLoginSuccess(LoginSuccessEvent $event): void
     {
         // A site whose User doesn't track its inactivity yet, or a user coming from another provider (in-memory admin...)

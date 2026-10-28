@@ -14,7 +14,7 @@ use c975L\UiBundle\Entity\Block;
 use c975L\UiBundle\Entity\Media;
 use c975L\UiBundle\Video\VideoPlatform;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
@@ -22,7 +22,7 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 // Copies a platform's own still into a local Media, once, when the editor asked for it by ticking "importPoster" - never on its own and never at render time
 // Importing rather than hotlinking is the whole point: the file ends up served from the site's own domain, so no third-party origin to open in the CSP, no visitor IP handed to the platform, and nothing to consent to before the poster is even visible
 // The tick is a one-shot action, not a stored preference: it is cleared here as soon as the import is done, so the editor stays free to replace the imported image by hand, and a still that changed on the platform is re-imported by ticking the box again - a flag re-fetching on every save would silently overwrite that manual replacement instead
-class VideoPosterImporter implements EventSubscriberInterface
+class VideoPosterImporter
 {
     // A still is a few hundred KB; anything past this is not one, and is dropped rather than written to disk
     private const int MAX_BYTES = 4_000_000;
@@ -38,12 +38,8 @@ class VideoPosterImporter implements EventSubscriberInterface
     ) {
     }
 
-    public static function getSubscribedEvents(): array
-    {
-        return [KernelEvents::TERMINATE => 'removeTemporaryFiles'];
-    }
-
     // The import runs from the form's POST_SUBMIT whatever the submission turns out to be worth - as a CollectionType entry, that listener fires before the root form is validated, so a rejected submission has downloaded its still all the same and Vich will never move it - swept here whatever the form's fate, a successful save having already had its file moved away
+    #[AsEventListener(event: KernelEvents::TERMINATE)]
     public function removeTemporaryFiles(): void
     {
         foreach ($this->temporaryPaths as $path) {

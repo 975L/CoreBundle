@@ -10,14 +10,14 @@
 
 namespace c975L\ConfigBundle\EventSubscriber;
 
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Event\ResponseEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 
 // Sends the nonce CookieNonceGenerator had to generate, so the rest of the visit reuses it. The constants live here rather than on the generator, which implements a NelmioSecurityBundle interface and is therefore not even autoloadable without that optional bundle
-class CspNonceCookieSubscriber implements EventSubscriberInterface
+class CspNonceCookieSubscriber
 {
     public const string COOKIE_NAME = 'csp_nonce';
 
@@ -33,12 +33,8 @@ class CspNonceCookieSubscriber implements EventSubscriberInterface
         return $request->isSecure() ? self::COOKIE_NAME_SECURE : self::COOKIE_NAME;
     }
 
-    public static function getSubscribedEvents(): array
-    {
-        // Ahead of NelmioSecurityBundle's SignedCookieListener, which signs on this same event at priority -10000: an unsigned nonce cookie is one its holder could rewrite, and a nonce the visitor chooses is a nonce an injected script can carry
-        return [KernelEvents::RESPONSE => ['onKernelResponse', 10]];
-    }
-
+    // Ahead of NelmioSecurityBundle's SignedCookieListener, which signs on this same event at priority -10000: an unsigned nonce cookie is one its holder could rewrite, and a nonce the visitor chooses is a nonce an injected script can carry
+    #[AsEventListener(event: KernelEvents::RESPONSE, priority: 10)]
     public function onKernelResponse(ResponseEvent $event): void
     {
         if (!$event->isMainRequest()) {

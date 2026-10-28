@@ -16,6 +16,7 @@ use c975L\ConfigBundle\Repository\RedirectRepository;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 use Symfony\Component\Cache\Adapter\TagAwareAdapter;
+use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
@@ -43,9 +44,10 @@ class RedirectSubscriberTest extends TestCase
     }
 
     // Runs before RouterListener (priority 33 > 32) so a redirect can short-circuit routing entirely
-    public function testGetSubscribedEventsRunsBeforeRouterListener(): void
+    public function testRunsBeforeRouterListener(): void
     {
-        $this->assertSame([KernelEvents::REQUEST => ['onKernelRequest', 33]], RedirectSubscriber::getSubscribedEvents());
+        $listener = new \ReflectionMethod(RedirectSubscriber::class, 'onKernelRequest')->getAttributes(AsEventListener::class)[0]->newInstance();
+        $this->assertSame([KernelEvents::REQUEST, 33], [$listener->event, $listener->priority]);
     }
 
     // A path matching a stored redirect gets a response set, with the status matching its permanent flag

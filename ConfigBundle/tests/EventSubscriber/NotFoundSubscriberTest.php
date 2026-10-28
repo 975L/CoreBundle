@@ -16,6 +16,7 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Clock\MockClock;
+use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\Exception\GoneHttpException;
@@ -55,9 +56,10 @@ class NotFoundSubscriberTest extends TestCase
     }
 
     // Runs on its own, well before the listener turning the exception into the response (priority -128)
-    public function testGetSubscribedEventsRunsBeforeTheErrorListener(): void
+    public function testRunsBeforeTheErrorListener(): void
     {
-        $this->assertSame([KernelEvents::EXCEPTION => ['onKernelException', 0]], NotFoundSubscriber::getSubscribedEvents());
+        $listener = new \ReflectionMethod(NotFoundSubscriber::class, 'onKernelException')->getAttributes(AsEventListener::class)[0]->newInstance();
+        $this->assertSame([KernelEvents::EXCEPTION, 0], [$listener->event, $listener->priority]);
     }
 
     // A link on one of our own pages: the path, the page carrying it, and the flag saying it is ours to fix

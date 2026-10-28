@@ -10,13 +10,13 @@
 
 namespace c975L\ConfigBundle\EventSubscriber;
 
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 
 // Sends a login post carrying no usable username straight back to the form. Scanners post to the login route with none of the expected fields, and FormLoginAuthenticator answers that with a BadRequestHttpException - a legitimate 400, but one the kernel error listener logs at ERROR level, so a few bots are enough to bury the real errors of a production log. Nothing is being let through here: such a request could never authenticate anyone, it just gets the redirect a failed login would have gotten anyway, without the exception.
-class LoginRequestSubscriber implements EventSubscriberInterface
+class LoginRequestSubscriber
 {
     // Name of the login route, as scaffolded by this bundle and used across the c975L apps
     private const string LOGIN_ROUTE = 'app_login';
@@ -24,12 +24,8 @@ class LoginRequestSubscriber implements EventSubscriberInterface
     // Default username_parameter of Symfony's form_login
     private const string USERNAME_PARAMETER = '_username';
 
-    public static function getSubscribedEvents(): array
-    {
-        // Priority 9 runs after RouterListener (32), so the route is known, and before the firewall (8), so the authenticator never sees the request
-        return [KernelEvents::REQUEST => ['onKernelRequest', 9]];
-    }
-
+    // Priority 9 runs after RouterListener (32), so the route is known, and before the firewall (8), so the authenticator never sees the request
+    #[AsEventListener(event: KernelEvents::REQUEST, priority: 9)]
     public function onKernelRequest(RequestEvent $event): void
     {
         if (!$event->isMainRequest()) {

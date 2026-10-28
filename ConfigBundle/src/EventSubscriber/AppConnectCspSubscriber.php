@@ -12,12 +12,12 @@ namespace c975L\ConfigBundle\EventSubscriber;
 
 use c975L\ConfigBundle\Service\AppTokenManager;
 use c975L\ConfigBundle\Service\CspFormAction;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\HttpKernel\Event\ResponseEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 
 // Names the site's app url schemes in the "form-action" of the page connecting an app: its form is answered by a redirection to the app, which a policy limited to 'self' stops without a word, the button then doing nothing. Only on that page, no other form of the site having any business sending the browser to an app
-class AppConnectCspSubscriber implements EventSubscriberInterface
+class AppConnectCspSubscriber
 {
     private const string ROUTE = 'config_app_connect';
 
@@ -26,12 +26,8 @@ class AppConnectCspSubscriber implements EventSubscriberInterface
     ) {
     }
 
-    public static function getSubscribedEvents(): array
-    {
-        // Behind everything that writes a policy: NelmioSecurityBundle's own listener sits at 0, and the WebProfiler rebuilds the header from its directives at -128
-        return [KernelEvents::RESPONSE => ['onKernelResponse', -1000]];
-    }
-
+    // Behind everything that writes a policy: NelmioSecurityBundle's own listener sits at 0, and the WebProfiler rebuilds the header from its directives at -128
+    #[AsEventListener(event: KernelEvents::RESPONSE, priority: -1000)]
     public function onKernelResponse(ResponseEvent $event): void
     {
         $response = $event->getResponse();

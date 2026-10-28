@@ -12,6 +12,7 @@ namespace c975L\ConfigBundle\Tests\EventSubscriber;
 
 use c975L\ConfigBundle\EventSubscriber\LoginRequestSubscriber;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
@@ -31,9 +32,10 @@ class LoginRequestSubscriberTest extends TestCase
     }
 
     // Runs after RouterListener (32), which sets the route, and before the firewall (8), which would otherwise throw
-    public function testGetSubscribedEventsRunsBetweenRouterAndFirewall(): void
+    public function testRunsBetweenRouterAndFirewall(): void
     {
-        $this->assertSame([KernelEvents::REQUEST => ['onKernelRequest', 9]], LoginRequestSubscriber::getSubscribedEvents());
+        $listener = new \ReflectionMethod(LoginRequestSubscriber::class, 'onKernelRequest')->getAttributes(AsEventListener::class)[0]->newInstance();
+        $this->assertSame([KernelEvents::REQUEST, 9], [$listener->event, $listener->priority]);
     }
 
     // The case seen in production: a post with none of the form fields

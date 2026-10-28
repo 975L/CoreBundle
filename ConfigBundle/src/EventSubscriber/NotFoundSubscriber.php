@@ -13,14 +13,14 @@ namespace c975L\ConfigBundle\EventSubscriber;
 use c975L\ConfigBundle\Entity\Redirect;
 use c975L\ConfigBundle\Repository\NotFoundRepository;
 use Psr\Clock\ClockInterface;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\KernelEvents;
 
 // Records the 404s that came from a link, so a broken one is known before anyone reports it. Monolog is deliberately not that place: its prod handler excludes 404 precisely because the mail it would otherwise send is 99% scanners walking "/wp-admin", and the same noise would drown a table just as well - hence the Referer, which a browser following a link always sends and most scanners do not. Some forge one, which PROBE_PATH_PATTERN and the self-referer check are there for
-class NotFoundSubscriber implements EventSubscriberInterface
+class NotFoundSubscriber
 {
     // What scanners walk for and this site never serves: dotfiles, WordPress, CGI and server-side scripts or config files. Scanners forge a referer too ("https://www.binance.com/", "https://google.com/", the url itself), so the shape of the path is what is left to tell them apart
     public const string PROBE_PATH_PATTERN = '#(?:^|/)(?:\.|wp-|cgi-bin)|\.(?:php\d?|aspx?|axd|jsp|cgi|cc|env|ini|ya?ml|sql|bak|old|log|properties|py|sh)$#i';
@@ -31,12 +31,8 @@ class NotFoundSubscriber implements EventSubscriberInterface
     ) {
     }
 
-    public static function getSubscribedEvents(): array
-    {
-        // Well before Symfony's own ErrorListener (priority -128), which turns the exception into the response - the row is written while the request is still the request that failed
-        return [KernelEvents::EXCEPTION => ['onKernelException', 0]];
-    }
-
+    // Well before Symfony's own ErrorListener (priority -128), which turns the exception into the response - the row is written while the request is still the request that failed
+    #[AsEventListener(event: KernelEvents::EXCEPTION, priority: 0)]
     public function onKernelException(ExceptionEvent $event): void
     {
         if (!$event->isMainRequest() || !$event->getThrowable() instanceof NotFoundHttpException) {
