@@ -101,6 +101,7 @@
     --flip-card-border-width: 3px;
     --flip-card-front-background: var(--white);
     --flip-card-hint-size: 1.5rem;
+    --flip-card-hint-inset: auto 0.6em 0.6em auto;
     --flip-card-media-max-width: 250px;
     --flip-card-radius: 25px;
     --flip-card-text-size: 0.9rem;
@@ -1788,8 +1789,7 @@ label[for=contact_form_username],
 .flip-card-face:has(.flip-card-toggle:not([hidden]))::after {
   content: "";
   position: absolute;
-  right: 0.6em;
-  bottom: 0.6em;
+  inset: var(--flip-card-hint-inset);
   width: var(--flip-card-hint-size);
   height: var(--flip-card-hint-size);
   z-index: 2;

@@ -1,5 +1,13 @@
 # ChangeLog
 
+## v1.79.7
+
+Flip card turn mark movable from a token
+
+### UiBundle
+
+- Added the `--flip-card-hint-inset` token placing the flip card's turn mark (28/10/2026)
+
 ## v1.79.6
 
 Event subscribers registered through `#[AsEventListener]`

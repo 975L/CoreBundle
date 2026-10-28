@@ -248,6 +248,8 @@
        accent like the outline does, and is painted over the face's own content rather than in a gutter held
        open for it - so resizing it here costs a card at rest nothing */
     /* --flip-card-hint-size: 1.5rem; */
+    /* Its corner, as an inset (top right bottom left): move it when the card already prints something bottom right */
+    /* --flip-card-hint-inset: auto 0.6em 0.6em auto; */
 
     /* The twelve hues the "accent" field offers, painting a card's header band and a flip card's outline and titles. Point one at this site's own palette to fold that hue into the design - the value stored on a block is the color's name, not a meaning, so it never has to change when the hue does. The card header writes white on them: keep any value here above 3:1 against white, or retune --card-accent's companion text color in this site's own app.css */
     /* --block-accent-red: #b23a2f; */

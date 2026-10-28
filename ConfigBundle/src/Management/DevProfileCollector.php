@@ -10,6 +10,7 @@
 
 namespace c975L\ConfigBundle\Management;
 
+use c975L\ConfigBundle\Service\HealthCheck;
 use Symfony\Component\DependencyInjection\Attribute\When;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\KernelInterface;
@@ -83,6 +84,9 @@ class DevProfileCollector
         // Request::create() announces an English browser, which a multilingual site sends from every bare url to its "/en/..." one: announcing none, the page is read in the language it is written in
         $request = Request::create(self::BASE_URL . $path);
         $request->headers->remove('Accept-Language');
+
+        // Announced as our own probe, so RateLimitListener lets the run through: a few dozen pages in a few seconds is exactly the burst it refuses, and every page past the sixtieth would be reported as a 429
+        $request->headers->set('User-Agent', HealthCheck::USER_AGENT);
         $this->profiler->enable();
 
         try {

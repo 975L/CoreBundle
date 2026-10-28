@@ -136,6 +136,8 @@
         --flip-card-front-background: var(--white);
         // The corner mark saying the card turns. Sized in rem rather than em: it is drawn on the toggle, whose "font: inherit" makes an em there the face's own body size, and the mark has one size on both faces whatever an editor typed in either
         --flip-card-hint-size: 1.5rem;
+        // Its corner, as an "inset" (top right bottom left): bottom-right by default, moved by a site whose card already prints something there - a number, a price
+        --flip-card-hint-inset: auto 0.6em 0.6em auto;
         --flip-card-media-max-width: 250px;
         --flip-card-radius: 25px;
         --flip-card-text-size: 0.9rem;
