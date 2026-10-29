@@ -434,6 +434,10 @@
                 <source>narration.guided_step_ui_review_decide</source>
                 <target>Back in the list, here are the two buttons this screen exists for: the tick on its row publishes the review, the cross turns it down.</target>
             </trans-unit>
+            <trans-unit id="CdTwoA6">
+                <source>narration.guided_step_ui_review_display</source>
+                <target>And here is the Displayed switch, on each row. It shows or hides the review on the site in one click, even one that came from Google. A hidden review stays hidden: the nightly import does not publish it again.</target>
+            </trans-unit>
             <trans-unit id="QQadmr1">
                 <source>narration.guided_step_ui_review_done</source>
                 <target>That is done: the published review shows on the page of the book or product it is about, with its date.</target>

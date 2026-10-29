@@ -1,5 +1,18 @@
 # ChangeLog
 
+## v1.80
+
+Reviews shown or hidden from a switch on the moderation list
+
+### UiBundle
+
+- Added `Review::isDisplayed()`/`setDisplayed()`, a virtual property over the status (29/10/2026)
+- Reviews list: "Displayed" switch, imported reviews included (29/10/2026)
+- Slider freeflow: start-aligned slides brought to the left edge (29/10/2026)
+- Slider freeflow: "next" starts over once the last slides are in view (29/10/2026)
+- Guided project "ui-review": step on the "Displayed" switch (29/10/2026)
+- README, skill: "Displayed" switch, slider row, SocialBundle's `google_reviews` block (29/10/2026)
+
 ## v1.79.8
 
 Redirect listener priority exposed as a constant

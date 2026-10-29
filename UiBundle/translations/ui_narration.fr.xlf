@@ -434,6 +434,10 @@
                 <source>narration.guided_step_ui_review_decide</source>
                 <target>De retour dans la liste, voici les deux boutons pour lesquels cet écran existe : la coche de sa ligne publie l'avis, la croix le refuse.</target>
             </trans-unit>
+            <trans-unit id="CdTwoA6">
+                <source>narration.guided_step_ui_review_display</source>
+                <target>Et voici l'interrupteur Affiché, au bout de chaque ligne. Il montre ou masque l'avis sur le site en un clic, même un avis venu de Google. Un avis masqué le reste : l'import de la nuit ne le republie pas.</target>
+            </trans-unit>
             <trans-unit id="QQadmr1">
                 <source>narration.guided_step_ui_review_done</source>
                 <target>C'est terminé : l'avis publié apparaît sur la page du livre ou du produit concerné, avec sa date.</target>

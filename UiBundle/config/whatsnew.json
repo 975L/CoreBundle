@@ -1,5 +1,15 @@
 [
     {
+        "date": "2026-10-29",
+        "description": [
+            {
+                "en": "Each review can be shown or hidden on the site in one click, from the reviews list, imported Google reviews included.",
+                "fr": "Chaque avis s'affiche ou se masque sur le site en un clic depuis la liste des avis, avis Google importés compris.",
+                "es": "Cada opinión se muestra u oculta en el sitio con un clic desde la lista de opiniones, incluidas las importadas de Google."
+            }
+        ]
+    },
+    {
         "date": "2026-10-28",
         "description": [
             {

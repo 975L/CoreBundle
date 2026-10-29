@@ -27,6 +27,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\KeyValueStore;
 use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
+use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
@@ -40,8 +41,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 use function Symfony\Component\Translation\t;
 
-// Where reviews are decided upon and answered, whichever side they came from - and where the two sides are not treated alike
-// A review written here is held until someone lets it through, and can be dropped: it exists nowhere else. An imported one is its author's statement on a platform, so its text, its score and its visibility stay untouched - rewriting it would falsify it, and dropping the ones that displease would be exactly what L111-7-2 forbids. An abusive imported review is reported to the platform, where it also has to disappear
+// Where reviews are decided upon and answered, whichever side they came from, not treated alike: a local review is held until published and can be dropped, an imported one keeps its text and score and is never deleted, only hidden with the "displayed" switch (the block then names the platform and links to it, as L111-7-2 asks), an abusive one being reported to the platform
 class ReviewCrudController extends AbstractCrudController
 {
     public function __construct(
@@ -165,12 +165,18 @@ class ReviewCrudController extends AbstractCrudController
         $review = $this->getContext()?->getEntity()->getInstance();
         $isLocal = $review instanceof Review && $review->isLocal();
 
-        // Disabled rather than hidden on an imported review, here and below: the field then says the decision is not this screen's to take, where a missing one would read as a screen that forgot it
+        // Disabled rather than hidden on an imported review, here and below: the field then says the decision is not this form's to take, where a missing one would read as a screen that forgot it - showing or hiding it is the list's switch alone, Pending meaning nothing for a review the platform moderated already
         yield ChoiceField::new('status', t('label.review_status', [], 'ui'))
             // Called with the choice, not with the field: EasyAdmin passes ($value, $field) in that order, and a callable typed the other way round takes the whole screen down (see ReviewStatus::badgeFor())
             ->renderAsBadges(static fn (mixed $value): string => ReviewStatus::badgeFor($value))
             ->setDisabled(!$isLocal)
         ;
+        // One click from the list, imported reviews included: the switch toggles through the edit action, whose updateEntity() below brings the average in line. That action only accepts a field its own page declares, so the field is declared there for the switch's request alone - on the edit form, the status above already says the same thing and the two would overwrite each other
+        $displayed = BooleanField::new('displayed', t('label.review_displayed', [], 'ui'))
+            ->renderAsSwitch()
+            ->setSortable(false)
+        ;
+        yield true === $this->getContext()?->getRequest()->isXmlHttpRequest() ? $displayed : $displayed->onlyOnIndex();
         yield TextField::new('authorName', t('label.review_author', [], 'ui'))->setDisabled();
         yield TextField::new('authorEmail', t('label.review_author_email', [], 'ui'))->setDisabled()->hideOnIndex();
         yield IntegerField::new('rating', t('label.review_rating', [], 'ui'))->setDisabled();
@@ -213,7 +219,7 @@ class ReviewCrudController extends AbstractCrudController
 
         $review = $context->getEntity()->getInstance();
 
-        // An imported review is its author's statement on a platform: publishing or turning it down here would say something its author never asked this site to say
+        // These two moderate what visitors wrote here: an imported review is shown or hidden from the list's switch alone, which never sends it back to Pending
         if (!$review instanceof Review || !$review->isLocal()) {
             throw $this->createAccessDeniedException();
         }

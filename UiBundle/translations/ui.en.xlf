@@ -92,7 +92,7 @@
             </trans-unit>
             <trans-unit id="m0_DD2W">
                 <source>description.guided_project_ui_review</source>
-                <target>Publish, turn down or answer what your readers wrote — and what the platforms sent back.</target>
+                <target>Publish, turn down, hide or answer what your readers wrote — and what the platforms sent back.</target>
             </trans-unit>
             <trans-unit id=".YA5nKT">
                 <source>description.guided_project_ui_shared_block</source>
@@ -465,6 +465,10 @@
             <trans-unit id="aCD7FM2">
                 <source>description.guided_step_ui_review_decide</source>
                 <target>Back in the list, the ✓ icon on its row publishes the review, the cross turns it down.</target>
+            </trans-unit>
+            <trans-unit id="E1m9bhh">
+                <source>description.guided_step_ui_review_display</source>
+                <target>The Displayed switch on each row shows or hides the review on the site in one click, a review imported from Google included. A hidden review stays hidden: the next import does not publish it again.</target>
             </trans-unit>
             <trans-unit id="RbaTJVU">
                 <source>description.guided_step_ui_review_done</source>
@@ -3110,6 +3114,10 @@
                 <source>label.guided_step_ui_review_decide</source>
                 <target>Publish it, or turn it down</target>
             </trans-unit>
+            <trans-unit id="gZciZyw">
+                <source>label.guided_step_ui_review_display</source>
+                <target>Show it, or hide it</target>
+            </trans-unit>
             <trans-unit id="DocjKzx">
                 <source>label.guided_step_ui_review_done</source>
                 <target>Done</target>
@@ -3368,7 +3376,7 @@
             </trans-unit>
             <trans-unit id="zkQpL1I">
                 <source>label.info_reviews</source>
-                <target>The reviews left on the site and those imported from a platform. On the first, the status is yours to set and the row can be deleted; on the second, only the public reply is yours.</target>
+                <target>The reviews left on the site and those imported from a platform. The Displayed switch shows or hides each of them on the site. On the first, the status is yours to set and the row can be deleted; on the second, only the public reply is yours to write.</target>
             </trans-unit>
             <trans-unit id="d6JPFgR">
                 <source>label.info_reviews_disabled</source>
@@ -4117,6 +4125,10 @@
             <trans-unit id="1cpgR1E">
                 <source>label.review_comment</source>
                 <target>Review</target>
+            </trans-unit>
+            <trans-unit id="_EzoWjG">
+                <source>label.review_displayed</source>
+                <target>Displayed</target>
             </trans-unit>
             <trans-unit id="FyZPljX">
                 <source>label.review_form_comment</source>

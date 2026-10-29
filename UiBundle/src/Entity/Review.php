@@ -177,6 +177,20 @@ class Review implements \Stringable
         return $this;
     }
 
+    // Whether the review shows on the site - the status read as the one yes/no the moderation list toggles (see ReviewCrudController), no column of its own
+    public function isDisplayed(): bool
+    {
+        return ReviewStatus::Published === $this->status;
+    }
+
+    // Hiding turns the review down rather than holding it as pending: Pending means nobody looked yet, which would put a decided review back in the moderators' queue
+    public function setDisplayed(bool $displayed): self
+    {
+        $this->status = $displayed ? ReviewStatus::Published : ReviewStatus::Rejected;
+
+        return $this;
+    }
+
     public function getAuthorName(): ?string
     {
         return $this->authorName;

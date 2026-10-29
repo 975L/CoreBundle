@@ -11,6 +11,7 @@
 namespace c975L\UiBundle\Tests\Entity;
 
 use c975L\UiBundle\Entity\Review;
+use c975L\UiBundle\Enum\ReviewStatus;
 use PHPUnit\Framework\TestCase;
 
 class ReviewTest extends TestCase
@@ -91,5 +92,20 @@ class ReviewTest extends TestCase
         $this->assertNull($review->getReplyComment());
         $this->assertNull($review->getRepliedAt());
         $this->assertNull($review->getSourceUrl());
+    }
+
+    // The list's switch reads the status as a yes/no: only a published review is displayed
+    public function testOnlyAPublishedReviewIsDisplayed(): void
+    {
+        $this->assertFalse(new Review()->isDisplayed());
+        $this->assertTrue(new Review()->setStatus(ReviewStatus::Published)->isDisplayed());
+        $this->assertFalse(new Review()->setStatus(ReviewStatus::Rejected)->isDisplayed());
+    }
+
+    // Switched on, a pending review is published; switched off, it is turned down rather than sent back to the moderators' queue
+    public function testSwitchingDisplayedPublishesOrRejects(): void
+    {
+        $this->assertSame(ReviewStatus::Published, new Review()->setDisplayed(true)->getStatus());
+        $this->assertSame(ReviewStatus::Rejected, new Review()->setStatus(ReviewStatus::Published)->setDisplayed(false)->getStatus());
     }
 }

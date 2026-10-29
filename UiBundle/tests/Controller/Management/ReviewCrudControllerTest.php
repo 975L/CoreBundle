@@ -28,8 +28,10 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\KeyValueStore;
 use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
 use EasyCorp\Bundle\EasyAdminBundle\Context\CrudContext;
+use EasyCorp\Bundle\EasyAdminBundle\Context\RequestContext;
 use EasyCorp\Bundle\EasyAdminBundle\Contracts\Provider\AdminContextProviderInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto;
+use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -112,13 +114,13 @@ class ReviewCrudControllerTest extends TestCase
     }
 
     // configureFields() reads the entity being edited off the admin context, which AbstractController resolves through its container - so a screen exercised outside EasyAdmin's runtime has to be handed one
-    private function createControllerOnContextOf(?Review $review, bool $supportsReply = true): ReviewCrudController
+    private function createControllerOnContextOf(?Review $review, bool $supportsReply = true, ?Request $request = null): ReviewCrudController
     {
         $entityDto = null === $review ? null : new EntityDto(Review::class, new ClassMetadata(Review::class), null, $review);
 
         $adminContextProvider = $this->createStub(AdminContextProviderInterface::class);
         $adminContextProvider->method('getContext')->willReturn(
-            null === $entityDto ? null : AdminContext::forTesting(crudContext: CrudContext::forTesting(entityDto: $entityDto))
+            null === $entityDto ? null : AdminContext::forTesting(RequestContext::forTesting($request), CrudContext::forTesting(entityDto: $entityDto))
         );
 
         $container = $this->createStub(ContainerInterface::class);
@@ -407,6 +409,37 @@ class ReviewCrudControllerTest extends TestCase
 
         $this->assertArrayHasKey('replyComment', $dtos);
         $this->assertNotTrue($dtos['replyComment']->getFormTypeOption('disabled'));
+    }
+
+    // One click from the list for every review, imported ones included - a switch, never sortable on a property no column holds
+    public function testTheListShowsTheDisplayedSwitch(): void
+    {
+        $dtos = $this->fieldsByProperty($this->createControllerOnContextOf(new Review()->setSource('google')->setExternalId('r1')));
+
+        $this->assertArrayHasKey('displayed', $dtos);
+        $this->assertTrue($dtos['displayed']->getCustomOption(BooleanField::OPTION_RENDER_AS_SWITCH));
+        $this->assertFalse($dtos['displayed']->isSortable());
+        $this->assertNotTrue($dtos['displayed']->getFormTypeOption('disabled'));
+        $this->assertTrue($dtos['displayed']->isDisplayedOn(Crud::PAGE_INDEX));
+    }
+
+    // Off the edit form, where the status says the same thing and the two would overwrite each other
+    public function testTheEditFormLeavesTheSwitchToTheList(): void
+    {
+        $dtos = $this->fieldsByProperty($this->createControllerOnContextOf(new Review()));
+
+        $this->assertFalse($dtos['displayed']->isDisplayedOn(Crud::PAGE_EDIT));
+    }
+
+    // The switch toggles through the edit action, which refuses a field its page does not declare - declared there for that request alone
+    public function testTheSwitchRequestFindsTheFieldOnTheEditAction(): void
+    {
+        $request = new Request();
+        $request->headers->set('X-Requested-With', 'XMLHttpRequest');
+
+        $dtos = $this->fieldsByProperty($this->createControllerOnContextOf(new Review(), true, $request));
+
+        $this->assertTrue($dtos['displayed']->isDisplayedOn(Crud::PAGE_EDIT));
     }
 
     // Disabled rather than hidden for a platform taking no reply: a missing field would read as a screen that forgot it

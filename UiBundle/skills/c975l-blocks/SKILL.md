@@ -557,16 +557,19 @@ differently — the caching is then yours to do.
   a kind means `verified: false` — the badge says the site checked, not that it had no way to. Settled
   once in `submit()` and never recomputed: an order archived years later must not un-verify a review.
 - **A review is never rewritten here.** The moderation screen edits nothing the author wrote: a local
-  review can be published, rejected or deleted, an imported one can only be answered — removing it
-  would hide here what stays published there, which is what L111-7-2 forbids.
+  review can be published, rejected or deleted, an imported one answered but never deleted. Any review
+  is shown or hidden with the list's **Displayed** switch (`Review::isDisplayed()`/`setDisplayed()`, a
+  virtual property over the status, `Published` or `Rejected`), through `updateEntity()` and so
+  `syncRating()`; a sync never touches the status of a review it already holds.
 - **The public answer travels first.** `ReviewService::reply()` hands the reply to
   `ReviewReplyRegistry`, which finds the platform's publisher (`ReviewReplyPublisherInterface`,
   auto-discovered by interface) and lets its exception through — a reply stored here but refused there
   would show an answer its author never received. A local review has no platform and is simply stored.
-- **Displayed by the generic `collection` block**, never by a kind of its own:
+- **Displayed by the generic `collection` block** for a wall mixing every source:
   `ReviewCollectionSourceProvider` exposes the source `ui.collection.reviews`, cache tag `ui_reviews`,
   item template `templates/collection/ReviewItem.html.twig` — the very card `ui_reviews()` draws, so a
-  book's reviews and the site's wall never drift apart.
+  book's reviews and the site's wall never drift apart. The imported Google reviews have their own
+  `google_reviews` block in SocialBundle, drawing the same card.
 
 ## Wishlist
 

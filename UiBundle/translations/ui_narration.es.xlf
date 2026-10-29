@@ -434,6 +434,10 @@
                 <source>narration.guided_step_ui_review_decide</source>
                 <target>De vuelta en la lista, estos son los dos botones por los que existe esta pantalla: la marca de su fila publica la opinión, la cruz la rechaza.</target>
             </trans-unit>
+            <trans-unit id="CdTwoA6">
+                <source>narration.guided_step_ui_review_display</source>
+                <target>Y aquí está el interruptor Mostrada, en cada fila. Muestra u oculta la opinión en el sitio con un clic, incluso una que vino de Google. Una opinión oculta lo sigue estando: la importación nocturna no la vuelve a publicar.</target>
+            </trans-unit>
             <trans-unit id="QQadmr1">
                 <source>narration.guided_step_ui_review_done</source>
                 <target>Ya está: la opinión publicada aparece en la página del libro o del producto correspondiente, con su fecha.</target>

@@ -336,6 +336,13 @@ class UiGuidedProjectProvider implements GuidedProjectProviderInterface
                     'highlight' => '.action-publishReview',
                 ],
                 [
+                    // The list's switch, which also covers the imported reviews the two buttons above never offer to decide
+                    'label' => 'label.guided_step_ui_review_display',
+                    'description' => 'description.guided_step_ui_review_display',
+                    'narration' => 'narration.guided_step_ui_review_display',
+                    'highlight' => 'tr[data-id] td[data-column="displayed"]',
+                ],
+                [
                     'label' => 'label.guided_step_ui_review_done',
                     'description' => 'description.guided_step_ui_review_done',
                     'narration' => 'narration.guided_step_ui_review_done',

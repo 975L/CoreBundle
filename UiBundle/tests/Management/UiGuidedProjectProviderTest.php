@@ -211,7 +211,7 @@ class UiGuidedProjectProviderTest extends TestCase
         }
 
         $this->assertSame(
-            [null, '.action-edit', '#Review_replyComment', '#Review_status', '.action-saveAndReturn', '.action-publishReview', null],
+            [null, '.action-edit', '#Review_replyComment', '#Review_status', '.action-saveAndReturn', '.action-publishReview', 'tr[data-id] td[data-column="displayed"]', null],
             array_map(static fn (array $step): ?string => $step['highlight'] ?? null, $steps),
         );
     }

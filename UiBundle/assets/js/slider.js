@@ -289,15 +289,28 @@ export default class extends Controller {
         }, { passive: true });
     }
 
-    // Index (1-based) of the slide whose center is nearest the list's own center - what "the current slide" means once the list is scrolled by hand
+    // Index (1-based) of the slide whose center is nearest the list's own center - or whose left edge is nearest the list's, for slides aligned on their start - what "the current slide" means once the list is scrolled by hand
     centeredSlideIndex(list, slides) {
-        const listCenter = list.getBoundingClientRect().left + list.clientWidth / 2;
+        const startAligned = slides.length > 0 && this.isStartAligned(slides[0]);
+        const anchor = list.getBoundingClientRect().left + (startAligned ? 0 : list.clientWidth / 2);
 
         return slides.length === 0 ? 1 : Array.from(slides).reduce((best, slide, idx) => {
             const rect = slide.getBoundingClientRect();
-            const distance = Math.abs(rect.left + rect.width / 2 - listCenter);
+            const distance = Math.abs(rect.left + (startAligned ? 0 : rect.width / 2) - anchor);
             return distance < best.distance ? { index: idx + 1, distance } : best;
         }, { index: 1, distance: Infinity }).index;
+    }
+
+    // Whether a freeflow slide snaps on its start rather than on its center, read off the stylesheet so a row of several slides only has to say so there
+    isStartAligned(slide) {
+        return getComputedStyle(slide).scrollSnapAlign.includes("start");
+    }
+
+    // Whether the freeflow list can scroll no further right, its last slides all in view
+    isScrolledToEnd(sliderId) {
+        const list = document.querySelector(`#${sliderId} .slider-list`);
+
+        return null !== list && list.scrollLeft + list.clientWidth >= list.scrollWidth - 1;
     }
 
     // Plays the <video> inside a slide, if any. Suppressed under prefers-reduced-motion unless explicit is true (user pressed the play/pause control themselves, which overrides it).
@@ -475,6 +488,10 @@ export default class extends Controller {
     // Display slide with ARIA support
     displaySlide(sliderId, number, direction = "next", announceChange = true) {
         if (this.isFreeflow) {
+            // A row showing several slides at once stops scrolling before its last ones reach the edge: going on from there would spend a turn per slide still in view, the row standing still, so it starts over instead
+            if ("next" === direction && this.isScrolledToEnd(sliderId)) {
+                number = 1;
+            }
             this.displaySlideFreeflow(sliderId, number, announceChange);
             return;
         }
@@ -576,11 +593,13 @@ export default class extends Controller {
         const index = this.calculateIndex(number, slides.length);
         const newSlide = slides[index - 1];
 
-        // Centers the slide in the list, matching scroll-snap-align: center on .slider-item, and scrolls that list alone. Deliberately not newSlide.scrollIntoView(): its "block" axis climbs ancestor scrollers, including the page itself, and yanks the page back to the slider whenever autoplay changes the slide while the user has scrolled away from it.
+        // Centers the slide in the list, matching scroll-snap-align: center on .slider-item - or brings it to the list's left edge when the slides are aligned on their start, a row showing several at once - and scrolls that list alone. Deliberately not newSlide.scrollIntoView(): its "block" axis climbs ancestor scrollers, including the page itself, and yanks the page back to the slider whenever autoplay changes the slide while the user has scrolled away from it.
         if (list) {
             const listRect = list.getBoundingClientRect();
             const slideRect = newSlide.getBoundingClientRect();
-            const delta = (slideRect.left + slideRect.width / 2) - (listRect.left + list.clientWidth / 2);
+            const delta = this.isStartAligned(newSlide)
+                ? slideRect.left - listRect.left
+                : (slideRect.left + slideRect.width / 2) - (listRect.left + list.clientWidth / 2);
             list.scrollTo({ left: list.scrollLeft + delta, behavior: "smooth" });
         }
 
