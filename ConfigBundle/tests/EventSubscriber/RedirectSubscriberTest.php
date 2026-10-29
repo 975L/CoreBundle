@@ -47,7 +47,7 @@ class RedirectSubscriberTest extends TestCase
     public function testRunsBeforeRouterListener(): void
     {
         $listener = new \ReflectionMethod(RedirectSubscriber::class, 'onKernelRequest')->getAttributes(AsEventListener::class)[0]->newInstance();
-        $this->assertSame([KernelEvents::REQUEST, 33], [$listener->event, $listener->priority]);
+        $this->assertSame([KernelEvents::REQUEST, 33, 33], [$listener->event, $listener->priority, RedirectSubscriber::PRIORITY]);
     }
 
     // A path matching a stored redirect gets a response set, with the status matching its permanent flag

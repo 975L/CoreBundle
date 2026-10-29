@@ -22,6 +22,9 @@ use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
 class RedirectSubscriber
 {
+    // Runs before RouterListener (32); a listener that must run before this one declares PRIORITY + 1
+    public const int PRIORITY = 33;
+
     // The tag the rows are cached under, emptied by CacheTagListener when one is written or removed
     public const string CACHE_TAG = 'config_redirects';
 
@@ -34,8 +37,8 @@ class RedirectSubscriber
     ) {
     }
 
-    // Priority 33 runs before RouterListener (priority 32)
-    #[AsEventListener(event: KernelEvents::REQUEST, priority: 33)]
+    // Answers a matching row with its redirect, or a 410 when the row says gone
+    #[AsEventListener(event: KernelEvents::REQUEST, priority: self::PRIORITY)]
     public function onKernelRequest(RequestEvent $event): void
     {
         if (!$event->isMainRequest()) {

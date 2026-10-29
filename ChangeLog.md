@@ -1,5 +1,13 @@
 # ChangeLog
 
+## v1.79.8
+
+Redirect listener priority exposed as a constant
+
+### ConfigBundle
+
+- Added `RedirectSubscriber::PRIORITY` for listeners that must run before it (29/10/2026)
+
 ## v1.79.7
 
 Flip card turn mark movable from a token
