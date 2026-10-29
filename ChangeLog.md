@@ -1,5 +1,14 @@
 # ChangeLog
 
+## v1.80.1
+
+Slider controls shared as a partial
+
+### UiBundle
+
+- Slider: controls and dots moved to `components/Slider/_controls.html.twig`, for carousels drawing their own items (29/10/2026)
+- README, skill: Slider controls partial (29/10/2026)
+
 ## v1.80
 
 Reviews shown or hidden from a switch on the moderation list

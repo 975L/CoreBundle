@@ -100,28 +100,6 @@
             </li>
         {% endfor %}
         </ul>
-        <div class="slider-controls">
-            <button type="button" class="slider-button slider-prev" aria-label="{{ "label.previous_slide"|trans({}, "ui") }}">
-                <img src="{{ asset("bundles/c975lsite/icons/angle-left.svg") }}" alt="" aria-hidden="true" class="angle" width="40">
-            </button>
-            <button type="button" class="slider-button slider-next" aria-label="{{ "label.next_slide"|trans({}, "ui") }}">
-                <img src="{{ asset("bundles/c975lsite/icons/angle-right.svg") }}" alt="" aria-hidden="true" class="angle" width="40">
-            </button>
-            {% if duration|default(0) > 0 %}
-                <button type="button" class="slider-play-pause" data-action="stop" aria-label="{{ "label.stop_animation"|trans({}, "ui") }}">
-                    <span aria-hidden="true">⏸</span>
-                </button>
-            {% endif %}
-        </div>
-
-        <ul class="slider-dots" aria-label="{{ "label.slide_navigation"|trans({}, "ui") }}">
-            {% for slideMedia in mediaList %}
-                <li>
-                    <button type="button" class="slider-dot{% if loop.first %} current active{% endif %}" data-slide="{{ loop.index0 }}" aria-label="{{ "label.slide"|trans({}, "ui") }} {{ loop.index }}{% if loop.first %} ({{ "label.current"|trans({}, "ui") }}){% endif %}">
-                        <span aria-hidden="true">{{ loop.index }}</span>
-                    </button>
-                </li>
-            {% endfor %}
-        </ul>
+        {{ include('@c975LUi/components/Slider/_controls.html.twig', {count: mediaList|length, duration: duration|default(0)}, with_context = false) }}
     </section>
 {% endif %}

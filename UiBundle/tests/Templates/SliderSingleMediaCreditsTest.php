@@ -94,7 +94,10 @@ class SliderSingleMediaCreditsTest extends TestCase
     /** @param list<object> $media */
     private function render(array $media): string
     {
-        $twig = new Environment(new FilesystemLoader(dirname(__DIR__, 2) . '/templates'));
+        // The namespace too, the controls being included by it
+        $loader = new FilesystemLoader(dirname(__DIR__, 2) . '/templates');
+        $loader->addPath(dirname(__DIR__, 2) . '/templates', 'c975LUi');
+        $twig = new Environment($loader);
         $twig->addFilter(new TwigFilter('trans', static fn (?string $key): string => (string) $key));
         $twig->addFilter(new TwigFilter('to_bool', new BoolExtension()->toBool(...)));
         $twig->addFunction(new TwigFunction('vich_uploader_asset', static fn (mixed $value): string => '/medias/insigne.webp'));
