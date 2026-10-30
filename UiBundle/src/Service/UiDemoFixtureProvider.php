@@ -15,9 +15,7 @@ use c975L\UiBundle\Entity\Font;
 use c975L\UiBundle\Entity\Review;
 use c975L\UiBundle\Enum\ReviewStatus;
 use c975L\UiBundle\Registry\PlaceholderMediaRegistry;
-use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Contracts\Translation\TranslatorInterface;
-use Vich\UploaderBundle\FileAbstraction\ReplacingFile;
 
 /**
  * The reviews a demo site is browsed for, and the one screen of this bundle a dataset has anything to add to.
@@ -48,8 +46,7 @@ class UiDemoFixtureProvider implements DemoFixtureProviderInterface
         private readonly TranslatorInterface $translator,
         private readonly PlaceholderMediaRegistry $placeholderMediaRegistry,
         private readonly FontFilenameParser $fontFilenameParser,
-        #[Autowire(param: 'kernel.project_dir')]
-        private readonly string $projectDir,
+        private readonly DemoFixtureMediaCopier $demoFixtureMediaCopier,
     ) {
     }
 
@@ -86,7 +83,7 @@ class UiDemoFixtureProvider implements DemoFixtureProviderInterface
             return null;
         }
 
-        $file = $this->temporaryCopy($path);
+        $file = $this->demoFixtureMediaCopier->copy($path);
 
         if (null === $file) {
             return null;
@@ -99,20 +96,6 @@ class UiDemoFixtureProvider implements DemoFixtureProviderInterface
             ->setWeight($guess['weight'])
             ->setStyle($guess['style'])
             ->setFile($file);
-    }
-
-    // Vich moves the file it is handed, so the dataset hands it a copy: the site's own showcase file has to survive every reload (same reasoning as SiteDemoFixtureProvider)
-    private function temporaryCopy(string $publicPath): ?ReplacingFile
-    {
-        $source = $this->projectDir . '/public/' . $publicPath;
-
-        if (!is_file($source)) {
-            return null;
-        }
-
-        $target = sys_get_temp_dir() . '/c975l-demo-' . uniqid() . '-' . basename($publicPath);
-
-        return copy($source, $target) ? new ReplacingFile($target, true, true, true) : null;
     }
 
     private function review(ReviewStatus $status, string $key, int $rating, string $postedAt): Review

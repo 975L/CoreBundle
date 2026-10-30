@@ -1355,7 +1355,7 @@ A demo application reads `Registry\DemoFixtureRegistry` and does the rest its ow
 
 Two things worth knowing before writing a provider:
 
-- **Hand VichUploader a temporary copy of a media file, never the bundle's own placeholder.** The upload *moves* the file it is given, and the placeholder would be gone after the first load.
+- **Hand VichUploader a temporary copy of a media file, never the bundle's own placeholder.** The upload *moves* the file it is given, and the placeholder would be gone after the first load. `Service\DemoFixtureMediaCopier::copy('medias/showcase/table-1.webp')` makes that copy from the site's `public/` directory, as the `ReplacingFile` Vich does not silently ignore, null when the file is no longer there, and deletes at the end of the request or command whatever copy a failed load left behind.
 - **Yield only what a demo is meant to be able to take back.** Whatever rides an ORM cascade off an entity leaves with it, its removal listener taking the uploaded files off the disk.
 
 ---

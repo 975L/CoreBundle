@@ -14,6 +14,7 @@ use c975L\UiBundle\Entity\Font;
 use c975L\UiBundle\Entity\Review;
 use c975L\UiBundle\Enum\ReviewStatus;
 use c975L\UiBundle\Registry\PlaceholderMediaRegistry;
+use c975L\UiBundle\Service\DemoFixtureMediaCopier;
 use c975L\UiBundle\Service\FontFilenameParser;
 use c975L\UiBundle\Service\UiDemoFixtureProvider;
 use PHPUnit\Framework\TestCase;
@@ -37,7 +38,7 @@ class UiDemoFixtureProviderTest extends TestCase
         $registry->method('getFont')->willReturn($font);
 
         return iterator_to_array(
-            new UiDemoFixtureProvider($translator, $registry, new FontFilenameParser(), $projectDir)->getDemoFixtures(),
+            new UiDemoFixtureProvider($translator, $registry, new FontFilenameParser(), new DemoFixtureMediaCopier($projectDir))->getDemoFixtures(),
             false,
         );
     }

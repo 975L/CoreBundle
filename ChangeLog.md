@@ -1,5 +1,17 @@
 # ChangeLog
 
+## v1.81.3
+
+One copier for the demo datasets' pictures
+
+### UiBundle
+
+- Added `DemoFixtureMediaCopier`, the placeholder copy every demo dataset hands VichUploader (30/10/2026)
+- `DemoFixtureMediaCopier`: leftover copies swept at the end of the request or command (30/10/2026)
+- `UiDemoFixtureProvider`: the font copied through `DemoFixtureMediaCopier` (30/10/2026)
+- README: `DemoFixtureMediaCopier` among the things worth knowing before writing a demo provider (30/10/2026)
+- Skill `c975l-media`: `DemoFixtureMediaCopier` for a demo dataset's placeholders (30/10/2026)
+
 ## v1.81.2
 
 The consumer mediator named in the terms of sale
