@@ -44,8 +44,8 @@ class CookieConsentBehaviourTest extends JsCase
         return $this->observe(
             sprintf('<div data-controller="cookie-consent"%s></div>', $attributes),
             ['cookie-consent' => 'cookie-consent'],
-            '// Waited on until the banner is not merely there but built: the library generates its buttons lazily, so a dialog element on screen is not yet a dialog anything can be clicked in
-             for (let attempt = 0; attempt < 150 && !(document.querySelector("#cc-main [data-role=all]") && document.querySelector("#cc-main [role=dialog]")?.getAttribute("aria-label")); attempt += 1) {
+            '// Waited on until the banner is not merely there but built: the library generates its buttons lazily, so a banner element on screen is not yet a banner anything can be clicked in
+             for (let attempt = 0; attempt < 150 && !(document.querySelector("#cc-main [data-role=all]") && document.querySelector("#cc-main .cm")?.getAttribute("aria-label")); attempt += 1) {
                  await new Promise((r) => setTimeout(r, 20));
              }
              ' . $probe,
@@ -61,7 +61,7 @@ class CookieConsentBehaviourTest extends JsCase
     public function testTheBannerIsBuiltFromTheValuesTheTemplateWrites(): void
     {
         $banner = $this->banner(
-            'const dialog = document.querySelector("#cc-main [role=dialog]");
+            'const dialog = document.querySelector("#cc-main .cm");
 
              return {
                  named: dialog?.getAttribute("aria-label") ?? null,
@@ -70,7 +70,7 @@ class CookieConsentBehaviourTest extends JsCase
              };'
         );
 
-        $this->assertSame('Gestion des cookies', $banner['named'], 'The dialog takes its accessible name from nowhere, leaving a role="dialog" a screen reader cannot announce.');
+        $this->assertSame('Gestion des cookies', $banner['named'], 'The banner takes its accessible name from nowhere, leaving a region a screen reader cannot announce.');
         $this->assertStringContainsString('Ce site depose des cookies.', $banner['text'], 'The message value never reaches the banner.');
         $this->assertContains('Accepter', $banner['buttons']);
         $this->assertContains('Refuser', $banner['buttons'], 'The reject button is missing, which leaves a banner offering acceptance only - the one shape consent law does not allow.');
@@ -123,7 +123,7 @@ class CookieConsentBehaviourTest extends JsCase
 
              return {
                  granted: window.CookieConsent.acceptedCategory("content"),
-                 visible: !!document.querySelector("#cc-main [role=dialog]")?.offsetParent,
+                 visible: !!document.querySelector("#cc-main .cm")?.offsetParent,
                  stored: document.cookie.includes("cc_cookie"),
              };'
         );
@@ -139,7 +139,7 @@ class CookieConsentBehaviourTest extends JsCase
         $this->assertStringContainsString(
             'Manage cookies',
             (string) $this->banner(
-                'return document.querySelector("#cc-main [role=dialog]")?.getAttribute("aria-label") ?? "";',
+                'return document.querySelector("#cc-main .cm")?.getAttribute("aria-label") ?? "";',
                 ['lang' => 'en', 'label' => 'Manage cookies']
             ),
             'The banner ignores the locale it is handed.'

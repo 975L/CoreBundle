@@ -39,19 +39,21 @@ class CookieConsentContractTest extends JsCase
         $this->assertSame('object', $this->banner('return typeof window.CookieConsent;'));
     }
 
-    // The banner is a role="dialog" with no title in the "bar inline" layout, so its aria-label is the only accessible name it has - without one a screen reader announces an unnamed dialog over the whole page
-    public function testTheBannerIsADialogNamedByTheLabelThisBundlePasses(): void
+    // The banner is a role="region" (a dialog only under "disablePageInteraction", which this bundle leaves off) with no title in the "bar inline" layout, so its aria-label is the only accessible name it has - without one a screen reader announces an unnamed landmark
+    public function testTheBannerIsARegionNamedByTheLabelThisBundlePasses(): void
     {
         $banner = $this->banner(
-            'const dialog = document.querySelector("#cc-main [role=dialog]");
+            'const dialog = document.querySelector("#cc-main .cm");
 
              return {
+                 role: dialog?.getAttribute("role") ?? null,
                  named: dialog?.getAttribute("aria-label") ?? null,
                  layout: dialog?.className ?? "",
                  buttons: [...document.querySelectorAll("#cc-main button")].map((b) => b.textContent.trim()),
              };'
         );
 
+        $this->assertSame('region', $banner['role'], 'The banner is no longer the non-modal region a bar leaving the page usable should be.');
         $this->assertSame('Gestion des cookies', $banner['named'], 'The banner no longer takes its accessible name from the "label" this bundle passes.');
         $this->assertStringContainsString('cm--bar', $banner['layout'], 'The "bar inline" layout this bundle asks for is no longer applied.');
         $this->assertContains('Accepter', $banner['buttons']);
@@ -149,7 +151,7 @@ class CookieConsentContractTest extends JsCase
         // Waited on until the banner is not merely there but built: the library generates its buttons lazily
         $start = sprintf(
             'await CookieConsent.run(%s);
-             for (let attempt = 0; attempt < 150 && !(document.querySelector("#cc-main [data-role=all]") && document.querySelector("#cc-main [role=dialog]")?.getAttribute("aria-label")); attempt += 1) {
+             for (let attempt = 0; attempt < 150 && !(document.querySelector("#cc-main [data-role=all]") && document.querySelector("#cc-main .cm")?.getAttribute("aria-label")); attempt += 1) {
                  await new Promise((r) => setTimeout(r, 20));
              }',
             self::CONFIG

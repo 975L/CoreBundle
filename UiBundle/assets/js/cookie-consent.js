@@ -29,7 +29,7 @@ export default class extends Controller {
                 return;
             }
 
-            // "label" is the dialog's aria-label - without it (or a title, which the "bar inline" layout has no room for) the role="dialog" has no accessible name at all
+            // "label" is the banner's aria-label - without it (or a title, which the "bar inline" layout has no room for) the role="region" has no accessible name at all
             const consentModal = {
                 label: this.labelValue,
                 description: this.messageValue,

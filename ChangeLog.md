@@ -1,5 +1,15 @@
 # ChangeLog
 
+## v1.82.1
+
+Updated vanilla-cookieconsent to 3.2.1
+
+### UiBundle
+
+- vanilla-cookieconsent updated from 3.1.0 to 3.2.1 (30/10/2026)
+- Cookie banner exposed as `role="region"` instead of `role="dialog"` (30/10/2026)
+- `CookieConsentContractTest` and `CookieConsentBehaviourTest` find the banner by its `.cm` class (30/10/2026)
+
 ## v1.82
 
 Changed urls submitted to IndexNow on each sitemaps run
