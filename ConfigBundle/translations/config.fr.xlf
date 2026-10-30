@@ -368,7 +368,7 @@
             </trans-unit>
             <trans-unit id="vZ9.bHh">
                 <source>description.guided_step_config_seo_sitemaps</source>
-                <target>Refait chaque plan du site et leur index, ce que la nuit fait de toute façon : utile juste après avoir publié.</target>
+                <target>Refait chaque plan du site et leur index, ce que la nuit fait de toute façon, et signale les pages modifiées à IndexNow (Bing…) : utile juste après avoir publié.</target>
             </trans-unit>
             <trans-unit id="3BtYhFM">
                 <source>description.guided_step_config_settings_alerts</source>
@@ -497,6 +497,14 @@
             <trans-unit id="duvD5dn">
                 <source>flash.config_cache_cleared</source>
                 <target>Cache de configuration vidé</target>
+            </trans-unit>
+            <trans-unit id="BZlFFu5">
+                <source>flash.config_indexnow_error</source>
+                <target>Sitemaps créées, mais IndexNow n'a pas accepté les pages modifiées : %error% Elles seront renvoyées au prochain passage.</target>
+            </trans-unit>
+            <trans-unit id="J_JSPbh">
+                <source>flash.config_indexnow_submitted</source>
+                <target>%count% page(s) nouvelle(s) ou modifiée(s) signalée(s) à IndexNow (Bing, Yandex…)</target>
             </trans-unit>
             <trans-unit id="n9r4S2p">
                 <source>flash.config_prune_deleted</source>

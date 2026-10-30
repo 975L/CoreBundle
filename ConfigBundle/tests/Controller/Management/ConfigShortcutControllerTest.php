@@ -13,6 +13,7 @@ namespace c975L\ConfigBundle\Tests\Controller\Management;
 use c975L\ConfigBundle\Command\ExportTablesCommand;
 use c975L\ConfigBundle\Controller\Management\ConfigShortcutController;
 use c975L\ConfigBundle\Management\AiCrawlerListUpdater;
+use c975L\ConfigBundle\Management\IndexNowNotifier;
 use c975L\ConfigBundle\Management\SeoFilesWriter;
 use c975L\ConfigBundle\Management\SitemapWriter;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
@@ -44,6 +45,7 @@ class ConfigShortcutControllerTest extends TestCase
         ?ExportTablesCommand $exportTablesCommand = null,
         ?FormRepository $formRepository = null,
         ?EntityManagerInterface $entityManager = null,
+        ?IndexNowNotifier $indexNowNotifier = null,
     ): ConfigShortcutController {
         $translator = $this->createStub(TranslatorInterface::class);
         $translator->method('trans')->willReturnArgument(0);
@@ -59,6 +61,7 @@ class ConfigShortcutControllerTest extends TestCase
             $formRepository ?? $this->createStub(FormRepository::class),
             $entityManager ?? $this->createStub(EntityManagerInterface::class),
             $translator,
+            $indexNowNotifier ?? $this->createStub(IndexNowNotifier::class),
         );
     }
 
@@ -220,6 +223,52 @@ class ConfigShortcutControllerTest extends TestCase
 
         $this->assertSame(['flash.config_sitemaps_created'], $session->getFlashBag()->get('success'));
         $this->assertSame('/management', $response->getTargetUrl());
+    }
+
+    // Pressed right after publishing, the shortcut is what gets the changed pages to IndexNow today
+    public function testCreateSitemapsSubmitsTheChangedUrlsToIndexNow(): void
+    {
+        $sitemapWriter = $this->createStub(SitemapWriter::class);
+        $sitemapWriter->method('write')->willReturn(['site']);
+        $indexNowNotifier = $this->createMock(IndexNowNotifier::class);
+        $indexNowNotifier->expects($this->once())->method('notify')->willReturn(3);
+
+        $controller = $this->createController($this->createStub(ConfigServiceInterface::class), null, null, $sitemapWriter, indexNowNotifier: $indexNowNotifier);
+        [$requestStack, $session] = $this->createRequestStackWithSession();
+        $controller->setContainer($this->createContainer([
+            'security.authorization_checker' => $this->createAuthorizationChecker(true),
+            'security.csrf.token_manager' => $this->createCsrfTokenManager(true),
+            'router' => $this->createRouter(),
+            'request_stack' => $requestStack,
+        ]));
+
+        $controller->createSitemaps(new Request([], ['_token' => 'valid-token']));
+
+        $this->assertSame(['flash.config_sitemaps_created'], $session->getFlashBag()->get('success'));
+        $this->assertSame(['flash.config_indexnow_submitted'], $session->getFlashBag()->get('info'));
+    }
+
+    // A refusal is a warning next to the success, the sitemaps themselves being written
+    public function testCreateSitemapsWarnsWhenIndexNowRefuses(): void
+    {
+        $sitemapWriter = $this->createStub(SitemapWriter::class);
+        $sitemapWriter->method('write')->willReturn(['site']);
+        $indexNowNotifier = $this->createStub(IndexNowNotifier::class);
+        $indexNowNotifier->method('notify')->willThrowException(new \RuntimeException('IndexNow answered 403.'));
+
+        $controller = $this->createController($this->createStub(ConfigServiceInterface::class), null, null, $sitemapWriter, indexNowNotifier: $indexNowNotifier);
+        [$requestStack, $session] = $this->createRequestStackWithSession();
+        $controller->setContainer($this->createContainer([
+            'security.authorization_checker' => $this->createAuthorizationChecker(true),
+            'security.csrf.token_manager' => $this->createCsrfTokenManager(true),
+            'router' => $this->createRouter(),
+            'request_stack' => $requestStack,
+        ]));
+
+        $controller->createSitemaps(new Request([], ['_token' => 'valid-token']));
+
+        $this->assertSame(['flash.config_sitemaps_created'], $session->getFlashBag()->get('success'));
+        $this->assertSame(['flash.config_indexnow_error'], $session->getFlashBag()->get('warning'));
     }
 
     public function testCreateSitemapsDoesNothingWhenCsrfTokenIsInvalid(): void

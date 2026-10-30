@@ -1384,6 +1384,12 @@ Two more keys are accepted and ignored by the sitemap itself, `title` and `descr
 
 Point Google Search Console at `sitemap-index.xml` only, never at the sub-sitemaps — installing or removing a bundle then changes what's crawled with nothing to update on Google's side. Both templates are overridable: `@c975LConfig/sitemaps/sitemap.xml.twig` (a sub-sitemap, gets `urls`) and `@c975LConfig/sitemaps/sitemap-index.xml.twig` (the index, gets `sitemaps`).
 
+### IndexNow
+
+Each run of `c975l:sitemaps:create` — and of the "Create sitemaps" dashboard shortcut, the one to press right after publishing — also submits to [IndexNow](https://www.indexnow.org) the urls that are new, changed or gone since the last accepted submission, so Bing, Yandex, Seznam and Naver recrawl them within minutes instead of at their next pass on the sitemap. Google doesn't use IndexNow, the sitemap stays its only signal. Nothing is asked of a provider: `IndexNowNotifier` is handed the urls `SitemapWriter` just declared, and reads a change off the `lastmod` they carry, compared to a snapshot of the previous run kept in `var/indexnow-snapshot.json`. A url declaring no `lastmod` only goes when it is new — the sitemap dates it from the day it runs, which would resubmit it every night. The first run, with no snapshot yet, submits every url.
+
+It needs nothing to configure. The key is derived from the application secret and served as `public/indexnow-key.txt` (added to the `.gitignore` by `c975l:scaffold:install`), declared to IndexNow through `keyLocation`. It only runs in the `prod` environment, a dev copy sharing the production `site-url`; `seo-indexnow` (**on by default**, `restricted`) turns it off, and `seo-robots-private` keeps it off — in both cases the key file is removed. A refusal or an unreachable endpoint is a warning, never a failure of the command: the snapshot is left as it was, so the same urls go again on the next run. The submissions received show up under "IndexNow" in Bing Webmaster Tools.
+
 ## robots.txt, humans.txt and llms.txt
 
 `c975l:seo:files:create` writes the three of them into `public/`, from the `seo` config group and from the urls the sitemap providers already declare — the "Create the SEO files" dashboard shortcut runs the same `SeoFilesWriter`. Schedule it right after `c975l:sitemaps:create`: `robots.txt` only declares the sitemap index once that command has really written one, a `Sitemap:` line pointing at a 404 being a Search Console error.

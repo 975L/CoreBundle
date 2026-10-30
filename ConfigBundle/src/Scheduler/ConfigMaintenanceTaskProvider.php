@@ -16,7 +16,7 @@ class ConfigMaintenanceTaskProvider implements MaintenanceTaskProviderInterface
     public function getMaintenanceTasks(): array
     {
         return [
-            // Sitemaps: nightly, once the day's content is in
+            // Sitemaps: nightly, once the day's content is in - the urls that changed going to IndexNow in the same run
             new MaintenanceTask('# #(0-2) * * *', 'c975l:sitemaps:create'),
             // robots.txt/humans.txt/llms.txt, on hours that never overlap the sitemaps': robots.txt only declares the sitemap index once that run has written one, and llms.txt lists the same urls - overlapping ranges would let a site's hash draw the two in the wrong order and ship a robots.txt without its Sitemap: line for the day
             new MaintenanceTask('# #(3-5) * * *', 'c975l:seo:files:create'),

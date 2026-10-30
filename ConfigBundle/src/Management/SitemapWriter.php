@@ -30,6 +30,9 @@ class SitemapWriter
 
     private readonly Filesystem $filesystem;
 
+    // loc => lastmod as the providers declared it (null when they didn't), filled by write() for IndexNowNotifier
+    private array $declaredUrls = [];
+
     public function __construct(
         private readonly ConfigServiceInterface $configService,
         private readonly Environment $environment,
@@ -48,6 +51,7 @@ class SitemapWriter
         $names = [];
         $lastmods = [];
         $declaredNames = [];
+        $this->declaredUrls = [];
 
         // A site out of search engines (see SeoFilesWriter) declares no url at all, so every file a previous run left goes the way an empty provider's does
         $isPrivate = (bool) $this->configService->get('seo-robots-private');
@@ -71,6 +75,10 @@ class SitemapWriter
                 continue;
             }
 
+            foreach ($urls as $url) {
+                $this->declaredUrls[$url['loc']] = $url['lastmod'] ?? null;
+            }
+
             $normalizedUrls = $this->normalizeUrls($urls);
             $sitemapContent = $this->environment->render('@c975LConfig/sitemaps/sitemap.xml.twig', ['urls' => $normalizedUrls]);
             $this->filesystem->dumpFile($sitemapFile, $sitemapContent);
@@ -83,6 +91,12 @@ class SitemapWriter
         $this->writeIndex($names, $lastmods);
 
         return $names;
+    }
+
+    // The urls the last write() declared, read before normalizeUrls() defaults a missing lastmod to today - so IndexNowNotifier can tell a page that changed from one that only declares no date, without asking every provider for its urls a second time
+    public function getDeclaredUrls(): array
+    {
+        return $this->declaredUrls;
     }
 
     // Creates the index declaring the sub-sitemaps just written, each dated by the most recent url it holds. $lastmods is keyed by sitemap name and stays optional, an index without dates being valid on its own - it only costs the crawler the download it could have skipped

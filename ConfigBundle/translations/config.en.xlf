@@ -368,7 +368,7 @@
             </trans-unit>
             <trans-unit id="vZ9.bHh">
                 <source>description.guided_step_config_seo_sitemaps</source>
-                <target>Rebuilds every sitemap and their index, which the night does anyway: useful right after publishing.</target>
+                <target>Rebuilds every sitemap and their index, which the night does anyway, and submits the changed pages to IndexNow (Bing…): useful right after publishing.</target>
             </trans-unit>
             <trans-unit id="3BtYhFM">
                 <source>description.guided_step_config_settings_alerts</source>
@@ -497,6 +497,14 @@
             <trans-unit id="duvD5dn">
                 <source>flash.config_cache_cleared</source>
                 <target>Config cache cleared</target>
+            </trans-unit>
+            <trans-unit id="BZlFFu5">
+                <source>flash.config_indexnow_error</source>
+                <target>Sitemaps created, but IndexNow did not accept the changed pages: %error% They will be submitted again on the next run.</target>
+            </trans-unit>
+            <trans-unit id="J_JSPbh">
+                <source>flash.config_indexnow_submitted</source>
+                <target>%count% new or changed page(s) submitted to IndexNow (Bing, Yandex…)</target>
             </trans-unit>
             <trans-unit id="n9r4S2p">
                 <source>flash.config_prune_deleted</source>

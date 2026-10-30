@@ -238,6 +238,31 @@ class SitemapWriterTest extends TestCase
         $this->assertSame(0.5, $url['priority']);
     }
 
+    // What IndexNowNotifier is handed: the lastmod as declared, null where SitemapWriter would have dated the url from today - so an undated url isn't taken for a changed one every night
+    public function testGetDeclaredUrlsKeepsTheLastmodAsTheProviderDeclaredIt(): void
+    {
+        $writer = $this->createWriter([
+            $this->createRawProvider('site', [['loc' => 'https://example.com/'], ['loc' => 'https://example.com/pages/about', 'lastmod' => '2026-10-01']]),
+            $this->createProvider('book', ['https://example.com/livre/tome-1']),
+        ]);
+        $writer->write();
+
+        $this->assertSame([
+            'https://example.com/' => null,
+            'https://example.com/pages/about' => '2026-10-01',
+            'https://example.com/livre/tome-1' => '2026-01-15',
+        ], $writer->getDeclaredUrls());
+    }
+
+    // A private site declares no url, so IndexNow is handed nothing to announce
+    public function testGetDeclaredUrlsIsEmptyOnAPrivateSite(): void
+    {
+        $writer = $this->createWriter([$this->createProvider('site', ['https://example.com/pages/about'])], 'https://example.com', true);
+        $writer->write();
+
+        $this->assertSame([], $writer->getDeclaredUrls());
+    }
+
     // A single-language provider declares no "alternates" at all, and the template then iterates over nothing
     public function testWriteDefaultsAlternatesToNoneWhenTheProviderDeclaresAny(): void
     {

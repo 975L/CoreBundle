@@ -1,5 +1,21 @@
 # ChangeLog
 
+## v1.82
+
+Changed urls submitted to IndexNow on each sitemaps run
+
+### ConfigBundle
+
+- Added `IndexNowNotifier`, submitting the urls new, changed or gone since the last accepted run (30/10/2026)
+- Added `IndexNowClient`, the IndexNow endpoint call (30/10/2026)
+- Added `seo-indexnow` setting, on by default, fr/en/es (30/10/2026)
+- `SitemapWriter`: `getDeclaredUrls()`, the urls and lastmod as the providers declared them (30/10/2026)
+- `c975l:sitemaps:create`: changed urls submitted to IndexNow, a refusal being a warning (30/10/2026)
+- "Create sitemaps" shortcut: changed urls submitted to IndexNow, with a flash message (30/10/2026)
+- `ScaffoldInstaller`: `public/indexnow-key.txt` added to the `.gitignore` rules (30/10/2026)
+- README: IndexNow section under the sitemaps (30/10/2026)
+- Skill `c975l-operations`: IndexNow and the `seo-indexnow` setting (30/10/2026)
+
 ## v1.81.3
 
 One copier for the demo datasets' pictures

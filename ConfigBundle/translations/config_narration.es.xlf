@@ -244,7 +244,7 @@
             </trans-unit>
             <trans-unit id="vNsJDqH">
                 <source>narration.guided_step_config_seo_sitemaps</source>
-                <target>Haga clic en el mosaico de los mapas del sitio: cada uno se rehace con su índice, sin esperar a la noche. Útil justo después de publicar.</target>
+                <target>Haga clic en el mosaico de los mapas del sitio: cada uno se rehace con su índice, y las páginas modificadas se envían a IndexNow, sin esperar a la noche. Útil justo después de publicar.</target>
             </trans-unit>
             <trans-unit id="TnV5eu0">
                 <source>narration.guided_step_config_settings_alerts</source>

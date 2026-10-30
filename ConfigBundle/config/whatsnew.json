@@ -1,5 +1,15 @@
 [
     {
+        "date": "2026-10-30",
+        "description": [
+            {
+                "en": "Bing and the other search engines taking part in IndexNow are now told about your new, changed or removed pages each time the sitemaps are created, so they show up there within minutes rather than days.",
+                "fr": "Bing et les autres moteurs participant à IndexNow sont désormais prévenus de vos pages nouvelles, modifiées ou supprimées à chaque création des plans du site, pour qu'elles y apparaissent en quelques minutes plutôt qu'en quelques jours.",
+                "es": "Bing y los demás buscadores que participan en IndexNow reciben ahora aviso de sus páginas nuevas, modificadas o eliminadas cada vez que se crean los mapas del sitio, para que aparezcan en ellos en minutos en lugar de días."
+            }
+        ]
+    },
+    {
         "date": "2026-10-25",
         "description": [
             {

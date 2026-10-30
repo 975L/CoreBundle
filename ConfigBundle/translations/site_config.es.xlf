@@ -78,6 +78,10 @@
                 <source>description.seo_humans_thanks</source>
                 <target>El bloque «THANKS» de humans.txt, un agradecimiento por línea (frameworks, autores, colaboradores).</target>
             </trans-unit>
+            <trans-unit id="aX4t8ei">
+                <source>description.seo_indexnow</source>
+                <target>Envía a IndexNow (Bing, Yandex, Seznam, Naver) las páginas nuevas, modificadas o eliminadas cada vez que se crean los sitemaps, para que se rastreen en minutos y no en la próxima visita al sitemap. Activado por defecto, solo en producción, nunca en un sitio fuera de los buscadores. Google no usa IndexNow.</target>
+            </trans-unit>
             <trans-unit id="aqkZyv.">
                 <source>description.seo_llms_summary</source>
                 <target>Resumen del sitio en una frase, usado como introducción citada de llms.txt. Si se deja vacío, y salvo que algún bundle declare urls con título, no se escribe ningún llms.txt.</target>
@@ -381,6 +385,10 @@
             <trans-unit id="KH8v7YP">
                 <source>label.seo_humans_thanks</source>
                 <target>humans.txt - agradecimientos</target>
+            </trans-unit>
+            <trans-unit id="CR7fmG_">
+                <source>label.seo_indexnow</source>
+                <target>IndexNow - enviar las páginas modificadas</target>
             </trans-unit>
             <trans-unit id="5OA6wWh">
                 <source>label.seo_llms_summary</source>

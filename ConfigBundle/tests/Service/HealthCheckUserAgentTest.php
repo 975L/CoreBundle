@@ -17,9 +17,10 @@ use PHPUnit\Framework\TestCase;
 // Swept from the source rather than exercised through each client, so a probe added tomorrow is covered the day it is written instead of the day someone remembers to test it. The polarity is deliberate: every caller is held to the contract unless it is named below, an unknown new client failing the test rather than slipping past it
 class HealthCheckUserAgentTest extends TestCase
 {
-    // The two callers that talk to a third party rather than probing a site: announcing ourselves as a health checker to an OAuth provider or to a crawler-list host would be a lie, and neither answers to our own rate limiter
+    // The callers that talk to a third party rather than probing a site: announcing ourselves as a health checker to an OAuth provider, a crawler-list host or IndexNow would be a lie, and none answers to our own rate limiter
     private const array NOT_PROBES = [
         'AiCrawlerListClient.php',
+        'IndexNowClient.php',
         'OAuthLoginClient.php',
     ];
 

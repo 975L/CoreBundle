@@ -244,7 +244,7 @@
             </trans-unit>
             <trans-unit id="vNsJDqH">
                 <source>narration.guided_step_config_seo_sitemaps</source>
-                <target>Click the sitemaps tile: each one is rebuilt with its index, without waiting for the night. Useful right after publishing.</target>
+                <target>Click the sitemaps tile: each one is rebuilt with its index, and the changed pages are submitted to IndexNow, without waiting for the night. Useful right after publishing.</target>
             </trans-unit>
             <trans-unit id="TnV5eu0">
                 <source>narration.guided_step_config_settings_alerts</source>

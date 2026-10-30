@@ -78,6 +78,10 @@
                 <source>description.seo_humans_thanks</source>
                 <target>The "THANKS" block of humans.txt, one credit per line (frameworks, authors, contributors).</target>
             </trans-unit>
+            <trans-unit id="aX4t8ei">
+                <source>description.seo_indexnow</source>
+                <target>Submits new, changed and removed pages to IndexNow (Bing, Yandex, Seznam, Naver) each time the sitemaps are created, so they are recrawled within minutes rather than on the next pass on the sitemap. On by default, in production only, never on a site kept out of search engines. Google does not use IndexNow.</target>
+            </trans-unit>
             <trans-unit id="aqkZyv.">
                 <source>description.seo_llms_summary</source>
                 <target>One-sentence summary of the site, used as the quoted introduction of llms.txt. Left empty, and unless a bundle declares titled urls, no llms.txt is written at all.</target>
@@ -381,6 +385,10 @@
             <trans-unit id="KH8v7YP">
                 <source>label.seo_humans_thanks</source>
                 <target>humans.txt - thanks</target>
+            </trans-unit>
+            <trans-unit id="CR7fmG_">
+                <source>label.seo_indexnow</source>
+                <target>IndexNow - submit changed pages</target>
             </trans-unit>
             <trans-unit id="5OA6wWh">
                 <source>label.seo_llms_summary</source>

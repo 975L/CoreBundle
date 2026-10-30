@@ -244,7 +244,7 @@
             </trans-unit>
             <trans-unit id="vNsJDqH">
                 <source>narration.guided_step_config_seo_sitemaps</source>
-                <target>Cliquez sur la tuile des plans du site : chacun est refait avec son index, sans attendre la nuit. Utile juste après avoir publié.</target>
+                <target>Cliquez sur la tuile des plans du site : chacun est refait avec son index, et les pages modifiées sont signalées à IndexNow, sans attendre la nuit. Utile juste après avoir publié.</target>
             </trans-unit>
             <trans-unit id="TnV5eu0">
                 <source>narration.guided_step_config_settings_alerts</source>

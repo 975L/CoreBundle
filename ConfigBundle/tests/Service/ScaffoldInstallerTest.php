@@ -325,7 +325,7 @@ class ScaffoldInstallerTest extends TestCase
         $installer->install();
 
         $gitignore = file_get_contents($this->projectDir . '/.gitignore');
-        foreach (['public/robots.txt', 'public/humans.txt', 'public/llms.txt'] as $rule) {
+        foreach (['public/robots.txt', 'public/humans.txt', 'public/llms.txt', 'public/indexnow-key.txt'] as $rule) {
             $this->assertStringContainsString($rule, $gitignore);
         }
     }

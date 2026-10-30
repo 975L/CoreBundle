@@ -12,6 +12,7 @@ namespace c975L\ConfigBundle\Controller\Management;
 
 use c975L\ConfigBundle\Command\ExportTablesCommand;
 use c975L\ConfigBundle\Management\AiCrawlerListUpdater;
+use c975L\ConfigBundle\Management\IndexNowNotifier;
 use c975L\ConfigBundle\Management\SeoFilesWriter;
 use c975L\ConfigBundle\Management\SitemapWriter;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
@@ -51,6 +52,7 @@ class ConfigShortcutController extends AbstractController
         private readonly FormRepository $formRepository,
         private readonly EntityManagerInterface $entityManager,
         private readonly TranslatorInterface $translator,
+        private readonly IndexNowNotifier $indexNowNotifier,
     ) {
     }
 
@@ -180,6 +182,7 @@ class ConfigShortcutController extends AbstractController
             try {
                 $this->sitemapWriter->write();
                 $this->addFlash('success', $this->translator->trans('flash.config_sitemaps_created', [], 'config'));
+                $this->notifyIndexNow();
             } catch (IOExceptionInterface | \LogicException $e) {
                 $this->addFlash('error', $this->translator->trans('flash.config_sitemaps_error', ['%error%' => $e->getMessage()], 'config'));
             }
@@ -238,5 +241,21 @@ class ConfigShortcutController extends AbstractController
         }
 
         return $this->redirectToRoute('management');
+    }
+
+    // Submits the urls the sitemaps just written changed to IndexNow, the reason to press this shortcut right after publishing being to get them seen today. A refusal is a warning, the sitemaps themselves being written
+    private function notifyIndexNow(): void
+    {
+        try {
+            $submitted = $this->indexNowNotifier->notify($this->sitemapWriter->getDeclaredUrls());
+        } catch (\RuntimeException | \JsonException $e) {
+            $this->addFlash('warning', $this->translator->trans('flash.config_indexnow_error', ['%error%' => $e->getMessage()], 'config'));
+
+            return;
+        }
+
+        if (null !== $submitted && $submitted > 0) {
+            $this->addFlash('info', $this->translator->trans('flash.config_indexnow_submitted', ['%count%' => $submitted], 'config'));
+        }
     }
 }
