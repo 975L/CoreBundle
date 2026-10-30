@@ -1,4 +1,4 @@
-{% set updateDate = '2026-08-22' %}
+{% set updateDate = '2026-10-30' %}
 
 <div class="legal">
 	<p class="text-center">
@@ -49,10 +49,13 @@
 	{# The credits a site sells, when PurchaseCreditsBundle is installed: nothing otherwise #}
 	{% include '@c975LPurchaseCredits/legal/terms-of-sales.en.html.twig' ignore missing %}
 
+	{# The purchases made inside a mobile app, when PaymentBundle sells there: nothing otherwise #}
+	{% include '@c975LPayment/legal/terms-of-sales.en.html.twig' ignore missing %}
+
 	<section data-legal-id="delivery">
 		<h2>Delivery</h2>
 		<div>
-			Physical items are shipped to mainland France only. Digital items are made available for download as soon as payment is validated, and services are provided under the conditions stated in their description.
+			Physical items are shipped to mainland France only. Digital items are made available as soon as payment is validated, for download or on the user's account, and services are provided under the conditions stated in their description.
 			<br>
 			Shipping costs, the purchase amount above which they are waived, if any, and the dispatch time are shown in the shop and repeated before the order is finally validated. Digital items and services incur no shipping costs.
 			<br>
@@ -76,7 +79,7 @@
 			<br>
 			By validating a service whose immediate performance they request, the private user agrees that we begin it before the end of the period and remains liable for the amount corresponding to what has been provided up to their withdrawal.
 			<br>
-			Pursuant to article L 221-28 of the French Consumer Code, the withdrawal right cannot be exercised for digital content supplied on an intangible medium whose performance has begun after the user's prior express consent and express waiver of that right, which is the case for digital items made available for download as soon as payment is validated. Nor can it be exercised for goods made to the user's specifications or clearly personalised, or for services fully performed before the end of the period with the user's prior express consent.
+			Pursuant to article L 221-28 of the French Consumer Code, the withdrawal right cannot be exercised for digital content supplied on an intangible medium whose performance has begun after the user's prior express consent and express waiver of that right, which is the case for digital items made available as soon as payment is validated, for download or on the user's account. Nor can it be exercised for goods made to the user's specifications or clearly personalised, or for services fully performed before the end of the period with the user's prior express consent.
 			<br>
 			The withdrawal procedure is as follows:
 		</div>

@@ -1,5 +1,19 @@
 # ChangeLog
 
+## v1.81.1
+
+Terms of sale: digital items delivered on an account, and the in-app purchases section
+
+### UiBundle
+
+- Terms of sale model: digital items delivered for download or on the user's account (30/10/2026)
+- Terms of sale model: includes PaymentBundle's in-app purchases section when it ships one (30/10/2026)
+- README: satellite sections of the terms of sale (30/10/2026)
+
+### ConfigBundle
+
+- Guided projects: CardBundle order block 11000 (30/10/2026)
+
 ## v1.81
 
 Domain verification meta tags read from a setting

@@ -1,4 +1,4 @@
-{% set updateDate = '2026-08-22' %}
+{% set updateDate = '2026-10-30' %}
 
 <div class="legal">
 	<p class="text-center">
@@ -49,10 +49,13 @@
 	{# The credits a site sells, when PurchaseCreditsBundle is installed: nothing otherwise #}
 	{% include '@c975LPurchaseCredits/legal/terms-of-sales.fr.html.twig' ignore missing %}
 
+	{# The purchases made inside a mobile app, when PaymentBundle sells there: nothing otherwise #}
+	{% include '@c975LPayment/legal/terms-of-sales.fr.html.twig' ignore missing %}
+
 	<section data-legal-id="delivery">
 		<h2>Livraison</h2>
 		<div>
-			Les articles physiques sont expédiés en France métropolitaine uniquement. Les articles numériques sont mis à disposition en téléchargement dès la validation du paiement et les services sont fournis selon les modalités indiquées sur leur descriptif.
+			Les articles physiques sont expédiés en France métropolitaine uniquement. Les articles numériques sont mis à disposition dès la validation du paiement, en téléchargement ou sur le compte de l'utilisateur/trice et les services sont fournis selon les modalités indiquées sur leur descriptif.
 			<br>
 			Les frais de port, le montant d'achat éventuel à partir duquel ils sont offerts et le délai d'expédition sont indiqués dans la boutique et rappelés avant la validation définitive de la commande. Les articles numériques et les services ne donnent lieu à aucun frais de port.
 			<br>
@@ -76,7 +79,7 @@
 			<br>
 			En validant une prestation de service dont il/elle demande l'exécution immédiate, l'utilisateur/trice particulier/e accepte que nous la commencions avant la fin du délai et reste redevable du montant correspondant à ce qui lui a été fourni jusqu'à sa rétractation.
 			<br>
-			En application de l'article L 221-28 du code de la consommation, le droit de rétractation ne peut pas être exercé pour un contenu numérique fourni sans support matériel dont l'exécution a commencé après accord préalable exprès de l'utilisateur/trice et renoncement exprès à son droit de rétractation, ce qui est le cas des articles numériques mis à disposition en téléchargement dès la validation du paiement. Il ne peut pas non plus être exercé pour les biens confectionnés selon les spécifications de l'utilisateur/trice ou nettement personnalisés, ni pour les services pleinement exécutés avant la fin du délai avec son accord préalable exprès.
+			En application de l'article L 221-28 du code de la consommation, le droit de rétractation ne peut pas être exercé pour un contenu numérique fourni sans support matériel dont l'exécution a commencé après accord préalable exprès de l'utilisateur/trice et renoncement exprès à son droit de rétractation, ce qui est le cas des articles numériques mis à disposition dès la validation du paiement, en téléchargement ou sur le compte de l'utilisateur/trice. Il ne peut pas non plus être exercé pour les biens confectionnés selon les spécifications de l'utilisateur/trice ou nettement personnalisés, ni pour les services pleinement exécutés avant la fin du délai avec son accord préalable exprès.
 			<br>
 			La procédure de rétractation est la suivante :
 		</div>

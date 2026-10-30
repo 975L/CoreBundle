@@ -1,4 +1,4 @@
-{% set updateDate = '2026-08-22' %}
+{% set updateDate = '2026-10-30' %}
 
 <div class="legal">
 	<p class="text-center">
@@ -49,10 +49,13 @@
 	{# The credits a site sells, when PurchaseCreditsBundle is installed: nothing otherwise #}
 	{% include '@c975LPurchaseCredits/legal/terms-of-sales.es.html.twig' ignore missing %}
 
+	{# The purchases made inside a mobile app, when PaymentBundle sells there: nothing otherwise #}
+	{% include '@c975LPayment/legal/terms-of-sales.es.html.twig' ignore missing %}
+
 	<section data-legal-id="delivery">
 		<h2>Entrega</h2>
 		<div>
-			Los artículos físicos se envían únicamente a la Francia metropolitana. Los artículos digitales se ponen a disposición para su descarga en cuanto se valida el pago y los servicios se prestan según las modalidades indicadas en su descripción.
+			Los artículos físicos se envían únicamente a la Francia metropolitana. Los artículos digitales se ponen a disposición en cuanto se valida el pago, para su descarga o en la cuenta del/de la usuario/a y los servicios se prestan según las modalidades indicadas en su descripción.
 			<br>
 			Los gastos de envío, el importe de compra a partir del cual se ofrecen gratuitamente, en su caso, y el plazo de expedición se indican en la tienda y se recuerdan antes de la validación definitiva del pedido. Los artículos digitales y los servicios no generan gastos de envío.
 			<br>
@@ -76,7 +79,7 @@
 			<br>
 			Al validar una prestación de servicios cuya ejecución inmediata solicita, el/la usuario/a particular acepta que la empecemos antes del fin del plazo y sigue debiendo el importe correspondiente a lo que se le haya prestado hasta su desistimiento.
 			<br>
-			En aplicación del artículo L 221-28 del código de consumo, el derecho de desistimiento no puede ejercerse sobre un contenido digital suministrado sin soporte material cuya ejecución haya comenzado tras el acuerdo previo expreso del/de la usuario/a y su renuncia expresa a ese derecho, lo que ocurre con los artículos digitales puestos a disposición para su descarga en cuanto se valida el pago. Tampoco puede ejercerse sobre los bienes confeccionados según las especificaciones del/de la usuario/a o claramente personalizados, ni sobre los servicios ejecutados por completo antes del fin del plazo con su acuerdo previo expreso.
+			En aplicación del artículo L 221-28 del código de consumo, el derecho de desistimiento no puede ejercerse sobre un contenido digital suministrado sin soporte material cuya ejecución haya comenzado tras el acuerdo previo expreso del/de la usuario/a y su renuncia expresa a ese derecho, lo que ocurre con los artículos digitales puestos a disposición en cuanto se valida el pago, para su descarga o en la cuenta del/de la usuario/a. Tampoco puede ejercerse sobre los bienes confeccionados según las especificaciones del/de la usuario/a o claramente personalizados, ni sobre los servicios ejecutados por completo antes del fin del plazo con su acuerdo previo expreso.
 			<br>
 			El procedimiento de desistimiento es el siguiente:
 		</div>

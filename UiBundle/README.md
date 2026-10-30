@@ -1946,7 +1946,8 @@ the locale a filename suffix:
 
 They pull the site's own data from ConfigBundle as they render, and a few sections only appear once the
 matching config value is filled in — `site-owner` adds the "Owner" one, and the Matomo opt-out link in the
-cookies policy needs `site-matomo-url`. Anything the site has to say beyond the model is written as an **added
+cookies policy needs `site-matomo-url`. The terms of sales also include PurchaseCreditsBundle's credits section and
+PaymentBundle's in-app purchases section, each only when that bundle is installed and ships it. Anything the site has to say beyond the model is written as an **added
 section**, on the legal models screen where the rest of the document is written: it belongs to the model rather
 than to the site, and it is translated, which a config entry is not.
 
