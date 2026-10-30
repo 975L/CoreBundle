@@ -138,6 +138,10 @@
                 <source>description.theme_mode</source>
                 <target>Mode d'affichage appliqué à tout le site pour tous les visiteurs</target>
             </trans-unit>
+            <trans-unit id="c76HJBu">
+                <source>description.ui_domain_verifications</source>
+                <target>Balises de propriété demandées par des services tiers (Pinterest, Meta, Bing…), au format nom=valeur, plusieurs séparées par des virgules, par exemple p:domain_verify=abc123. Chacune est publiée en balise meta sur toutes les pages. Google se vérifie plutôt par un enregistrement DNS, qui couvre tout le domaine</target>
+            </trans-unit>
             <trans-unit id="5gWmNrB">
                 <source>description.ui_enable_reviews</source>
                 <target>Permet aux visiteurs de déposer un avis et affiche les avis publiés. Le menu de modération reste disponible dans tous les cas. Laisser à false tant qu'aucun avis n'est attendu.</target>
@@ -353,6 +357,10 @@
             <trans-unit id="71mpRDI">
                 <source>label.ui_ai_assistant_writer_provider</source>
                 <target>Donovan (Writer) - Fournisseur LLM</target>
+            </trans-unit>
+            <trans-unit id="XUOOvjg">
+                <source>label.ui_domain_verifications</source>
+                <target>Vérifications de domaine</target>
             </trans-unit>
             <trans-unit id="xJvR5pw">
                 <source>label.ui_enable_reviews</source>

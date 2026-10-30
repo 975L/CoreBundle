@@ -3112,6 +3112,10 @@ Renders the tracking snippet of a self-hosted [Matomo](https://matomo.org/) inst
 
 **Deliberately outside the cookie banner.** It is meant for a CNIL-exempt setup — self-hosted, anonymized IP, no cross-site tracking, cookie under 13 months, Do Not Track honored — which is exactly what this bundle's own cookies model tells the visitor, offering Matomo's opt-out link from `site-matomo-url`. That legal text is why the two keys live here rather than in c975L/SiteBundle, which declared them until v8.4: a key belongs to the bundle reading it, and both bundles do. If your instance isn't configured that way, gate the component yourself before filling `site-matomo-url` and `site-matomo-id`.
 
+## Domain verifications
+
+The proofs of ownership third-party services ask for - Pinterest's `p:domain_verify`, Meta's `facebook-domain-verification`, Bing's `msvalidate.01` - go in **`ui-domain-verifications`**, as `name=value` pairs separated by commas: this bundle's layout prints one `<meta name="…" content="…">` per pair on every page (`domain_verifications()`, `Twig\DomainVerificationExtension`), an entry missing either side being skipped. A new service needs no code, only one more pair. Google Search Console is better verified through a DNS TXT record: it opens a *Domain* property, covering every subdomain and both protocols, where a meta tag only proves one URL prefix.
+
 ---
 
 ## Media Library

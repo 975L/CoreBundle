@@ -81,6 +81,11 @@
                     <meta name="author" content="{{ config('site-author') }}">
                 {% endif %}
                 <meta name="copyright" content="{{ site_copyright() }}">
+
+{# The proofs of ownership third-party services ask for (see DomainVerificationExtension) #}
+                {% for verificationName, verificationValue in domain_verifications() %}
+                    <meta name="{{ verificationName }}" content="{{ verificationValue }}">
+                {% endfor %}
 {# The page's own summary, stated by the template rendering it under this name and no other, reduced to plain text so a rich-text column never publishes escaped markup, then cut to 160 characters on a word as a search engine shows no more (see ContentQualityAnalyzer::DESCRIPTION_MAX_LENGTH) #}
                 {% if summarySocialNetwork is defined and summarySocialNetwork is not empty %}
                     <meta name="description" content="{{ summarySocialNetwork|plain_text|excerpt(160) }}">

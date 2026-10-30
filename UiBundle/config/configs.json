@@ -463,6 +463,17 @@
         "description": "description.site_matomo_id"
     },
     {
+        "label": "label.ui_domain_verifications",
+        "slug": "ui-domain-verifications",
+        "sensitive": false,
+        "restricted": true,
+        "value": null,
+        "kind": "text",
+        "group": "analytics",
+        "severity": null,
+        "description": "description.ui_domain_verifications"
+    },
+    {
         "label": "label.ui_watermark_position",
         "slug": "ui-watermark-position",
         "sensitive": false,

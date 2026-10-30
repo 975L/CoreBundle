@@ -138,6 +138,10 @@
                 <source>description.theme_mode</source>
                 <target>Display mode applied site-wide for every visitor</target>
             </trans-unit>
+            <trans-unit id="c76HJBu">
+                <source>description.ui_domain_verifications</source>
+                <target>Ownership tags asked for by third-party services (Pinterest, Meta, Bing…), as name=value, several separated by commas, for instance p:domain_verify=abc123. Each one is published as a meta tag on every page. Google is better verified through a DNS record, which covers the whole domain</target>
+            </trans-unit>
             <trans-unit id="5gWmNrB">
                 <source>description.ui_enable_reviews</source>
                 <target>Lets visitors submit a review and displays the published ones. The moderation menu stays available either way. Leave to false until reviews are expected.</target>
@@ -353,6 +357,10 @@
             <trans-unit id="71mpRDI">
                 <source>label.ui_ai_assistant_writer_provider</source>
                 <target>Donovan (Writer) - LLM provider</target>
+            </trans-unit>
+            <trans-unit id="XUOOvjg">
+                <source>label.ui_domain_verifications</source>
+                <target>Domain verifications</target>
             </trans-unit>
             <trans-unit id="xJvR5pw">
                 <source>label.ui_enable_reviews</source>

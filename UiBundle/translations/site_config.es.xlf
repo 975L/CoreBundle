@@ -138,6 +138,10 @@
                 <source>description.theme_mode</source>
                 <target>Modo de visualización aplicado a todo el sitio para todos los visitantes</target>
             </trans-unit>
+            <trans-unit id="c76HJBu">
+                <source>description.ui_domain_verifications</source>
+                <target>Etiquetas de propiedad que piden servicios de terceros (Pinterest, Meta, Bing…), en formato nombre=valor, varias separadas por comas, por ejemplo p:domain_verify=abc123. Cada una se publica como etiqueta meta en todas las páginas. Google se verifica mejor con un registro DNS, que cubre todo el dominio</target>
+            </trans-unit>
             <trans-unit id="5gWmNrB">
                 <source>description.ui_enable_reviews</source>
                 <target>Permite a los visitantes dejar una opinión y muestra las publicadas. El menú de moderación sigue disponible en todos los casos. Dejar en false mientras no se esperen opiniones.</target>
@@ -353,6 +357,10 @@
             <trans-unit id="71mpRDI">
                 <source>label.ui_ai_assistant_writer_provider</source>
                 <target>Donovan (Writer) - Proveedor LLM</target>
+            </trans-unit>
+            <trans-unit id="XUOOvjg">
+                <source>label.ui_domain_verifications</source>
+                <target>Verificaciones de dominio</target>
             </trans-unit>
             <trans-unit id="xJvR5pw">
                 <source>label.ui_enable_reviews</source>

@@ -1,5 +1,15 @@
 # ChangeLog
 
+## v1.81
+
+Domain verification meta tags read from a setting
+
+### UiBundle
+
+- Added `ui-domain-verifications` setting and `domain_verifications()` Twig function (30/10/2026)
+- Layout: one verification meta tag per configured pair (30/10/2026)
+- README, skill: domain verifications (30/10/2026)
+
 ## v1.80.2
 
 Slider freeflow row freed from the reading measure
