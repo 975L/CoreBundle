@@ -17,8 +17,8 @@ class ReadingMeasureTest extends TestCase
 {
     private const string MEASURE = 'max-width: var(--reading-max-width, min(75ch, 90vw))';
 
-    // ".legal" carries it for the whole document, headings included: "ch" is read against the font of the element the max-width is written on, so a heading stating its own would read a measure its body copy never does. A slider reads it unless its block picked a "width-*" class, which caps it instead
-    private const array MEASURED_RULES = ['.slider:not([class*=" width-"])', '.slider-single', '.image-compare', '.readmore', '.legal'];
+    // ".legal" carries it for the whole document, headings included: "ch" is read against the font of the element the max-width is written on, so a heading stating its own would read a measure its body copy never does. A slider reads it unless its block picked a "width-*" class, which caps it instead, or it is a freeflow row, which spans the viewport
+    private const array MEASURED_RULES = ['.slider:not([class*=" width-"],.slider-freeflow)', '.slider-single', '.image-compare', '.readmore', '.legal'];
 
     /**
      * @return array<string, array{string}>
@@ -93,7 +93,7 @@ class ReadingMeasureTest extends TestCase
         preg_match_all('/([^{}]+)\{([^{}]*)\}/', $css, $matches, PREG_SET_ORDER);
 
         foreach ($matches as $match) {
-            if (!in_array($selector, explode(',', trim($match[1])), true)) {
+            if (!in_array($selector, (array) preg_split('/,(?![^(]*\))/', trim($match[1])), true)) {
                 continue;
             }
 

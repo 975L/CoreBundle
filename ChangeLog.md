@@ -1,5 +1,13 @@
 # ChangeLog
 
+## v1.80.2
+
+Slider freeflow row freed from the reading measure
+
+### UiBundle
+
+- Slider freeflow: row no longer capped by the reading measure (30/10/2026)
+
 ## v1.80.1
 
 Slider controls shared as a partial

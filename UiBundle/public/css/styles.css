@@ -5596,7 +5596,7 @@ span {
   aspect-ratio: 16/9;
 }
 
-.slider:not([class*=" width-"]) {
+.slider:not([class*=" width-"], .slider-freeflow) {
   max-width: var(--reading-max-width, min(75ch, 90vw));
 }
 

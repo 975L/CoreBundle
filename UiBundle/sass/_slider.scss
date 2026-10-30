@@ -22,8 +22,8 @@
     aspect-ratio: 16 / 9;
 }
 
-// The measure caps a slider only when the block picked no width of its own (see _sizes.scss): written after it, it beat the "width-*" class the slider form offers, which then did nothing
-.slider:not([class*=" width-"]) {
+// The measure caps a slider unless its block picked a "width-*" class (see _sizes.scss), which the cap written after it used to beat, or it is a freeflow row, which spans the viewport
+.slider:not([class*=" width-"], .slider-freeflow) {
     max-width: var(--reading-max-width, min(75ch, 90vw));
 }
 
@@ -341,6 +341,7 @@
 .slider-freeflow {
     // One slide's width, shared: the list's side padding is derived from it so a slide can sit dead center, first and last included
     --slider-freeflow-item: clamp(240px, 55vw, 480px);
+    // Beats the max-width of a "width-*" class the form still offers, the measure cap excluding a freeflow row on its own
     max-width: none;
     width: var(--slider-freeflow-vw, 100vw);
     margin-left: calc(50% - (var(--slider-freeflow-vw, 100vw) / 2));

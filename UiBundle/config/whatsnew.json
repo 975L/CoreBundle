@@ -1,5 +1,15 @@
 [
     {
+        "date": "2026-10-30",
+        "description": [
+            {
+                "en": "A slider showing its slides side by side spans the full width of the screen again.",
+                "fr": "Un diaporama affichant ses diapositives côte à côte occupe de nouveau toute la largeur de l'écran.",
+                "es": "Un carrusel que muestra sus diapositivas una al lado de otra vuelve a ocupar todo el ancho de la pantalla."
+            }
+        ]
+    },
+    {
         "date": "2026-10-29",
         "description": [
             {
