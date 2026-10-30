@@ -158,6 +158,10 @@
                 <source>description.site_backup_retention_days</source>
                 <target>Nombre de jours de sauvegardes conservées sur le serveur. La copie hors site doit en garder davantage, sinon elle re-télécharge à chaque passage ce qu'elle vient de purger. 0 conserve toutes les archives</target>
             </trans-unit>
+            <trans-unit id="TYB0qvV">
+                <source>description.site_consumer_mediator</source>
+                <target>Nom, adresse et moyens de contact du médiateur de la consommation auquel le site adhère, cités dans les conditions générales de vente (obligatoire pour vendre à des particuliers)</target>
+            </trans-unit>
             <trans-unit id="maeSbQ2">
                 <source>description.site_contact_email</source>
                 <target>Adresse email de contact publique affichée sur les pages légales</target>
@@ -457,6 +461,10 @@
             <trans-unit id="k4fofqT">
                 <source>label.site_backup_retention_days</source>
                 <target>Rétention des sauvegardes (jours)</target>
+            </trans-unit>
+            <trans-unit id="iL31smG">
+                <source>label.site_consumer_mediator</source>
+                <target>Médiateur de la consommation</target>
             </trans-unit>
             <trans-unit id="P.LxD.a">
                 <source>label.site_contact_email</source>

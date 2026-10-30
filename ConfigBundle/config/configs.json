@@ -598,6 +598,17 @@
         "description": "description.site_dpo"
     },
     {
+        "label": "label.site_consumer_mediator",
+        "slug": "site-consumer-mediator",
+        "sensitive": false,
+        "restricted": false,
+        "value": null,
+        "kind": "textarea",
+        "group": "legal",
+        "severity": null,
+        "description": "description.site_consumer_mediator"
+    },
+    {
         "label": "label.site_age_warning",
         "slug": "site-age-warning",
         "sensitive": false,

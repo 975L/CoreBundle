@@ -41,6 +41,8 @@ class LegalModelPlaceholders
         'site-producer' => self::RAW,
         'site-hosting-provider' => self::RAW_NL2BR,
         'site-dpo' => self::ESCAPE,
+        // The consumer mediator a seller must name (L612-1 of the French consumer code), which the terms of sale state
+        'site-consumer-mediator' => self::RAW_NL2BR,
         // How long the site search keeps a question, which the privacy policy states
         'ui-ai-assistant-site-retention-days' => self::RETENTION_DAYS,
     ];

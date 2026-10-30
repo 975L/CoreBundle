@@ -197,9 +197,14 @@
 		</div>
 		<ol>
 			<li>Nous contacter pour un traitement à l'amiable</li>
-			<li>En cas d'échec, prendre contact avec un/e
-				<a href="http://www.economie.gouv.fr/mediation-conso" rel="nofollow">médiateur/trice</a>
-			</li>
+			{# The mediator the site named, the ministry's list of them until it names one #}
+			{% if config('site-consumer-mediator') %}
+				<li>À défaut de réponse satisfaisante, recourir gratuitement à la médiation de la consommation auprès de :<br>{{ legal_var('site-consumer-mediator') }}</li>
+			{% else %}
+				<li>En cas d'échec, prendre contact avec un/e
+					<a href="http://www.economie.gouv.fr/mediation-conso" rel="nofollow">médiateur/trice</a>
+				</li>
+			{% endif %}
 			<li>En dernier recours, saisie du tribunal compétent</li>
 		</ol>
 	</section>

@@ -92,6 +92,15 @@ class LegalModelPlaceholdersTest extends TestCase
         $this->assertContains('site-address', $this->placeholders()->slugs());
     }
 
+    // The consumer mediator the terms of sale name: the site's own wording, link included, line by line
+    public function testSubstitutionKeepsTheMediatorLinkAndLines(): void
+    {
+        $html = $this->placeholders()->substitute('<li>%site-consumer-mediator%</li>');
+
+        $this->assertStringContainsString("Mediator<br />\n<a href=\"https://mediator.example\">mediator.example</a>", $html);
+        $this->assertContains('site-consumer-mediator', $this->placeholders()->slugs());
+    }
+
     // The retention the privacy policy states is the one the purge applies, an empty entry reading as the default
     public function testAnEmptyRetentionPrintsTheDefaultThePurgeApplies(): void
     {
@@ -113,6 +122,7 @@ class LegalModelPlaceholdersTest extends TestCase
             'site-owner' => '<strong>Owner</strong>',
             'site-hosting-provider' => "Host\nCity",
             'site-address' => "Acme & Co\n1 rue du Test",
+            'site-consumer-mediator' => "Mediator\n<a href=\"https://mediator.example\">mediator.example</a>",
             default => null,
         });
 

@@ -197,9 +197,14 @@
 		</div>
 		<ol>
 			<li>Contactarnos para una solución amistosa</li>
-			<li>En caso de fracaso, contactar con un/a
-				<a href="http://www.economie.gouv.fr/mediation-conso" rel="nofollow">mediador/a</a>
-			</li>
+			{# The mediator the site named, the ministry's list of them until it names one #}
+			{% if config('site-consumer-mediator') %}
+				<li>A falta de una respuesta satisfactoria, recurrir gratuitamente a la mediación de consumo ante:<br>{{ legal_var('site-consumer-mediator') }}</li>
+			{% else %}
+				<li>En caso de fracaso, contactar con un/a
+					<a href="http://www.economie.gouv.fr/mediation-conso" rel="nofollow">mediador/a</a>
+				</li>
+			{% endif %}
 			<li>Como último recurso, acudir al tribunal competente</li>
 		</ol>
 	</section>

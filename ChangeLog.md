@@ -1,5 +1,20 @@
 # ChangeLog
 
+## v1.81.2
+
+The consumer mediator named in the terms of sale
+
+### ConfigBundle
+
+- Added `site-consumer-mediator` setting, legal group, fr/en/es (30/10/2026)
+
+### UiBundle
+
+- Terms of sale model (fr, en, es): the disputes clause names the site's consumer mediator, the ministry's list kept until one is set (30/10/2026)
+- `LegalModelPlaceholders`: `site-consumer-mediator`, rich text read line by line (30/10/2026)
+- README: the consumer mediator among the legal variables (30/10/2026)
+- Skill `c975l-blocks`: the consumer mediator in the legal models (30/10/2026)
+
 ## v1.81.1
 
 Terms of sale: digital items delivered on an account, and the in-app purchases section

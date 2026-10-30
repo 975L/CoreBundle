@@ -158,6 +158,10 @@
                 <source>description.site_backup_retention_days</source>
                 <target>Number of days of backups kept on the server. Whoever copies them offsite must keep more than this, otherwise the next copy downloads again what it has just purged. 0 keeps every archive</target>
             </trans-unit>
+            <trans-unit id="TYB0qvV">
+                <source>description.site_consumer_mediator</source>
+                <target>Name, address and contact details of the consumer mediator the site belongs to, stated in the terms of sale (required to sell to consumers)</target>
+            </trans-unit>
             <trans-unit id="maeSbQ2">
                 <source>description.site_contact_email</source>
                 <target>Public contact email address displayed on legal pages</target>
@@ -457,6 +461,10 @@
             <trans-unit id="k4fofqT">
                 <source>label.site_backup_retention_days</source>
                 <target>Backup Retention (days)</target>
+            </trans-unit>
+            <trans-unit id="iL31smG">
+                <source>label.site_consumer_mediator</source>
+                <target>Consumer mediator</target>
             </trans-unit>
             <trans-unit id="P.LxD.a">
                 <source>label.site_contact_email</source>

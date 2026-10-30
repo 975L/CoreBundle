@@ -3,6 +3,11 @@
         "date": "2026-10-30",
         "description": [
             {
+                "en": "Your terms of sale can now name your consumer mediator: enter it in the \"Consumer mediator\" setting.",
+                "fr": "Vos conditions générales de vente peuvent désormais citer votre médiateur de la consommation : renseignez-le dans le réglage « Médiateur de la consommation ».",
+                "es": "Sus condiciones generales de venta ya pueden citar a su mediador de consumo: indíquelo en el ajuste «Mediador de consumo»."
+            },
+            {
                 "en": "A slider showing its slides side by side spans the full width of the screen again.",
                 "fr": "Un diaporama affichant ses diapositives côte à côte occupe de nouveau toute la largeur de l'écran.",
                 "es": "Un carrusel que muestra sus diapositivas una al lado de otra vuelve a ocupar todo el ancho de la pantalla."

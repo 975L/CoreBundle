@@ -2058,8 +2058,10 @@ heading and its first sub-section, so rewriting a section leaves its sub-section
 
 The models read the site's own data through `legal_var()` rather than `config()`: `site-name`, `site-owner`,
 `site-address`, `site-director`, `site-director-location`, `site-contact-email`, `site-contact-phone`,
-`site-producer`, `site-hosting-provider` and `site-dpo` - all ten declared by ConfigBundle, so they are there
-whatever else the site installs. It resolves on the spot, so a model rendered any way at all — a
+`site-producer`, `site-hosting-provider`, `site-dpo` and `site-consumer-mediator` - all eleven declared by
+ConfigBundle, so they are there whatever else the site installs. The last one is the consumer mediator a seller
+must name (L612-1 of the French consumer code): the terms of sale state it in their disputes clause, and point to
+the ministry's list of mediators as long as it is empty. It resolves on the spot, so a model rendered any way at all — a
 `legal_model` block, or the plain `{% include %}` shown above — reads as finished text, with nothing to
 post-process.
 

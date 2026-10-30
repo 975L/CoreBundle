@@ -13,7 +13,7 @@ namespace c975L\UiBundle\Tests\Templates;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
-// The "france/terms-of-sales" model in each locale: the sections the satellite bundles add by name, and digital items delivered on an account as well as for download (a card back, a credit), which the withdrawal waiver has to cover too
+// The "france/terms-of-sales" model in each locale: the sections the satellite bundles add by name, the consumer mediator the site names, and digital items delivered on an account as well as for download (a card back, a credit), which the withdrawal waiver has to cover too
 class TermsOfSalesModelTest extends TestCase
 {
     /** @return iterable<array{string, string}> */
@@ -31,6 +31,11 @@ class TermsOfSalesModelTest extends TestCase
 
         $this->assertStringContainsString("{% include '@c975LPurchaseCredits/legal/terms-of-sales." . $locale . ".html.twig' ignore missing %}", $template);
         $this->assertStringContainsString("{% include '@c975LPayment/legal/terms-of-sales." . $locale . ".html.twig' ignore missing %}", $template);
+
+        // The mediator the site names, the ministry's list kept for a site that names none
+        $this->assertStringContainsString("{% if config('site-consumer-mediator') %}", $template);
+        $this->assertStringContainsString("{{ legal_var('site-consumer-mediator') }}", $template);
+        $this->assertStringContainsString('economie.gouv.fr/mediation-conso', $template);
 
         $delivery = substr($template, (int) strpos($template, 'data-legal-id="delivery"'), 600);
         $this->assertStringContainsString($account, $delivery);

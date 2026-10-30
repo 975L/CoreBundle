@@ -197,9 +197,14 @@
 		</div>
 		<ol>
 			<li>Contact us for an amicable resolution</li>
-			<li>If unsuccessful, contact a
-				<a href="http://www.economie.gouv.fr/mediation-conso" rel="nofollow">mediator</a>
-			</li>
+			{# The mediator the site named, the ministry's list of them until it names one #}
+			{% if config('site-consumer-mediator') %}
+				<li>Failing a satisfactory answer, refer the matter free of charge to the consumer mediator:<br>{{ legal_var('site-consumer-mediator') }}</li>
+			{% else %}
+				<li>If unsuccessful, contact a
+					<a href="http://www.economie.gouv.fr/mediation-conso" rel="nofollow">mediator</a>
+				</li>
+			{% endif %}
 			<li>As a last resort, refer the matter to the competent court</li>
 		</ol>
 	</section>

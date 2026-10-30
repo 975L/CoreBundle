@@ -158,6 +158,10 @@
                 <source>description.site_backup_retention_days</source>
                 <target>Número de días de copias de seguridad conservadas en el servidor. La copia externa debe guardar más, de lo contrario vuelve a descargar lo que acaba de purgar. 0 conserva todas las copias</target>
             </trans-unit>
+            <trans-unit id="TYB0qvV">
+                <source>description.site_consumer_mediator</source>
+                <target>Nombre, dirección y datos de contacto del mediador de consumo al que se adhiere el sitio, citados en las condiciones generales de venta (obligatorio para vender a particulares)</target>
+            </trans-unit>
             <trans-unit id="maeSbQ2">
                 <source>description.site_contact_email</source>
                 <target>Dirección de correo de contacto pública mostrada en las páginas legales</target>
@@ -457,6 +461,10 @@
             <trans-unit id="k4fofqT">
                 <source>label.site_backup_retention_days</source>
                 <target>Retención de copias (días)</target>
+            </trans-unit>
+            <trans-unit id="iL31smG">
+                <source>label.site_consumer_mediator</source>
+                <target>Mediador de consumo</target>
             </trans-unit>
             <trans-unit id="P.LxD.a">
                 <source>label.site_contact_email</source>
