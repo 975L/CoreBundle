@@ -10,6 +10,7 @@
 
 namespace c975L\ConfigBundle\Management;
 
+use EasyCorp\Bundle\EasyAdminBundle\Contracts\Router\AdminRouteGeneratorInterface;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -25,6 +26,7 @@ class GuidedProjectBuilder
         private readonly TranslatorInterface $translator,
         /** @var iterable<TutorialFilmUrlProviderInterface> */
         private readonly iterable $tutorialFilmUrlProviders = [],
+        private readonly ?AdminRouteGeneratorInterface $adminRouteGenerator = null,
     ) {
     }
 
@@ -63,6 +65,11 @@ class GuidedProjectBuilder
     // Merged across every provider and sorted by "order" - a deliberate sequence, not the alphabetical merge MenuBuilder/AlertBuilder use. Merged by hand rather than through ProviderMerger, each project keeping the bundle it comes from
     private function declaredProjects(): array
     {
+        // Admin urls built outside EasyAdmin (front, console) find no dashboard once its route map has left the cache, which only an admin request rebuilds (EasyAdmin issue #6680)
+        if ([] === $this->adminRouteGenerator?->getDashboardRoutes()) {
+            $this->adminRouteGenerator->generateAll();
+        }
+
         $projects = [];
         foreach ($this->guidedProjectProviders as $provider) {
             $bundle = $this->bundleName($provider);

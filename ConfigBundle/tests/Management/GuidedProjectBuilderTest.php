@@ -15,6 +15,7 @@ use c975L\ConfigBundle\Management\GuidedProjectBuilder;
 use c975L\ConfigBundle\Management\GuidedProjectProviderInterface;
 use c975L\ConfigBundle\Management\TutorialFilmUrlProviderInterface;
 use c975L\ConfigBundle\Tests\Fixtures\GuidedProjectProviderStub;
+use EasyCorp\Bundle\EasyAdminBundle\Contracts\Router\AdminRouteGeneratorInterface;
 use PHPUnit\Framework\TestCase;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -282,5 +283,19 @@ class GuidedProjectBuilderTest extends TestCase
         );
 
         $this->assertSame(['/tutorials/film/site-own', EcosystemUrls::TUTORIAL_FILM . '/creer-page'], array_column($builder->getProjects(), 'film'));
+    }
+
+    // The dashboard route map gone from the cache is rebuilt before any provider builds an admin url, and left alone when it is there
+    public function testTheDashboardRouteMapIsRebuiltOnlyWhenMissing(): void
+    {
+        foreach ([[[], 1], [['Dashboard' => 'management'], 0]] as [$routes, $rebuilds]) {
+            $routeGenerator = $this->createMock(AdminRouteGeneratorInterface::class);
+            $routeGenerator->method('getDashboardRoutes')->willReturn($routes);
+            $routeGenerator->expects($this->exactly($rebuilds))->method('generateAll');
+
+            $builder = new GuidedProjectBuilder([$this->createProvider([$this->project('creer-page', 10)])], $this->createSecurity(), $this->createTranslator(), [], $routeGenerator);
+
+            $this->assertCount(1, $builder->getAllProjects());
+        }
     }
 }

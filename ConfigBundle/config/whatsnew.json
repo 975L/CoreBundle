@@ -1,5 +1,15 @@
 [
     {
+        "date": "2026-10-31",
+        "description": [
+            {
+                "en": "The tutorials page and the assistant no longer fail to open the guided projects right after the site's cache has been cleared.",
+                "fr": "La page des tutoriels et l'assistant n'échouent plus à ouvrir les projets guidés juste après un vidage du cache du site.",
+                "es": "La página de tutoriales y el asistente ya no fallan al abrir los proyectos guiados justo después de vaciar la caché del sitio."
+            }
+        ]
+    },
+    {
         "date": "2026-10-30",
         "description": [
             {

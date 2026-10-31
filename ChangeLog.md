@@ -1,5 +1,13 @@
 # ChangeLog
 
+## v1.82.2
+
+Fixed guided projects' admin urls once the route cache is gone
+
+### ConfigBundle
+
+- `GuidedProjectBuilder`: EasyAdmin dashboard route map rebuilt when missing from the cache (31/10/2026)
+
 ## v1.82.1
 
 Updated vanilla-cookieconsent to 3.2.1
