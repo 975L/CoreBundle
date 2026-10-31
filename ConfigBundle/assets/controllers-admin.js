@@ -5,6 +5,7 @@ import GuidedProjectController from './js/guided-project.js';
 import HealthCheckProgressController from './js/health-check-progress.js';
 import HealthCheckTableController from './js/health-check-table.js';
 import OnboardingTourController from './js/onboarding-tour.js';
+import './js/batch-action-modal.js';
 
 // Guards against this module's top-level code running twice, which would add its chartjs listener twice
 if (!window.__c975lConfigAdminStarted) {

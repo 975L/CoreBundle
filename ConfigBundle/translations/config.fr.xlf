@@ -14,6 +14,10 @@
                 <source>action.content_import</source>
                 <target>Importer</target>
             </trans-unit>
+            <trans-unit id="sSgetpg">
+                <source>action.delete_permanently</source>
+                <target>Supprimer définitivement</target>
+            </trans-unit>
             <trans-unit id="4noVC8G">
                 <source>action.export_for_sync</source>
                 <target>Synchro</target>
@@ -33,6 +37,10 @@
             <trans-unit id="uNJVXca">
                 <source>action.health_check_run</source>
                 <target>Lancer le bilan de santé</target>
+            </trans-unit>
+            <trans-unit id="vUjYe27">
+                <source>action.move_to_trash</source>
+                <target>Mettre à la corbeille</target>
             </trans-unit>
             <trans-unit id="ALmOjg.">
                 <source>action.preview_preset</source>

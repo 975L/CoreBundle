@@ -1,5 +1,16 @@
 # ChangeLog
 
+## v1.83.0
+
+Batch delete worded for screens holding a recycle bin
+
+### ConfigBundle
+
+- `EasyAdminActionHelper::trashBatchDelete()`: EasyAdmin's batch "Delete" reads "Move to the recycle bin" on a list and "Delete permanently" in its bin (31/10/2026)
+- `EasyAdminActionHelper::trashBatchDelete()`: the recycle bin move in warning, the permanent deletion staying danger (31/10/2026)
+- EasyAdmin's batch modal only says "cannot be undone" for a danger action (31/10/2026)
+- Added `action.move_to_trash` and `action.delete_permanently` to the three `config` catalogs (31/10/2026)
+
 ## v1.82.2
 
 Fixed guided projects' admin urls once the route cache is gone
