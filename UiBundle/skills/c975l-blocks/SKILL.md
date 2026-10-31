@@ -64,7 +64,7 @@ The flag is all the bundle gives; the two steps are yours, and always the same t
   can answer **410 Gone** from the row itself.
 - **The index switches** on a `?trash=1` query parameter (`createIndexQueryBuilder()`), where a restore
   and a permanent delete appear. **Hold the permanent one at a higher role**: it is the only
-  irreversible one.
+  irreversible one, and `use` ConfigBundle's `TrashBatchDeleteTrait` so the batch one is held there too.
 
 ## Registering a kind
 

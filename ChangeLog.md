@@ -1,5 +1,16 @@
 # ChangeLog
 
+## v1.84.0
+
+One batch removal for every recycle bin
+
+### ConfigBundle
+
+- Added `TrashBatchDeleteTrait`: a recycle bin's batch "Delete" checks the admin role before the first row (31/10/2026)
+- `TrashBatchDeleteTrait`: one flash for the whole selection, counting the rows removed for good (31/10/2026)
+- `c975l-management` and `c975l-blocks` skills: `TrashBatchDeleteTrait` documented (31/10/2026)
+- Added `flash.trash_removed_for_good` to the three `config` catalogs (31/10/2026)
+
 ## v1.83.0
 
 Batch delete worded for screens holding a recycle bin

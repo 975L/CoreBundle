@@ -690,6 +690,10 @@
                 <source>flash.sessions_closed</source>
                 <target>Your other devices have been signed out.</target>
             </trans-unit>
+            <trans-unit id="eQ2W0kf">
+                <source>flash.trash_removed_for_good</source>
+                <target>%count% item(s) permanently deleted from the recycle bin</target>
+            </trans-unit>
             <trans-unit id="GW_a8jw">
                 <source>flash.user_anonymized</source>
                 <target>The account has been anonymized.</target>

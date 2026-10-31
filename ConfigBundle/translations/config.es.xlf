@@ -690,6 +690,10 @@
                 <source>flash.sessions_closed</source>
                 <target>Sus otros dispositivos han sido desconectados.</target>
             </trans-unit>
+            <trans-unit id="eQ2W0kf">
+                <source>flash.trash_removed_for_good</source>
+                <target>%count% elemento(s) eliminado(s) definitivamente de la papelera</target>
+            </trans-unit>
             <trans-unit id="GW_a8jw">
                 <source>flash.user_anonymized</source>
                 <target>La cuenta ha sido anonimizada.</target>

@@ -11,6 +11,11 @@
                 "en": "On the screens holding a recycle bin, the action applied to several ticked rows now reads \"Move to the recycle bin\" or \"Delete permanently\", and its confirmation no longer calls a move to the bin irreversible.",
                 "fr": "Sur les écrans qui ont une corbeille, l'action appliquée à plusieurs lignes cochées s'intitule désormais « Mettre à la corbeille » ou « Supprimer définitivement », et sa confirmation ne présente plus une mise à la corbeille comme irréversible.",
                 "es": "En las pantallas con papelera, la acción aplicada a varias filas marcadas se llama ahora «Mover a la papelera» o «Eliminar definitivamente», y su confirmación ya no presenta como irreversible un envío a la papelera."
+            },
+            {
+                "en": "Emptying several rows of a recycle bin at once now tells you in a single message how many items were permanently deleted, and is refused up front to anyone who may not delete for good.",
+                "fr": "Vider plusieurs lignes d'une corbeille en une fois indique désormais en un seul message combien d'éléments ont été supprimés définitivement, et c'est refusé d'emblée à qui n'a pas le droit de supprimer définitivement.",
+                "es": "Vaciar varias filas de una papelera a la vez indica ahora en un solo mensaje cuántos elementos se han eliminado definitivamente, y se rechaza desde el principio a quien no puede eliminar definitivamente."
             }
         ]
     },
