@@ -47,7 +47,10 @@ bundle never knows what your action does.**
 `Service\SendEmailFormAction` (key `send_email`) is the built-in one, so a form built purely through
 the admin still notifies someone, configured through `actionConfig` (`to`, `from`, `replyTo`,
 `subject`, `template` or `emailTemplate`, `senderEmailField`, `offerReceiveCopy`), everything unset
-falling back on the site-wide `email-*` settings.
+falling back on the site-wide `email-*` settings. `offerReceiveCopy` sends the whole copy to the signed-in
+account's own address (`CurrentAccountAddress`, `copyToEmail`). Any other address, which proves nothing, gets the
+message on a request of its own, without its attachments and under the fixed sentence `text.form_copy_notice`
+(`EmailSendRequest::$preface`, written ahead of whichever body the message has, a site's own template included).
 
 **The flash shown after a submission is picked on the action's key**, in `FormController::submit()`:
 `send_email` says the message was sent, `register` says a confirmation email may not have been resent
@@ -247,7 +250,8 @@ relative in the back office, and the layout is the one place they all pass throu
 The six address settings (`email-from`, `email-from-name`, `email-to`, `email-to-name`,
 `email-reply-to`, `email-reply-to-name`) live in ConfigBundle and resolve on their own; an explicit
 `to:` wins. `bcc` is a real blind copy, not to be confused with `copyToEmail`, which sends a **second**
-message.
+message. `preface` is one plain sentence `EmailService` escapes and writes ahead of an `html` or `template`
+body, inside the layout when `wrapLayout` is on; a `text` body ignores it.
 
 **Nothing is sent while the debug mode is on.** `email-debug` (a restricted config) plus
 `ROLE_SUPER_ADMIN` makes `EmailService` render the message and stash its preview in the session

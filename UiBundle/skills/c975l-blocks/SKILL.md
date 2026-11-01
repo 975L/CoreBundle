@@ -548,15 +548,21 @@ differently — the caching is then yours to do.
   address a plain-text notice in the site's locale, its result ignored — a review is stored whatever
   the mailer answers. `ReviewAlertProvider` says on the dashboard how many are waiting, `ui-enable-reviews` on or off.
 - **The score goes into the same average as the clicks.** Publishing a review carrying a rating calls
-  `RatingService::record()` under a voter derived from the author's e-mail (a truncated sha-256, so
-  `Rating` still holds no address of anyone); rejecting or deleting it calls `withdraw()`.
+  `RatingService::record()` under a voter derived from the author's e-mail for a verified review (a truncated
+  sha-256, so `Rating` still holds no address of anyone) and from the review's own id for any other, so typing someone's
+  address reaches nobody's score; rejecting or deleting it calls `withdraw()`.
+  Scores published before v1.85.0 stood under the address for every review: `c975l:ui:review-ratings-rekey`
+  (`--dry-run`), once per site, moves them; `syncRating()` does the same for whatever it is handed
+  (`rekeyLegacyRating()`), so a site that has not run it does not count a score under both keys.
   `ReviewService::syncRating()` does both and is called on **every** save, so no transition has to be
   remembered. A visitor who clicked the stars *and* left a scored review counts twice — the price of
   the anonymous vote, already accepted in `resolveVoter()`.
+- **The form prefills the address of a signed-in visitor** (`CurrentAccountAddress::address()`, in `ReviewController`, a page no shared cache keeps), which is also the only address a verified review accepts.
 - **The "vérifié" badge is earned, never assumed.** `ReviewVerifierInterface` (auto-discovered, one per
   owner type) answers "did that address get hold of that thing?"; the shop's own implementation reads
   the paid orders of the address and compares **item ids**, never titles or slugs. No verifier for
-  a kind means `verified: false` — the badge says the site checked, not that it had no way to. Settled
+  a kind means `verified: false` — the badge says the site checked, not that it had no way to. Only asked
+  for the address of the account signing the review (`CurrentAccountAddress`), a typed one proving nothing. Settled
   once in `submit()` and never recomputed: an order archived years later must not un-verify a review.
 - **A review is never rewritten here.** The moderation screen edits nothing the author wrote: a local
   review can be published, rejected or deleted, an imported one answered but never deleted. Any review
@@ -629,7 +635,8 @@ The same terms as the ratings above, for a thing a visitor puts *aside*: `Entity
   `PlayDurationProviderInterface` (tag `c975l.play_duration_provider`; a kind none supports, or a thing whose length
   cannot be read, counts on the ticket alone). The controller then dispatches `ui-play-count:counted` with the ticket, for a site giving
   something for a play to check it with `PlayTicket::isHeard()`. `ui_app_play` takes no ticket: an app
-  counts listens made offline too.
+  counts listens made offline too, so `PlayService::recordFromApp()` keeps them out of the public total, under
+  `PlayService::APP_TOTAL_PREFIX` + the owner type.
   The account side is ConfigBundle's `AppConnectController`.
 
 ## Site search
@@ -694,6 +701,8 @@ they are. A satellite exporting the entity owning the blocks (a Page's title) ca
 ## Do not
 
 - **Do not add a column for a block's own data** — it goes in `Block::$data`.
+- **Do not print an editor's rich text `|raw`** — `{{ text|default('')|sanitize_html('c975l.rich') }}`, `|nl2br` after it where a bare newline matters.
+- **Do not leave a url field of a block's form bare** — it carries `new SafeUrl()` (`Validator\SafeUrl`), which `LinkTargetType` holds on its own.
 - **Do not put `Edit:Entity` or an `entity_edit_url()` inside a render cache** — the fragment is served
   to every visitor with an editor's url in it. Mark it with `data-edit-entity` / `data-edit-field`.
 - **Do not use `OneToMany` or `orphanRemoval`** for a blocks collection.

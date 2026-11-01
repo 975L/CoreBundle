@@ -73,7 +73,7 @@ class AppLibraryController extends AbstractController
         return $this->answer($holder);
     }
 
-    // One more time this thing was played to its end. A listener with no account and no token is counted all the same, in the total alone: an app counts every listen without making up anything that names the phone
+    // One more time this thing was played to its end, on the app's word (see PlayService::recordFromApp()): no ticket to prove it, the shipped apps taking none and counting offline listens too. A listener with no account and no token is counted all the same, in the apps' own count alone: an app counts every listen without making up anything that names the phone
     #[Route('/play/{ownerType}/{ownerId}', name: 'ui_app_play', requirements: self::OWNER_REQUIREMENTS, methods: ['POST'])]
     public function play(string $ownerType, int $ownerId, Request $request): Response
     {
@@ -83,7 +83,7 @@ class AppLibraryController extends AbstractController
         }
         $this->denyUnlessKnown($ownerType, $ownerId);
 
-        $this->playService->record($ownerType, $ownerId, $holder);
+        $this->playService->recordFromApp($ownerType, $ownerId, $holder);
 
         return null === $holder ? new Response(null, Response::HTTP_NO_CONTENT) : $this->answer($holder);
     }

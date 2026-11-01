@@ -13,6 +13,7 @@ namespace c975L\UiBundle\Form;
 use c975L\UiBundle\Entity\FormField;
 use c975L\UiBundle\Form\Util\CollectionReconciler;
 use c975L\UiBundle\Form\Util\FormTranslationBuilder;
+use c975L\UiBundle\Validator\SafeUrl;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Event\PreSetDataEvent;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -61,6 +62,7 @@ class FormFieldType extends AbstractType
                 'label' => 'label.field_url',
                 'help' => 'text.field_url_help',
                 'required' => false,
+                'constraints' => [new SafeUrl()],
             ])
             ->add('required', CheckboxType::class, [
                 'label' => 'label.field_required',

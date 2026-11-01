@@ -42,6 +42,14 @@ class FormGdprInformationTest extends TestCase
     }
 
     // Renders the form component against the "ui" catalogue's own wording, the config function answering what the admin typed
+    // The sentence is printed raw: the setting cannot leave its href
+    public function testThePrivacyUrlCannotLeaveItsAttribute(): void
+    {
+        $html = $this->render('x" onmouseover="alert(1)');
+
+        $this->assertStringNotContainsString('" onmouseover="', $html);
+    }
+
     private function render(?string $privacyUrl): string
     {
         // Namespaced as the bundle registers it, the template including its shared partials through it

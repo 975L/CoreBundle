@@ -343,6 +343,20 @@ class RedirectSubscriberTest extends TestCase
         new RedirectSubscriber($repository, $cache)->onKernelRequest($this->createEvent('/c'));
     }
 
+    // The tail is the visitor's, and must not turn a path of this site into an address on another one
+    public function testATailCannotLeadOffSite(): void
+    {
+        foreach (['/old//evil.test', '/old///evil.test', '/old/\evil.test'] as $path) {
+            // Built off the server's own variables, the way a real request is: Request::create() refuses a backslash a web server may well hand over
+            $event = new RequestEvent($this->createStub(HttpKernelInterface::class), new Request(server: ['REQUEST_URI' => $path]), HttpKernelInterface::MAIN_REQUEST);
+            $this->createSubscriber(new Redirect()->setFromPath('/old/*')->setToUrl('/*'))->onKernelRequest($event);
+
+            $response = $event->getResponse();
+            $this->assertInstanceOf(RedirectResponse::class, $response);
+            $this->assertMatchesRegularExpression('#^/[^/\\\\]#', $response->getTargetUrl(), $path);
+        }
+    }
+
     // A row not ending on "*" names one url alone, and never covers what sits below it
     public function testAnExactRowDoesNotCoverTheUrlsBelowIt(): void
     {

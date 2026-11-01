@@ -10,6 +10,7 @@
 
 namespace c975L\UiBundle\Tests\Templates;
 
+use c975L\UiBundle\Tests\Fixtures\HtmlSanitizerKernel;
 use PHPUnit\Framework\TestCase;
 use Symfony\Bridge\Twig\Extension\TranslationExtension;
 use Symfony\Component\Translation\IdentityTranslator;
@@ -60,7 +61,7 @@ class MediaTitleLevelTest extends TestCase
     private function render(string $template, array $context): string
     {
         $loader = new FilesystemLoader(\dirname(__DIR__, 2) . '/templates');
-        $twig = new Environment($loader);
+        $twig = HtmlSanitizerKernel::register(new Environment($loader));
         // Untranslated keys come back as-is, which is enough for the players' fallback text
         $twig->addExtension(new TranslationExtension(new IdentityTranslator()));
         // The bundle's own filter, which a bare Environment knows nothing of - the same rule BoolExtension applies

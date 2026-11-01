@@ -6,7 +6,7 @@
     <div class="section-wrap">
         <div class="cta-band__inner">
             <h2 class="cta-band__title">{{ title }}</h2>
-            {% if text %}<div class="cta-band__text">{{ text|raw }}</div>{% endif %}
+            {% if text %}<div class="cta-band__text">{{ text|sanitize_html('c975l.rich') }}</div>{% endif %}
             <a class="section-btn" href="{{ ctaUrl }}">{{ ctaLabel }}</a>
         </div>
     </div>

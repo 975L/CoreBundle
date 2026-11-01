@@ -32,6 +32,8 @@ class ReviewService
         private readonly EntityManagerInterface $entityManager,
         private readonly ConfigServiceInterface $configService,
         private readonly ReviewNotifier $reviewNotifier,
+        // Optional so an app wiring this by hand keeps working - without it, no address is proven and no review is verified
+        private readonly ?CurrentAccountAddress $currentAccountAddress = null,
     ) {
     }
 
@@ -42,20 +44,14 @@ class ReviewService
             && $this->configService->getBool($this->configService->get('ui-enable-reviews'));
     }
 
-    /**
-     * Stores what a visitor just wrote, and stores nothing else.
-     *
-     * A submission is born pending whatever the form sent, and vouched for by nobody but a verifier: the two fields deciding if a text is readable and if the site stands behind it are never the author's to fill, and a forged post setting them is answered by overwriting them rather than by an error nobody reads.
-     *
-     * Whether it is verified is settled here, once, and never asked again: it is a snapshot of what was true the day the review was written, like the lines of the order it may be checked against. An order archived or purged years later must not un-verify a review nobody can re-examine.
-     */
+    // Stores what a visitor just wrote, born pending and vouched for by nobody but a verifier whatever the form sent. Verified is a snapshot settled here once, an order archived later must not un-verify a review, and only for the address of the account signing it, anyone being able to type a customer's
     public function submit(Review $review): void
     {
         $review
             ->setSource(Review::SOURCE_SITE)
             ->setExternalId(null)
             ->setStatus(ReviewStatus::Pending)
-            ->setVerified($this->reviewVerifierRegistry->verify($review))
+            ->setVerified(true === $this->currentAccountAddress?->owns($review->getAuthorEmail()) && $this->reviewVerifierRegistry->verify($review))
             ->setPublishedAt(new \DateTimeImmutable())
         ;
 
@@ -87,6 +83,9 @@ class ReviewService
             return;
         }
 
+        // Ahead of what follows, so a site that has not run the command yet does not count a score under both keys
+        $this->rekeyLegacyRating($review);
+
         if (ReviewStatus::Published === $review->getStatus() && null !== $review->getRating()) {
             $this->ratingService->record($ownerType, $ownerId, $this->onSiteScale($review->getRating()), $voter);
 
@@ -94,6 +93,51 @@ class ReviewService
         }
 
         $this->ratingService->withdraw($ownerType, $ownerId, $voter);
+    }
+
+    // Moves the scores an address held together, before an unverified review weighed under its own key, onto the reviews they came from: by address and owner, one row standing for all of them, and it stays only for a verified review of that address, which gets its own score back. A second pass finds nothing to do
+    /** @return int how many reviews got a score of their own, or would have on a dry run */
+    public function rekeyLegacyRating(Review $review, bool $dryRun = false): int
+    {
+        $address = $this->addressKey($review);
+
+        if (null === $address || $review->isVerified() || !$review->hasOwner()) {
+            return 0;
+        }
+
+        $ownerType = (string) $review->getOwnerType();
+        $ownerId = (int) $review->getOwnerId();
+
+        if (!$this->ratingService->hasVote($ownerType, $ownerId, $address)) {
+            return 0;
+        }
+
+        $scored = array_filter(
+            $this->reviewRepository->findLocalByOwnerAndAddress($ownerType, $ownerId, (string) $review->getAuthorEmail()),
+            static fn (Review $candidate): bool => ReviewStatus::Published === $candidate->getStatus() && null !== $candidate->getRating(),
+        );
+        $verified = array_filter($scored, static fn (Review $candidate): bool => $candidate->isVerified());
+        $pending = array_filter(
+            $scored,
+            fn (Review $candidate): bool => !$candidate->isVerified() && !$this->ratingService->hasVote($ownerType, $ownerId, (string) $this->voterFor($candidate)),
+        );
+
+        if ($dryRun) {
+            return \count($pending);
+        }
+
+        foreach ($pending as $candidate) {
+            $this->ratingService->record($ownerType, $ownerId, $this->onSiteScale((int) $candidate->getRating()), (string) $this->voterFor($candidate));
+        }
+
+        if ([] === $verified) {
+            $this->ratingService->withdraw($ownerType, $ownerId, $address);
+        } elseif ([] !== $pending || !\in_array($review, $scored, true)) {
+            // The review handed being taken out, nothing will carry its score elsewhere, and it may have written over this one
+            $this->ratingService->record($ownerType, $ownerId, $this->onSiteScale((int) end($verified)->getRating()), $address);
+        }
+
+        return \count($pending);
     }
 
     /**
@@ -148,14 +192,20 @@ class ReviewService
         return $this->reviewRepository->countPending();
     }
 
-    /**
-     * The key a review's score is stored under in Rating, so that two reviews by the same person weigh once.
-     *
-     * A hash rather than the address itself: Rating::$voter holds no personal data of anyone (see RatingService::resolveVoter(), where an anonymous voter is a token their browser made up), and the average has no use for who wrote what. Truncated to the 32 hexadecimal characters that column accepts, which is also what the token pattern looks like - a review's score is then indistinguishable from a click, which is exactly what it is.
-     *
-     * Null when the review carries no address, an imported review having none: its score stays on the review and is never averaged into the owner's, the platform having counted it already on its own side.
-     */
+    // The key a review's score is stored under in Rating, a hash holding nobody's address and null for an imported review, the platform having counted it: the address for a verified review, so two of them weigh once, a key of its own for any other, or typing someone's address would overwrite that person's score
     public function voterFor(Review $review): ?string
+    {
+        $address = $this->addressKey($review);
+
+        if (null === $address || $review->isVerified()) {
+            return $address;
+        }
+
+        return null === $review->getId() ? null : substr(hash('sha256', 'review|' . $review->getId()), 0, 32);
+    }
+
+    // The key of a review's address, null when it carries none or was not written here
+    private function addressKey(Review $review): ?string
     {
         $email = $review->getAuthorEmail();
 

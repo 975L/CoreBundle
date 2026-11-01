@@ -10,6 +10,7 @@
 
 namespace c975L\UiBundle\Form;
 
+use c975L\UiBundle\Validator\AllowedUploadExtension;
 use Symfony\Component\Validator\Constraints\File as FileConstraint;
 
 // Shared Vich image-upload field options, for both an EasyAdmin Field::new()->setFormTypeOptions(...) and a plain Symfony FormBuilder::add(..., VichImageType::class, ...) - one place to keep in sync instead of the same five lines hand-duplicated in every bundle declaring an upload field. Lives here rather than in SiteBundle, where it started: BookBundle, ShopBundle, GalleryBundle and CrowdfundingBundle all declare Vich fields and require none of it
@@ -24,6 +25,7 @@ final class VichImageOptions
             'asset_helper' => true,
             'constraints' => [
                 new FileConstraint(maxSize: $maxSize),
+                new AllowedUploadExtension(),
             ],
         ];
     }

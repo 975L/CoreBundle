@@ -66,6 +66,28 @@ class PlayServiceTest extends TestCase
         $this->assertSame(['book:12 u42', 'book:12 u42'], $persisted);
     }
 
+    // An app's word proves nothing: its play is in its holder's list and its own count, and never reaches the total the pages show
+    public function testAnAppsPlayStaysOutOfThePublicTotal(): void
+    {
+        $repository = $this->createStub(PlayRepository::class);
+        $repository->method('countsByHolder')->willReturn(['book:12' => 1]);
+
+        $total = $this->createMock(PlayTotalRepository::class);
+        $total->expects($this->once())->method('increment')->with(PlayService::APP_TOTAL_PREFIX . 'book', 12);
+
+        $persisted = null;
+        $entityManager = $this->createStub(EntityManagerInterface::class);
+        $entityManager->method('persist')->willReturnCallback(static function (object $play) use (&$persisted): void {
+            $persisted = $play;
+        });
+
+        $counts = new PlayService($repository, $total, $entityManager)->recordFromApp('book', 12, 'u42');
+
+        $this->assertInstanceOf(Play::class, $persisted);
+        $this->assertSame('book', $persisted->getOwnerType());
+        $this->assertSame(['book:12' => 1], $counts);
+    }
+
     // A listener nobody knows is counted in the total, and written under no holder
     public function testAnAnonymousPlayIsCountedInTheTotalAlone(): void
     {

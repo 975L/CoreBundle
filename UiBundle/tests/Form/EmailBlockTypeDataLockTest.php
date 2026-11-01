@@ -13,8 +13,10 @@ namespace c975L\UiBundle\Tests\Form;
 use c975L\UiBundle\Entity\EmailBlock;
 use c975L\UiBundle\Form\EmailBlockType;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Form\Extension\Validator\ValidatorExtension;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\Forms;
+use Symfony\Component\Validator\Validation;
 
 /**
  * The other half of "a data block moves but is never deleted".
@@ -76,7 +78,10 @@ class EmailBlockTypeDataLockTest extends TestCase
 
     private function form(?EmailBlock $block): FormInterface
     {
-        return Forms::createFormFactory()->create(EmailBlockType::class, $block);
+        return Forms::createFormFactoryBuilder()
+            ->addExtension(new ValidatorExtension(Validation::createValidator()))
+            ->getFormFactory()
+            ->create(EmailBlockType::class, $block);
     }
 
     private function block(string $type, ?string $label, int $position): EmailBlock

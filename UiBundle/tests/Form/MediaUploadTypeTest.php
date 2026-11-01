@@ -15,6 +15,8 @@ use c975L\UiBundle\Form\ImageClassChoiceType;
 use c975L\UiBundle\Form\MediaUploadType;
 use c975L\UiBundle\Service\ImageDimensionsReader;
 use c975L\UiBundle\Service\MediaDimensionsFiller;
+use c975L\UiBundle\Validator\AllowedUploadExtension;
+use c975L\UiBundle\Validator\SafeUrl;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Form\Event\PostSubmitEvent;
@@ -328,6 +330,23 @@ class MediaUploadTypeTest extends TestCase
         }
     }
 
+    // A project card's outbound link is the editor's own words, and goes out as an href
+    public function testThePortfolioCardsLinkCarriesSafeUrl(): void
+    {
+        $options = [];
+        $builder = $this->createStub(FormBuilderInterface::class);
+        $builder->method('add')->willReturnCallback(function (string $name, ?string $type = null, array $fieldOptions = []) use (&$options, $builder) {
+            $options[$name] = $fieldOptions;
+
+            return $builder;
+        });
+        $builder->method('addEventListener')->willReturnSelf();
+
+        $this->createType()->buildForm($builder, ['accept' => 'image/*', 'context' => 'portfolio_grid']);
+
+        $this->assertContainsOnlyInstancesOf(SafeUrl::class, $options['url']['constraints'] ?? [null]);
+    }
+
     // Fires the POST_SUBMIT listener with $media as the entry's submitted data
     private function submitEntry(?string $accept, ?string $context, Media $media): void
     {
@@ -414,9 +433,10 @@ class MediaUploadTypeTest extends TestCase
         foreach ([$this->buildFileOptions('image/*,video/*'), $this->buildFileOptionsForEntry('image/*,video/*', null, new Media())] as $options) {
             $constraints = $options['constraints'] ?? [];
 
-            $this->assertCount(1, $constraints);
+            $this->assertCount(2, $constraints);
             $this->assertInstanceOf(FileConstraint::class, $constraints[0]);
             $this->assertSame(['image/*', 'video/*'], $constraints[0]->mimeTypes);
+            $this->assertInstanceOf(AllowedUploadExtension::class, $constraints[1]);
         }
     }
 
@@ -439,11 +459,13 @@ class MediaUploadTypeTest extends TestCase
         $this->assertSame($mimeTypes, array_values(array_unique($mimeTypes)));
     }
 
-    // A kind declaring no media type at all constrains nothing rather than constraining everything away
-    public function testFileFieldCarriesNoConstraintWhenNoMediaTypeIsDeclared(): void
+    // A kind declaring no media type at all leaves the type free rather than constraining everything away - the extension stays on the list whatever the kind says
+    public function testFileFieldOnlyChecksTheExtensionWhenNoMediaTypeIsDeclared(): void
     {
-        $this->assertSame([], $this->buildFileOptions(null)['constraints']);
-        $this->assertSame([], $this->buildFileOptionsForEntry(null, null, new Media())['constraints']);
+        foreach ([$this->buildFileOptions(null), $this->buildFileOptionsForEntry(null, null, new Media())] as $options) {
+            $this->assertCount(1, $options['constraints']);
+            $this->assertInstanceOf(AllowedUploadExtension::class, $options['constraints'][0]);
+        }
     }
 
     // Same capture as buildFileOptionsForEntry(), but on the placeholder field buildForm() adds directly - the one a brand new row renders with until PRE_SET_DATA runs

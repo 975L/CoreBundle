@@ -11,6 +11,7 @@
 namespace c975L\UiBundle\Form\Block;
 
 use c975L\UiBundle\Service\MapGeocoderInterface;
+use c975L\UiBundle\Validator\SafeUrl;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
@@ -68,6 +69,7 @@ class MapPointType extends AbstractType
             ->add('url', TextType::class, [
                 'label' => 'label.url',
                 'required' => false,
+                'constraints' => [new SafeUrl()],
             ]);
 
         // SUBMIT and not POST_SUBMIT, same as HasAnchorFieldTrait: this is where a whole array of block data can still be written back, and the constraint below then validates what the geocoding actually produced rather than what was typed

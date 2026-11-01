@@ -10,6 +10,7 @@
 
 namespace c975L\UiBundle\Tests\Templates;
 
+use c975L\UiBundle\Tests\Fixtures\HtmlSanitizerKernel;
 use PHPUnit\Framework\TestCase;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
@@ -60,7 +61,7 @@ class VideoPreloadTest extends TestCase
     // The component alone, its two filters stubbed: only the <video> attributes are under test
     private function render(array $context): string
     {
-        $twig = new Environment(new FilesystemLoader(\dirname(__DIR__, 2) . '/templates/components/Video'));
+        $twig = HtmlSanitizerKernel::register(new Environment(new FilesystemLoader(\dirname(__DIR__, 2) . '/templates/components/Video')));
         $twig->addFilter(new TwigFilter('to_bool', static fn (mixed $value): bool => (bool) $value));
         $twig->addFilter(new TwigFilter('trans', static fn (string $id): string => $id));
 

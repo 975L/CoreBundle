@@ -33,5 +33,5 @@
             {% endif %}
         </div>
     </div>
-    {% if caption and description is defined and description %}<figcaption class="video-iframe-description text">{{ description|raw }}</figcaption>{% endif %}
+    {% if caption and description is defined and description %}<figcaption class="video-iframe-description text">{{ description|sanitize_html('c975l.rich') }}</figcaption>{% endif %}
 </figure>

@@ -13,7 +13,7 @@ namespace c975L\UiBundle\Entity;
 use c975L\UiBundle\Repository\PlayTotalRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-// How many times something was played to its end, by anyone: the site's own listeners and its apps', signed in or not. A count and nobody's, kept apart from Play - whose rows are one holder's and are handed over to an account when it connects, which would count the same listens twice
+// How many times something was played to its end, by anyone: the site's own listeners on a ticket under the thing's owner type, and its apps' on their word under "app:" + that type (see PlayService::APP_TOTAL_PREFIX), signed in or not. A count and nobody's, kept apart from Play - whose rows are one holder's and are handed over to an account when it connects, which would count the same listens twice
 #[ORM\Entity(repositoryClass: PlayTotalRepository::class)]
 #[ORM\Table(name: 'site_play_total')]
 #[ORM\UniqueConstraint(name: 'uniq_play_total_owner', columns: ['owner_type', 'owner_id'])]

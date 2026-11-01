@@ -1,5 +1,41 @@
 # ChangeLog
 
+## v1.85.0
+
+Security fixes from the audit of 01/11/2026
+
+### ConfigBundle
+
+- `OAuthLoginController`: a `redirect_to` holding a control character is refused (01/11/2026)
+- `RedirectSubscriber`: leading slashes and backslashes of a target computed from a "*" row collapse (01/11/2026)
+- `PasswordResetter`: a password change, a reset and the "other devices" sign-out delete the account's app tokens (01/11/2026)
+- `Redirect::$toUrl` carries `SafeUrl`, and `Config::validateUrlValue()` applies it to any setting named `url-*` or `*-url` (01/11/2026)
+
+### UiBundle
+
+- `UiMediaNamer`: the extension stored under `public/` comes from an allowlist, or else the file's bytes, or else becomes `.bin` (01/11/2026)
+- Added `AllowedUploadExtension` constraint and validator, on `VichImageOptions`, `MediaCrudController` and `MediaUploadType` (01/11/2026)
+- Added `symfony/html-sanitizer` and the `c975l.rich` and `c975l.legal` sanitizers (01/11/2026)
+- Editor-fed `|raw` replaced with `|sanitize_html('c975l.rich')` in the components and blocks, and the Hero's title sanitized ahead of `|trix_inline` (01/11/2026)
+- `legal/pdf.html.twig` goes through `c975l.legal`, so a rewritten section can no longer join a server file to a WeasyPrint PDF (01/11/2026)
+- The `legal_*` Twig functions go through `c975l.rich`, which keeps `data-legal-id` (01/11/2026)
+- `BlockFormController`: `ui_block_data_form` asks for the editor role (01/11/2026)
+- `DownloadController`: the route's dots are escaped, dotfiles and php-like files are refused on both routes (01/11/2026)
+- `SendEmailFormAction`: "receive a copy" keeps its attachments for the signed-in account's own address alone, any other getting the message under `text.form_copy_notice` (01/11/2026)
+- `EmailSendRequest::$preface`: a sentence `EmailService` escapes and writes ahead of an html or template body (01/11/2026)
+- `ReviewService`: verified only for the signed-in account's own address, an unverified review's score weighing under its own key (01/11/2026)
+- `ReviewController`: the address of a signed-in visitor prefilled, through `CurrentAccountAddress::address()` (01/11/2026)
+- Added `c975l:ui:review-ratings-rekey` (`--dry-run`), to run once per site, moving published unverified scores to their per-review key (01/11/2026)
+- `ReviewService::syncRating()` runs the same move for the review it is handed (01/11/2026)
+- Added `RatingService::hasVote()` (01/11/2026)
+- Added `SafeUrl` constraint and validator, refusing any scheme but http, https, mailto, tel however spelled (01/11/2026)
+- `SafeUrl` on `LinkTargetType`, `CollectionItemType`, `MapPointType`, `MediaUploadType`, `FormFieldType`, `FormLinkType` and `EmailBlockType`; `Assert\Url` limited to http and https on `VideoIframeType::src`, which had none, and `ContactDetailsType` (01/11/2026)
+- `AppLibraryController`: an app's plays stay out of the public total, held under `PlayService::APP_TOTAL_PREFIX` (01/11/2026)
+- Added `CurrentAccountAddress` (01/11/2026)
+- `components/Form/_submit.html.twig`: the privacy url is escaped ahead of its `|raw` sentence (01/11/2026)
+- `label.review_form_moderation_notice` says a verified review is written from a signed-in account (01/11/2026)
+- Added `text.form_copy_notice` to the three `ui` catalogs, `label.upload_extension_not_allowed` and `label.url_scheme_not_allowed` to the three `validators` catalogs (01/11/2026)
+
 ## v1.84.0
 
 One batch removal for every recycle bin

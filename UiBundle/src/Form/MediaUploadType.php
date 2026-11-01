@@ -12,6 +12,8 @@ namespace c975L\UiBundle\Form;
 
 use c975L\UiBundle\Entity\Media;
 use c975L\UiBundle\Service\MediaDimensionsFiller;
+use c975L\UiBundle\Validator\AllowedUploadExtension;
+use c975L\UiBundle\Validator\SafeUrl;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Event\PostSubmitEvent;
 use Symfony\Component\Form\Event\PreSetDataEvent;
@@ -72,7 +74,7 @@ class MediaUploadType extends AbstractType
                     'download_label' => false,
                     'delete_label_translation_domain' => 'messages',
                     'attr' => array_filter(['accept' => $options['accept']]),
-                    'constraints' => $this->mimeTypeConstraints($options['accept']),
+                    'constraints' => [...$this->mimeTypeConstraints($options['accept']), new AllowedUploadExtension()],
                 ]);
             }
         );
@@ -112,7 +114,7 @@ class MediaUploadType extends AbstractType
                 'download_label' => false,
                 'delete_label_translation_domain' => 'messages',
                 'attr' => array_filter(['accept' => $options['accept']]),
-                'constraints' => $this->mimeTypeConstraints($options['accept']),
+                'constraints' => [...$this->mimeTypeConstraints($options['accept']), new AllowedUploadExtension()],
             ])
             ->add('position', HiddenType::class, [
                 'attr' => ['class' => 'ui-sort-position'],
@@ -194,6 +196,7 @@ class MediaUploadType extends AbstractType
                     ->add('url', TextType::class, [
                         'label' => 'label.url',
                         'required' => false,
+                        'constraints' => [new SafeUrl()],
                     ]);
             }
 

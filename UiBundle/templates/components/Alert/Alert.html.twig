@@ -9,5 +9,5 @@
     {% if label %}
         <span class="alert__label">{{ ('label.alert_' ~ type)|trans({}, 'ui') }}</span>
     {% endif %}
-    <div class="alert__body">{% block content %}{{ content|raw|nl2br }}{% endblock %}</div>
+    <div class="alert__body">{% block content %}{{ content|default('')|sanitize_html('c975l.rich')|nl2br }}{% endblock %}</div>
 </div>

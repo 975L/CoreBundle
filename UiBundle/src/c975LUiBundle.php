@@ -56,6 +56,31 @@ use Symfony\Component\HttpKernel\Bundle\AbstractBundle;
 
 class c975LUiBundle extends AbstractBundle
 {
+    // What an editor's rich text may hold once on a page, whichever bundle prints it: |sanitize_html('c975l.rich'). Trix aligns a block through its "class" (see trix-editor.js) and no stylesheet of this ecosystem works without it, where the sanitizer's safe list leaves it out. "data-legal-id" is what legal-model-edit.js finds a section of a legal page by, read by nothing else. The head elements go too, the safe list keeping a <link> that would load a stylesheet. No input ceiling: the default of 20000 characters silently cuts a long text in two
+    private const array RICH_SANITIZER = [
+        'allow_safe_elements' => true,
+        'drop_elements' => ['head', 'link', 'meta', 'title'],
+        'allow_attributes' => ['class' => '*', 'data-legal-id' => '*'],
+        'allowed_link_schemes' => ['http', 'https', 'mailto', 'tel'],
+        'allow_relative_links' => true,
+        'allowed_media_schemes' => ['http', 'https'],
+        'allow_relative_medias' => true,
+        'max_input_length' => -1,
+    ];
+
+    // Both names are a contract with the templates of the other bundles
+    public const array HTML_SANITIZERS = [
+        'c975l.rich' => self::RICH_SANITIZER,
+        // The legal documents as a PDF, and for nothing else: a page in a browser goes through "c975l.rich", its links keeping their "rel". WeasyPrint reads off the disk and off the network as much as a browser would: "rel" dropped everywhere since rel="attachment" is what joins a file to the PDF, "srcset" since no url check reads it, and no media at all: a relative src is a path on the disk to WeasyPrint's base url, and no shipped model holds an image. FrameworkBundle reads an empty scheme list as "the defaults", "data:" among them, so that is said with a list holding no "data" and no host at all, which leaves nothing absolute
+        'c975l.legal' => [
+            ...self::RICH_SANITIZER,
+            'drop_attributes' => ['rel' => '*', 'srcset' => '*'],
+            'allowed_media_schemes' => ['https'],
+            'allowed_media_hosts' => [],
+            'allow_relative_medias' => false,
+        ],
+    ];
+
     public function build(ContainerBuilder $container): void
     {
         $container->addCompilerPass(new BlockRegistryPass());
@@ -106,6 +131,9 @@ class c975LUiBundle extends AbstractBundle
                 'paths' => [
                     __DIR__ . '/../assets' => '@c975l/ui-bundle',
                 ],
+            ],
+            'html_sanitizer' => [
+                'sanitizers' => self::HTML_SANITIZERS,
             ],
             // The limiter every generic Form shares, declared here rather than left to the consuming app: a Form built in the back office has no dedicated service of its own to bind a named limiter to, and FormController takes "@?limiter.ui_form" optionally, so a site that never declared it served its public forms - registration and password reset among them - with no limit at all, and nothing said so. An app declaring its own "ui_form" still decides, its config being merged over this one. Unguarded on purpose: symfony/rate-limiter is a hard dependency of this package, and an app that strips it anyway must fail on an unknown "rate_limiter" key rather than quietly lose the protection again
             'rate_limiter' => [

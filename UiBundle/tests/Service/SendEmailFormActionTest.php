@@ -16,6 +16,7 @@ use c975L\UiBundle\Entity\FormField;
 use c975L\UiBundle\Entity\FormOutput;
 use c975L\UiBundle\Model\EmailSendRequest;
 use c975L\UiBundle\Repository\EmailTemplateRepository;
+use c975L\UiBundle\Service\CurrentAccountAddress;
 use c975L\UiBundle\Service\EmailService;
 use c975L\UiBundle\Service\EmailTemplateRenderer;
 use c975L\UiBundle\Service\ExpressionEvaluator;
@@ -32,6 +33,7 @@ class SendEmailFormActionTest extends TestCase
         ?EmailTemplateRepository $emailTemplateRepository = null,
         ?EmailTemplateRenderer $emailTemplateRenderer = null,
         ?ExpressionEvaluator $expressionEvaluator = null,
+        bool $ownAddress = false,
     ): SendEmailFormAction {
         $emailTemplateRepository ??= $this->createConfiguredStub(EmailTemplateRepository::class, ['findOneBy' => null]);
         $emailTemplateRenderer ??= $this->createStub(EmailTemplateRenderer::class);
@@ -45,7 +47,14 @@ class SendEmailFormActionTest extends TestCase
         );
         $translator->method('getLocale')->willReturn('fr');
 
-        return new SendEmailFormAction($emailService, $emailTemplateRepository, $emailTemplateRenderer, $translator, $expressionEvaluator);
+        return new SendEmailFormAction(
+            $emailService,
+            $emailTemplateRepository,
+            $emailTemplateRenderer,
+            $translator,
+            $expressionEvaluator,
+            currentAccountAddress: $this->createConfiguredStub(CurrentAccountAddress::class, ['owns' => $ownAddress]),
+        );
     }
 
     private function buildForm(string $name, ?array $actionConfig, array $fields): Form
@@ -316,7 +325,7 @@ class SendEmailFormActionTest extends TestCase
             'senderEmailField' => 'email',
             'offerReceiveCopy' => true,
         ], ['email' => 'Email']);
-        $action = $this->createAction($emailService);
+        $action = $this->createAction($emailService, ownAddress: true);
 
         // "receiveCopy" is the visitor's own checkbox answer (see FormSubmissionType), not a fixed admin choice
         $action->handle($form, ['email' => 'visitor@example.com', 'receiveCopy' => true]);
@@ -328,6 +337,131 @@ class SendEmailFormActionTest extends TestCase
         $this->assertFalse($captured->wrapLayout);
         $this->assertSame('visitor@example.com', $captured->replyTo);
         $this->assertSame('visitor@example.com', $captured->copyToEmail);
+    }
+
+    // A typed address proves nothing: it gets the message under a fixed sentence, on a request of its own, and none of the files somebody chose to send
+    public function testATypedAddressGetsTheMessageWithoutItsAttachmentsAndUnderTheNotice(): void
+    {
+        $sent = [];
+        $emailService = $this->createStub(EmailService::class);
+        $emailService->method('send')->willReturnCallback(function (EmailSendRequest $request) use (&$sent): bool {
+            $sent[] = $request;
+
+            return true;
+        });
+
+        $path = tempnam(sys_get_temp_dir(), 'photo');
+        file_put_contents($path, 'bytes');
+        $photo = new UploadedFile($path, 'plaque.jpg', 'image/jpeg', null, true);
+
+        $form = $this->buildForm('contact', ['senderEmailField' => 'email', 'offerReceiveCopy' => true], ['email' => 'Email', 'message' => 'Message']);
+        $form->addField(new FormField()->setName('photos')->setLabel('Photos')->setType(FormField::TYPE_IMAGE)->setMaxValue(3));
+
+        $this->createAction($emailService)->handle($form, ['email' => 'visitor@example.com', 'message' => 'Hello', 'photos' => [$photo], 'receiveCopy' => true]);
+        unlink($path);
+
+        $this->assertCount(2, $sent);
+        $this->assertNull($sent[0]->copyToEmail);
+        $this->assertCount(1, $sent[0]->attachments);
+        $this->assertNull($sent[0]->preface);
+
+        $this->assertSame('visitor@example.com', $sent[1]->to);
+        $this->assertSame('visitor@example.com', $sent[1]->toName);
+        $this->assertNull($sent[1]->replyTo);
+        $this->assertSame([], $sent[1]->attachments);
+        $this->assertSame('text.form_copy_notice', $sent[1]->preface);
+        $this->assertSame($sent[0]->subject, $sent[1]->subject);
+        $this->assertSame($sent[0]->template, $sent[1]->template);
+        $this->assertSame('Hello', $sent[1]->context['fields']['Message']);
+        $this->assertTrue($sent[1]->wrapLayout);
+    }
+
+    // The very body the site received, when an EmailTemplate composes it
+    public function testACopyToATypedAddressCarriesTheBodyOfANamedTemplate(): void
+    {
+        $sent = [];
+        $emailService = $this->createStub(EmailService::class);
+        $emailService->method('send')->willReturnCallback(function (EmailSendRequest $request) use (&$sent): bool {
+            $sent[] = $request;
+
+            return true;
+        });
+
+        $emailTemplateRepository = $this->createConfiguredStub(EmailTemplateRepository::class, ['findOneBy' => new EmailTemplate()]);
+        $emailTemplateRenderer = $this->createConfiguredStub(EmailTemplateRenderer::class, ['render' => '<p>Compiled</p>']);
+
+        $form = $this->buildForm('contact', ['emailTemplate' => 'x', 'senderEmailField' => 'email', 'offerReceiveCopy' => true], ['email' => 'Email']);
+        $this->createAction($emailService, $emailTemplateRepository, $emailTemplateRenderer)->handle($form, ['email' => 'visitor@example.com', 'receiveCopy' => true]);
+
+        $this->assertSame('<p>Compiled</p>', $sent[1]->html);
+        $this->assertSame('text.form_copy_notice', $sent[1]->preface);
+    }
+
+    // The account's own address stays one message and its whole copy: attachments, and no notice to explain anything to its owner
+    public function testAnAccountsOwnAddressGetsTheWholeCopy(): void
+    {
+        $sent = [];
+        $emailService = $this->createStub(EmailService::class);
+        $emailService->method('send')->willReturnCallback(function (EmailSendRequest $request) use (&$sent): bool {
+            $sent[] = $request;
+
+            return true;
+        });
+
+        $path = tempnam(sys_get_temp_dir(), 'photo');
+        file_put_contents($path, 'bytes');
+        $photo = new UploadedFile($path, 'plaque.jpg', 'image/jpeg', null, true);
+
+        $form = $this->buildForm('contact', ['senderEmailField' => 'email', 'offerReceiveCopy' => true], ['email' => 'Email']);
+        $form->addField(new FormField()->setName('photos')->setLabel('Photos')->setType(FormField::TYPE_IMAGE)->setMaxValue(3));
+
+        $this->createAction($emailService, ownAddress: true)->handle($form, ['email' => 'member@example.com', 'photos' => [$photo], 'receiveCopy' => true]);
+        unlink($path);
+
+        $this->assertCount(1, $sent);
+        $this->assertSame('member@example.com', $sent[0]->copyToEmail);
+        $this->assertCount(1, $sent[0]->attachments);
+        $this->assertNull($sent[0]->preface);
+    }
+
+    // Sent under the sender the form names, like the message
+    public function testTheCopyLeavesLikeTheMessage(): void
+    {
+        $sent = [];
+        $emailService = $this->createStub(EmailService::class);
+        $emailService->method('send')->willReturnCallback(function (EmailSendRequest $request) use (&$sent): bool {
+            $sent[] = $request;
+
+            return true;
+        });
+
+        $form = $this->buildForm('contact', ['senderEmailField' => 'email', 'offerReceiveCopy' => true, 'from' => 'form@example.com', 'fromName' => 'The form'], ['email' => 'Email']);
+        $this->createAction($emailService)->handle($form, ['email' => 'visitor@example.com', 'receiveCopy' => true]);
+
+        $this->assertSame('form@example.com', $sent[1]->from);
+        $this->assertSame('The form', $sent[1]->fromName);
+    }
+
+    // No copy of a message that did not leave
+    public function testNoCopyWhenTheMessageFailed(): void
+    {
+        $emailService = $this->createMock(EmailService::class);
+        $emailService->expects($this->once())->method('send')->willReturn(false);
+
+        $form = $this->buildForm('contact', ['senderEmailField' => 'email', 'offerReceiveCopy' => true], ['email' => 'Email']);
+
+        $this->assertFalse($this->createAction($emailService)->handle($form, ['email' => 'visitor@example.com', 'receiveCopy' => true]));
+    }
+
+    // Its own failure changes nothing to the answer
+    public function testAFailedCopyLeavesTheAnswerAlone(): void
+    {
+        $emailService = $this->createStub(EmailService::class);
+        $emailService->method('send')->willReturnOnConsecutiveCalls(true, false);
+
+        $form = $this->buildForm('contact', ['senderEmailField' => 'email', 'offerReceiveCopy' => true], ['email' => 'Email']);
+
+        $this->assertTrue($this->createAction($emailService)->handle($form, ['email' => 'visitor@example.com', 'receiveCopy' => true]));
     }
 
     public function testHandleDoesNotSendCopyWhenCheckboxNotOffered(): void

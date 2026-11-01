@@ -18,6 +18,14 @@
                 <source>label.fixed_icon_invalid_format</source>
                 <target>Formato no compatible con este rol - suba una imagen %formats%</target>
             </trans-unit>
+            <trans-unit id="pQqp8el">
+                <source>label.upload_extension_not_allowed</source>
+                <target>Los archivos con la extensión «.%extension%» no se pueden subir aquí.</target>
+            </trans-unit>
+            <trans-unit id="Dz4ecQu">
+                <source>label.url_scheme_not_allowed</source>
+                <target>Esta dirección no se acepta: utilice un enlace http o https, mailto, tel, o una ruta de este sitio.</target>
+            </trans-unit>
             <trans-unit id="57FGRQf">
                 <source>text.captcha_failed</source>
                 <target>No se ha podido verificar que su envío proviene de una persona, inténtelo de nuevo</target>

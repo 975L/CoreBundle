@@ -10,6 +10,7 @@
 
 namespace c975L\UiBundle\Form;
 
+use c975L\UiBundle\Validator\SafeUrl;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -27,6 +28,7 @@ class FormLinkType extends AbstractType
             ])
             ->add('url', TextType::class, [
                 'label' => 'label.form_link_url',
+                'constraints' => [new SafeUrl()],
             ])
         ;
     }

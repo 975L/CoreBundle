@@ -19,14 +19,14 @@
 <p class="text-center">
     <{{ tag }}{% if url %} href="{{ url }}"{% if target is defined and target != "" %} target="{{ target }}"{% endif %}{% if ariaLabel != '' %} aria-label="{{ ariaLabel }}"{% endif %}{% endif %}>
         {% if above and label != '' %}
-            <span class="img-above {{ classLabel|default("") }}">{{ label|raw }}</span>
+            <span class="img-above {{ classLabel|default("") }}">{{ label|default('')|sanitize_html('c975l.rich') }}</span>
             <br>
         {% endif %}
         {# aria-hidden doubles the empty alt so checkers read it as decorative, not as a missing alternative #}
         <img src="{{ asset(src) }}" class="img {{ imgResponsive }} {{ class|default("") }}" alt="{{ alt|default("") }}"{% if alt|default("") == "" %} aria-hidden="true"{% endif %} {% if width is defined and width != "" %} width="{{ width }}" {% endif %} {% if height is defined and height != "" %} height="{{ height }}" {% endif %} {% if priority %}loading="eager" fetchpriority="high"{% else %}loading="lazy"{% endif %}>
         {% if not above and label != '' %}
             <br>
-            <span class="img-below {{ classLabel|default("") }}">{{ label|raw }}</span>
+            <span class="img-below {{ classLabel|default("") }}">{{ label|default('')|sanitize_html('c975l.rich') }}</span>
         {% endif %}
     </{{ tag }}>
 </p>

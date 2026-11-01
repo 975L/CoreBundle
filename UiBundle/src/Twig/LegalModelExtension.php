@@ -15,9 +15,12 @@ use c975L\UiBundle\Service\LegalDocument;
 use c975L\UiBundle\Service\LegalModelCatalog;
 use c975L\UiBundle\Service\LegalModelPlaceholders;
 use c975L\UiBundle\Service\LegalModelRenderer;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Component\HtmlSanitizer\HtmlSanitizerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Twig\Attribute\AsTwigFunction;
 
+// A legal document on a page, which is where these functions stop: its PDF is drawn by LegalDocument::pdf(), which reads LegalModelRenderer directly and goes through legal/pdf.html.twig and the stricter "c975l.legal". A template handed to a PDF engine does not call them
 class LegalModelExtension
 {
     public function __construct(
@@ -25,6 +28,8 @@ class LegalModelExtension
         private readonly LegalDocument $legalDocument,
         private readonly LegalModelPlaceholders $placeholders,
         private readonly RequestStack $requestStack,
+        #[Autowire(service: 'html_sanitizer.sanitizer.c975l.rich')]
+        private readonly HtmlSanitizerInterface $sanitizer,
     ) {
     }
 
@@ -52,21 +57,21 @@ class LegalModelExtension
     #[AsTwigFunction('legal_document_html', isSafe: ['html'])]
     public function legalDocumentHtml(string $model, ?string $locale = null): string
     {
-        return $this->legalDocument->html(
+        return $this->sanitizer->sanitize($this->legalDocument->html(
             $model,
             $locale ?? $this->requestStack->getCurrentRequest()?->getLocale() ?? LegalModelCatalog::FALLBACK_LOCALE,
-        );
+        ));
     }
 
     // The same document straight from a model identifier, for an app rendering a legal page from its own template rather than from a block - what a site installing ShopBundle without any page management needs for its terms of sales. No customization screen goes with it, so whatever delta is passed here is the caller's own
     #[AsTwigFunction('legal_model_html', isSafe: ['html'])]
     public function legalModelHtml(string $model, ?string $latestUpdate = null, array $customization = [], ?string $locale = null): string
     {
-        return $this->renderer->render(
+        return $this->sanitizer->sanitize($this->renderer->render(
             $model,
             $latestUpdate,
             $customization,
             $locale ?? $this->requestStack->getCurrentRequest()?->getLocale() ?? LegalModelCatalog::FALLBACK_LOCALE,
-        );
+        ));
     }
 }

@@ -10,6 +10,7 @@
 
 namespace c975L\UiBundle\Tests\Templates;
 
+use c975L\UiBundle\Tests\Fixtures\HtmlSanitizerKernel;
 use c975L\UiBundle\Twig\BoolExtension;
 use PHPUnit\Framework\TestCase;
 use Symfony\Bridge\Twig\Extension\TranslationExtension;
@@ -91,7 +92,7 @@ class ComponentLocaleTest extends TestCase
             }
         };
 
-        $twig = new Environment(new FilesystemLoader(\dirname(__DIR__, 2) . '/templates'));
+        $twig = HtmlSanitizerKernel::register(new Environment(new FilesystemLoader(\dirname(__DIR__, 2) . '/templates')));
         $twig->addExtension(new TranslationExtension($translator));
         // The bundle's own filter and not a cast: a cast reads the string "false" as true
         $twig->addFilter(new TwigFilter('to_bool', new BoolExtension()->toBool(...)));

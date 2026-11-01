@@ -20,7 +20,7 @@ use c975L\UiBundle\Repository\EmailTemplateRepository;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-// Built-in FormActionInterface provider (key "send_email"), so a Form built entirely through the admin - no custom bundle/code - can still notify someone by email on submit. Configured via Form::$actionConfig: "to"/"toName"/"from"/"fromName"/"replyTo"/"replyToName"/"subject" (all optional, EmailService/ConfigService fill in the rest), "senderEmailField" (name of the submitted field holding the visitor's own email, used as replyTo) and "offerReceiveCopy" (shows a "receive a copy" checkbox, see FormSubmissionType - the visitor's own answer, not a fixed admin choice, decides whether a copy is actually sent). The email body is either "emailTemplate" (the name of an EmailTemplate, rendered by EmailTemplateRenderer with the submitted fields available to a TYPE_FIELDS_TABLE block - see UiBundle Readme) or, failing that/its lookup, the legacy "template" Twig path (defaults to DEFAULT_TEMPLATE)
+// Built-in FormActionInterface provider (key "send_email"), so a Form built entirely through the admin - no custom bundle/code - can still notify someone by email on submit. Configured via Form::$actionConfig: "to"/"toName"/"from"/"fromName"/"replyTo"/"replyToName"/"subject" (all optional, EmailService/ConfigService fill in the rest), "senderEmailField" (name of the submitted field holding the visitor's own email, used as replyTo) and "offerReceiveCopy" (shows a "receive a copy" checkbox, see FormSubmissionType - the visitor's own answer, not a fixed admin choice, decides whether anything is sent back: the whole copy to the address of the account signed in, and to any other, a typed address proving nothing, the message without its attachments and under a fixed sentence saying where it comes from). The email body is either "emailTemplate" (the name of an EmailTemplate, rendered by EmailTemplateRenderer with the submitted fields available to a TYPE_FIELDS_TABLE block - see UiBundle Readme) or, failing that/its lookup, the legacy "template" Twig path (defaults to DEFAULT_TEMPLATE)
 class SendEmailFormAction implements FormActionInterface
 {
     private const string DEFAULT_TEMPLATE = '@c975LUi/emails/form_submission.html.twig';
@@ -33,6 +33,8 @@ class SendEmailFormAction implements FormActionInterface
         // Optional so a subclass or an app wiring this by hand keeps working - without it, a calculator's results are simply left out of the email
         private readonly ?ExpressionEvaluator $expressionEvaluator = null,
         private readonly PriceFormatter $priceFormatter = new PriceFormatter(),
+        // Optional for the same reason - without it, nobody is proven to own the address they typed, and every copy is the one of an unproven address
+        private readonly ?CurrentAccountAddress $currentAccountAddress = null,
     ) {
     }
 
@@ -52,26 +54,51 @@ class SendEmailFormAction implements FormActionInterface
 
         $addressing = $this->addressing($config, $senderEmail);
 
-        $request = new EmailSendRequest(
+        $wantsCopy = !empty($submittedData['receiveCopy']) && \is_string($senderEmail) && '' !== $senderEmail;
+        $ownAddress = $wantsCopy && true === $this->currentAccountAddress?->owns($senderEmail);
+
+        // What the message and its copy to a typed address have in common
+        $message = [
             // Same sentence as the heading the seeded EmailTemplate opens with ("Nouveau message via contact"), and translated like it: an admin reading their inbox got an English subject over a French email
-            subject: $config['subject'] ?? $this->translator->trans('label.form_new_message', ['%form%' => (string) $form->getName()], 'ui'),
-            context: ['form' => $form, 'fields' => $labelledFields],
-            template: null === $html ? ($config['template'] ?? self::DEFAULT_TEMPLATE) : null,
-            html: $html,
-            from: $addressing['from'],
-            fromName: $addressing['fromName'],
+            'subject' => $config['subject'] ?? $this->translator->trans('label.form_new_message', ['%form%' => (string) $form->getName()], 'ui'),
+            'context' => ['form' => $form, 'fields' => $labelledFields],
+            'template' => null === $html ? ($config['template'] ?? self::DEFAULT_TEMPLATE) : null,
+            'html' => $html,
+            'from' => $addressing['from'],
+            'fromName' => $addressing['fromName'],
+            // The default body in the site's layout; a "template" of the site's own stays the whole document it always was
+            'wrapLayout' => null === $html && !isset($config['template']),
+        ];
+
+        $sent = $this->emailService->send(new EmailSendRequest(
+            ...$message,
             to: $addressing['to'],
             toName: $addressing['toName'],
             replyTo: $addressing['replyTo'],
             replyToName: $addressing['replyToName'],
             // The visitor's own checkbox answer (see FormSubmissionType's "receiveCopy" field, only rendered when actionConfig's "offerReceiveCopy" is set) - not a fixed admin choice
-            copyToEmail: (!empty($submittedData['receiveCopy']) && null !== $senderEmail) ? $senderEmail : null,
-            // The default body in the site's layout; a "template" of the site's own stays the whole document it always was
-            wrapLayout: null === $html && !isset($config['template']),
+            copyToEmail: $ownAddress ? $senderEmail : null,
             attachments: $this->attachments($form, $submittedData),
-        );
+        ));
 
-        return $this->emailService->send($request);
+        // Only once the message left, and its own failure changes nothing to the answer: what the visitor wrote did reach the site
+        if ($sent && $wantsCopy && !$ownAddress) {
+            $this->sendTypedAddressCopy($message, $senderEmail);
+        }
+
+        return $sent;
+    }
+
+    // A typed address proves nothing, so whoever it belongs to is told where this comes from and why, and gets no file somebody chose to send them. The address as its own name, EmailService otherwise naming any recipient after the site's "email-to-name"; no reply-to of the visitor's, who would be answering themselves
+    /** @param array{subject: string, context: array<string, mixed>, template: ?string, html: ?string, from: ?string, fromName: ?string, wrapLayout: bool} $message */
+    private function sendTypedAddressCopy(array $message, string $address): void
+    {
+        $this->emailService->send(new EmailSendRequest(
+            ...$message,
+            to: $address,
+            toName: $address,
+            preface: $this->translator->trans('text.form_copy_notice', [], 'ui'),
+        ));
     }
 
     // The body a named EmailTemplate composes, or null for a form that names none - which falls the request back on its Twig template

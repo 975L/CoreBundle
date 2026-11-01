@@ -10,5 +10,5 @@
         <source src="{{ src }}" type="{{ type|default('audio/mpeg') }}">
         <p>{{ 'label.audio_not_supported'|trans({}, "ui") }} <a href="{{ src }}">{{ 'label.download'|trans({}, "ui") }}</a></p>
     </audio>
-    {% if description is defined and description %}<figcaption class="audio-description text">{{ description|raw }}</figcaption>{% endif %}
+    {% if description is defined and description %}<figcaption class="audio-description text">{{ description|sanitize_html('c975l.rich') }}</figcaption>{% endif %}
 </figure>

@@ -1,5 +1,15 @@
 [
     {
+        "date": "2026-11-01",
+        "description": [
+            {
+                "en": "Changing or resetting a password now also signs the account out of its mobile apps.",
+                "fr": "Changer ou réinitialiser un mot de passe déconnecte désormais aussi le compte de ses applications mobiles.",
+                "es": "Cambiar o restablecer una contraseña ahora también desconecta la cuenta de sus aplicaciones móviles."
+            }
+        ]
+    },
+    {
         "date": "2026-10-31",
         "description": [
             {

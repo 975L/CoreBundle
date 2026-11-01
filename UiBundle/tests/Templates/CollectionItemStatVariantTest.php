@@ -10,6 +10,7 @@
 
 namespace c975L\UiBundle\Tests\Templates;
 
+use c975L\UiBundle\Tests\Fixtures\HtmlSanitizerKernel;
 use PHPUnit\Framework\TestCase;
 use Symfony\Bridge\Twig\Extension\TranslationExtension;
 use Symfony\Component\Translation\IdentityTranslator;
@@ -81,7 +82,7 @@ class CollectionItemStatVariantTest extends TestCase
     // A bare Environment writes the "<twig:...>" calls out as text, which is what these assertions read - and stringifies "stats" on the way, where the component syntax hands the array over as it is (see TwigPreLexer). That one warning is dropped here rather than worked around in the template
     private function render(array $context): string
     {
-        $twig = new Environment(new FilesystemLoader(\dirname(__DIR__, 2) . '/templates'));
+        $twig = HtmlSanitizerKernel::register(new Environment(new FilesystemLoader(\dirname(__DIR__, 2) . '/templates')));
         // Untranslated keys come back as-is, which is enough for the button's generic label
         $twig->addExtension(new TranslationExtension(new IdentityTranslator()));
         set_error_handler(static fn (int $severity, string $message): bool => str_contains($message, 'Array to string conversion'), \E_WARNING);

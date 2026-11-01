@@ -16,9 +16,12 @@ class DownloadController extends AbstractController
     // What "asset_file" opens in place, matched on the start of the detected type: a scanned deed, a photograph, a pdf book, a film or a recording
     private const array VIEWABLE_TYPES = ['image/', 'video/', 'audio/', 'application/pdf'];
 
+    // What is source code rather than a file to hand out, wherever the name carries it: a "config.php.bak" is that same source. An "inc" only as the last extension, a scan being free to be called "Acme.Inc.pdf"
+    private const string PHP_LIKE_PATTERN = '/\.(?:(?:php\d*|phtml?|phps|phar)(?:\.|$)|inc$)/i';
+
     #[Route(
         path: '/download/{file}',
-        requirements: ['file' => '[\p{L}0-9\-\_\/]+.[a-z]{1,5}.[a-z]*'],
+        requirements: ['file' => '[\p{L}0-9\-\_\/]+\.[a-z0-9]{1,10}(?:\.[a-z0-9]{1,10})?'],
         name: 'download_file',
         methods: ['GET']
     )]
@@ -49,7 +52,8 @@ class DownloadController extends AbstractController
             throw $this->createNotFoundException('Le fichier demandé n\'existe pas.');
         }
 
-        if (!is_file($filePath)) {
+        // Never a hidden file nor a source, on either route: the web server refuses them, and this controller reads them off the disk without asking it
+        if ($this->isHiddenOrSource($file) || !is_file($filePath)) {
             throw $this->createNotFoundException('Le fichier demandé n\'existe pas.');
         }
 
@@ -71,6 +75,14 @@ class DownloadController extends AbstractController
         $response->headers->addCacheControlDirective('must-revalidate', true);
 
         return $response;
+    }
+
+    // A segment of the path starting with a dot (".env", ".git/config", "a/.htaccess") or a php-like name
+    private function isHiddenOrSource(string $file): bool
+    {
+        $segments = explode('/', str_replace('\\', '/', $file));
+
+        return array_any($segments, static fn (string $segment): bool => str_starts_with($segment, '.')) || 1 === preg_match(self::PHP_LIKE_PATTERN, $file);
     }
 
     // Read off the content rather than the extension, which a file named by whoever scanned it may lack or misstate - a whitelist rather than a list of what to refuse, so nothing a site drops in public/ tomorrow slips through

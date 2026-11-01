@@ -11,6 +11,7 @@
 namespace c975L\UiBundle\Tests\Controller;
 
 use c975L\ConfigBundle\Controller\Management\DashboardController;
+use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\UiBundle\Controller\BlockFormController;
 use c975L\UiBundle\Registry\BlockRegistry;
 use c975L\UiBundle\Tests\Controller\Management\ControllerContainerTestTrait;
@@ -26,6 +27,7 @@ use Symfony\Component\Form\FormView;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 use Symfony\Component\Validator\Validation;
 use Twig\Environment;
@@ -112,14 +114,29 @@ class BlockFormControllerTest extends TestCase
         $twig = $this->createStub(Environment::class);
         $twig->method('render')->willReturn('<form></form>');
 
-        return $this->createContainer(['twig' => $twig]);
+        return $this->createContainer(['twig' => $twig, 'security.authorization_checker' => $this->createAuthorizationChecker(true)]);
+    }
+
+    // A member with no role reads no sub-form, whatever the site's access_control says
+    public function testDataFormRefusesAMemberWithoutTheEditorRole(): void
+    {
+        $configService = $this->createStub(ConfigServiceInterface::class);
+        $configService->method('get')->willReturn('ROLE_EDITOR');
+
+        $added = [];
+        $controller = new BlockFormController($this->createStub(BlockRegistry::class), $this->createFormFactory($added), $configService);
+        $controller->setContainer($this->createContainer(['security.authorization_checker' => $this->createAuthorizationChecker(false)]));
+
+        $this->expectException(AccessDeniedException::class);
+        $controller->dataForm(new Request());
     }
 
     public function testDataFormReturnsNoContentWhenKindIsMissing(): void
     {
         $registry = $this->createStub(BlockRegistry::class);
         $added = [];
-        $controller = new BlockFormController($registry, $this->createFormFactory($added));
+        $controller = new BlockFormController($registry, $this->createFormFactory($added), $this->createStub(ConfigServiceInterface::class));
+        $controller->setContainer($this->createContainerWithTwig());
 
         $response = $controller->dataForm(new Request());
 
@@ -131,7 +148,8 @@ class BlockFormControllerTest extends TestCase
         $registry = $this->createStub(BlockRegistry::class);
         $registry->method('has')->willReturn(false);
         $added = [];
-        $controller = new BlockFormController($registry, $this->createFormFactory($added));
+        $controller = new BlockFormController($registry, $this->createFormFactory($added), $this->createStub(ConfigServiceInterface::class));
+        $controller->setContainer($this->createContainerWithTwig());
 
         $response = $controller->dataForm(new Request(['k' => 'unknown']));
 
@@ -145,7 +163,7 @@ class BlockFormControllerTest extends TestCase
         $registry->method('getFormClass')->willReturn(\Symfony\Component\Form\Extension\Core\Type\FormType::class);
         $registry->method('hasMediaTypes')->willReturn(false);
         $added = [];
-        $controller = new BlockFormController($registry, $this->createFormFactory($added));
+        $controller = new BlockFormController($registry, $this->createFormFactory($added), $this->createStub(ConfigServiceInterface::class));
         $controller->setContainer($this->createContainerWithTwig());
 
         $controller->dataForm(new Request(['k' => 'text_section']));
@@ -164,7 +182,7 @@ class BlockFormControllerTest extends TestCase
         $registry->method('getMediaTypes')->willReturn(['image/*', 'video/*']);
         $registry->method('allowsMultiUpload')->willReturn(true);
         $added = [];
-        $controller = new BlockFormController($registry, $this->createFormFactory($added));
+        $controller = new BlockFormController($registry, $this->createFormFactory($added), $this->createStub(ConfigServiceInterface::class));
         $controller->setContainer($this->createContainerWithTwig());
 
         $controller->dataForm(new Request(['k' => 'slider']));
@@ -182,7 +200,7 @@ class BlockFormControllerTest extends TestCase
         $registry->method('getMediaTypes')->willReturn(['image/*']);
         $registry->method('allowsMultiUpload')->willReturn(false);
         $added = [];
-        $controller = new BlockFormController($registry, $this->createFormFactory($added));
+        $controller = new BlockFormController($registry, $this->createFormFactory($added), $this->createStub(ConfigServiceInterface::class));
         $controller->setContainer($this->createContainerWithTwig());
 
         $controller->dataForm(new Request(['k' => 'image']));
@@ -201,7 +219,7 @@ class BlockFormControllerTest extends TestCase
         $registry->method('isContainer')->willReturn(true);
         $registry->method('getSlotContext')->willReturn('flex_slot');
         $added = [];
-        $controller = new BlockFormController($registry, $this->createFormFactory($added));
+        $controller = new BlockFormController($registry, $this->createFormFactory($added), $this->createStub(ConfigServiceInterface::class));
         $controller->setContainer($this->createContainerWithTwig());
 
         $controller->dataForm(new Request(['k' => 'flex_columns']));
@@ -217,7 +235,7 @@ class BlockFormControllerTest extends TestCase
         $registry->method('hasMediaTypes')->willReturn(false);
         $registry->method('isContainer')->willReturn(false);
         $added = [];
-        $controller = new BlockFormController($registry, $this->createFormFactory($added));
+        $controller = new BlockFormController($registry, $this->createFormFactory($added), $this->createStub(ConfigServiceInterface::class));
         $controller->setContainer($this->createContainerWithTwig());
 
         $controller->dataForm(new Request(['k' => 'text_section']));
@@ -235,7 +253,7 @@ class BlockFormControllerTest extends TestCase
         $registry->method('getMediaTypes')->willReturn(['application/pdf']);
         $registry->method('getMediaHelp')->willReturn('label.document_download_media_help');
         $added = [];
-        $controller = new BlockFormController($registry, $this->createFormFactoryCapturingOptions($added));
+        $controller = new BlockFormController($registry, $this->createFormFactoryCapturingOptions($added), $this->createStub(ConfigServiceInterface::class));
         $controller->setContainer($this->createContainerWithTwig());
 
         $controller->dataForm(new Request(['k' => 'document_download']));
@@ -252,7 +270,7 @@ class BlockFormControllerTest extends TestCase
         $registry->method('hasMediaTypes')->willReturn(false);
         $submitted = null;
         $clearMissing = null;
-        $controller = new BlockFormController($registry, $this->createFormFactoryCapturingSubmittedData($submitted, $clearMissing));
+        $controller = new BlockFormController($registry, $this->createFormFactoryCapturingSubmittedData($submitted, $clearMissing), $this->createStub(ConfigServiceInterface::class));
         $controller->setContainer($this->createContainerWithTwig());
 
         $controller->dataForm(Request::create('/management/ui/block/data-form?k=slider', 'POST', [
@@ -272,7 +290,7 @@ class BlockFormControllerTest extends TestCase
         $registry->method('getFormClass')->willReturn(\Symfony\Component\Form\Extension\Core\Type\FormType::class);
         $registry->method('hasMediaTypes')->willReturn(false);
         $submitted = 'not submitted';
-        $controller = new BlockFormController($registry, $this->createFormFactoryCapturingSubmittedData($submitted));
+        $controller = new BlockFormController($registry, $this->createFormFactoryCapturingSubmittedData($submitted), $this->createStub(ConfigServiceInterface::class));
         $controller->setContainer($this->createContainerWithTwig());
 
         $controller->dataForm(new Request(['k' => 'slider']));
@@ -288,7 +306,7 @@ class BlockFormControllerTest extends TestCase
         $registry->method('getFormClass')->willReturn(\Symfony\Component\Form\Extension\Core\Type\FormType::class);
         $registry->method('hasMediaTypes')->willReturn(false);
         $submitted = null;
-        $controller = new BlockFormController($registry, $this->createFormFactoryCapturingSubmittedData($submitted));
+        $controller = new BlockFormController($registry, $this->createFormFactoryCapturingSubmittedData($submitted), $this->createStub(ConfigServiceInterface::class));
         $controller->setContainer($this->createContainerWithTwig());
 
         $controller->dataForm(Request::create('/management/ui/block/data-form?k=slider', 'POST', [
@@ -305,7 +323,7 @@ class BlockFormControllerTest extends TestCase
         $registry->method('has')->willReturn(true);
         $registry->method('getFormClass')->willReturn(DummyCheckboxBlockType::class);
         $registry->method('hasMediaTypes')->willReturn(false);
-        $controller = new BlockFormController($registry, $this->createRealFormFactory());
+        $controller = new BlockFormController($registry, $this->createRealFormFactory(), $this->createStub(ConfigServiceInterface::class));
         $controller->setContainer($this->createContainerWithTwig());
 
         $response = $controller->dataForm(Request::create('/management/ui/block/data-form?k=menu_link', 'POST', [
@@ -329,8 +347,8 @@ class BlockFormControllerTest extends TestCase
 
             return '<form></form>';
         });
-        $controller = new BlockFormController($registry, $this->createRealFormFactory());
-        $controller->setContainer($this->createContainer(['twig' => $twig]));
+        $controller = new BlockFormController($registry, $this->createRealFormFactory(), $this->createStub(ConfigServiceInterface::class));
+        $controller->setContainer($this->createContainer(['twig' => $twig, 'security.authorization_checker' => $this->createAuthorizationChecker(true)]));
 
         $controller->dataForm(Request::create('/management/ui/block/data-form?k=menu_link', 'POST', [
             'data' => ['label' => 'Contact', 'primary' => '1'],

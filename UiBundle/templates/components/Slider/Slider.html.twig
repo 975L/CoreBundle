@@ -23,11 +23,11 @@
         {% set src = vich_uploader_asset(media) %}
         {% set zoomClass = slide and (slide.title or slide.text) ? 'img-rounded box-shadow' : ('img-rounded box-shadow ' ~ class ~ ' ' ~ media.cssClasses|join(' '))|trim %}
         {% set zoomedMedia %}
-            {% if media.above and media.label %}<p class="text-center"><span class="img-above">{{ media.label|raw }}</span></p>{% endif %}
+            {% if media.above and media.label %}<p class="text-center"><span class="img-above">{{ media.label|sanitize_html('c975l.rich') }}</span></p>{% endif %}
             <div class="text-center">
                 <twig:c975LUi:Image:Zoom src="{{ src }}" highres="{{ media.highresWidth is defined and src ends with '.webp' ? src|slice(0, -5) ~ '-highres.webp' : src }}" alt="{{ mediaAlt }}" class="{{ zoomClass }}" width="{{ media.width }}" height="{{ media.height }}" :priority="false" />
             </div>
-            {% if not media.above and media.label %}<p class="text-center"><span class="img-below">{{ media.label|raw }}</span></p>{% endif %}
+            {% if not media.above and media.label %}<p class="text-center"><span class="img-below">{{ media.label|sanitize_html('c975l.rich') }}</span></p>{% endif %}
         {% endset %}
     {% endif %}
     {# The credits and the rights mention are laid over the media, so a media shown on its own needs a containing block of its own: without one they would anchor to whatever positioned ancestor the page happens to carry. Sized to its content, so the band spans the media and not the column - a portrait scan in a wide column would otherwise wear a band twice its width #}

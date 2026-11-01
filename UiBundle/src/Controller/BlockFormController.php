@@ -11,6 +11,7 @@
 namespace c975L\UiBundle\Controller;
 
 use c975L\ConfigBundle\Controller\Management\DashboardController;
+use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\UiBundle\Form\BlockType;
 use c975L\UiBundle\Form\MediaUploadType;
 use c975L\UiBundle\Registry\BlockRegistry;
@@ -28,6 +29,7 @@ class BlockFormController extends AbstractController
     public function __construct(
         private readonly BlockRegistry $registry,
         private readonly FormFactoryInterface $formFactory,
+        private readonly ConfigServiceInterface $configService,
     ) {
     }
 
@@ -35,6 +37,9 @@ class BlockFormController extends AbstractController
     #[Route(DashboardController::ROUTE_PATH . '/ui/block/data-form', name: 'ui_block_data_form', methods: ['GET', 'POST'])]
     public function dataForm(Request $request): Response
     {
+        // The site's access_control rule on the back office's path is the site's to write, and a member with no role would otherwise read every kind's sub-form: refused here whatever that rule says, as the other screens editing a block do
+        $this->denyAccessUnlessGranted($this->configService->get('site-role-editor'));
+
         $kind = (string) $request->query->get('k', '');
         if (!$kind || !$this->registry->has($kind)) {
             return new Response('', Response::HTTP_NO_CONTENT);

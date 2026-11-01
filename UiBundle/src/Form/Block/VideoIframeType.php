@@ -19,14 +19,17 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\UrlType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\Url;
 
 class VideoIframeType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
+            // UrlType only adds a protocol to an address naming none: "javascript://%0Aalert(1)" names one. Protocol-relative as UrlType itself leaves it, an embed code pasted as such
             ->add('src', UrlType::class, [
                 'label' => 'label.video_url',
+                'constraints' => [new Url(protocols: ['http', 'https'], relativeProtocol: true)],
             ])
             // Only rewrites the URL for a recognized YouTube host - see BlockVideoNoCookieListener, which performs the actual rewrite once on save, so the stored src (and the render template) never need to know about this checkbox
             ->add('noCookie', CheckboxType::class, [

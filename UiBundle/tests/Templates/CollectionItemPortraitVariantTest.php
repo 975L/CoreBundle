@@ -10,6 +10,7 @@
 
 namespace c975L\UiBundle\Tests\Templates;
 
+use c975L\UiBundle\Tests\Fixtures\HtmlSanitizerKernel;
 use PHPUnit\Framework\TestCase;
 use Symfony\Bridge\Twig\Extension\TranslationExtension;
 use Symfony\Component\Translation\IdentityTranslator;
@@ -97,7 +98,7 @@ class CollectionItemPortraitVariantTest extends TestCase
     // A bare Environment writes the "<twig:...>" calls out as text, which is what these assertions read
     private function render(array $context): string
     {
-        $twig = new Environment(new FilesystemLoader(\dirname(__DIR__, 2) . '/templates'));
+        $twig = HtmlSanitizerKernel::register(new Environment(new FilesystemLoader(\dirname(__DIR__, 2) . '/templates')));
         // Untranslated keys come back as-is, which is enough for the button's generic label
         $twig->addExtension(new TranslationExtension(new IdentityTranslator()));
 

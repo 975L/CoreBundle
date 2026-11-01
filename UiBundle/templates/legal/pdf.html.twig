@@ -1,4 +1,4 @@
-{# A legal document as a file the reader keeps. Written against the weaker of the two engines: no flexbox, no grid, no custom properties #}
+{# A legal document as a file the reader keeps. Written against the weaker of the two engines: no flexbox, no grid, no custom properties. Sanitized because an editor's rewritten section reaches an engine reading the server's disk: WeasyPrint joins whatever an <a rel="attachment"> names to the PDF, ".env" included #}
 <html lang="{{ locale }}">
 <head>
     <meta charset="utf-8">
@@ -16,5 +16,5 @@
         blockquote { margin: 0 0 3mm 0; padding: 2mm 3mm; border: 0.3mm solid #666; }
     </style>
 </head>
-<body>{{ html|raw }}</body>
+<body>{{ html|sanitize_html('c975l.legal') }}</body>
 </html>

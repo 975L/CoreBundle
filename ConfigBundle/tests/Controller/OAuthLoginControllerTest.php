@@ -46,6 +46,10 @@ class OAuthLoginControllerTest extends TestCase
         // Some browsers have read a backslash as a slash, which makes this an off-site host too
         $this->assertNull($this->relativePath('/\evil.test'));
         $this->assertNull($this->relativePath('/orders\..\..'));
+        // A browser drops these out of a url, which leaves it with "//evil.test"
+        $this->assertNull($this->relativePath("/\t/evil.test"));
+        $this->assertNull($this->relativePath("/\n/evil.test"));
+        $this->assertNull($this->relativePath("/orders\x00"));
     }
 
     public function testAnythingThatIsNotAPathIsDropped(): void

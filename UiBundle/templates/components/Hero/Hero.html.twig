@@ -35,8 +35,8 @@
         {% if badge|default('') or hasTitle or subtitle|default('') or hasPrimary or hasSecondary or hasStat %}
             <div class="hero__text">
                 {% if badge|default('') %}<span class="hero__badge">{{ badge }}</span>{% endif %}
-                {% if hasTitle %}<{{ level }} class="hero__title">{{ title|trix_inline }}</{{ level }}>{% endif %}
-                {% if subtitle|default('') %}<div class="hero__sub">{{ subtitle|raw }}</div>{% endif %}
+                {% if hasTitle %}<{{ level }} class="hero__title">{{ title|sanitize_html('c975l.rich')|trix_inline }}</{{ level }}>{% endif %}
+                {% if subtitle|default('') %}<div class="hero__sub">{{ subtitle|sanitize_html('c975l.rich') }}</div>{% endif %}
                 {% if hasPrimary or hasSecondary %}
                     <div class="hero__cta">
                         {% if hasPrimary %}<a class="section-btn section-btn--primary" href="{{ primaryUrl }}">{{ primaryLabel }}</a>{% endif %}

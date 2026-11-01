@@ -14,6 +14,7 @@ use c975L\UiBundle\Registry\SameAsRegistry;
 use c975L\UiBundle\Service\ContactSnippetBuilder;
 use c975L\UiBundle\Service\GoogleMapsLinkBuilder;
 use c975L\UiBundle\Service\JsonLdBuilder;
+use c975L\UiBundle\Tests\Fixtures\HtmlSanitizerKernel;
 use c975L\UiBundle\Twig\BoolExtension;
 use c975L\UiBundle\Twig\ContactExtension;
 use PHPUnit\Framework\TestCase;
@@ -154,7 +155,7 @@ class ContactDetailsMarkupTest extends TestCase
 
     private function render(array $context): string
     {
-        $twig = new Environment(new FilesystemLoader(\dirname(__DIR__, 2) . '/templates'));
+        $twig = HtmlSanitizerKernel::register(new Environment(new FilesystemLoader(\dirname(__DIR__, 2) . '/templates')));
         // Untranslated keys come back as-is, which is what the assertions above read
         $twig->addExtension(new TranslationExtension(new IdentityTranslator()));
         // What TwigBundle assembles from the #[AsTwigFunction] attributes: the extension reads them, the runtime loader hands over the instance the callables are called on

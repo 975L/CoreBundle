@@ -151,21 +151,14 @@ class OAuthLoginController extends AbstractController
         return $this->generateUrl('config_oauth_check', ['provider' => $provider], UrlGeneratorInterface::ABSOLUTE_URL);
     }
 
-    /**
-     * A path on this site and nothing else, or null.
-     *
-     * Anything else is dropped rather than corrected: "//example.com" and "https://example.com" are both an
-     * absolute url a browser follows off-site, which is the whole of an open redirect - a login page handing
-     * a visitor to whoever put the address in the link they clicked. A backslash goes with them, some browsers
-     * having read it as a slash.
-     */
+    // A path on this site and nothing else, or null, what is off it dropped rather than corrected: "//example.com" and "https://example.com" are what a browser follows off-site, some read a backslash as a slash, and one drops a tab or a line break out of a url, "/\t/example.com" reaching it as "//example.com"
     private function relativePath(mixed $path): ?string
     {
         if (!is_string($path) || !str_starts_with($path, '/') || str_starts_with($path, '//')) {
             return null;
         }
 
-        return str_contains($path, '\\') ? null : $path;
+        return str_contains($path, '\\') || 1 === preg_match('/[\x00-\x1F\x7F]/', $path) ? null : $path;
     }
 
     private function refuse(string $message): Response

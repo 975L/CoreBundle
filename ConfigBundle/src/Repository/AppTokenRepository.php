@@ -35,7 +35,7 @@ class AppTokenRepository extends ServiceEntityRepository
         return $this->findOneBy(['codeHash' => $codeHash]);
     }
 
-    // Every token of an account at once, for one that is anonymized rather than deleted
+    // Every token of an account at once, for one that is anonymized rather than deleted or whose password changed
     public function deleteOfUser(UserInterface $user): void
     {
         $this->createQueryBuilder('t')

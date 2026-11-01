@@ -21,7 +21,7 @@
             {% endif %}
             <div class="contact-details__intro">
                 {% if name %}<p class="contact-details__name">{{ name }}</p>{% endif %}
-                {% if description|default('') %}<div class="contact-details__description">{{ description|raw }}</div>{% endif %}
+                {% if description|default('') %}<div class="contact-details__description">{{ description|sanitize_html('c975l.rich') }}</div>{% endif %}
             </div>
         </div>
     {% endif %}

@@ -5,5 +5,5 @@
 {# Wrapped as every other section-level block, else the bar sits flat against the viewport's left edge #}
 {# ".flex-columns__col .section-wrap" drops the gutter back off when the hook sits inside a column #}
 <div class="section-wrap">
-    <div class="text-hook text-hook--standalone">{{ text|raw }}</div>
+    <div class="text-hook text-hook--standalone">{{ text|default('')|sanitize_html('c975l.rich') }}</div>
 </div>

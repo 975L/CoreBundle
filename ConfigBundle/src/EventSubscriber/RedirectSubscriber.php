@@ -92,7 +92,10 @@ class RedirectSubscriber
         }
 
         // A row matched on its literal path ("/character/*" requested as such, which resolve() treats as an exact match) carries its own star over as the tail, landing on "/personnages/*" - the destination the row states, which is what makes such a row checkable by requesting it as written
-        return rtrim($toUrl, '*') . substr($path, \strlen(rtrim($fromPath, '*')));
+        $target = rtrim($toUrl, '*') . substr($path, \strlen(rtrim($fromPath, '*')));
+
+        // The tail is the visitor's: "/old//example.com" on a "/old/*" -> "/*" row would otherwise compute "//example.com", an absolute url a browser follows off-site, and a backslash reads as a slash to some of them
+        return 1 === preg_match('#^[/\\\\]#', $target) ? '/' . ltrim($target, '/\\') : $target;
     }
 
     // An exact fromPath always wins, so a single "/apidoc/*" row can cover a whole tree of removed urls while one of them keeps its own specific answer. Among prefixes the longest one wins, so "/apidoc/c975L/*" still beats a broader "/apidoc/*" covering it

@@ -327,6 +327,42 @@ class EmailServiceTest extends TestCase
     }
 
     // "html" (e.g. EmailTemplateRenderer output) is an alternative to "template" - see EmailSendRequest
+    // Ahead of the body the caller rendered, escaped, right after <body> on a whole document
+    public function testAPrefaceGoesAheadOfAnHtmlBody(): void
+    {
+        $mailer = $this->createRecordingMailer();
+        $service = $this->createService($mailer, ['email-from' => 'from@example.com', 'email-to' => 'to@example.com']);
+
+        $service->send(new EmailSendRequest(subject: 'S', context: [], html: '<html><body class="b"><p>Body</p></body></html>', preface: 'A <fixed> sentence'));
+
+        $this->assertSame('<html><body class="b"><p><em>A &lt;fixed&gt; sentence</em></p><p>Body</p></body></html>', $mailer->sent[0]->getHtmlBody());
+    }
+
+    // A site's own template says nothing of a sentence it was never told about, so it is rendered here and the sentence put in front
+    public function testAPrefaceGoesAheadOfASitesOwnTemplate(): void
+    {
+        $mailer = $this->createRecordingMailer();
+        $service = $this->createService($mailer, ['email-from' => 'from@example.com', 'email-to' => 'to@example.com'], renderedHtml: '<p>Own template</p>');
+
+        $service->send(new EmailSendRequest(subject: 'S', context: [], template: 'own.html.twig', preface: 'Sentence'));
+
+        $this->assertNull($mailer->sent[0]->getHtmlTemplate());
+        $this->assertSame('<p><em>Sentence</em></p><p>Own template</p>', $mailer->sent[0]->getHtmlBody());
+    }
+
+    // Inside the site's layout, not above it
+    public function testAPrefaceGoesInsideTheLayoutOfAWrappedBody(): void
+    {
+        $mailer = $this->createRecordingMailer();
+        $layout = $this->createStub(EmailLayoutRegistry::class);
+        $layout->method('wrap')->willReturnCallback(static fn (string $body): string => '<div class="layout">' . $body . '</div>');
+        $service = $this->createService($mailer, ['email-from' => 'from@example.com', 'email-to' => 'to@example.com'], renderedHtml: '<p>Body</p>', emailLayoutRegistry: $layout);
+
+        $service->send(new EmailSendRequest(subject: 'S', context: [], template: 'body.html.twig', wrapLayout: true, preface: 'Sentence'));
+
+        $this->assertSame('<div class="layout"><p><em>Sentence</em></p><p>Body</p></div>', $mailer->sent[0]->getHtmlBody());
+    }
+
     public function testSendUsesRawHtmlBodyWhenHtmlGivenInsteadOfTemplate(): void
     {
         $mailer = $this->createRecordingMailer();

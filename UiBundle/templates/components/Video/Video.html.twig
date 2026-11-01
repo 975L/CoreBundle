@@ -19,5 +19,5 @@
         <source src="{{ src }}" type="{{ type }}">
         <p>{{ 'label.video_not_supported'|trans({}, "ui") }} <a href="{{ src }}">{{ 'label.download'|trans({}, "ui") }}</a></p>
     </video>
-    {% if caption and description is defined and description %}<figcaption class="video-description text">{{ description|raw }}</figcaption>{% endif %}
+    {% if caption and description is defined and description %}<figcaption class="video-description text">{{ description|sanitize_html('c975l.rich') }}</figcaption>{% endif %}
 </figure>

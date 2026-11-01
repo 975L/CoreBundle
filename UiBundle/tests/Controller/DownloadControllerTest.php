@@ -186,5 +186,58 @@ class DownloadControllerTest extends TestCase
         $this->assertSame(1, preg_match($pattern, 'medias/sous-dossier/fichier_2.pdf'));
         $this->assertSame(0, preg_match($pattern, '../../.env'));
         $this->assertSame(0, preg_match($pattern, 'medias/../../config/packages/security.yaml'));
+        // The dot is a dot: a name with none, or something else standing in its place, is no file of a media
+        $this->assertSame(0, preg_match($pattern, 'medias/brochure'));
+        $this->assertSame(0, preg_match($pattern, 'medias/brochure~pdf~x'));
+        $this->assertSame(1, preg_match($pattern, 'medias/film.mp4'));
+        $this->assertSame(1, preg_match($pattern, 'fonts/titre.woff2'));
+        $this->assertSame(1, preg_match($pattern, 'medias/archive.tar.gz'));
+    }
+
+    // Under public/ and matching the route's requirement, and still neither a hidden file nor a source goes out, on either route - with the bytes of a jpeg, the asset route's own check letting them through
+    #[DataProvider('hiddenOrSourceFiles')]
+    public function testHiddenFilesAndSourcesAreRefused(string $name): void
+    {
+        $path = $this->projectDir . '/public/' . $name;
+        if (!is_dir(\dirname($path))) {
+            mkdir(\dirname($path), 0o777, true);
+        }
+        file_put_contents($path, self::JPEG);
+
+        foreach (['downloadFile', 'assetFile'] as $action) {
+            try {
+                $this->createController()->{$action}($name);
+                $this->fail($action . ' served ' . $name);
+            } catch (NotFoundHttpException) {
+                $this->addToAssertionCount(1);
+            }
+        }
+    }
+
+    // A dot and a word are not a source: a scan keeps its odd name, on the route opening it in place
+    public function testANameMerelyHoldingIncIsServed(): void
+    {
+        $path = $this->projectDir . '/public/medias/Facture Acme.Inc.jpg';
+        if (!is_dir(\dirname($path))) {
+            mkdir(\dirname($path), 0o777, true);
+        }
+        file_put_contents($path, self::JPEG);
+
+        $this->assertSame(200, $this->createController()->assetFile('medias/Facture Acme.Inc.jpg')->getStatusCode());
+    }
+
+    /** @return iterable<string, array{string}> */
+    public static function hiddenOrSourceFiles(): iterable
+    {
+        yield 'dotfile' => ['.env'];
+        yield 'dotfile in a directory' => ['medias/.htaccess'];
+        yield 'hidden directory' => ['.git/config'];
+        yield 'php' => ['index.php'];
+        yield 'php in capitals' => ['medias/INDEX.PHP'];
+        yield 'php with a version' => ['medias/x.php7'];
+        yield 'phtml' => ['medias/x.phtml'];
+        yield 'phar' => ['medias/x.phar'];
+        yield 'a saved source' => ['medias/config.php.bak'];
+        yield 'an include' => ['medias/config.inc'];
     }
 }

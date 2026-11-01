@@ -44,7 +44,7 @@ class AppLibraryControllerTest extends TestCase
 
         $playService = $this->createStub(PlayService::class);
         $playService->method('counts')->willReturn(['book:12' => 3]);
-        $playService->method('record')->willReturnCallback(function (string $ownerType, int $ownerId): array {
+        $playService->method('recordFromApp')->willReturnCallback(function (string $ownerType, int $ownerId): array {
             $this->calls[] = 'play ' . $ownerType . ':' . $ownerId;
 
             return [];

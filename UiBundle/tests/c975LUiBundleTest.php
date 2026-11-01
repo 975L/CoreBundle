@@ -80,6 +80,19 @@ class c975LUiBundleTest extends TestCase
         $this->assertSame([], $container->getExtensionConfig('twig'));
     }
 
+    // The names other bundles' templates call |sanitize_html() with: a contract, declared where every site gets it
+    public function testPrependExtensionRegistersTheTwoSanitizers(): void
+    {
+        $container = new ContainerBuilder();
+
+        new c975LUiBundle()->prependExtension($this->createStub(ContainerConfigurator::class), $container);
+
+        $sanitizers = $container->getExtensionConfig('framework')[0]['html_sanitizer']['sanitizers'];
+
+        $this->assertSame(['c975l.rich', 'c975l.legal'], array_keys($sanitizers));
+        $this->assertSame(c975LUiBundle::HTML_SANITIZERS, $sanitizers);
+    }
+
     // The asset_mapper path is the one prepend that has no condition - framework is always there
     public function testPrependExtensionRegistersTheAssetMapperPath(): void
     {

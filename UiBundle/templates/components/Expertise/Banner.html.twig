@@ -7,7 +7,7 @@
                 {% if eyebrow %}<p class="section-eyebrow">{{ eyebrow }}</p>{% endif %}
                 <h2 class="expertise-banner__title">{{ title }}</h2>
                 {# A <div>, not a <p>: raw rich-text is already block-level and the browser would split the <p> #}
-                {% if text %}<div class="expertise-banner__text">{{ text|raw }}</div>{% endif %}
+                {% if text %}<div class="expertise-banner__text">{{ text|sanitize_html('c975l.rich') }}</div>{% endif %}
             </div>
             {% if tags|length > 0 %}
                 <div class="section-tags">

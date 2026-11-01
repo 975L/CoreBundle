@@ -266,6 +266,15 @@ class RatingServiceTest extends TestCase
         $this->service($repository, $manager)->withdraw('book', 12, 'abc');
     }
 
+    public function testHasVoteSaysWhetherAScoreStandsWithoutTouchingIt(): void
+    {
+        $manager = $this->createMock(EntityManagerInterface::class);
+        $manager->expects($this->never())->method('flush');
+
+        $this->assertTrue($this->service($this->repository(new Rating(), []), $manager)->hasVote('book', 12, 'abc'));
+        $this->assertFalse($this->service($this->repository(null, []), $manager)->hasVote('book', 12, 'abc'));
+    }
+
     private function service(
         ?RatingRepository $repository = null,
         ?EntityManagerInterface $manager = null,

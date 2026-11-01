@@ -19,6 +19,6 @@
             <twig:c975LUi:Image:Image imgSrc="{{ src }}" alt="{{ alt|default('') }}" class="img-rounded img-responsive"/>
         {% endif %}
         {# No nl2br: Trix already encodes its line breaks, so it would double them into blank lines #}
-        {{ content|raw }}
+        {{ content|default('')|sanitize_html('c975l.rich') }}
     </div>
 </{{ tag }}>

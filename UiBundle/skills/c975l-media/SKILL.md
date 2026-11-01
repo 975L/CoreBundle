@@ -235,7 +235,9 @@ while the pool is empty. `BlockCacheInvalidationListener` empties **both** tags 
 removed, whatever its role — a media leaving a role goes stale as much as one entering it.
 
 `Form\VichImageOptions::default($maxSize, $required)` is the one place the five Vich upload options
-live, for an EasyAdmin `setFormTypeOptions()` and a plain `FormBuilder::add()` alike.
+live, for an EasyAdmin `setFormTypeOptions()` and a plain `FormBuilder::add()` alike. It carries
+`Validator\AllowedUploadExtension`, which any other upload field adds to its `constraints`: `UiMediaNamer` stores
+under `public/` nothing off that list, an extension off it being read from the bytes and otherwise becoming `.bin`.
 
 An entity carrying a share image of its own - SiteBundle's `Page`, ConfigBundle's `UrlMetadata` - embeds
 `Form\OgImageType`, a single `Media` upload and its alternative text. On an EasyAdmin screen it is

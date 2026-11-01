@@ -11,6 +11,7 @@
 namespace c975L\UiBundle\Tests\Templates;
 
 use c975L\UiBundle\Service\JsonLdBuilder;
+use c975L\UiBundle\Tests\Fixtures\HtmlSanitizerKernel;
 use c975L\UiBundle\Twig\JsonLdExtension;
 use PHPUnit\Framework\TestCase;
 use Twig\Environment;
@@ -132,7 +133,7 @@ class FaqMarkupTest extends TestCase
         // The bundle's namespace too, the block drawing its title through the shared section head
         $loader = new FilesystemLoader(\dirname(__DIR__, 2) . '/templates');
         $loader->addPath(\dirname(__DIR__, 2) . '/templates', 'c975LUi');
-        $twig = new Environment($loader);
+        $twig = HtmlSanitizerKernel::register(new Environment($loader));
         $twig->addExtension(new AttributeExtension(JsonLdExtension::class));
         $twig->addRuntimeLoader(new FactoryRuntimeLoader([JsonLdExtension::class => static fn (): JsonLdExtension => new JsonLdExtension(new JsonLdBuilder())]));
         $twig->addFunction(new TwigFunction('absolute_url', static fn (string $path): string => 'https://example.test' . $path));

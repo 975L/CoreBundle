@@ -12,6 +12,7 @@ namespace c975L\UiBundle\Form;
 
 use c975L\UiBundle\Entity\EmailBlock;
 use c975L\UiBundle\Form\Util\CollectionReconciler;
+use c975L\UiBundle\Validator\SafeUrl;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Event\PreSetDataEvent;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -74,6 +75,7 @@ class EmailBlockType extends AbstractType
                 'label' => 'label.email_block_url',
                 'help' => 'label.email_block_url_help',
                 'required' => false,
+                'constraints' => [new SafeUrl()],
             ])
             ->add('alt', TextType::class, [
                 'label' => 'label.email_block_alt',

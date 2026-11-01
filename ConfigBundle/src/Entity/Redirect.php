@@ -11,6 +11,7 @@
 namespace c975L\ConfigBundle\Entity;
 
 use c975L\ConfigBundle\Repository\RedirectRepository;
+use c975L\UiBundle\Validator\SafeUrl;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -42,6 +43,7 @@ class Redirect implements \Stringable
         expression: 'false === this.isGone()',
         constraints: [new Assert\NotBlank()],
     )]
+    #[SafeUrl]
     private ?string $toUrl = null;
 
     #[ORM\Column(type: Types::BOOLEAN, options: ['default' => true])]

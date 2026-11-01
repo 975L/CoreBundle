@@ -58,9 +58,7 @@ class EmailService
             : null;
     }
 
-    // Builds the TemplatedEmail(s) for a request - the main one, plus a copy to $request->copyToEmail if set (its own Reply-To stripped, to avoid exposing the main recipient's address to the copy holder, and its Bcc too, the archive needing a single exemplary)
-    // The one body the request carries, whichever of the three it names
-    // A request carrying two would silently go out as whichever a chain tests first, so it fails as plainly as one carrying none
+    // The one body the request carries, whichever of the three it names: one carrying two would silently go out as whichever a chain tests first, so it fails as plainly as one carrying none
     private function applyBody(TemplatedEmail $email, EmailSendRequest $request): void
     {
         if (1 !== count(array_filter([$request->template, $request->html, $request->text], static fn (?string $body): bool => null !== $body))) {
@@ -68,7 +66,7 @@ class EmailService
         }
 
         if (null !== $request->html) {
-            $email->html($request->html);
+            $email->html($this->withPreface($request->html, $request->preface));
 
             return;
         }
@@ -84,17 +82,41 @@ class EmailService
             return;
         }
 
-        if (!$request->wrapLayout) {
+        if (!$request->wrapLayout && null === $request->preface) {
             $email->htmlTemplate($request->template);
 
             return;
         }
 
+        // A site's own template being a whole document, nothing goes round it: the sentence goes in once it is rendered
+        if (!$request->wrapLayout) {
+            $email->html($this->withPreface($this->twig->render($request->template, $request->context), $request->preface));
+
+            return;
+        }
+
         // Rendered here rather than left to the mailer, so the registry's layout can be wrapped around it - a bundle then ships the body of its email alone, and the branding stays wherever EmailLayoutProviderInterface is implemented (SiteBundle's when installed, none otherwise)
-        $body = $this->twig->render($request->template, $request->context);
+        $body = $this->withPreface($this->twig->render($request->template, $request->context), $request->preface);
         $email->html($this->emailLayoutRegistry->wrap($body) ?? $body);
     }
 
+    // The request's sentence, escaped, at the top of the body
+    private function withPreface(string $html, ?string $preface): string
+    {
+        return null === $preface ? $html : $this->atBodyStart(sprintf('<p><em>%s</em></p>', htmlspecialchars($preface)), $html);
+    }
+
+    // Right after <body> on a whole document, a single valid HTML document being kept, ahead of everything on a fragment. _callback, not preg_replace: a "$1" in $inserted would be read as a backreference
+    private function atBodyStart(string $inserted, string $html): string
+    {
+        if (1 === preg_match('/<body[^>]*>/i', $html)) {
+            return preg_replace_callback('/<body[^>]*>/i', static fn (array $matches): string => $matches[0] . $inserted, $html, 1);
+        }
+
+        return $inserted . $html;
+    }
+
+    // Builds the TemplatedEmail(s) for a request - the main one, plus a copy to $request->copyToEmail if set (its own Reply-To stripped, to avoid exposing the main recipient's address to the copy holder, and its Bcc too, the archive needing a single exemplary)
     private function buildEmails(EmailSendRequest $request): array
     {
         $from = $this->resolveAddress($request->from, $request->fromName, 'email-from');
@@ -230,7 +252,7 @@ class EmailService
         return [] === $names ? '' : '<br>' . htmlspecialchars(sprintf('Attachments: %s', implode(', ', $names)));
     }
 
-    // Inserts a debug banner with the subject, the addresses and the attached files right after <body>, keeping a single valid HTML document
+    // Inserts a debug banner with the subject, the addresses and the attached files at the top of the email
     private function wrapDebugEmail(TemplatedEmail $email, string $renderedEmail): string
     {
         $banner = sprintf(
@@ -240,12 +262,7 @@ class EmailService
             $this->formatDebugAttachments($email)
         );
 
-        if (1 === preg_match('/<body[^>]*>/i', $renderedEmail)) {
-            // _callback, not preg_replace: a "$1" in $banner would be read as a backreference
-            return preg_replace_callback('/<body[^>]*>/i', static fn (array $matches): string => $matches[0] . $banner, $renderedEmail, 1);
-        }
-
-        return $banner . $renderedEmail;
+        return $this->atBodyStart($banner, $renderedEmail);
     }
 
     // Formats From/To/Cc/Bcc addresses for the debug banner

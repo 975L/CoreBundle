@@ -150,6 +150,43 @@ class ReviewRepository extends ServiceEntityRepository
         ;
     }
 
+    // The published scores written here that nothing verified, whose rating may still stand under their author's address (see ReviewService::rekeyLegacyRating())
+    /** @return Review[] */
+    public function findPublishedUnverifiedRated(): array
+    {
+        return $this->publishedQueryBuilder()
+            ->andWhere('r.source = :source')
+            ->andWhere('r.verified = false')
+            ->andWhere('r.rating IS NOT NULL')
+            ->andWhere('r.ownerType IS NOT NULL')
+            ->andWhere('r.ownerId IS NOT NULL')
+            ->andWhere('r.authorEmail IS NOT NULL')
+            ->setParameter('source', Review::SOURCE_SITE)
+            ->orderBy('r.id', \SortDirection::Ascending)
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+
+    // What one address wrote about one thing, whatever became of it, oldest first
+    /** @return Review[] */
+    public function findLocalByOwnerAndAddress(string $ownerType, int $ownerId, string $address): array
+    {
+        return $this->createQueryBuilder('r')
+            ->andWhere('r.source = :source')
+            ->andWhere('r.ownerType = :ownerType')
+            ->andWhere('r.ownerId = :ownerId')
+            ->andWhere('LOWER(TRIM(r.authorEmail)) = :address')
+            ->setParameter('source', Review::SOURCE_SITE)
+            ->setParameter('ownerType', $ownerType)
+            ->setParameter('ownerId', $ownerId)
+            ->setParameter('address', strtolower(trim($address)))
+            ->orderBy('r.id', \SortDirection::Ascending)
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+
     // Said once here rather than at each of the methods above, so that adding one never adds a way to serve a review that was not let through
     private function publishedQueryBuilder(): QueryBuilder
     {

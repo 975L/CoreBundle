@@ -18,6 +18,7 @@ final class EmailSendRequest
      * @param bool              $wrapLayout  only meaningful alongside "template": renders it and wraps the result through EmailLayoutRegistry before sending, so a bundle's own email body comes out in the site's branded layout without that template having to {% extends %} a path it would have to know. The body template must then render the body alone, with no layout of its own. Ignored on an "html" request, already-rendered markup being the caller's own call
      * @param ?string           $text        a plain-text body, written by the caller with no template - what a system email (a digest, an alert) needs. Sent as such, with its HTML twin in the site's layout when one is registered (see EmailService)
      * @param EmailAttachment[] $attachments files travelling with the message. Appended last, like $text before it, so the positional signature stays what it was. A copy sent to copyToEmail carries them too - it is the same message, sent to a second address
+     * @param ?string           $preface     a plain sentence EmailService writes ahead of an html or a template body, escaped, whichever template the body comes from. What a message needs saying about itself, a template of a site's own knowing nothing of it
      */
     public function __construct(
         public readonly string $subject,
@@ -35,6 +36,7 @@ final class EmailSendRequest
         public readonly bool $wrapLayout = false,
         public readonly ?string $text = null,
         public readonly array $attachments = [],
+        public readonly ?string $preface = null,
     ) {
     }
 }

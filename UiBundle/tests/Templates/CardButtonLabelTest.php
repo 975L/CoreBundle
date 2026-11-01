@@ -10,6 +10,7 @@
 
 namespace c975L\UiBundle\Tests\Templates;
 
+use c975L\UiBundle\Tests\Fixtures\HtmlSanitizerKernel;
 use PHPUnit\Framework\TestCase;
 use Symfony\Bridge\Twig\Extension\TranslationExtension;
 use Symfony\Component\Translation\Loader\ArrayLoader;
@@ -58,7 +59,7 @@ class CardButtonLabelTest extends TestCase
         $translator = new Translator('fr');
         $translator->addLoader('array', new ArrayLoader());
         $translator->addResource('array', ['label.learn_more' => 'En savoir plus', 'label.learn_more_about' => 'En savoir plus sur %title%'], 'fr', 'ui');
-        $twig = new Environment(new FilesystemLoader(\dirname(__DIR__, 2) . '/templates'));
+        $twig = HtmlSanitizerKernel::register(new Environment(new FilesystemLoader(\dirname(__DIR__, 2) . '/templates')));
         $twig->addExtension(new TranslationExtension($translator));
         // Named by the card block for its attached media, which these cards do not carry
         $twig->addFunction(new TwigFunction('vich_uploader_asset', static fn (): string => ''));

@@ -16,6 +16,7 @@ use c975L\UiBundle\Enum\ReviewStatus;
 use c975L\UiBundle\Registry\ReviewReplyRegistry;
 use c975L\UiBundle\Registry\ReviewVerifierRegistry;
 use c975L\UiBundle\Repository\ReviewRepository;
+use c975L\UiBundle\Service\CurrentAccountAddress;
 use c975L\UiBundle\Service\RatingService;
 use c975L\UiBundle\Service\ReviewNotifier;
 use c975L\UiBundle\Service\ReviewService;
@@ -64,7 +65,7 @@ class ReviewServiceTest extends TestCase
     {
         $review = $this->localReview(ReviewStatus::Pending, 4);
 
-        $this->service(verified: true)->submit($review);
+        $this->service(verified: true, currentAccountAddress: $this->accountAddress(true))->submit($review);
 
         $this->assertTrue($review->isVerified());
     }
@@ -164,7 +165,47 @@ class ReviewServiceTest extends TestCase
         $this->service(ratingService: $ratingService)->syncRating($review);
     }
 
-    // Two reviews by the same person weigh once, the way two clicks from one browser do
+    // A review carrying a typed address is born unverified whatever the verifier says about that address: anyone can type a customer's
+    public function testATypedAddressIsNeverVerified(): void
+    {
+        $review = $this->localReview(ReviewStatus::Pending, 5, 'customer@example.org');
+
+        $this->service(verified: true)->submit($review);
+        $this->assertFalse($review->isVerified());
+
+        $review = $this->localReview(ReviewStatus::Pending, 5, 'customer@example.org');
+        $this->service(verified: true, currentAccountAddress: $this->accountAddress(false))->submit($review);
+        $this->assertFalse($review->isVerified());
+    }
+
+    // The address of the account signing the review is proven, and the verifier then answers for it
+    public function testTheAccountsOwnAddressIsVerifiedWhenTheVerifierSaysSo(): void
+    {
+        $review = $this->localReview(ReviewStatus::Pending, 5, 'customer@example.org');
+        $this->service(verified: true, currentAccountAddress: $this->accountAddress(true))->submit($review);
+        $this->assertTrue($review->isVerified());
+
+        $review = $this->localReview(ReviewStatus::Pending, 5, 'customer@example.org');
+        $this->service(verified: false, currentAccountAddress: $this->accountAddress(true))->submit($review);
+        $this->assertFalse($review->isVerified());
+    }
+
+    // Typing a customer's address must not reach that customer's score: an unverified review weighs under a key of its own
+    public function testAnUnverifiedReviewCannotOverwriteAnotherPersonsScore(): void
+    {
+        $service = $this->service();
+
+        $proven = $service->voterFor($this->localReview(ReviewStatus::Published, 4, 'jean@example.org'));
+        $typed = $service->voterFor($this->reviewWithId(7, 'jean@example.org'));
+        $otherTyped = $service->voterFor($this->reviewWithId(8, 'jean@example.org'));
+
+        $this->assertNotNull($typed);
+        $this->assertMatchesRegularExpression('/^[0-9a-f]{32}$/', $typed);
+        $this->assertNotSame($proven, $typed);
+        $this->assertNotSame($typed, $otherTyped);
+    }
+
+    // Two verified reviews by the same person weigh once, the way two clicks from one browser do
     public function testTheVoterKeyIsTheSameForOneAddressAndDiffersForAnother(): void
     {
         $service = $this->service();
@@ -249,6 +290,192 @@ class ReviewServiceTest extends TestCase
         $this->service(notifier: $notifier)->submit(new Review()->setAuthorName('Jean D.')->setComment('Impeccable'));
     }
 
+    // The ratings of a site as a plain voter => value table, what the assertions below read: how many rows an owner's average is made of is the whole point
+    /** @param array<string, int> $votes */
+    private function ratings(array &$votes, int $scale = 5): RatingService
+    {
+        $service = $this->createStub(RatingService::class);
+        $service->method('getScale')->willReturn($scale);
+        $service->method('hasVote')->willReturnCallback(static function (string $type, int $id, string $voter) use (&$votes): bool {
+            return isset($votes[$voter]);
+        });
+        $service->method('record')->willReturnCallback(static function (string $type, int $id, int $value, string $voter) use (&$votes): void {
+            $votes[$voter] = $value;
+        });
+        $service->method('withdraw')->willReturnCallback(static function (string $type, int $id, string $voter) use (&$votes): void {
+            unset($votes[$voter]);
+        });
+
+        return $service;
+    }
+
+    /** @param Review[] $reviews */
+    private function repositoryHolding(array $reviews): ReviewRepository
+    {
+        return $this->createConfiguredStub(ReviewRepository::class, ['findLocalByOwnerAndAddress' => $reviews]);
+    }
+
+    private static function addressKey(string $email): string
+    {
+        return substr(hash('sha256', $email), 0, 32);
+    }
+
+    // The one row a published unverified review had becomes its own
+    public function testRekeyingMovesTheScoreFromTheAddressToTheReview(): void
+    {
+        $review = $this->reviewWithId(7, 'jean@example.org');
+        $votes = [self::addressKey('jean@example.org') => 4];
+        $service = $this->service(ratingService: $this->ratings($votes), reviewRepository: $this->repositoryHolding([$review]));
+
+        $this->assertSame(1, $service->rekeyLegacyRating($review));
+
+        $this->assertSame([(string) $service->voterFor($review) => 4], $votes);
+    }
+
+    // Run twice, as a command run once per site ends up being
+    public function testRekeyingTwiceChangesNothingMore(): void
+    {
+        $review = $this->reviewWithId(7, 'jean@example.org');
+        $votes = [self::addressKey('jean@example.org') => 4];
+        $service = $this->service(ratingService: $this->ratings($votes), reviewRepository: $this->repositoryHolding([$review]));
+
+        $service->rekeyLegacyRating($review);
+        $after = $votes;
+
+        $this->assertSame(0, $service->rekeyLegacyRating($review));
+        $this->assertSame($after, $votes);
+    }
+
+    public function testADryRunCountsAndWritesNothing(): void
+    {
+        $review = $this->reviewWithId(7, 'jean@example.org');
+        $votes = [self::addressKey('jean@example.org') => 4];
+        $before = $votes;
+        $service = $this->service(ratingService: $this->ratings($votes), reviewRepository: $this->repositoryHolding([$review]));
+
+        $this->assertSame(1, $service->rekeyLegacyRating($review, true));
+        $this->assertSame($before, $votes);
+    }
+
+    // One row stood for both: moving it for the first must not take the second out of the average
+    public function testTwoUnverifiedReviewsOfAnAddressEachGetTheirOwn(): void
+    {
+        $first = $this->reviewWithId(7, 'jean@example.org');
+        $second = $this->reviewWithId(8, 'Jean@Example.org')->setRating(2);
+        $votes = [self::addressKey('jean@example.org') => 2];
+        $service = $this->service(ratingService: $this->ratings($votes), reviewRepository: $this->repositoryHolding([$first, $second]));
+
+        $this->assertSame(2, $service->rekeyLegacyRating($first));
+
+        $this->assertSame([(string) $service->voterFor($first) => 4, (string) $service->voterFor($second) => 2], $votes);
+    }
+
+    // The address's row is a verified review's own key: it stays, carrying that review's score again and not the one an unverified review wrote over it
+    public function testTheRowOfAVerifiedReviewOfThatAddressStays(): void
+    {
+        $verified = $this->reviewWithId(6, 'jean@example.org')->setVerified(true)->setRating(5);
+        $unverified = $this->reviewWithId(7, 'jean@example.org')->setRating(1);
+        $address = self::addressKey('jean@example.org');
+        $votes = [$address => 1];
+        $service = $this->service(ratingService: $this->ratings($votes), reviewRepository: $this->repositoryHolding([$verified, $unverified]));
+
+        $this->assertSame(1, $service->rekeyLegacyRating($unverified));
+
+        $this->assertSame([$address => 5, (string) $service->voterFor($unverified) => 1], $votes);
+    }
+
+    // Rejected before it moved, the unverified review will never carry the score it wrote over the verified one
+    public function testRejectingAnUnverifiedReviewGivesTheVerifiedRowItsScoreBack(): void
+    {
+        $verified = $this->reviewWithId(6, 'jean@example.org')->setVerified(true)->setRating(5);
+        $unverified = $this->reviewWithId(7, 'jean@example.org')->setRating(1)->setStatus(ReviewStatus::Rejected);
+        $address = self::addressKey('jean@example.org');
+        $votes = [$address => 1];
+        $service = $this->service(ratingService: $this->ratings($votes), reviewRepository: $this->repositoryHolding([$verified, $unverified]));
+
+        $this->assertSame(0, $service->rekeyLegacyRating($unverified));
+
+        $this->assertSame([$address => 5], $votes);
+    }
+
+    // A verified review's row is left alone once done, a moderator having republished another one of that address meanwhile being no business of this
+    public function testNothingLeftToMoveLeavesTheVerifiedRowAlone(): void
+    {
+        $verified = $this->reviewWithId(6, 'jean@example.org')->setVerified(true)->setRating(5);
+        $unverified = $this->reviewWithId(7, 'jean@example.org')->setRating(1);
+        $address = self::addressKey('jean@example.org');
+        $votes = [$address => 3];
+        $service = $this->service(ratingService: $this->ratings($votes), reviewRepository: $this->repositoryHolding([$verified, $unverified]));
+        $votes[(string) $service->voterFor($unverified)] = 1;
+
+        $this->assertSame(0, $service->rekeyLegacyRating($unverified));
+
+        $this->assertSame(3, $votes[$address]);
+    }
+
+    // On the site's own scale, as the score it replaces was
+    public function testRekeyingWritesOnTheSiteScale(): void
+    {
+        $review = $this->reviewWithId(7, 'jean@example.org');
+        $votes = [self::addressKey('jean@example.org') => 8];
+        $service = $this->service(ratingService: $this->ratings($votes, 10), reviewRepository: $this->repositoryHolding([$review]));
+
+        $service->rekeyLegacyRating($review);
+
+        $this->assertSame([(string) $service->voterFor($review) => 8], $votes);
+    }
+
+    // A site moderating before it ran the command: the score stands once, not under both keys
+    public function testPublishingAgainWithoutTheCommandDoesNotCountTwice(): void
+    {
+        $review = $this->reviewWithId(7, 'jean@example.org');
+        $votes = [self::addressKey('jean@example.org') => 4];
+        $service = $this->service(ratingService: $this->ratings($votes), reviewRepository: $this->repositoryHolding([$review]));
+
+        $service->syncRating($review);
+
+        $this->assertSame([(string) $service->voterFor($review) => 4], $votes);
+    }
+
+    // Rejected before the command ran: its score goes, and the other review the row also stood for keeps its own
+    public function testRejectingWithoutTheCommandLeavesTheOtherReviewCounted(): void
+    {
+        $rejected = $this->reviewWithId(7, 'jean@example.org')->setStatus(ReviewStatus::Rejected);
+        $other = $this->reviewWithId(8, 'jean@example.org')->setRating(2);
+        $votes = [self::addressKey('jean@example.org') => 4];
+        $service = $this->service(ratingService: $this->ratings($votes), reviewRepository: $this->repositoryHolding([$rejected, $other]));
+
+        $service->syncRating($rejected);
+
+        $this->assertSame([(string) $service->voterFor($other) => 2], $votes);
+    }
+
+    // A review imported from a platform, or carrying no address, was never under one
+    public function testAReviewWithNoAddressHasNothingToMove(): void
+    {
+        $votes = [];
+        $service = $this->service(ratingService: $this->ratings($votes));
+
+        $this->assertSame(0, $service->rekeyLegacyRating(new Review()->setOwnerType('book')->setOwnerId(12)->setVerified(false)));
+    }
+
+    private function accountAddress(bool $owns): CurrentAccountAddress
+    {
+        $address = $this->createStub(CurrentAccountAddress::class);
+        $address->method('owns')->willReturn($owns);
+
+        return $address;
+    }
+
+    // An unverified review as moderation sees it: stored, hence its id, set the way Doctrine does
+    private function reviewWithId(int $id, string $email): Review
+    {
+        $review = $this->localReview(ReviewStatus::Published, 4, $email)->setVerified(false);
+        new \ReflectionProperty(Review::class, 'id')->setValue($review, $id);
+
+        return $review;
+    }
+
     /**
      * @param array<string, string> $configs
      */
@@ -259,6 +486,8 @@ class ReviewServiceTest extends TestCase
         array $configs = [],
         bool $verified = false,
         ?ReviewNotifier $notifier = null,
+        ?CurrentAccountAddress $currentAccountAddress = null,
+        ?ReviewRepository $reviewRepository = null,
     ): ReviewService {
         $configService = $this->createMock(ConfigServiceInterface::class);
         $configService->method('hasParameter')->willReturnCallback(fn (string $key): bool => \array_key_exists($key, $configs));
@@ -269,13 +498,14 @@ class ReviewServiceTest extends TestCase
         $verifierRegistry->method('verify')->willReturn($verified);
 
         return new ReviewService(
-            $this->createMock(ReviewRepository::class),
+            $reviewRepository ?? $this->createMock(ReviewRepository::class),
             $ratingService ?? $this->createMock(RatingService::class),
             $replyRegistry ?? $this->createMock(ReviewReplyRegistry::class),
             $verifierRegistry,
             $manager ?? $this->createMock(EntityManagerInterface::class),
             $configService,
             $notifier ?? $this->createMock(ReviewNotifier::class),
+            $currentAccountAddress,
         );
     }
 }

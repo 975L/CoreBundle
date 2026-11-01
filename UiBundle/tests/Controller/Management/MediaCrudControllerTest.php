@@ -19,6 +19,7 @@ use c975L\UiBundle\Repository\MediaRepository;
 use c975L\UiBundle\Service\ImageDimensionsReader;
 use c975L\UiBundle\Service\MediaDimensionsFiller;
 use c975L\UiBundle\Twig\DocumentExtension;
+use c975L\UiBundle\Validator\AllowedUploadExtension;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use EasyCorp\Bundle\EasyAdminBundle\Collection\EntityCollection;
@@ -193,6 +194,21 @@ class MediaCrudControllerTest extends TestCase
         ]));
 
         $this->assertFalse(new \ReflectionMethod($controller, 'isUsed')->invoke($controller, $this->mediaWithId(1)));
+    }
+
+    // The library takes any type of file, so the extension is the one thing standing between an upload and public/
+    public function testFileFieldRefusesAnExtensionOutsideTheList(): void
+    {
+        foreach ($this->createController()->configureFields('new') as $field) {
+            if ('file' === $field->getAsDto()->getProperty()) {
+                $constraints = $field->getAsDto()->getFormTypeOptions()['constraints'];
+                $this->assertNotEmpty(array_filter($constraints, static fn (object $constraint): bool => $constraint instanceof AllowedUploadExtension));
+
+                return;
+            }
+        }
+
+        $this->fail('file field not found');
     }
 
     private function fileFieldOption(string $option, MediaCrudController $controller): \Closure

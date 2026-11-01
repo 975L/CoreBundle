@@ -10,6 +10,7 @@
 
 namespace c975L\UiBundle\Tests\Templates;
 
+use c975L\UiBundle\Tests\Fixtures\HtmlSanitizerKernel;
 use PHPUnit\Framework\TestCase;
 use Symfony\UX\TwigComponent\ComponentAttributes;
 use Symfony\UX\TwigComponent\Twig\PropsTokenParser;
@@ -54,7 +55,7 @@ class CardIconTest extends TestCase
      */
     private function render(array $context): string
     {
-        $twig = new Environment(new FilesystemLoader(dirname(__DIR__, 2) . '/templates'));
+        $twig = HtmlSanitizerKernel::register(new Environment(new FilesystemLoader(dirname(__DIR__, 2) . '/templates')));
         $twig->addTokenParser(new PropsTokenParser());
         // What TwigEnvironmentConfigurator does in the application: without it the rendered attributes come back escaped, quotes included
         $twig->getRuntime(EscaperRuntime::class)->addSafeClass(ComponentAttributes::class, ['html']);

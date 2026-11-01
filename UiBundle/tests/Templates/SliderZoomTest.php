@@ -10,6 +10,7 @@
 
 namespace c975L\UiBundle\Tests\Templates;
 
+use c975L\UiBundle\Tests\Fixtures\HtmlSanitizerKernel;
 use c975L\UiBundle\Twig\BoolExtension;
 use PHPUnit\Framework\TestCase;
 use Twig\Environment;
@@ -116,7 +117,7 @@ class SliderZoomTest extends TestCase
         // The namespace too, the controls being included by it
         $loader = new FilesystemLoader(dirname(__DIR__, 2) . '/templates');
         $loader->addPath(dirname(__DIR__, 2) . '/templates', 'c975LUi');
-        $twig = new Environment($loader);
+        $twig = HtmlSanitizerKernel::register(new Environment($loader));
         $twig->addFilter(new TwigFilter('trans', static fn (?string $key): string => (string) $key));
         $twig->addFilter(new TwigFilter('to_bool', new BoolExtension()->toBool(...)));
         $twig->addFunction(new TwigFunction('vich_uploader_asset', static fn (mixed $value): string => '/medias/insigne.webp'));

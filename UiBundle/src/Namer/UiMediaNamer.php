@@ -12,7 +12,9 @@ namespace c975L\UiBundle\Namer;
 
 use c975L\UiBundle\Contract\VichImageResizableInterface;
 use c975L\UiBundle\Contract\VichMediaNamableInterface;
+use c975L\UiBundle\Contract\VichPrivateFileInterface;
 use c975L\UiBundle\Entity\Media;
+use c975L\UiBundle\Validator\AllowedUploadExtension;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -22,6 +24,20 @@ use Vich\UploaderBundle\Naming\NamerInterface;
 
 class UiMediaNamer implements NamerInterface
 {
+    // What a file gets named when its extension is on no list: harmless under public/, where a server runs a ".php" and a browser opens an ".html", and answering no 500 to whatever got this far
+    private const string FALLBACK_EXTENSION = 'bin';
+
+    // The common images, named off their bytes whatever the file says it is
+    private const array IMAGE_EXTENSIONS = [
+        'image/jpeg' => 'jpg',
+        'image/jpg' => 'jpg',
+        'image/png' => 'png',
+        'image/gif' => 'gif',
+        'image/webp' => 'webp',
+        'image/vnd.microsoft.icon' => 'ico',
+        'image/x-icon' => 'ico',
+    ];
+
     private readonly Filesystem $filesystem;
 
     public function __construct(
@@ -61,9 +77,8 @@ class UiMediaNamer implements NamerInterface
             return $object->getVichMediaPath() . '.' . $extension;
         }
 
-        // A Page's or a UrlMetadata's own og-image is rasterized like the site-wide one, so an SVG upload is named webp here too
-        // ".webp" is only promised to an entity VichImageResizeListener converts: anything else would keep its jpeg or png bytes under a name that lies about them
-        $extension = $object instanceof Media && $object->isOgImage() ? 'webp' : $this->determineExtension($file, $object instanceof VichImageResizableInterface);
+        // A Page's or a UrlMetadata's own og-image is rasterized like the site-wide one, so an SVG upload is named webp here too. ".webp" is only promised to an entity VichImageResizeListener converts: anything else would keep its jpeg or png bytes under a name that lies about them
+        $extension = $object instanceof Media && $object->isOgImage() ? 'webp' : $this->determineExtension($file, $object instanceof VichImageResizableInterface, $object instanceof VichPrivateFileInterface);
         $basePath = $object instanceof Media ? $this->resolveBasePath($object) : $object->getVichMediaPath();
 
         return $basePath . '-' . uniqid() . '.' . $extension;
@@ -83,32 +98,27 @@ class UiMediaNamer implements NamerInterface
         return ('.' !== $dir ? $dir . '/' : '') . $slug;
     }
 
-    private function determineExtension(File $file, bool $convertToWebp = true): string
+    // Whatever goes under public/ comes out of AllowedUploadExtension's list, read off the bytes for the common images and otherwise off a name nobody here wrote: the form's constraint is one door, an import or another bundle's form reach this namer without it. A class of files that never leaves private/ (a paid .cbz, a .7z) keeps its own extension, which neither a web server nor a browser reads there: not so a members-only Media, which unticking moves to public/
+    private function determineExtension(File $file, bool $convertToWebp = true, bool $private = false): string
     {
-        $mimeType = $file->getMimeType();
-        $extension = $file->getExtension();
-
-        if ('image/jpeg' === $mimeType || 'image/jpg' === $mimeType) {
-            $extension = 'jpg';
-        } elseif ('image/png' === $mimeType) {
-            $extension = 'png';
-        } elseif ('image/gif' === $mimeType) {
-            $extension = 'gif';
-        } elseif ('image/webp' === $mimeType) {
-            $extension = 'webp';
-        } elseif ('image/vnd.microsoft.icon' === $mimeType || 'image/x-icon' === $mimeType) {
-            $extension = 'ico';
-        }
+        $extension = self::IMAGE_EXTENSIONS[(string) $file->getMimeType()] ?? strtolower($file->getExtension());
 
         if ($convertToWebp && in_array($extension, ['jpg', 'png', 'gif', 'webp'])) {
             return 'webp';
         }
 
-        if ('' !== $extension) {
+        // A temporary upload has no extension of its own, so the name the visitor's browser sent is where it is read from
+        if ('' === $extension && $file instanceof UploadedFile) {
+            $extension = strtolower($file->getClientOriginalExtension());
+        }
+
+        if (\in_array($extension, AllowedUploadExtension::EXTENSIONS, true) || ($private && 1 === preg_match('/^[a-z0-9]{1,10}$/', $extension))) {
             return $extension;
         }
 
-        // A temporary upload has no extension of its own, so the name the visitor's browser sent is where it is read from - and the mime type is all that is left for anything else
-        return $file instanceof UploadedFile ? $file->getClientOriginalExtension() : (string) $file->guessExtension();
+        // No name to go by, or one off the list: the bytes decide, which still name a script or a page as such
+        $guessed = strtolower((string) $file->guessExtension());
+
+        return \in_array($guessed, AllowedUploadExtension::EXTENSIONS, true) ? $guessed : self::FALLBACK_EXTENSION;
     }
 }

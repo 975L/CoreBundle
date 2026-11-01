@@ -13,6 +13,7 @@ namespace c975L\UiBundle\Controller;
 use c975L\UiBundle\Entity\Review;
 use c975L\UiBundle\Form\ReviewType;
 use c975L\UiBundle\Registry\FavoriteItemRegistry;
+use c975L\UiBundle\Service\CurrentAccountAddress;
 use c975L\UiBundle\Service\FormBotProtection;
 use c975L\UiBundle\Service\RateLimiterGuard;
 use c975L\UiBundle\Service\ReviewService;
@@ -39,6 +40,8 @@ class ReviewController extends AbstractController
         private readonly RateLimiterGuard $rateLimiterGuard,
         private readonly TranslatorInterface $translator,
         private readonly ?RateLimiterFactoryInterface $reviewLimiterFactory = null,
+        // Optional so an app wiring this by hand keeps working - without it, nobody is offered their address
+        private readonly ?CurrentAccountAddress $currentAccountAddress = null,
     ) {
     }
 
@@ -102,6 +105,8 @@ class ReviewController extends AbstractController
         $review = new Review()
             ->setOwnerType($ownerType)
             ->setOwnerId($ownerId)
+            // Saves a signed-in visitor typing it, and is what a verified review asks for (see ReviewService::submit()). This page stores nothing in a shared cache (see its #[Cache]), and a submission overwrites it
+            ->setAuthorEmail($this->currentAccountAddress?->address())
         ;
         // Stated rather than left to the browser: injected into the page of the thing it is about (see components/Review/List.html.twig), a form with no action of its own posts to that page, which serves GET alone
         $form = $this->createForm(ReviewType::class, $review, [

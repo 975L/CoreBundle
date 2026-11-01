@@ -26,9 +26,11 @@ use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\FormType;
+use Symfony\Component\Form\Extension\Validator\ValidatorExtension;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\Forms;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\Validator\Validation;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class EmailTemplateCrudControllerTest extends TestCase
@@ -88,7 +90,7 @@ class EmailTemplateCrudControllerTest extends TestCase
     // A real form, not a double: the keys the entries are filed under are the form's own, and that is half of what is being checked
     private function blocksForm(EmailTemplate $emailTemplate): FormInterface
     {
-        $form = Forms::createFormFactory()->createBuilder(FormType::class, null, ['data_class' => null])
+        $form = Forms::createFormFactoryBuilder()->addExtension(new ValidatorExtension(Validation::createValidator()))->getFormFactory()->createBuilder(FormType::class, null, ['data_class' => null])
             ->add('blocks', CollectionType::class, ['entry_type' => EmailBlockType::class, 'allow_add' => true, 'allow_delete' => true])
             ->getForm();
 

@@ -21,6 +21,7 @@ use c975L\UiBundle\Registry\MediaUsageRegistry;
 use c975L\UiBundle\Repository\MediaRepository;
 use c975L\UiBundle\Service\MediaDimensionsFiller;
 use c975L\UiBundle\Twig\DocumentExtension;
+use c975L\UiBundle\Validator\AllowedUploadExtension;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
 use EasyCorp\Bundle\EasyAdminBundle\Collection\EntityCollection;
@@ -249,6 +250,7 @@ class MediaCrudController extends AbstractCrudController
                     'delete_label_translation_domain' => 'messages',
                     'constraints' => [
                         new FileConstraint(maxSize: self::MAX_FILE_SIZE),
+                        new AllowedUploadExtension(),
                     ],
                 ])
                 ->onlyOnForms(),

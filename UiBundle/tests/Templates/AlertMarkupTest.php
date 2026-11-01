@@ -10,6 +10,7 @@
 
 namespace c975L\UiBundle\Tests\Templates;
 
+use c975L\UiBundle\Tests\Fixtures\HtmlSanitizerKernel;
 use PHPUnit\Framework\TestCase;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
@@ -43,10 +44,25 @@ class AlertMarkupTest extends TestCase
         $this->assertStringNotContainsString('text-center', $html);
     }
 
+    // An editor's text: what it may hold stays, what would run goes, and a bare newline still breaks the line
+    public function testTheContentIsSanitized(): void
+    {
+        $html = $this->render(['content' => "<strong>First</strong>\nSecond<script>alert(1)</script><img src=\"/a.png\" onerror=\"alert(2)\">"]);
+
+        $this->assertStringContainsString('<strong>First</strong><br />', $html);
+        $this->assertStringNotContainsString('alert(', $html);
+    }
+
+    // A block saved with no text at all renders an empty body rather than a TypeError from the filter
+    public function testNoContentRendersAnEmptyBody(): void
+    {
+        $this->assertStringContainsString('<div class="alert__body"></div>', $this->render([]));
+    }
+
     // The bare environment the component renderer would otherwise bring, with the "to_bool" filter the label prop is read through and a "trans" echoing its domain and key
     private function render(array $context): string
     {
-        $twig = new Environment(new FilesystemLoader(dirname(__DIR__, 2) . '/templates'));
+        $twig = HtmlSanitizerKernel::register(new Environment(new FilesystemLoader(dirname(__DIR__, 2) . '/templates')));
         $twig->addFilter(new TwigFilter('to_bool', static fn (mixed $value): bool => filter_var($value, FILTER_VALIDATE_BOOLEAN)));
         $twig->addFilter(new TwigFilter('trans', static fn (string $key, array $parameters = [], ?string $domain = null): string => $domain . ':' . $key));
 

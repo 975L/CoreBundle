@@ -5,7 +5,7 @@
 {% set locale = locale|default('') ?: null %}
 <div class="readmore" data-controller="readmore">
     <input type="checkbox" id="readmore-toggle-{{ id }}" class="readmore-toggle" data-readmore-target="toggle" hidden>
-    <div class="readmore-content" data-readmore-target="content">{{ text|raw|nl2br }}</div>
+    <div class="readmore-content" data-readmore-target="content">{{ text|default('')|sanitize_html('c975l.rich')|nl2br }}</div>
     <label for="readmore-toggle-{{ id }}" class="readmore-toggle-label">
         <span class="read-more">{{ 'label.readmore'|trans({}, 'ui', locale) }}</span>
         <span class="read-less">{{ 'label.readless'|trans({}, 'ui', locale) }}</span>

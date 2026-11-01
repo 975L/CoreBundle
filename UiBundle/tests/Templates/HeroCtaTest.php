@@ -10,6 +10,8 @@
 
 namespace c975L\UiBundle\Tests\Templates;
 
+use c975L\UiBundle\Tests\Fixtures\HtmlSanitizerKernel;
+use c975L\UiBundle\Twig\TrixExtension;
 use PHPUnit\Framework\TestCase;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
@@ -73,11 +75,20 @@ class HeroCtaTest extends TestCase
         $this->assertStringContainsString('class="hero__title"', $html);
     }
 
+    // The title is an editor's text like the rest, and the filter dropping its <div> vouches for nothing: what would run goes, what Trix wrote stays
+    public function testTheTitleIsSanitized(): void
+    {
+        $html = $this->render(['title' => '<div>Marre<script>alert(1)</script></div><div><strong onclick="alert(2)">des</strong> radars</div>']);
+
+        $this->assertStringContainsString('class="hero__title">Marre <br><strong>des</strong> radars<', $html);
+        $this->assertStringNotContainsString('alert(', $html);
+    }
+
     // Twig resolves these at compile time, so they must exist even when never reached
     private function render(array $context): string
     {
-        $twig = new Environment(new FilesystemLoader(dirname(__DIR__, 2) . '/templates'));
-        $twig->addFilter(new TwigFilter('trix_inline', static fn (?string $value): string => (string) $value, ['is_safe' => ['html']]));
+        $twig = HtmlSanitizerKernel::register(new Environment(new FilesystemLoader(dirname(__DIR__, 2) . '/templates')));
+        $twig->addFilter(new TwigFilter('trix_inline', new TrixExtension()->trixInline(...), ['is_safe' => ['html']]));
         $twig->addFilter(new TwigFilter('to_bool', static fn (mixed $value): bool => (bool) $value));
         $twig->addFunction(new TwigFunction('vich_uploader_asset', static fn (mixed $media): string => ''));
 

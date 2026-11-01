@@ -17,7 +17,7 @@
                         <div class="feature-tile">
                             {% if c.icon %}<span class="feature-tile__icon"><img src="{{ asset(c.icon) }}" alt="" aria-hidden="true" width="28" height="28" loading="lazy"></span>{% endif %}
                             <h3 class="feature-tile__title">{{ c.title }}</h3>
-                            <div class="feature-tile__text">{{ c.text|raw }}</div>
+                            <div class="feature-tile__text">{{ c.text|default('')|sanitize_html('c975l.rich') }}</div>
                         </div>
                     {% endfor %}
                 </div>

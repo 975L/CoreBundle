@@ -10,6 +10,7 @@
 
 namespace c975L\UiBundle\Tests\Templates;
 
+use c975L\UiBundle\Tests\Fixtures\HtmlSanitizerKernel;
 use PHPUnit\Framework\TestCase;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
@@ -72,7 +73,7 @@ class TextHookMarkupTest extends TestCase
     // Twig resolves these at compile time, so they must exist even when never reached
     private function render(string $template, array $context): string
     {
-        $twig = new Environment(new FilesystemLoader(dirname(__DIR__, 2) . '/templates'));
+        $twig = HtmlSanitizerKernel::register(new Environment(new FilesystemLoader(dirname(__DIR__, 2) . '/templates')));
         $twig->addFilter(new TwigFilter('trix_inline', static fn (?string $value): string => (string) $value, ['is_safe' => ['html']]));
         $twig->addFilter(new TwigFilter('to_bool', static fn (mixed $value): bool => (bool) $value));
         $twig->addFunction(new TwigFunction('vich_uploader_asset', static fn (mixed $media): string => ''));

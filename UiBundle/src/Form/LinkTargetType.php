@@ -12,6 +12,7 @@ namespace c975L\UiBundle\Form;
 
 use c975L\UiBundle\Form\ChoiceList\LinkTargetChoiceLoader;
 use c975L\UiBundle\Registry\LinkTargetRegistry;
+use c975L\UiBundle\Validator\SafeUrl;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\OptionsResolver\Options;
@@ -36,6 +37,8 @@ class LinkTargetType extends AbstractType
             'choice_loader' => fn (Options $options): LinkTargetChoiceLoader => new LinkTargetChoiceLoader($this->registry->all()),
             // Read by EasyAdmin's autocomplete, which then lets a value typed into its search box become the field's own (see ChoiceAutocompleteExtension, which keeps the widget on it whatever the length of the list)
             'attr' => ['data-ea-autocomplete-allow-item-create' => 'true'],
+            // A typed address is the editor's own words: listed or not, nothing a browser would run goes through
+            'constraints' => [new SafeUrl()],
         ]);
     }
 

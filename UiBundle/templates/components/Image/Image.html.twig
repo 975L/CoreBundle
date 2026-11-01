@@ -13,7 +13,7 @@
 {% if imgSrc %}
     <p class="text-center">
         {% if above and label != '' %}
-            <span class="img-above {{ classLabel|default('') }}">{{ label|raw }}</span>
+            <span class="img-above {{ classLabel|default('') }}">{{ label|default('')|sanitize_html('c975l.rich') }}</span>
             <br>
         {% endif %}
         {# aria-hidden doubles the empty alt so checkers read it as decorative, not as a missing alternative #}
@@ -25,7 +25,7 @@
             {% if priority %}loading="eager" fetchpriority="high"{% else %}loading="lazy"{% endif %}>
         {% if not above and label != '' %}
             <br>
-            <span class="img-below {{ classLabel|default('') }}">{{ label|raw }}</span>
+            <span class="img-below {{ classLabel|default('') }}">{{ label|default('')|sanitize_html('c975l.rich') }}</span>
         {% endif %}
     </p>
 {% endif %}

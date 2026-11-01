@@ -268,8 +268,8 @@ scheme, traded at `POST /app/api/token` (`config_app_token`, `{code, verifier}`)
 The `app-connect-schemes` slug lists the schemes a code may be sent to: empty, every route is a 404. The
 app declares a stateless firewall over `^/app/api/`, before `main`, with
 `access_token.token_handler: c975L\ConfigBundle\Security\AppTokenHandler` (see the readme); no token
-goes through as a visitor. Tokens cascade with the account, and `AppTokenSubscriber` deletes them on
-`UserAnonymizedEvent`.
+goes through as a visitor. Tokens cascade with the account, `AppTokenSubscriber` deletes them on
+`UserAnonymizedEvent`, and `PasswordResetter` on a password change, a reset or the "other devices" sign-out.
 `AppConnectCspSubscriber` adds the schemes to the policy's `form-action` on `config_app_connect` only,
 through `CspFormAction::widen()`; a policy without `form-action` is left alone.
 The agreement form carries `data-turbo="false"`: Turbo's `fetch()` would follow the redirection to the

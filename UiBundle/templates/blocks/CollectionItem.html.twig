@@ -26,7 +26,7 @@
             {% if href %}<a{{ linkAttributes }}><{{ titleLevel }} class="portfolio-grid__project-title">{{ title }}</{{ titleLevel }}></a>{% else %}<{{ titleLevel }} class="portfolio-grid__project-title">{{ title }}</{{ titleLevel }}>{% endif %}
             {# The description as its source wrote it, Trix HTML like the one every variant below renders: this branch was the only one printing it escaped, so a name set in italics reached the page as its own tags #}
             {# A <div> and not a <p>, for the reason the portrait card states too: that markup is already block-level and a <p> would be split #}
-            {% if content %}<div class="portfolio-grid__project-text">{{ content|raw|nl2br }}</div>{% endif %}
+            {% if content %}<div class="portfolio-grid__project-text">{{ content|sanitize_html('c975l.rich')|nl2br }}</div>{% endif %}
         </div>
     </div>
 {% elseif variant is defined and variant == 'portrait' %}
@@ -50,7 +50,7 @@
             {% endif %}
             <{{ titleLevel }} class="card-title">{% if href %}<a href="{{ href }}"{% if hrefTarget %} target="{{ hrefTarget }}"{% endif %}>{{ title }}</a>{% else %}{{ title }}{% endif %}</{{ titleLevel }}>
             {# A <div>, not a <p>: raw Trix HTML is already block-level and a <p> would be split. No ".text-center" beside it, unlike the plain card below: this card centers everything it holds, and the alignment is declared there once (see sass/_cards.scss) #}
-            {% if content|default('') %}<div>{{ content|raw|nl2br }}</div>{% endif %}
+            {% if content|default('') %}<div>{{ content|sanitize_html('c975l.rich')|nl2br }}</div>{% endif %}
             {# Wrapped in the very ".card-data" the other variants use, so a row of portraits of unequal lengths still lines its buttons up - the text above it is left in plain flow, where a name is read right under its face #}
             {# The destination's own name in the default label rather than a bare "learn more": it is the text a search engine reads the link by #}
             {% if url|default('') %}<div class="card-data"><twig:c975LUi:Button:Button label="{{ buttonLabel|default(title|default('') ? 'label.learn_more_about'|trans({'%title%': title}, 'ui') : 'label.learn_more'|trans({}, 'ui')) }}" url="{{ url }}" target="{{ target|default('') }}" icon="{{ buttonIcon|default('') }}"/></div>{% endif %}
@@ -80,7 +80,7 @@
             class="{{ cardClass }}"
         >
             {# No wrapper of its own here, unlike the teaser below: the stat card already carries its own alignment (see "class"), and what a source nests under its figures - a link, a line of navigation - is markup it wrote itself, which has to come out as the app's own components render it #}
-            {% if itemContent %}{{ itemContent|raw|nl2br }}{% endif %}
+            {% if itemContent %}{{ itemContent|sanitize_html('c975l.rich')|nl2br }}{% endif %}
         </twig:c975LUi:Card:Card>
     {% elseif resolvedImageUrl or url %}
         <twig:c975LUi:Card:Card tag="article" id="{{ id|default('') }}" title="{{ title }}" titleUrl="{{ detailUrl|default('') }}" level="{{ level|default('') }}" class="{{ cardClass }}">
@@ -91,7 +91,7 @@
             {% endif %}
             <div class="card-data">
                 {# A <div>, not a <p>: raw Trix HTML is already block-level and a <p> would be split #}
-                {% if itemContent %}<div class="text-center">{{ itemContent|raw|nl2br }}</div>{% endif %}
+                {% if itemContent %}<div class="text-center">{{ itemContent|sanitize_html('c975l.rich')|nl2br }}</div>{% endif %}
                 {# The destination's own name in the default label rather than a bare "learn more": it is the text a search engine reads the link by #}
                 {% if url %}<twig:c975LUi:Button:Button label="{{ buttonLabel|default(title|default('') ? 'label.learn_more_about'|trans({'%title%': title}, 'ui') : 'label.learn_more'|trans({}, 'ui')) }}" url="{{ url }}" target="{{ target|default('') }}" icon="{{ buttonIcon|default('') }}"/>{% endif %}
             </div>

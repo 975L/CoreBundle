@@ -132,7 +132,7 @@ class ContactDetailsType extends AbstractType
     {
         return [
             'default_protocol' => 'https',
-            'constraints' => [new Url()],
+            'constraints' => [new Url(protocols: ['http', 'https'])],
             'required' => false,
         ];
     }

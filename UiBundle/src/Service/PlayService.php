@@ -21,6 +21,9 @@ class PlayService
     // No thing is raised past this in one go: a child does not hear one story more often than that before a parent connects the app
     private const int RAISE_MAX = 500;
 
+    // What an app says it played is held apart from the public total, in rows of its own that totals() never reads for the same owner type: "app:book" beside "book"
+    public const string APP_TOTAL_PREFIX = 'app:';
+
     public function __construct(
         private readonly PlayRepository $playRepository,
         private readonly PlayTotalRepository $playTotalRepository,
@@ -34,6 +37,22 @@ class PlayService
     {
         $this->playTotalRepository->increment($ownerType, $ownerId);
 
+        return $this->hold($ownerType, $ownerId, $holder);
+    }
+
+    // The same play on the word of an app, which holds no ticket: it counts its listens offline and answers to nobody on the time they took, so anyone can post one. Written down for its holder and in its own count, never in the total the pages show
+    /** @return array<string, int> "book:12" => 3 */
+    public function recordFromApp(string $ownerType, int $ownerId, ?string $holder): array
+    {
+        $this->playTotalRepository->increment(self::APP_TOTAL_PREFIX . $ownerType, $ownerId);
+
+        return $this->hold($ownerType, $ownerId, $holder);
+    }
+
+    // The row under its holder, none for a listener nobody knows
+    /** @return array<string, int> */
+    private function hold(string $ownerType, int $ownerId, ?string $holder): array
+    {
         if (null === $holder) {
             return [];
         }

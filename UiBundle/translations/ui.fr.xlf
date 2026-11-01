@@ -4152,7 +4152,7 @@
             </trans-unit>
             <trans-unit id="6wAr97D">
                 <source>label.review_form_moderation_notice</source>
-                <target>Chaque avis est approuvé avant d'être publié, puis affiché avec sa date. Un avis est marqué « vérifié » lorsque son courriel correspond à un achat. Aucun avis n'est rémunéré, et un avis n'est écarté que s'il est injurieux, hors sujet ou manifestement faux - jamais parce qu'il est négatif.</target>
+                <target>Chaque avis est approuvé avant d'être publié, puis affiché avec sa date. Un avis est marqué « vérifié » lorsqu'il est écrit depuis un compte connecté dont le courriel correspond à un achat. Aucun avis n'est rémunéré, et un avis n'est écarté que s'il est injurieux, hors sujet ou manifestement faux - jamais parce qu'il est négatif.</target>
             </trans-unit>
             <trans-unit id="MceC1MW">
                 <source>label.review_form_name</source>
@@ -4869,6 +4869,10 @@
             <trans-unit id="V_DHWtY">
                 <source>text.field_url_help</source>
                 <target><![CDATA[Les mots du libellé entre crochets deviennent le lien, par exemple « J'accepte les [conditions générales d'utilisation] » ; sans crochets, un lien « (lire) » suit le libellé.]]></target>
+            </trans-unit>
+            <trans-unit id="W4825Gb">
+                <source>text.form_copy_notice</source>
+                <target>Ce message est la copie d'un message envoyé depuis le formulaire de ce site, à la demande d'une personne ayant indiqué cette adresse pour en recevoir une copie. Si ce n'est pas vous, ignorez-le simplement.</target>
             </trans-unit>
             <trans-unit id="UAH_ycC">
                 <source>text.form_required_note</source>

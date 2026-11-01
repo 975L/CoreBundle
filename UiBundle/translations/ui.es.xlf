@@ -4152,7 +4152,7 @@
             </trans-unit>
             <trans-unit id="6wAr97D">
                 <source>label.review_form_moderation_notice</source>
-                <target>Cada opinión se aprueba antes de publicarse y luego se muestra con su fecha. Una opinión se marca «verificada» cuando su correo corresponde a una compra. Ninguna opinión está remunerada, y una opinión solo se descarta si es injuriosa, ajena al tema o manifiestamente falsa - nunca por ser desfavorable.</target>
+                <target>Cada opinión se aprueba antes de publicarse y luego se muestra con su fecha. Una opinión se marca «verificada» cuando se escribe desde una cuenta conectada cuyo correo corresponde a una compra. Ninguna opinión está remunerada, y una opinión solo se descarta si es injuriosa, ajena al tema o manifiestamente falsa - nunca por ser desfavorable.</target>
             </trans-unit>
             <trans-unit id="MceC1MW">
                 <source>label.review_form_name</source>
@@ -4869,6 +4869,10 @@
             <trans-unit id="V_DHWtY">
                 <source>text.field_url_help</source>
                 <target><![CDATA[Las palabras de la etiqueta entre corchetes se convierten en el enlace, por ejemplo «Acepto las [condiciones de uso]»; sin corchetes, un enlace «(leer)» sigue a la etiqueta.]]></target>
+            </trans-unit>
+            <trans-unit id="W4825Gb">
+                <source>text.form_copy_notice</source>
+                <target>Este mensaje es la copia de un mensaje enviado desde el formulario de este sitio, a petición de una persona que indicó esta dirección para recibir una copia. Si no ha sido usted, simplemente ignórelo.</target>
             </trans-unit>
             <trans-unit id="UAH_ycC">
                 <source>text.form_required_note</source>

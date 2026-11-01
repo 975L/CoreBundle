@@ -67,6 +67,6 @@
             </div>
         {% endif %}
         {# Declared as a prop rather than left to exist or not: a card called self-closing nests nothing, and a bare "content" raised an error where a card reduced to its title is a perfectly legitimate call #}
-        {% block content %}{{ content|raw|nl2br }}{% endblock %}
+        {% block content %}{{ content|default('')|sanitize_html('c975l.rich')|nl2br }}{% endblock %}
     </div>
 </{{ tag }}>

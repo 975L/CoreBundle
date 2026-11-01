@@ -14,7 +14,7 @@
         {% if icon != '' %}
             <twig:c975LUi:Image:Icon src="{{ icon }}" width="16" height="16"/>
         {% endif %}
-        {{ label|raw }}
+        {{ label|default('')|sanitize_html('c975l.rich') }}
     </a>
 {% if not inline %}
     </p>

@@ -258,6 +258,8 @@ generated and belongs in the site's `.gitignore`; overriding the template change
 
 ## Do not
 
+- **Do not name a setting `url-*` or `*-url` unless it holds an address** — `Config::validateUrlValue()` holds any
+  such slug to `SafeUrl`, whichever bundle declares it.
 - **Do not add a `.env` variable, a container parameter or a Configuration/TreeBuilder class** for
   an application setting. The only `.env` value that belongs here is `C975L_VAULT_KEY`, and the only
   setting declared in a Symfony config file is `framework.enabled_locales`.

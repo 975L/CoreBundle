@@ -11,6 +11,7 @@
 namespace c975L\UiBundle\Form\Block;
 
 use c975L\UiBundle\Form\TrixEditorType;
+use c975L\UiBundle\Validator\SafeUrl;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -33,10 +34,12 @@ class CollectionItemType extends AbstractType
             ->add('url', TextType::class, [
                 'label' => 'label.url',
                 'required' => false,
+                'constraints' => [new SafeUrl()],
             ])
             ->add('imageUrl', TextType::class, [
                 'label' => 'label.url',
                 'required' => false,
+                'constraints' => [new SafeUrl()],
             ])
             ->add('buttonLabel', TextType::class, [
                 'label' => 'label.button_label',
@@ -49,6 +52,7 @@ class CollectionItemType extends AbstractType
             ->add('detailUrl', TextType::class, [
                 'label' => 'label.url',
                 'required' => false,
+                'constraints' => [new SafeUrl()],
             ]);
     }
 

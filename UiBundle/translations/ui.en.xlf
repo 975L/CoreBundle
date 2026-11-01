@@ -4152,7 +4152,7 @@
             </trans-unit>
             <trans-unit id="6wAr97D">
                 <source>label.review_form_moderation_notice</source>
-                <target>Every review is approved before it is published, then shown with its date. A review is marked "verified" when its e-mail matches a purchase. No review is paid for, and a review is only turned down when it is abusive, off topic or plainly false - never for being unfavourable.</target>
+                <target>Every review is approved before it is published, then shown with its date. A review is marked "verified" when it is written from a signed-in account whose e-mail matches a purchase. No review is paid for, and a review is only turned down when it is abusive, off topic or plainly false - never for being unfavourable.</target>
             </trans-unit>
             <trans-unit id="MceC1MW">
                 <source>label.review_form_name</source>
@@ -4869,6 +4869,10 @@
             <trans-unit id="V_DHWtY">
                 <source>text.field_url_help</source>
                 <target><![CDATA[The label's words in brackets become the link, for example "I accept the [terms of use]"; without brackets, a "(read)" link follows the label.]]></target>
+            </trans-unit>
+            <trans-unit id="W4825Gb">
+                <source>text.form_copy_notice</source>
+                <target>This message is a copy of a message sent from this site's form, at the request of someone who gave this address to receive a copy. If that was not you, simply ignore it.</target>
             </trans-unit>
             <trans-unit id="UAH_ycC">
                 <source>text.form_required_note</source>

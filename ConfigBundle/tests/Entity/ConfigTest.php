@@ -12,8 +12,11 @@ namespace c975L\ConfigBundle\Tests\Entity;
 
 use c975L\ConfigBundle\Contract\UserInterface;
 use c975L\ConfigBundle\Entity\Config;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Validator\Constraints\Callback;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
+use Symfony\Component\Validator\Validation;
 use Symfony\Component\Validator\Violation\ConstraintViolationBuilderInterface;
 
 class ConfigTest extends TestCase
@@ -297,5 +300,32 @@ class ConfigTest extends TestCase
 
         $this->assertNull($config->getUser());
         $this->assertNull($config->setUser($this->createStub(UserInterface::class))->setUser(null)->getUser());
+    }
+
+    // Any setting named as holding an address, the bundle declaring it included: "url-privacy-policy" goes through |raw in a translated sentence
+    #[DataProvider('urlSettings')]
+    public function testASettingHoldingAnAddressIsChecked(string $slug, ?string $value, int $violations): void
+    {
+        $config = new Config()->setLabel('x')->setSlug($slug)->setValue($value);
+
+        $found = Validation::createValidator()->validate($config, new Callback(static fn (Config $subject, ExecutionContextInterface $context) => $subject->validateUrlValue($context)));
+
+        $this->assertCount($violations, $found);
+        if ($violations > 0) {
+            $this->assertSame('value', $found[0]->getPropertyPath());
+        }
+    }
+
+    /** @return iterable<string, array{string, ?string, int}> */
+    public static function urlSettings(): iterable
+    {
+        yield 'prefix, refused' => ['url-privacy-policy', 'javascript:alert(1)', 1];
+        yield 'suffix, refused' => ['site-made-by-url', " java\tscript:alert(1)", 1];
+        yield 'another bundle, refused' => ['url-terms-of-sales', 'data:text/html,x', 1];
+        yield 'path' => ['url-privacy-policy', '/pages/privacy', 0];
+        yield 'absolute' => ['site-url', 'https://example.com', 0];
+        yield 'empty' => ['url-terms-of-use', '', 0];
+        yield 'nothing' => ['url-terms-of-use', null, 0];
+        yield 'not an address' => ['site-name', 'javascript:alert(1)', 0];
     }
 }

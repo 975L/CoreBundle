@@ -748,7 +748,7 @@ Declare its two config keys in your own bundle's `configs.json` (the interface a
 
 ### Connecting the site's mobile app to an account
 
-A mobile app of the site can act for a member without ever holding their password (RFC 8252, with PKCE): it opens `/app/connect` in the browser, the member signs in by whatever means the site offers and agrees, the app is handed a one-time code through its own url scheme and trades it at `/app/api/token` for the token it then sends as `Authorization: Bearer ...`. See `AppTokenManager` and `AppConnectController`.
+A mobile app of the site can act for a member without ever holding their password (RFC 8252, with PKCE): it opens `/app/connect` in the browser, the member signs in by whatever means the site offers and agrees, the app is handed a one-time code through its own url scheme and trades it at `/app/api/token` for the token it then sends as `Authorization: Bearer ...`. See `AppTokenManager` and `AppConnectController`. A token has no expiry: it goes when the app signs out, or when the account's password changes (`PasswordResetter`, which the "other devices" sign-out goes through too).
 
 Two things to set on a site that has an app, nothing on one that has none (every route then answers 404):
 

@@ -11,7 +11,9 @@
 namespace c975L\ConfigBundle\Tests\Entity;
 
 use c975L\ConfigBundle\Entity\Redirect;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Validator\Validation;
 
 class RedirectTest extends TestCase
 {
@@ -66,5 +68,26 @@ class RedirectTest extends TestCase
     {
         $this->assertDoesNotMatchRegularExpression(Redirect::STATIC_PATH_PATTERN, '/medias/site/guide.pdf');
         $this->assertDoesNotMatchRegularExpression(Redirect::STATIC_PATH_PATTERN, '/old-page');
+    }
+
+    // The target goes out in a Location header and is read off a back-office screen: a path, an address, and nothing a browser would run
+    #[DataProvider('targets')]
+    public function testTheTargetIsChecked(string $target, bool $valid): void
+    {
+        $validator = Validation::createValidatorBuilder()->enableAttributeMapping()->getValidator();
+
+        $violations = $validator->validateProperty(new Redirect()->setToUrl($target), 'toUrl');
+
+        $this->assertSame($valid, 0 === \count($violations));
+    }
+
+    /** @return iterable<string, array{string, bool}> */
+    public static function targets(): iterable
+    {
+        yield 'path' => ['/new-page', true];
+        yield 'wildcard' => ['/new/*', true];
+        yield 'absolute' => ['https://example.com/a', true];
+        yield 'javascript' => ['javascript:alert(1)', false];
+        yield 'data' => ['data:text/html,x', false];
     }
 }

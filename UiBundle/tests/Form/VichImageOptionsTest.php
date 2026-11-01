@@ -11,6 +11,7 @@
 namespace c975L\UiBundle\Tests\Form;
 
 use c975L\UiBundle\Form\VichImageOptions;
+use c975L\UiBundle\Validator\AllowedUploadExtension;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Validator\Constraints\File as FileConstraint;
 
@@ -24,9 +25,10 @@ class VichImageOptionsTest extends TestCase
         $this->assertTrue($options['allow_delete']);
         $this->assertTrue($options['download_uri']);
         $this->assertTrue($options['asset_helper']);
-        $this->assertCount(1, $options['constraints']);
+        $this->assertCount(2, $options['constraints']);
         $this->assertInstanceOf(FileConstraint::class, $options['constraints'][0]);
         $this->assertSame(10_000_000, $options['constraints'][0]->maxSize);
+        $this->assertInstanceOf(AllowedUploadExtension::class, $options['constraints'][1]);
     }
 
     public function testDefaultAppliesTheGivenMaxSizeAndRequiredFlag(): void

@@ -1,5 +1,45 @@
 [
     {
+        "date": "2026-11-01",
+        "description": [
+            {
+                "en": "Uploading a file type that has no place on a website, such as a script or a web page, is now refused with a clear message.",
+                "fr": "L'envoi d'un type de fichier qui n'a pas sa place sur un site, comme un script ou une page web, est désormais refusé avec un message clair.",
+                "es": "El envío de un tipo de archivo que no tiene cabida en un sitio, como un script o una página web, ahora se rechaza con un mensaje claro."
+            },
+            {
+                "en": "Rich text is cleaned when it is displayed: inline styles, scripts, forms and embedded frames pasted into a text no longer reach the page.",
+                "fr": "Les textes riches sont nettoyés à l'affichage : les styles, scripts, formulaires et cadres intégrés collés dans un texte n'arrivent plus sur la page.",
+                "es": "Los textos enriquecidos se limpian al mostrarse: los estilos, scripts, formularios y marcos integrados pegados en un texto ya no llegan a la página."
+            },
+            {
+                "en": "A form's \"receive a copy\" box sends the whole copy to the address of a signed-in account; any other address gets the message without its attachments, under a sentence saying where it comes from.",
+                "fr": "La case « recevoir une copie » d'un formulaire envoie la copie complète à l'adresse d'un compte connecté ; toute autre adresse reçoit le message sans ses pièces jointes, précédé d'une phrase disant d'où il vient.",
+                "es": "La casilla «recibir una copia» de un formulario envía la copia completa a la dirección de una cuenta conectada; cualquier otra dirección recibe el mensaje sin sus adjuntos, precedido de una frase que indica de dónde viene."
+            },
+            {
+                "en": "The \"verified\" badge on a review now requires the author to be signed in with the address that made the purchase.",
+                "fr": "Le badge « vérifié » d'un avis exige désormais que l'auteur soit connecté avec l'adresse qui a effectué l'achat.",
+                "es": "La insignia «verificada» de una opinión ahora exige que el autor haya iniciado sesión con la dirección que realizó la compra."
+            },
+            {
+                "en": "An address typed into a link or a setting is now checked: anything other than a web link, an email, a phone number or a page of the site is refused.",
+                "fr": "Une adresse saisie dans un lien ou un réglage est désormais contrôlée : tout ce qui n'est pas un lien web, un courriel, un téléphone ou une page du site est refusé.",
+                "es": "Una dirección escrita en un enlace o un ajuste ahora se comprueba: se rechaza todo lo que no sea un enlace web, un correo, un teléfono o una página del sitio."
+            },
+            {
+                "en": "The review form offers a signed-in visitor their own address.",
+                "fr": "Le formulaire d'avis propose à un visiteur connecté sa propre adresse.",
+                "es": "El formulario de opinión propone a un visitante conectado su propia dirección."
+            },
+            {
+                "en": "Listens reported by the mobile app are no longer added to the public listen counter, as nothing proves them.",
+                "fr": "Les écoutes signalées par l'application mobile ne s'ajoutent plus au compteur public d'écoutes, rien ne les prouvant.",
+                "es": "Las escuchas comunicadas por la aplicación móvil ya no se suman al contador público de escuchas, ya que nada las demuestra."
+            }
+        ]
+    },
+    {
         "date": "2026-10-30",
         "description": [
             {

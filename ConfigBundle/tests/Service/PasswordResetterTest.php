@@ -10,6 +10,7 @@
 
 namespace c975L\ConfigBundle\Tests\Service;
 
+use c975L\ConfigBundle\Repository\AppTokenRepository;
 use c975L\ConfigBundle\Service\PasswordResetter;
 use c975L\ConfigBundle\Tests\Fixtures\UserStub;
 use c975L\UiBundle\Model\EmailSendRequest;
@@ -38,6 +39,26 @@ class PasswordResetterTest extends TestCase
 
         $this->assertSame('new-hashed-password', $user->getPassword());
         $this->assertNotNull($user->getModification());
+    }
+
+    // A token outlives a session: an app connected by whoever held the password must not outlive the password
+    public function testTheAccountsAppTokensAreDeleted(): void
+    {
+        $user = new UserStub('user@example.test');
+        $tokens = $this->createMock(AppTokenRepository::class);
+        $tokens->expects($this->once())->method('deleteOfUser')->with($user);
+
+        $this->resetter(appTokenRepository: $tokens)->resetPassword($user, 'NewStr0ngPassword!');
+    }
+
+    // The "other devices" sign-out reaches the apps too, the same call doing it
+    public function testTheAppTokensGoWithTheOtherDevicesToo(): void
+    {
+        $user = new UserStub('user@example.test');
+        $tokens = $this->createMock(AppTokenRepository::class);
+        $tokens->expects($this->once())->method('deleteOfUser')->with($user);
+
+        $this->resetter(appTokenRepository: $tokens)->resetPassword($user, 'NewStr0ngPassword!', notify: false);
     }
 
     // The account's own address is told, so a password changed by somebody else does not go unnoticed
@@ -70,7 +91,7 @@ class PasswordResetterTest extends TestCase
 
     // Collaborators stubbed to succeed, the emails leaving collected in $sent
     /** @param list<EmailSendRequest> $sent */
-    private function resetter(?UserPasswordHasherInterface $passwordHasher = null, ?EntityManagerInterface $entityManager = null, ?array &$sent = null, ?string $html = '<html>notice</html>'): PasswordResetter
+    private function resetter(?UserPasswordHasherInterface $passwordHasher = null, ?EntityManagerInterface $entityManager = null, ?array &$sent = null, ?string $html = '<html>notice</html>', ?AppTokenRepository $appTokenRepository = null): PasswordResetter
     {
         $renderer = $this->createStub(EmailTemplateRenderer::class);
         $renderer->method('renderNamed')->willReturn($html);
@@ -91,6 +112,7 @@ class PasswordResetterTest extends TestCase
             $emailService,
             $renderer,
             $translator,
+            $appTokenRepository ?? $this->createStub(AppTokenRepository::class),
         );
     }
 }

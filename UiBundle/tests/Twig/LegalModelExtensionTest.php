@@ -16,8 +16,10 @@ use c975L\UiBundle\Service\LegalDocument;
 use c975L\UiBundle\Service\LegalModelCatalog;
 use c975L\UiBundle\Service\LegalModelPlaceholders;
 use c975L\UiBundle\Service\LegalModelRenderer;
+use c975L\UiBundle\Tests\Fixtures\HtmlSanitizerKernel;
 use c975L\UiBundle\Twig\LegalModelExtension;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Twig\Environment;
@@ -53,6 +55,7 @@ class LegalModelExtensionTest extends TestCase
             $this->createStub(LegalDocument::class),
             $placeholders,
             $requestStack,
+            HtmlSanitizerKernel::sanitizer('c975l.rich'),
         );
     }
 
@@ -90,6 +93,51 @@ class LegalModelExtensionTest extends TestCase
         $html = $this->createExtension('en')->legalModelHtml(self::MODEL, null, [], 'fr');
 
         $this->assertStringContainsString('<h2>Un</h2>', $html);
+    }
+
+    // The public page, whether reached through a block or a template of its own: a rewritten section carrying a script does not reach a visitor
+    public function testThePublicOutputIsSanitized(): void
+    {
+        $legalDocument = $this->createStub(LegalDocument::class);
+        $legalDocument->method('html')->willReturn('<section data-legal-id="a"><p onclick="x()">Text</p><script>alert(1)</script></section>');
+
+        $extension = new LegalModelExtension(
+            $this->createStub(LegalModelRenderer::class),
+            $legalDocument,
+            $this->createStub(LegalModelPlaceholders::class),
+            new RequestStack(),
+            HtmlSanitizerKernel::sanitizer('c975l.rich'),
+        );
+
+        $this->assertSame('<section data-legal-id="a"><p>Text</p></section>', $extension->legalDocumentHtml('france/terms-of-sales', 'fr'));
+    }
+
+    // Read by a browser and not by WeasyPrint: an editor's rel="noopener" stays, and the section stays findable by legal-model-edit.js. What strips "rel" is the PDF's path alone
+    public function testThePublicOutputKeepsItsRelAndItsSectionIds(): void
+    {
+        $legalDocument = $this->createStub(LegalDocument::class);
+        $legalDocument->method('html')->willReturn('<section data-legal-id="a"><a href="https://example.com" rel="noopener">x</a></section>');
+
+        $extension = new LegalModelExtension(
+            $this->createStub(LegalModelRenderer::class),
+            $legalDocument,
+            $this->createStub(LegalModelPlaceholders::class),
+            new RequestStack(),
+            HtmlSanitizerKernel::sanitizer('c975l.rich'),
+        );
+
+        $html = $extension->legalDocumentHtml('france/terms-of-sales', 'fr');
+
+        $this->assertStringContainsString('rel="noopener"', $html);
+        $this->assertStringContainsString('data-legal-id="a"', $html);
+    }
+
+    // The service the container hands the extension, the test above holding the sanitizer it is given
+    public function testTheExtensionIsWiredOnThePageSanitizer(): void
+    {
+        $parameter = new \ReflectionMethod(LegalModelExtension::class, '__construct')->getParameters()[4];
+
+        $this->assertSame('html_sanitizer.sanitizer.c975l.rich', (string) $parameter->getAttributes(Autowire::class)[0]->newInstance()->value);
     }
 
     public function testLegalVarReturnsTheConfigValue(): void

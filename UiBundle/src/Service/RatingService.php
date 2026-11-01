@@ -128,13 +128,7 @@ class RatingService
         return ['value' => $own] + $this->ratingRepository->getAggregate($ownerType, $ownerId);
     }
 
-    /**
-     * Stores a score without the toggle above, for a caller that is not a visitor clicking twice.
-     *
-     * A review's rating is written this way when the review is let through moderation (see ReviewService): re-publishing a review already published must leave its score where it is, where vote() would read the same value and take it back.
-     *
-     * The voter key is the caller's business - a review derives one from the author's e-mail so that two reviews by the same person count once, the same way two clicks from one browser do.
-     */
+    // Stores a score without the toggle of vote(), for a caller that is not a visitor clicking twice: re-publishing a review must leave its score where it is. The voter key is the caller's business (see ReviewService::voterFor())
     public function record(string $ownerType, int $ownerId, int $value, string $voter): void
     {
         $value = max(1, min($this->getScale(), $value));
@@ -159,6 +153,12 @@ class RatingService
         } catch (UniqueConstraintViolationException) {
             throw new ConflictHttpException();
         }
+    }
+
+    // Whether this voter has a score standing on this thing, without touching it
+    public function hasVote(string $ownerType, int $ownerId, string $voter): bool
+    {
+        return null !== $this->ratingRepository->findOneByVoter($ownerType, $ownerId, $voter);
     }
 
     // Takes a recorded score back, for when what carried it stops being published - a review rejected after the fact must not keep weighing on an average nobody can read it under
