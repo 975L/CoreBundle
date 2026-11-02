@@ -1,5 +1,12 @@
 # ChangeLog
 
+## v1.86.2
+
+ConfigService: configs read as database rows, never stale entities
+
+- Added `ConfigRepository::findAllValues()` (02/11/2026)
+- `ConfigService`: an invalidated cache reads what the database holds, not the entities already managed (02/11/2026)
+
 ## v1.86.1
 
 Corrected stale references to the former packages

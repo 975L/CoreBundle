@@ -6,6 +6,11 @@
                 "en": "New activity log, under Advanced: who did what and when in the back office, the maintenance mode going on and off included.",
                 "fr": "Nouveau journal des modifications, sous Avancé : qui a fait quoi et quand sur le back-office, y compris le passage en mode maintenance et son retrait.",
                 "es": "Nuevo registro de actividad, en Avanzado: quién hizo qué y cuándo en el back-office, incluida la activación y retirada del modo mantenimiento."
+            },
+            {
+                "en": "A setting you change no longer goes back to its former value when a background task is running at the same moment.",
+                "fr": "Un réglage que vous modifiez ne revient plus à son ancienne valeur lorsqu'une tâche de fond tourne au même moment.",
+                "es": "Un ajuste que modifica ya no vuelve a su valor anterior cuando una tarea en segundo plano se ejecuta al mismo tiempo."
             }
         ]
     },

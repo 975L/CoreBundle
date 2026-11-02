@@ -30,6 +30,16 @@ class ConfigRepository extends ServiceEntityRepository
         return $this->findOneBy(['slug' => $slug]);
     }
 
+    // What every row holds in the database right now, read as arrays since Doctrine answers an entity it already manages as it stands, whatever another process has written since
+    /** @return list<array{slug: string, value: ?string, isSensitive: ?bool, kind: string}> */
+    public function findAllValues(): array
+    {
+        return $this->createQueryBuilder('c')
+            ->select('c.slug', 'c.value', 'c.isSensitive', 'c.kind')
+            ->getQuery()
+            ->getArrayResult();
+    }
+
     // The id every slug is stored under - what the translation layer names its owner by, the values themselves being handed around by slug (see ConfigTranslator)
     public function idsBySlug(): array
     {

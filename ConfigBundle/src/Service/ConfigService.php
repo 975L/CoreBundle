@@ -103,7 +103,7 @@ class ConfigService implements ConfigServiceInterface, ResetInterface
             return $this->configs;
         }
 
-        // A database whose schema predates the current entity (a site being migrated from an older base, whose site_config has yet to gain the columns Config now maps) answers nothing readable, and this runs on every console command through TimezoneListener - so the very commands that would migrate that schema could no longer boot. The configuration is left empty for this call instead, exactly as an empty table would leave it, and the failure goes to the log. Deliberately not memoized in $this->configs nor written to the cache: the next call retries, and the run that finally migrates the schema sees the real values. The mapping is just as unreadable on a site that has yet to be created: Config::$user resolves to App\Entity\User (see c975LConfigBundle::prependExtension), a class only written by "make:user" or the scaffold - two console commands that could no longer boot to write it
+        // A database whose schema predates the current entity (a site being migrated from an older base, whose site_config has yet to gain a column findAllValues() reads) answers nothing readable, and this runs on every console command through TimezoneListener - so the very commands that would migrate that schema could no longer boot. The configuration is left empty for this call instead, exactly as an empty table would leave it, and the failure goes to the log. Deliberately not memoized in $this->configs nor written to the cache: the next call retries, and the run that finally migrates the schema sees the real values. The mapping is just as unreadable on a site that has yet to be created: Config::$user resolves to App\Entity\User (see c975LConfigBundle::prependExtension), a class only written by "make:user" or the scaffold - two console commands that could no longer boot to write it
         try {
             return $this->loadAllFromDatabase();
         } catch (DBALException | MappingException $exception) {
@@ -123,17 +123,17 @@ class ConfigService implements ConfigServiceInterface, ResetInterface
             $item->expiresAfter(null);
 
             $configs = [];
-            foreach ($this->configRepository->findAll() as $configEntry) {
-                $value = $configEntry->getValue();
+            foreach ($this->configRepository->findAllValues() as $configEntry) {
+                $value = $configEntry['value'];
 
                 // Decrypted one row at a time: every sensitive value of the site is read inside this one callback, so a single unreadable secret used to take the whole configuration down with it - a 500 on every page for a setting nothing on that page needed. The row is left empty instead, exactly as an unfilled setting is, and the reason goes to the log
-                if ($configEntry->getIsSensitive() && null !== $value && '' !== $value) {
+                if ($configEntry['isSensitive'] && null !== $value && '' !== $value) {
                     if ($this->vaultEncryptor->isEncrypted($value)) {
                         try {
                             $value = $this->vaultEncryptor->decrypt($value);
                         } catch (\RuntimeException $exception) {
                             $this->logger?->error('Sensitive setting left empty, it could not be decrypted', [
-                                'slug' => $configEntry->getSlug(),
+                                'slug' => $configEntry['slug'],
                                 'reason' => $exception->getMessage(),
                             ]);
 
@@ -142,7 +142,7 @@ class ConfigService implements ConfigServiceInterface, ResetInterface
                     }
                 }
 
-                $configs[$configEntry->getSlug()] = $this->castValue($configEntry->getKind(), $value);
+                $configs[$configEntry['slug']] = $this->castValue($configEntry['kind'], $value);
             }
 
             // Missing from the database, site-role-admin would lock the whole back-office out, so it falls back on its configs.json default

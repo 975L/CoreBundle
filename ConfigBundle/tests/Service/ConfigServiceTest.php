@@ -45,14 +45,20 @@ class ConfigServiceTest extends TestCase
         return $config;
     }
 
-    // Builds a ConfigRepository double returning the given configs, recording each findAll() call so tests can assert on ConfigService's in-memory memoization without a real database
-    private function createConfigRepository(array $configs, array &$findAllCallLog): ConfigRepository
+    // The rows ConfigRepository::findAllValues() answers for the given configs
+    private function rows(array $configs): array
+    {
+        return array_map(static fn (Config $config): array => ['slug' => $config->getSlug(), 'value' => $config->getValue(), 'isSensitive' => $config->getIsSensitive(), 'kind' => $config->getKind()], $configs);
+    }
+
+    // Builds a ConfigRepository double returning the given configs, recording each findAllValues() call so tests can assert on ConfigService's in-memory memoization without a real database
+    private function createConfigRepository(array $configs, array &$callLog): ConfigRepository
     {
         $repository = $this->createStub(ConfigRepository::class);
-        $repository->method('findAll')->willReturnCallback(function () use ($configs, &$findAllCallLog) {
-            $findAllCallLog[] = true;
+        $repository->method('findAllValues')->willReturnCallback(function () use ($configs, &$callLog) {
+            $callLog[] = true;
 
-            return $configs;
+            return $this->rows($configs);
         });
 
         return $repository;
@@ -64,7 +70,7 @@ class ConfigServiceTest extends TestCase
         $repository = $this->createStub(ConfigRepository::class);
         $unreadable = new class ('Unknown column') extends \RuntimeException implements DBALException {
         };
-        $repository->method('findAll')->willThrowException($unreadable);
+        $repository->method('findAllValues')->willThrowException($unreadable);
 
         return $repository;
     }
@@ -252,7 +258,7 @@ class ConfigServiceTest extends TestCase
     public function testLoadAllLeavesTheConfigurationEmptyWhenTheMappingCannotBeResolved(): void
     {
         $repository = $this->createStub(ConfigRepository::class);
-        $repository->method('findAll')->willThrowException(
+        $repository->method('findAllValues')->willThrowException(
             MappingException::invalidTargetEntityClass(\App\Entity\User::class, Config::class, 'user')
         );
 
@@ -268,13 +274,13 @@ class ConfigServiceTest extends TestCase
         $attempt = 0;
 
         $repository = $this->createStub(ConfigRepository::class);
-        $repository->method('findAll')->willReturnCallback(function () use ($configs, &$attempt) {
+        $repository->method('findAllValues')->willReturnCallback(function () use ($configs, &$attempt) {
             if (0 === $attempt++) {
                 throw new class ('Unknown column') extends \RuntimeException implements DBALException {
                 };
             }
 
-            return $configs;
+            return $this->rows($configs);
         });
 
         $service = $this->createService($repository);
@@ -390,8 +396,8 @@ class ConfigServiceTest extends TestCase
     // findOneBySlug() is a magic EntityRepository method, hence a hand-written double rather than a PHPUnit stub
     private function createRepositoryIndexedBySlug(Config ...$configs): ConfigRepository
     {
-        return new class ($configs) extends ConfigRepository {
-            public function __construct(private readonly array $configs)
+        return new class ($configs, $this->rows(...)) extends ConfigRepository {
+            public function __construct(private readonly array $configs, private readonly \Closure $rows)
             {
             }
 
@@ -406,9 +412,9 @@ class ConfigServiceTest extends TestCase
                 return null;
             }
 
-            public function findAll(): array
+            public function findAllValues(): array
             {
-                return $this->configs;
+                return ($this->rows)($this->configs);
             }
         };
     }
