@@ -66,6 +66,7 @@ See it in action at [bundles.975l.com/pages/config-bundle](https://bundles.975l.
 - Atom feeds at `/feed/<name>.xml`, one per bundle with content to push out, announced in every page's `<head>`, extensible via `FeedProviderInterface`
 - `c975l:seo:files:create`, writing `robots.txt`, `humans.txt` and `llms.txt` from the `seo` configs and from the urls those same providers declare, with a monthly check reporting the AI crawlers that appeared in the community list
 - Url redirects and `410 Gone` rows (`site_redirect` table, EasyAdmin CRUD, export/import, chain/loop check), answering before the router, a `*` on both sides renaming a whole url tree
+- Activity log: who did what and when in the back office (`site_activity_log` table, read-only EasyAdmin CRUD), maintenance mode included, with no value kept but the state of a boolean
 - Broken links recorded as they are followed (`site_not_found` table, EasyAdmin CRUD, one click to the redirect that answers it), with a dashboard alert on the ones the site's own pages carry - and none of the scanner noise a 404 log is made of
 - Url descriptions for the pages no entity carries (`site_url_metadata` table, EasyAdmin CRUD, export/import), read by the layouts, listed by `c975l:url-metadata:sync` from what each bundle declares via `UrlMetadataProviderInterface`
 - The site-wide half of the health check: TLS certificate, security headers, `robots.txt`/sitemaps and the two cross-checked, redirect chains, deployment, and the content quality of every url any bundle declares
@@ -1836,6 +1837,20 @@ A url that changed needs a redirect whether it was a page's or a product's, and 
 - **A page costs no `site_redirect` query.** The subscriber runs on every request, so it reads the whole table through `cache.app.taggable` — tens of rows, not thousands — under `RedirectSubscriber::CACHE_TAG` (`config_redirects`), and filters it in PHP. `Listener\CacheTagListener` empties that tag once per flush whenever a `Redirect` is written or removed, whatever wrote it (the back office, an import, hand-made code going through Doctrine); a row written in raw SQL is only seen after `cache:clear`.
 
 `RedirectChainHealthCheckProvider` walks the rows for chains and loops, from the database alone.
+
+## Activity log
+
+`Listener\ActivityLogListener` writes one row per entity saved by a signed-in account under `/management`, whichever bundle the entity comes from, with no declaration needed. `Entity\ActivityLog` (table `site_activity_log`) holds when, the account, the action (`create`, `update`, `delete`, `trash`, `restore`), the entity's short class name, id and label, the names of the changed fields and the back-office path. It is listed from *Management → Advanced → Activity log*, for the admin role, read-only and with no way to delete a row.
+
+- **No value is kept**, so no secret or page content lands in the table or its dumps. A boolean field keeps its new value: that is how `site-maintenance` going on and off reads. The label is the exception, being the entity's `__toString()`: `#[ActivityLogUnnamed]` on an entity whose name is a secret or personal data leaves its row with the type and id only (`Review`, `GiftCard`, `CrowdfundingContributor`).
+- **A many-to-many counts as a field**: rewriting a product's categories or a menu's pages writes an `update` row naming the relation, the owning side only.
+- **What a save always touches is left out**: `modification`, `updatedAt`, `user`, `position`. A row carrying nothing else is not written, so reordering blocks leaves no trace.
+- **A block names no page**: read the *Screen* column, which holds the path of the page being edited.
+- **An account is never copied**: the row relates to it, so its anonymization applies here, and a deleted account leaves the column empty. A row about an account carries no label.
+- **Bulk DQL or raw SQL writes are not seen**, as they never reach the flush. Whoever runs SQL directly on a server notes it with `c975l:config:activity-log-record --action=update --type=site_page --label="Fixed the slug of page 12" --by=someone@example.com` (`--by` naming an existing account is required, `--id` is optional and refused past 64 characters): the row reads `console` under *Screen* and never holds the statement.
+- **`#[ActivityLogIgnored]`** on an entity keeps out what the machine writes while someone stands in the back office (`HealthCheckResult`, `AiUsage`, `AiSearchChunk`).
+- **A failed write only leaves a warning**: a site whose migration has not run yet takes no note, and the save stays a success.
+- **`c975l:config:activity-log-cleanup`** deletes what is older than `site-activity-log-retention-days` (365 by default, `0` keeping everything), weekly.
 
 ## Broken links
 

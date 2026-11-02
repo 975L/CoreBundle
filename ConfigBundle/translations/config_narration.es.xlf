@@ -2,6 +2,10 @@
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
     <file source-language="en" target-language="es" datatype="plaintext" original="config_narration.es.xlf">
         <body>
+            <trans-unit id="rw84Amt">
+                <source>narration.activity_logs</source>
+                <target>El registro de actividad indica quién hizo qué y cuándo en el back-office: páginas, bloques, ajustes, modo mantenimiento. Nadie puede borrar una línea.</target>
+            </trans-unit>
             <trans-unit id="5ATKQD9">
                 <source>narration.block_showcase</source>
                 <target>Justo al lado, «Vitrina de bloques» muestra todos los tipos de bloques disponibles, cada uno con una vista previa en directo: lo justo para elegir cuál colocar en una página.</target>
@@ -17,6 +21,26 @@
             <trans-unit id="6gPpiSf">
                 <source>narration.guided_projects</source>
                 <target>En la parte superior del panel, «Proyectos guiados» abre la lista de recorridos: elija una tarea y un panel le acompaña pantalla por pantalla.</target>
+            </trans-unit>
+            <trans-unit id="Y5op4jc">
+                <source>narration.guided_step_config_activity_log_changes</source>
+                <target>Esta columna nombra los campos modificados, sin su contenido. Para una opción, indica si se activó o desactivó, como el modo mantenimiento.</target>
+            </trans-unit>
+            <trans-unit id="yY1udc0">
+                <source>narration.guided_step_config_activity_log_done</source>
+                <target>Ya está. Nadie puede borrar una línea de este registro: solo lo vacía el periodo de conservación.</target>
+            </trans-unit>
+            <trans-unit id="srtaP9X">
+                <source>narration.guided_step_config_activity_log_filter</source>
+                <target>Los filtros encuentran lo que hizo una cuenta, o una acción en un periodo dado.</target>
+            </trans-unit>
+            <trans-unit id="wNfR5Sb">
+                <source>narration.guided_step_config_activity_log_open</source>
+                <target>Abramos el registro de actividad, en la columna de la izquierda, en «Avanzado». Se llena solo con cada guardado.</target>
+            </trans-unit>
+            <trans-unit id="HnKNWkN">
+                <source>narration.guided_step_config_activity_log_row</source>
+                <target>Cada línea indica cuándo, qué cuenta, qué acción y sobre qué elemento. La más reciente está arriba.</target>
             </trans-unit>
             <trans-unit id="GpCKJ6q">
                 <source>narration.guided_step_config_content_export_carry</source>

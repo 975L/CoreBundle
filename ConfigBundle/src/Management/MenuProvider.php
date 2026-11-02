@@ -10,6 +10,7 @@
 
 namespace c975L\ConfigBundle\Management;
 
+use c975L\ConfigBundle\Controller\Management\ActivityLogCrudController;
 use c975L\ConfigBundle\Controller\Management\ConfigCrudController;
 use c975L\ConfigBundle\Controller\Management\NotFoundCrudController;
 use c975L\ConfigBundle\Controller\Management\RedirectCrudController;
@@ -80,6 +81,19 @@ class MenuProvider implements MenuProviderInterface
                 // The bar RedirectCrudController sets on its own index and edit - a url that moved is the editor's business, whoever published the page it pointed at
                 'role' => $this->configService->get('site-role-editor'),
                 'description' => 'label.info_redirect',
+            ],
+            // Admin rather than editor: the screen tells what each colleague did (see ActivityLogCrudController)
+            'activity_log' => [
+                'controller' => ActivityLogCrudController::class,
+                // Lists what happened rather than what an admin makes: empty, it is no feature left unused (see UnusedFeatureBuilder)
+                'creatable' => false,
+                'label' => 'label.activity_logs',
+                'narration' => 'narration.activity_logs',
+                'translation_domain' => 'config',
+                'icon' => 'fas fa-clock-rotate-left',
+                'tier' => 'advanced',
+                'role' => $this->configService->get('site-role-admin'),
+                'description' => 'label.info_activity_log',
             ],
         ];
     }

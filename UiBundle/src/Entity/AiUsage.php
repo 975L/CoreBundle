@@ -10,12 +10,14 @@
 
 namespace c975L\UiBundle\Entity;
 
+use c975L\ConfigBundle\Attribute\ActivityLogIgnored;
 use c975L\UiBundle\Repository\AiUsageRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 // Tracks the token spend of each AI feature paid for by the site's own key (FEATURE_*), one row per feature and calendar month - AiRephraseClient calls the provider directly (no intermediary), so this is the only place that spend is ever visible. Aggregated at month granularity on purpose, not one row per request: a per-request log would tie a token count to a timestamp close enough to correlate with a specific edit, undermining the "nothing is persisted" promise for the rephrased content itself, even though the count alone reveals nothing about it
 #[ORM\Entity(repositoryClass: AiUsageRepository::class)]
 #[ORM\Table(name: 'site_ai_usage')]
+#[ActivityLogIgnored]
 #[ORM\UniqueConstraint(name: 'uniq_ai_usage_feature_month', columns: ['feature', 'year_month'])]
 class AiUsage
 {

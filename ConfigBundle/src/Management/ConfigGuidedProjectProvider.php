@@ -10,6 +10,7 @@
 
 namespace c975L\ConfigBundle\Management;
 
+use c975L\ConfigBundle\Controller\Management\ActivityLogCrudController;
 use c975L\ConfigBundle\Controller\Management\ConfigCrudController;
 use c975L\ConfigBundle\Controller\Management\ConfigPruneController;
 use c975L\ConfigBundle\Controller\Management\ContentImportController;
@@ -24,7 +25,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-// This bundle's own guided projects, running the 1000 block GuidedProjectProviderInterface reserves them - the same docblock stating every other bundle's, so a range is read there rather than recopied here. Each carries the role its own screen is gated by, so a parcours is never offered to someone its very first step turns away - the projects' page the list is started from opens to a contributor (same BackOfficeAccessVoter floor as the dashboard, see GuidedProjectController::index()), and eight of these sixteen walk a screen only an admin may read, two the buttons or tiles only a super admin is shown, and two a screen a super admin alone opens. Only the opening step of each carries an url: from there the parcours walks the screen the user has been sent to, highlighting the button or the field they are meant to use next - one they click themselves, which brings the panel back on that very step (see assets/js/guided-project.js resume())
+// This bundle's own guided projects, running the 1000 block GuidedProjectProviderInterface reserves them - the same docblock stating every other bundle's, so a range is read there rather than recopied here. Each carries the role its own screen is gated by, so a parcours is never offered to someone its very first step turns away - the projects' page the list is started from opens to a contributor (same BackOfficeAccessVoter floor as the dashboard, see GuidedProjectController::index()), and nine of these seventeen walk a screen only an admin may read, two the buttons or tiles only a super admin is shown, and two a screen a super admin alone opens. Only the opening step of each carries an url: from there the parcours walks the screen the user has been sent to, highlighting the button or the field they are meant to use next - one they click themselves, which brings the panel back on that very step (see assets/js/guided-project.js resume())
 class ConfigGuidedProjectProvider implements GuidedProjectProviderInterface
 {
     public function __construct(
@@ -53,6 +54,7 @@ class ConfigGuidedProjectProvider implements GuidedProjectProviderInterface
             $this->messengerFailedProject(),
             $this->contentExportProject(),
             $this->contentImportProject(),
+            $this->activityLogProject(),
             $this->pruneProject(),
         ];
     }
@@ -235,6 +237,54 @@ class ConfigGuidedProjectProvider implements GuidedProjectProviderInterface
                     'label' => 'label.guided_step_config_not_found_done',
                     'description' => 'description.guided_step_config_not_found_done',
                     'narration' => 'narration.guided_step_config_not_found_done',
+                ],
+            ],
+        ];
+    }
+
+    // Who did what and when, read rather than written: nothing on this screen changes anything, so the walk stops at finding a row
+    private function activityLogProject(): array
+    {
+        return [
+            'slug' => 'config-activity-log',
+            'label' => 'label.guided_project_config_activity_log',
+            'description' => 'description.guided_project_config_activity_log',
+            'translation_domain' => 'config',
+            // After the imports, whose rows are among what this screen shows, and before the pruning that closes the list
+            'order' => 1095,
+            // The bar ActivityLogCrudController sets on its own index
+            'role' => $this->configService->get('site-role-admin'),
+            'steps' => [
+                [
+                    'label' => 'label.guided_step_config_activity_log_open',
+                    'description' => 'description.guided_step_config_activity_log_open',
+                    'narration' => 'narration.guided_step_config_activity_log_open',
+                    'url' => $this->indexUrl(ActivityLogCrudController::class),
+                ],
+                [
+                    // Sorted by "occurredAt" descending (see ActivityLogCrudController::configureCrud()), so the first row is the latest thing done
+                    'label' => 'label.guided_step_config_activity_log_row',
+                    'description' => 'description.guided_step_config_activity_log_row',
+                    'narration' => 'narration.guided_step_config_activity_log_row',
+                    'highlight' => 'tr[data-id]',
+                ],
+                [
+                    'label' => 'label.guided_step_config_activity_log_changes',
+                    'description' => 'description.guided_step_config_activity_log_changes',
+                    'narration' => 'narration.guided_step_config_activity_log_changes',
+                    'highlight' => 'tr[data-id] td[data-column="changes"]',
+                ],
+                [
+                    // EasyAdmin's filters button, which names no action of its own (see UiGuidedProjectProvider)
+                    'label' => 'label.guided_step_config_activity_log_filter',
+                    'description' => 'description.guided_step_config_activity_log_filter',
+                    'narration' => 'narration.guided_step_config_activity_log_filter',
+                    'highlight' => '[data-bs-target="#modal-filters"]',
+                ],
+                [
+                    'label' => 'label.guided_step_config_activity_log_done',
+                    'description' => 'description.guided_step_config_activity_log_done',
+                    'narration' => 'narration.guided_step_config_activity_log_done',
                 ],
             ],
         ];

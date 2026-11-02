@@ -110,6 +110,10 @@
                 <source>description.seo_robots_private</source>
                 <target>Mantiene este sitio fuera de los buscadores: robots.txt prohíbe entonces todo rastreo y no se escribe ningún llms.txt. Solo declarativo: lo que no debe alcanzarse tiene que estar tras una autenticación, nunca tras este ajuste.</target>
             </trans-unit>
+            <trans-unit id="PEUWEgq">
+                <source>description.site_activity_log_retention_days</source>
+                <target>Número de días que una línea permanece en el registro de actividad. 0 lo conserva todo.</target>
+            </trans-unit>
             <trans-unit id="MlHHZXH">
                 <source>description.site_address</source>
                 <target>Dirección postal del vendedor, utilizada por el formulario de desistimiento de las condiciones generales de venta. Facultativa, déjela vacía para un sitio gestionado desde un domicilio.</target>
@@ -417,6 +421,10 @@
             <trans-unit id="xzbvGNq">
                 <source>label.seo_robots_private</source>
                 <target>robots.txt - sitio fuera de los buscadores</target>
+            </trans-unit>
+            <trans-unit id="ORc.Ci_">
+                <source>label.site_activity_log_retention_days</source>
+                <target>Conservación del registro de actividad (días)</target>
             </trans-unit>
             <trans-unit id="Yc66g7d">
                 <source>label.site_address</source>

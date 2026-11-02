@@ -2,6 +2,10 @@
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
     <file source-language="en" target-language="en" datatype="plaintext" original="config_narration.en.xlf">
         <body>
+            <trans-unit id="rw84Amt">
+                <source>narration.activity_logs</source>
+                <target>The activity log tells who did what and when in the back office: pages, blocks, settings, maintenance mode. Nobody can erase a row of it.</target>
+            </trans-unit>
             <trans-unit id="5ATKQD9">
                 <source>narration.block_showcase</source>
                 <target>Right beside it, "Block showcase" shows every available block kind, each with a live preview: enough to choose which one to put on a page.</target>
@@ -17,6 +21,26 @@
             <trans-unit id="6gPpiSf">
                 <source>narration.guided_projects</source>
                 <target>At the top of the dashboard, "Guided projects" opens the list of walkthroughs: pick a task, and a panel walks you through it screen by screen.</target>
+            </trans-unit>
+            <trans-unit id="Y5op4jc">
+                <source>narration.guided_step_config_activity_log_changes</source>
+                <target>This column names the changed fields, without their content. For an option, it says whether it was turned on or off, like the maintenance mode.</target>
+            </trans-unit>
+            <trans-unit id="yY1udc0">
+                <source>narration.guided_step_config_activity_log_done</source>
+                <target>There you are. Nobody can erase a row of this log: only the retention period empties it.</target>
+            </trans-unit>
+            <trans-unit id="srtaP9X">
+                <source>narration.guided_step_config_activity_log_filter</source>
+                <target>The filters find what an account did, or an action over a given period.</target>
+            </trans-unit>
+            <trans-unit id="wNfR5Sb">
+                <source>narration.guided_step_config_activity_log_open</source>
+                <target>Let's open the activity log, in the left column, under "Advanced". It fills itself on every save.</target>
+            </trans-unit>
+            <trans-unit id="HnKNWkN">
+                <source>narration.guided_step_config_activity_log_row</source>
+                <target>Each row says when, which account, which action and on which item. The latest is on top.</target>
             </trans-unit>
             <trans-unit id="GpCKJ6q">
                 <source>narration.guided_step_config_content_export_carry</source>

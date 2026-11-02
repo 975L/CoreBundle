@@ -1,5 +1,15 @@
 [
     {
+        "date": "2026-11-02",
+        "description": [
+            {
+                "en": "New activity log, under Advanced: who did what and when in the back office, the maintenance mode going on and off included.",
+                "fr": "Nouveau journal des modifications, sous Avancé : qui a fait quoi et quand sur le back-office, y compris le passage en mode maintenance et son retrait.",
+                "es": "Nuevo registro de actividad, en Avanzado: quién hizo qué y cuándo en el back-office, incluida la activación y retirada del modo mantenimiento."
+            }
+        ]
+    },
+    {
         "date": "2026-11-01",
         "description": [
             {

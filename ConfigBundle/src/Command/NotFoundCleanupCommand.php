@@ -13,23 +13,9 @@ namespace c975L\ConfigBundle\Command;
 use c975L\ConfigBundle\Repository\NotFoundRepository;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
-use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Style\SymfonyStyle;
 
+// Deletes the recorded 404s nothing has hit for the retention period set by site-not-found-retention-days: a link nobody follows any more is a link nobody publishes, and its row would only feed an alert with nothing left to do. Usage: php bin/console c975l:config:not-found-cleanup
 /**
- * Deletes the recorded 404s nothing has hit for the retention period.
- *
- * A broken link that stopped being followed is a link nobody publishes any more - the page
- * carrying it was fixed, or the site that had it moved on. Keeping the row would only leave
- * a listing of things there is nothing left to do about, and an alert with it.
- *
- * Usage:
- *   php bin/console c975l:config:not-found-cleanup
- *
- * Settings managed via ConfigBundle (site-not-found-retention-days).
- *
  * @author Laurent Marquet <laurent.marquet@laposte.net>
  * @copyright 2026 975L <contact@975l.com>
  */
@@ -37,34 +23,33 @@ use Symfony\Component\Console\Style\SymfonyStyle;
     name: 'c975l:config:not-found-cleanup',
     description: 'Deletes the recorded 404s past their retention period'
 )]
-class NotFoundCleanupCommand extends Command
+class NotFoundCleanupCommand extends AbstractRetentionCleanupCommand
 {
-    private const int DEFAULT_RETENTION_DAYS = 90;
-
     public function __construct(
         private readonly NotFoundRepository $notFoundRepository,
-        private readonly ConfigServiceInterface $configService,
+        ConfigServiceInterface $configService,
     ) {
-        parent::__construct();
+        parent::__construct($configService);
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output): int
+    // The setting of this list's retention
+    #[\Override]
+    protected function retentionSlug(): string
     {
-        $io = new SymfonyStyle($input, $output);
+        return 'site-not-found-retention-days';
+    }
 
-        // Read as the backup, health check and messenger retentions are: only a missing row falls back to the default, a typed "0" meaning "keep everything" rather than "delete everything"
-        $configured = $this->configService->get('site-not-found-retention-days');
-        $retentionDays = null === $configured ? self::DEFAULT_RETENTION_DAYS : (int) $configured;
+    // What configs.json declares
+    #[\Override]
+    protected function defaultRetentionDays(): int
+    {
+        return 90;
+    }
 
-        if ($retentionDays <= 0) {
-            $io->note('Retention set to keep everything, nothing purged.');
-
-            return Command::SUCCESS;
-        }
-
-        $purged = $this->notFoundRepository->purgeOlderThan($retentionDays);
-        $io->success(sprintf('Deleted %d recorded 404(s) not seen for %d days.', $purged, $retentionDays));
-
-        return Command::SUCCESS;
+    // Deletes the 404s nothing has hit for the retention
+    #[\Override]
+    protected function purge(int $retentionDays): string
+    {
+        return sprintf('Deleted %d recorded 404(s) not seen for %d days.', $this->notFoundRepository->purgeOlderThan($retentionDays), $retentionDays);
     }
 }

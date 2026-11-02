@@ -98,6 +98,10 @@
                 <source>description.essential_action_roles</source>
                 <target>Who can do what in the back office</target>
             </trans-unit>
+            <trans-unit id="4R6tJpU">
+                <source>description.guided_project_config_activity_log</source>
+                <target>Read the activity log and find a specific action in it.</target>
+            </trans-unit>
             <trans-unit id="09u2h9T">
                 <source>description.guided_project_config_content_export</source>
                 <target>The whole site content in a single zip, ready to be imported elsewhere.</target>
@@ -161,6 +165,26 @@
             <trans-unit id="xi28kgp">
                 <source>description.guided_project_config_user_role</source>
                 <target>Decide what an account may do in the back office: contributor, editor or administrator.</target>
+            </trans-unit>
+            <trans-unit id="HZNqDNW">
+                <source>description.guided_step_config_activity_log_changes</source>
+                <target>This column names the changed fields, without their content. For an option, it says whether it was turned on or off: this is where the maintenance mode going on and off can be read.</target>
+            </trans-unit>
+            <trans-unit id="egpHnGJ">
+                <source>description.guided_step_config_activity_log_done</source>
+                <target>Nobody can erase a row of this log: only the retention period empties it, set in the configuration.</target>
+            </trans-unit>
+            <trans-unit id="wrTHVvT">
+                <source>description.guided_step_config_activity_log_filter</source>
+                <target>The filters find what an account did, an action or an item over a given period.</target>
+            </trans-unit>
+            <trans-unit id="MZEgq54">
+                <source>description.guided_step_config_activity_log_open</source>
+                <target>The activity log sits under "Advanced". It fills itself on every save made in the back office.</target>
+            </trans-unit>
+            <trans-unit id="lxcVOTr">
+                <source>description.guided_step_config_activity_log_row</source>
+                <target>A row says when, which account, which action and on which item. The latest is on top. A page saved with several blocks gives one row per changed block: the "Screen" column tells which page it was.</target>
             </trans-unit>
             <trans-unit id="uQsSrc2">
                 <source>description.guided_step_config_content_export_carry</source>
@@ -806,6 +830,70 @@
                 <source>label.account_validation_text</source>
                 <target>Thanks for registering. Click the button below to confirm your email address.</target>
             </trans-unit>
+            <trans-unit id="xtOs7A3">
+                <source>label.activity_log</source>
+                <target>Log entry</target>
+            </trans-unit>
+            <trans-unit id="BIMXw0.">
+                <source>label.activity_log_action</source>
+                <target>Action</target>
+            </trans-unit>
+            <trans-unit id="I3u0LX4">
+                <source>label.activity_log_action_create</source>
+                <target>Creation</target>
+            </trans-unit>
+            <trans-unit id="RJ8t6T6">
+                <source>label.activity_log_action_delete</source>
+                <target>Deletion</target>
+            </trans-unit>
+            <trans-unit id="ukDrH.V">
+                <source>label.activity_log_action_restore</source>
+                <target>Restoration</target>
+            </trans-unit>
+            <trans-unit id="ZDrmkr5">
+                <source>label.activity_log_action_trash</source>
+                <target>Moved to the recycle bin</target>
+            </trans-unit>
+            <trans-unit id="iImNGnr">
+                <source>label.activity_log_action_update</source>
+                <target>Change</target>
+            </trans-unit>
+            <trans-unit id="guBGAit">
+                <source>label.activity_log_changes</source>
+                <target>Changed fields</target>
+            </trans-unit>
+            <trans-unit id="UMdSxTR">
+                <source>label.activity_log_entity_type</source>
+                <target>Type</target>
+            </trans-unit>
+            <trans-unit id="MmPBMDy">
+                <source>label.activity_log_label</source>
+                <target>Item</target>
+            </trans-unit>
+            <trans-unit id="6kLslcr">
+                <source>label.activity_log_occurred_at</source>
+                <target>Date</target>
+            </trans-unit>
+            <trans-unit id="inCkrr2">
+                <source>label.activity_log_off</source>
+                <target>off</target>
+            </trans-unit>
+            <trans-unit id="olw4AJf">
+                <source>label.activity_log_on</source>
+                <target>on</target>
+            </trans-unit>
+            <trans-unit id="6e8S3r3">
+                <source>label.activity_log_path</source>
+                <target>Screen</target>
+            </trans-unit>
+            <trans-unit id="salL8MH">
+                <source>label.activity_log_user</source>
+                <target>Account</target>
+            </trans-unit>
+            <trans-unit id="FEvepTW">
+                <source>label.activity_logs</source>
+                <target>Activity log</target>
+            </trans-unit>
             <trans-unit id="4TsTMJK">
                 <source>label.app_connect</source>
                 <target>Connect the app</target>
@@ -1162,6 +1250,10 @@
                 <source>label.group_theme</source>
                 <target>Theme</target>
             </trans-unit>
+            <trans-unit id="XrMVWni">
+                <source>label.guided_project_config_activity_log</source>
+                <target>Find out who did what</target>
+            </trans-unit>
             <trans-unit id="XDpFqMy">
                 <source>label.guided_project_config_content_export</source>
                 <target>Export content to another environment</target>
@@ -1269,6 +1361,26 @@
             <trans-unit id="aOZmqdz">
                 <source>label.guided_projects_intro</source>
                 <target>Your progress is stored in this browser, not on the site: it won't follow you to another computer.</target>
+            </trans-unit>
+            <trans-unit id="xZd__pn">
+                <source>label.guided_step_config_activity_log_changes</source>
+                <target>See what changed</target>
+            </trans-unit>
+            <trans-unit id="53C1P_4">
+                <source>label.guided_step_config_activity_log_done</source>
+                <target>That's it</target>
+            </trans-unit>
+            <trans-unit id="iOouBwI">
+                <source>label.guided_step_config_activity_log_filter</source>
+                <target>Filter</target>
+            </trans-unit>
+            <trans-unit id="pEW1Tpy">
+                <source>label.guided_step_config_activity_log_open</source>
+                <target>Open the log</target>
+            </trans-unit>
+            <trans-unit id="siwWl6.">
+                <source>label.guided_step_config_activity_log_row</source>
+                <target>Read a row</target>
             </trans-unit>
             <trans-unit id="v8kPZur">
                 <source>label.guided_step_config_content_export_carry</source>
@@ -2213,6 +2325,10 @@
             <trans-unit id="4sz8iu4">
                 <source>label.hide_sensitive</source>
                 <target>Hide sensitive data</target>
+            </trans-unit>
+            <trans-unit id="62Bfe7u">
+                <source>label.info_activity_log</source>
+                <target>Who did what and when in the back office: every creation, change, move to the recycle bin, restoration or deletion is listed. Only the names of the changed fields are kept, never their content, except the state of an option turned on or off.</target>
             </trans-unit>
             <trans-unit id="p4rGI4c">
                 <source>label.info_not_found</source>

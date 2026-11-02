@@ -98,6 +98,10 @@
                 <source>description.essential_action_roles</source>
                 <target>Quién puede hacer qué en el panel de administración</target>
             </trans-unit>
+            <trans-unit id="4R6tJpU">
+                <source>description.guided_project_config_activity_log</source>
+                <target>Leer el registro de actividad y encontrar en él una acción concreta.</target>
+            </trans-unit>
             <trans-unit id="09u2h9T">
                 <source>description.guided_project_config_content_export</source>
                 <target>Todo el contenido del sitio en un solo zip, listo para importarse en otro lugar.</target>
@@ -161,6 +165,26 @@
             <trans-unit id="xi28kgp">
                 <source>description.guided_project_config_user_role</source>
                 <target>Decidir lo que una cuenta puede hacer en el back-office: colaborador, editor o administrador.</target>
+            </trans-unit>
+            <trans-unit id="HZNqDNW">
+                <source>description.guided_step_config_activity_log_changes</source>
+                <target>Esta columna nombra los campos modificados, sin su contenido. Para una opción, indica si se activó o desactivó: aquí se lee la activación del modo mantenimiento y su retirada.</target>
+            </trans-unit>
+            <trans-unit id="egpHnGJ">
+                <source>description.guided_step_config_activity_log_done</source>
+                <target>Nadie puede borrar una línea de este registro: solo lo vacía el periodo de conservación, ajustable en la configuración.</target>
+            </trans-unit>
+            <trans-unit id="wrTHVvT">
+                <source>description.guided_step_config_activity_log_filter</source>
+                <target>Los filtros encuentran lo que hizo una cuenta, una acción o un elemento en un periodo dado.</target>
+            </trans-unit>
+            <trans-unit id="MZEgq54">
+                <source>description.guided_step_config_activity_log_open</source>
+                <target>El registro de actividad se encuentra en «Avanzado». Se llena solo con cada guardado hecho en el back-office.</target>
+            </trans-unit>
+            <trans-unit id="lxcVOTr">
+                <source>description.guided_step_config_activity_log_row</source>
+                <target>Una línea indica cuándo, qué cuenta, qué acción y sobre qué elemento. La más reciente está arriba. Una página guardada con varios bloques da una línea por bloque modificado: la columna «Pantalla» indica de qué página se trata.</target>
             </trans-unit>
             <trans-unit id="uQsSrc2">
                 <source>description.guided_step_config_content_export_carry</source>
@@ -806,6 +830,70 @@
                 <source>label.account_validation_text</source>
                 <target>Gracias por registrarte. Haz clic en el botón de abajo para confirmar tu dirección de email.</target>
             </trans-unit>
+            <trans-unit id="xtOs7A3">
+                <source>label.activity_log</source>
+                <target>Entrada del registro</target>
+            </trans-unit>
+            <trans-unit id="BIMXw0.">
+                <source>label.activity_log_action</source>
+                <target>Acción</target>
+            </trans-unit>
+            <trans-unit id="I3u0LX4">
+                <source>label.activity_log_action_create</source>
+                <target>Creación</target>
+            </trans-unit>
+            <trans-unit id="RJ8t6T6">
+                <source>label.activity_log_action_delete</source>
+                <target>Eliminación</target>
+            </trans-unit>
+            <trans-unit id="ukDrH.V">
+                <source>label.activity_log_action_restore</source>
+                <target>Restauración</target>
+            </trans-unit>
+            <trans-unit id="ZDrmkr5">
+                <source>label.activity_log_action_trash</source>
+                <target>Enviado a la papelera</target>
+            </trans-unit>
+            <trans-unit id="iImNGnr">
+                <source>label.activity_log_action_update</source>
+                <target>Modificación</target>
+            </trans-unit>
+            <trans-unit id="guBGAit">
+                <source>label.activity_log_changes</source>
+                <target>Campos modificados</target>
+            </trans-unit>
+            <trans-unit id="UMdSxTR">
+                <source>label.activity_log_entity_type</source>
+                <target>Tipo</target>
+            </trans-unit>
+            <trans-unit id="MmPBMDy">
+                <source>label.activity_log_label</source>
+                <target>Elemento</target>
+            </trans-unit>
+            <trans-unit id="6kLslcr">
+                <source>label.activity_log_occurred_at</source>
+                <target>Fecha</target>
+            </trans-unit>
+            <trans-unit id="inCkrr2">
+                <source>label.activity_log_off</source>
+                <target>desactivado</target>
+            </trans-unit>
+            <trans-unit id="olw4AJf">
+                <source>label.activity_log_on</source>
+                <target>activado</target>
+            </trans-unit>
+            <trans-unit id="6e8S3r3">
+                <source>label.activity_log_path</source>
+                <target>Pantalla</target>
+            </trans-unit>
+            <trans-unit id="salL8MH">
+                <source>label.activity_log_user</source>
+                <target>Cuenta</target>
+            </trans-unit>
+            <trans-unit id="FEvepTW">
+                <source>label.activity_logs</source>
+                <target>Registro de actividad</target>
+            </trans-unit>
             <trans-unit id="4TsTMJK">
                 <source>label.app_connect</source>
                 <target>Conectar la aplicación</target>
@@ -1162,6 +1250,10 @@
                 <source>label.group_theme</source>
                 <target>Tema</target>
             </trans-unit>
+            <trans-unit id="XrMVWni">
+                <source>label.guided_project_config_activity_log</source>
+                <target>Averiguar quién hizo qué</target>
+            </trans-unit>
             <trans-unit id="XDpFqMy">
                 <source>label.guided_project_config_content_export</source>
                 <target>Exportar el contenido a otro entorno</target>
@@ -1269,6 +1361,26 @@
             <trans-unit id="aOZmqdz">
                 <source>label.guided_projects_intro</source>
                 <target>Tu progreso se guarda en este navegador, no en el sitio: no te seguirá a otro ordenador.</target>
+            </trans-unit>
+            <trans-unit id="xZd__pn">
+                <source>label.guided_step_config_activity_log_changes</source>
+                <target>Vea qué cambió</target>
+            </trans-unit>
+            <trans-unit id="53C1P_4">
+                <source>label.guided_step_config_activity_log_done</source>
+                <target>Eso es todo</target>
+            </trans-unit>
+            <trans-unit id="iOouBwI">
+                <source>label.guided_step_config_activity_log_filter</source>
+                <target>Filtre</target>
+            </trans-unit>
+            <trans-unit id="pEW1Tpy">
+                <source>label.guided_step_config_activity_log_open</source>
+                <target>Abra el registro</target>
+            </trans-unit>
+            <trans-unit id="siwWl6.">
+                <source>label.guided_step_config_activity_log_row</source>
+                <target>Lea una línea</target>
             </trans-unit>
             <trans-unit id="v8kPZur">
                 <source>label.guided_step_config_content_export_carry</source>
@@ -2213,6 +2325,10 @@
             <trans-unit id="4sz8iu4">
                 <source>label.hide_sensitive</source>
                 <target>Ocultar datos sensibles</target>
+            </trans-unit>
+            <trans-unit id="62Bfe7u">
+                <source>label.info_activity_log</source>
+                <target>Quién hizo qué y cuándo en el back-office: aquí figura cada creación, modificación, envío a la papelera, restauración o eliminación. Solo se conservan los nombres de los campos modificados, nunca su contenido, salvo el estado de una opción activada o desactivada.</target>
             </trans-unit>
             <trans-unit id="p4rGI4c">
                 <source>label.info_not_found</source>

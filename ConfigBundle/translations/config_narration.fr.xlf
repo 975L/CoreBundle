@@ -2,6 +2,10 @@
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
     <file source-language="en" target-language="fr" datatype="plaintext" original="config_narration.fr.xlf">
         <body>
+            <trans-unit id="rw84Amt">
+                <source>narration.activity_logs</source>
+                <target>Le journal des modifications dit qui a fait quoi et quand sur le back-office : pages, blocs, réglages, mode maintenance. Personne ne peut en effacer une ligne.</target>
+            </trans-unit>
             <trans-unit id="5ATKQD9">
                 <source>narration.block_showcase</source>
                 <target>Juste à côté, « Vitrine des blocks » montre tous les types de blocks disponibles, chacun avec un aperçu en direct : de quoi choisir lequel poser sur une page.</target>
@@ -17,6 +21,26 @@
             <trans-unit id="6gPpiSf">
                 <source>narration.guided_projects</source>
                 <target>En haut du tableau de bord, « Projets guidés » ouvre la liste des parcours : choisissez une tâche, un panneau vous accompagne d'écran en écran.</target>
+            </trans-unit>
+            <trans-unit id="Y5op4jc">
+                <source>narration.guided_step_config_activity_log_changes</source>
+                <target>Cette colonne nomme les champs modifiés, sans leur contenu. Pour une option, elle dit si elle a été activée ou désactivée, comme le mode maintenance.</target>
+            </trans-unit>
+            <trans-unit id="yY1udc0">
+                <source>narration.guided_step_config_activity_log_done</source>
+                <target>Voilà. Personne ne peut effacer une ligne de ce journal : seule la durée de conservation le vide.</target>
+            </trans-unit>
+            <trans-unit id="srtaP9X">
+                <source>narration.guided_step_config_activity_log_filter</source>
+                <target>Les filtres retrouvent ce qu'a fait un compte, ou une action sur une période donnée.</target>
+            </trans-unit>
+            <trans-unit id="wNfR5Sb">
+                <source>narration.guided_step_config_activity_log_open</source>
+                <target>Ouvrons le journal des modifications, dans la colonne de gauche, sous « Avancé ». Il se remplit tout seul à chaque enregistrement.</target>
+            </trans-unit>
+            <trans-unit id="HnKNWkN">
+                <source>narration.guided_step_config_activity_log_row</source>
+                <target>Chaque ligne dit quand, quel compte, quelle action et sur quel élément. La plus récente est en haut.</target>
             </trans-unit>
             <trans-unit id="GpCKJ6q">
                 <source>narration.guided_step_config_content_export_carry</source>

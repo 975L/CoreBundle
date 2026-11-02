@@ -10,6 +10,7 @@
 
 namespace c975L\UiBundle\Entity;
 
+use c975L\ConfigBundle\Attribute\ActivityLogUnnamed;
 use c975L\UiBundle\Enum\ReviewStatus;
 use c975L\UiBundle\Repository\ReviewRepository;
 use Doctrine\ORM\Mapping as ORM;
@@ -22,6 +23,7 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Index(name: 'idx_review_published', columns: ['published_at'])]
 #[ORM\Index(name: 'idx_review_owner', columns: ['owner_type', 'owner_id'])]
 #[ORM\Index(name: 'idx_review_status', columns: ['status'])]
+#[ActivityLogUnnamed]
 class Review implements \Stringable
 {
     // What $source holds for a review written here, and the one value no ReviewsSourceInterface may declare: a sync matches on $source, so the rows this site owns are the rows no sync can reach

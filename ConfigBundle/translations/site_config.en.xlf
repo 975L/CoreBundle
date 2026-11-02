@@ -110,6 +110,10 @@
                 <source>description.seo_robots_private</source>
                 <target>Keeps this site out of search engines: robots.txt then forbids all crawling, and no llms.txt is written. Advisory only - what must not be reached has to sit behind authentication, never behind this setting.</target>
             </trans-unit>
+            <trans-unit id="PEUWEgq">
+                <source>description.site_activity_log_retention_days</source>
+                <target>Number of days a row stays in the activity log. 0 keeps everything.</target>
+            </trans-unit>
             <trans-unit id="MlHHZXH">
                 <source>description.site_address</source>
                 <target>The seller's postal address, used by the withdrawal form of the terms of sales. Optional, leave it empty for a site run from a home.</target>
@@ -417,6 +421,10 @@
             <trans-unit id="xzbvGNq">
                 <source>label.seo_robots_private</source>
                 <target>robots.txt - keep the site out of search engines</target>
+            </trans-unit>
+            <trans-unit id="ORc.Ci_">
+                <source>label.site_activity_log_retention_days</source>
+                <target>Activity log retention (days)</target>
             </trans-unit>
             <trans-unit id="Yc66g7d">
                 <source>label.site_address</source>

@@ -1,0 +1,6 @@
+{# The fields written, by name, with the new state of a boolean one (see ActivityLog::$changes) #}
+{% for name, value in field.value %}
+    {{- name -}}
+    {%- if value is not null %}: {{ (value ? 'label.activity_log_on' : 'label.activity_log_off')|trans({}, 'config') }}{% endif -%}
+    {%- if not loop.last %}, {% endif -%}
+{% endfor %}

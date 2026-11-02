@@ -98,6 +98,10 @@
                 <source>description.essential_action_roles</source>
                 <target>Qui peut faire quoi dans le back-office</target>
             </trans-unit>
+            <trans-unit id="4R6tJpU">
+                <source>description.guided_project_config_activity_log</source>
+                <target>Lire le journal des modifications et y retrouver une action précise.</target>
+            </trans-unit>
             <trans-unit id="09u2h9T">
                 <source>description.guided_project_config_content_export</source>
                 <target>Tout le contenu du site en un seul zip, prêt à être importé ailleurs.</target>
@@ -161,6 +165,26 @@
             <trans-unit id="xi28kgp">
                 <source>description.guided_project_config_user_role</source>
                 <target>Décider de ce qu'un compte peut faire dans le back-office : contributeur, éditeur ou administrateur.</target>
+            </trans-unit>
+            <trans-unit id="HZNqDNW">
+                <source>description.guided_step_config_activity_log_changes</source>
+                <target>Cette colonne nomme les champs modifiés, sans leur contenu. Pour une option, elle dit si elle a été activée ou désactivée : c'est là que se lit le passage en mode maintenance et son retrait.</target>
+            </trans-unit>
+            <trans-unit id="egpHnGJ">
+                <source>description.guided_step_config_activity_log_done</source>
+                <target>Personne ne peut effacer une ligne de ce journal : seule la durée de conservation le vide, réglable dans la configuration.</target>
+            </trans-unit>
+            <trans-unit id="wrTHVvT">
+                <source>description.guided_step_config_activity_log_filter</source>
+                <target>Les filtres retrouvent ce qu'a fait un compte, une action ou un élément sur une période donnée.</target>
+            </trans-unit>
+            <trans-unit id="MZEgq54">
+                <source>description.guided_step_config_activity_log_open</source>
+                <target>Le journal des modifications se trouve sous « Avancé ». Il se remplit tout seul à chaque enregistrement fait sur le back-office.</target>
+            </trans-unit>
+            <trans-unit id="lxcVOTr">
+                <source>description.guided_step_config_activity_log_row</source>
+                <target>Une ligne dit quand, quel compte, quelle action et sur quel élément. La plus récente est en haut. Une page enregistrée avec plusieurs blocs donne une ligne par bloc modifié : la colonne « Écran » dit de quelle page il s'agit.</target>
             </trans-unit>
             <trans-unit id="uQsSrc2">
                 <source>description.guided_step_config_content_export_carry</source>
@@ -806,6 +830,70 @@
                 <source>label.account_validation_text</source>
                 <target>Merci de votre inscription. Cliquez sur le bouton ci-dessous pour confirmer votre adresse email.</target>
             </trans-unit>
+            <trans-unit id="xtOs7A3">
+                <source>label.activity_log</source>
+                <target>Entrée du journal</target>
+            </trans-unit>
+            <trans-unit id="BIMXw0.">
+                <source>label.activity_log_action</source>
+                <target>Action</target>
+            </trans-unit>
+            <trans-unit id="I3u0LX4">
+                <source>label.activity_log_action_create</source>
+                <target>Création</target>
+            </trans-unit>
+            <trans-unit id="RJ8t6T6">
+                <source>label.activity_log_action_delete</source>
+                <target>Suppression</target>
+            </trans-unit>
+            <trans-unit id="ukDrH.V">
+                <source>label.activity_log_action_restore</source>
+                <target>Restauration</target>
+            </trans-unit>
+            <trans-unit id="ZDrmkr5">
+                <source>label.activity_log_action_trash</source>
+                <target>Mise à la corbeille</target>
+            </trans-unit>
+            <trans-unit id="iImNGnr">
+                <source>label.activity_log_action_update</source>
+                <target>Modification</target>
+            </trans-unit>
+            <trans-unit id="guBGAit">
+                <source>label.activity_log_changes</source>
+                <target>Champs modifiés</target>
+            </trans-unit>
+            <trans-unit id="UMdSxTR">
+                <source>label.activity_log_entity_type</source>
+                <target>Type</target>
+            </trans-unit>
+            <trans-unit id="MmPBMDy">
+                <source>label.activity_log_label</source>
+                <target>Élément</target>
+            </trans-unit>
+            <trans-unit id="6kLslcr">
+                <source>label.activity_log_occurred_at</source>
+                <target>Date</target>
+            </trans-unit>
+            <trans-unit id="inCkrr2">
+                <source>label.activity_log_off</source>
+                <target>désactivé</target>
+            </trans-unit>
+            <trans-unit id="olw4AJf">
+                <source>label.activity_log_on</source>
+                <target>activé</target>
+            </trans-unit>
+            <trans-unit id="6e8S3r3">
+                <source>label.activity_log_path</source>
+                <target>Écran</target>
+            </trans-unit>
+            <trans-unit id="salL8MH">
+                <source>label.activity_log_user</source>
+                <target>Compte</target>
+            </trans-unit>
+            <trans-unit id="FEvepTW">
+                <source>label.activity_logs</source>
+                <target>Journal des modifications</target>
+            </trans-unit>
             <trans-unit id="4TsTMJK">
                 <source>label.app_connect</source>
                 <target>Connecter l'application</target>
@@ -1162,6 +1250,10 @@
                 <source>label.group_theme</source>
                 <target>Thème</target>
             </trans-unit>
+            <trans-unit id="XrMVWni">
+                <source>label.guided_project_config_activity_log</source>
+                <target>Retrouver qui a fait quoi</target>
+            </trans-unit>
             <trans-unit id="XDpFqMy">
                 <source>label.guided_project_config_content_export</source>
                 <target>Exporter le contenu vers un autre environnement</target>
@@ -1269,6 +1361,26 @@
             <trans-unit id="aOZmqdz">
                 <source>label.guided_projects_intro</source>
                 <target>Votre progression est enregistrée dans ce navigateur, pas sur le site : elle ne vous suivra pas sur un autre ordinateur.</target>
+            </trans-unit>
+            <trans-unit id="xZd__pn">
+                <source>label.guided_step_config_activity_log_changes</source>
+                <target>Voyez ce qui a changé</target>
+            </trans-unit>
+            <trans-unit id="53C1P_4">
+                <source>label.guided_step_config_activity_log_done</source>
+                <target>C'est tout</target>
+            </trans-unit>
+            <trans-unit id="iOouBwI">
+                <source>label.guided_step_config_activity_log_filter</source>
+                <target>Filtrez</target>
+            </trans-unit>
+            <trans-unit id="pEW1Tpy">
+                <source>label.guided_step_config_activity_log_open</source>
+                <target>Ouvrez le journal</target>
+            </trans-unit>
+            <trans-unit id="siwWl6.">
+                <source>label.guided_step_config_activity_log_row</source>
+                <target>Lisez une ligne</target>
             </trans-unit>
             <trans-unit id="v8kPZur">
                 <source>label.guided_step_config_content_export_carry</source>
@@ -2213,6 +2325,10 @@
             <trans-unit id="4sz8iu4">
                 <source>label.hide_sensitive</source>
                 <target>Masquer données sensibles</target>
+            </trans-unit>
+            <trans-unit id="62Bfe7u">
+                <source>label.info_activity_log</source>
+                <target>Qui a fait quoi et quand sur le back-office : chaque création, modification, mise à la corbeille, restauration ou suppression y figure. Seuls les noms des champs modifiés sont conservés, jamais leur contenu, sauf l'état d'une option activée ou désactivée.</target>
             </trans-unit>
             <trans-unit id="p4rGI4c">
                 <source>label.info_not_found</source>

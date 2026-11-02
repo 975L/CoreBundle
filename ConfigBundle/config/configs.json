@@ -824,6 +824,17 @@
         "description": "description.seo_llms_summary"
     },
     {
+        "label": "label.site_activity_log_retention_days",
+        "slug": "site-activity-log-retention-days",
+        "sensitive": false,
+        "restricted": true,
+        "value": "365",
+        "kind": "int",
+        "group": "system",
+        "severity": null,
+        "description": "description.site_activity_log_retention_days"
+    },
+    {
         "label": "label.site_not_found_retention_days",
         "slug": "site-not-found-retention-days",
         "sensitive": false,

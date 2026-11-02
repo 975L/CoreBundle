@@ -10,12 +10,14 @@
 
 namespace c975L\UiBundle\Entity;
 
+use c975L\ConfigBundle\Attribute\ActivityLogIgnored;
 use c975L\UiBundle\Repository\AiSearchChunkRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 // A passage of a public page, as an anonymous visitor reads it - what the site search answers from. Rebuilt as a whole by AiSearchIndexer, never edited: this table is a cache of the site's own pages, so it holds nothing another site or a signed-in visitor could have seen. The FULLTEXT index is MariaDB's own, which a site on a version without the VECTOR type still has
 #[ORM\Entity(repositoryClass: AiSearchChunkRepository::class)]
 #[ORM\Table(name: 'site_ai_search_chunk')]
+#[ActivityLogIgnored]
 #[ORM\Index(name: 'idx_ai_search_chunk_locale', columns: ['locale'])]
 #[ORM\Index(name: 'idx_ai_search_chunk_text', columns: ['title', 'content'], flags: ['fulltext'])]
 class AiSearchChunk

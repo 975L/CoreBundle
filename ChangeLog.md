@@ -1,5 +1,25 @@
 # ChangeLog
 
+## v1.86.0
+
+Added the activity log: who did what and when in the back office
+
+### ConfigBundle
+
+- Added `ActivityLog` entity (`site_activity_log`) and `ActivityLogListener`, one row per entity saved by a signed-in account under `/management` (02/11/2026)
+- Added `ActivityLogCrudController`, read-only and for the admin role, under *Advanced* (02/11/2026)
+- Added `ActivityLogIgnored` attribute, on `HealthCheckResult` (02/11/2026)
+- Added `ActivityLogUnnamed` attribute, keeping an entity's name out of the log (02/11/2026)
+- Added `c975l:config:activity-log-cleanup`, its weekly `MaintenanceTask` and `site-activity-log-retention-days` (02/11/2026)
+- Added `c975l:config:activity-log-record`, noting in the log what no flush went through, such as SQL run on a server (02/11/2026)
+- Added `AbstractRetentionCleanupCommand`, which `NotFoundCleanupCommand` now extends (02/11/2026)
+- Added `config-activity-log` guided project (02/11/2026)
+
+### UiBundle
+
+- `AiUsage` and `AiSearchChunk` carry `ActivityLogIgnored` (02/11/2026)
+- `Review` carries `ActivityLogUnnamed` (02/11/2026)
+
 ## v1.85.0
 
 Security fixes from the audit of 01/11/2026
