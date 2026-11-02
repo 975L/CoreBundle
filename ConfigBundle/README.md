@@ -60,7 +60,7 @@ See it in action at [bundles.975l.com/pages/config-bundle](https://bundles.975l.
 - `/account/delete`, where a signed-in user deletes their own account (GDPR right to erasure), anonymized the same way
 - `/account/deletion`, open to anyone, explaining how to delete an account and what is erased or kept: the address a store asks for (Google Play's account deletion link)
 - An "Anonymize" action on the back office's Users screen, for an erasure asked by email or an address that bounces, anonymized the same way
-- The languages a site offers, declared once in `framework.enabled_locales`: a language selector in the back office, the front office following the one a visitor picks, and the block content translated per language (see `c975l/ui-bundle`)
+- The languages a site offers, declared once in `framework.enabled_locales`: a language selector in the back office, the front office following the one a visitor picks, and the block content translated per language (see UiBundle)
 - Maintenance mode closing the site to its visitors, answering the search-engine-friendly 503 they expect from a temporary outage, with a dashboard alert turning to danger once it has lasted long enough to cost indexing
 - Sitemap generation (one sub-sitemap per bundle plus the sitemap index), extensible via `SitemapProviderInterface`
 - Atom feeds at `/feed/<name>.xml`, one per bundle with content to push out, announced in every page's `<head>`, extensible via `FeedProviderInterface`
@@ -475,7 +475,7 @@ To offer other sizes, override `@c975LUi/management/paginator.html.twig` in your
 
 ### JS assets loaded on the dashboard
 
-The `/management` dashboard loads dedicated AssetMapper entries (not your site's main `app` entry), so that satellite bundles needing Stimulus controllers in the back-office don't drag your site's front-end stylesheet into EasyAdmin. `c975l/ui-bundle` contributes one for its block editor — see the [UiBundle README](../UiBundle/README.md#installation) for how to define that entry.
+The `/management` dashboard loads dedicated AssetMapper entries (not your site's main `app` entry), so that satellite bundles needing Stimulus controllers in the back-office don't drag your site's front-end stylesheet into EasyAdmin. UiBundle contributes one for its block editor — see the [UiBundle README](../UiBundle/README.md#installation) for how to define that entry.
 
 ConfigBundle contributes its own, `@c975l/config-bundle/controllers-admin.js`, for the dashboard's guided tour (see [Contributing menu items from other bundles](#contributing-menu-items-from-other-bundles) below for how a bundle's own menu entries feed into it) and its Health check trend chart (see below). This entry (and any other c975L bundle's own admin JS) is added to your `importmap.php` automatically — see [Contributing importmap entries from other bundles](#contributing-importmap-entries-from-other-bundles) below, nothing to add by hand.
 
@@ -552,8 +552,6 @@ A role the edited account already holds is kept in its choices even when the con
 The detail page is disabled (not useful on top of the index and edit pages).
 
 ### ROLE_SUPER_ADMIN and restricted configs
-
-Requires `c975l/config-bundle` >= v5.4.
 
 Some configs are shared server-level secrets rather than per-site application settings — for
 example `site-backup-db-user`/`site-backup-db-password`, used by ConfigBundle's `c975l:config:backup`: a single privileged MySQL user reused to back up the database, not
@@ -653,7 +651,7 @@ security:
 
 ### Back-office access control
 
-`c975l:site:create` also declares `- { path: ^/management, roles: IS_AUTHENTICATED_FULLY }` under `access_control` in `config/packages/security.yaml` (same step again), so an anonymous visitor gets the login form instead of a bare 403. On the skeleton's `lazy: true` firewall it also makes the token resolve up front, without which `c975l/config-bundle`'s dashboard runs before the firewall has restored it. `IS_AUTHENTICATED_FULLY` rather than a role, on purpose: which roles grant the back office is editable from the dashboard (`site-role-editor`, `site-role-admin`), so the screens check it themselves. If your site predates this, add it yourself:
+`c975l:site:create` also declares `- { path: ^/management, roles: IS_AUTHENTICATED_FULLY }` under `access_control` in `config/packages/security.yaml` (same step again), so an anonymous visitor gets the login form instead of a bare 403. On the skeleton's `lazy: true` firewall it also makes the token resolve up front, without which ConfigBundle's dashboard runs before the firewall has restored it. `IS_AUTHENTICATED_FULLY` rather than a role, on purpose: which roles grant the back office is editable from the dashboard (`site-role-editor`, `site-role-admin`), so the screens check it themselves. If your site predates this, add it yourself:
 
 ```yaml
 security:
@@ -1205,7 +1203,7 @@ Leave it out and the item is localised whenever a localised twin exists, which i
 
 If your bundle ships its own Stimulus controller for the `/management` dashboard (or any other AssetMapper entry the consuming app needs in its `importmap.php`), implement `ImportmapProviderInterface` — no manual service tagging needed, same `TaggedInterfacePass` mechanism as `MenuProviderInterface` above.
 
-The interface has two methods, mirroring `c975l/ui-bundle`'s own `BundleScriptAdminProviderInterface`/`BundleScriptProviderInterface` admin/non-admin split: `getAdminImportmapEntries()` for scripts loaded on the `/management` dashboard only, `getImportmapEntries()` for anything else (a front-end Stimulus controller, or any other AssetMapper dependency). Both end up in the same `importmap.php` — the split only matters to keep each entry's purpose explicit at the declaration site. Return `[]` from whichever one doesn't apply.
+The interface has two methods, mirroring UiBundle's own `BundleScriptAdminProviderInterface`/`BundleScriptProviderInterface` admin/non-admin split: `getAdminImportmapEntries()` for scripts loaded on the `/management` dashboard only, `getImportmapEntries()` for anything else (a front-end Stimulus controller, or any other AssetMapper dependency). Both end up in the same `importmap.php` — the split only matters to keep each entry's purpose explicit at the declaration site. Return `[]` from whichever one doesn't apply.
 
 ```php
 namespace c975L\MyBundle\Management;
@@ -1261,7 +1259,7 @@ framework:
     enabled_locales: ['en', 'fr', 'es']
 ```
 
-That one line turns on the whole set: the language selector in the back office (EasyAdmin's own, which names each language in its own), the front office following the language a visitor picks, and the translation of block content (see `c975l/ui-bundle`). **A site declaring nothing offers its default language alone and behaves exactly as it always did**, which is every existing site.
+That one line turns on the whole set: the language selector in the back office (EasyAdmin's own, which names each language in its own), the front office following the language a visitor picks, and the translation of block content (see UiBundle). **A site declaring nothing offers its default language alone and behaves exactly as it always did**, which is every existing site.
 
 `Service\SiteLocales` is the one place anything asks what a site offers — `all()` and `isMultilingual()`. It always holds the default locale whether or not the list names it, and drops any code the Intl catalogue doesn't know, a typo otherwise taking down every back-office page through EasyAdmin's `Locale::new()`. `Listener\LocaleListener` (priority 20) then sets each request's language from the `_locale` query parameter, then the session, then what the browser asks for — a route carrying its own `_locale` attribute winning over all three. A `?_locale=xx` sent to such a route moves the visitor to that same route in the language asked (`/fr/preview/abc` → `/en/preview/abc`, a route Symfony declares per language included), keeping the choice in session; a route whose `_locale` is only a default is left where it is. Any other front page answered to a `?_locale=xx` then moves to its own url without it, the other parameters kept, the choice being in session by now — a redirect already answered, the back office and a request with no session are left alone. `Service\LocalizedUrlGenerator::sameRouteIn()` builds that url, and `screenLanguages()` offers it in each language for a route with no localised twin.
 
@@ -1514,7 +1512,7 @@ class WhatsNewProvider implements WhatsNewProviderInterface
 
 Make sure your bundle's `services.yaml` includes the `Management/` folder in its `src/` resource so the class is registered.
 
-**UiBundle exception:** `UiBundle` cannot depend on `c975l/config-bundle` (the dependency already runs the other way, ConfigBundle → UiBundle), so it doesn't implement `WhatsNewProviderInterface`. It contributes entries through its own `WhatsNewRegistry` (same pattern as `ScriptAdminRegistry`) — see the UiBundle README for how to register entries there; `WhatsNewBuilder` merges them in automatically alongside every other bundle's entries.
+**UiBundle exception:** `UiBundle` cannot depend on ConfigBundle (the dependency already runs the other way, ConfigBundle → UiBundle), so it doesn't implement `WhatsNewProviderInterface`. It contributes entries through its own `WhatsNewRegistry` (same pattern as `ScriptAdminRegistry`) — see the UiBundle README for how to register entries there; `WhatsNewBuilder` merges them in automatically alongside every other bundle's entries.
 
 ## Contributing dashboard alerts from other bundles
 
@@ -2657,7 +2655,7 @@ What the report holds:
     "environment": "prod",
     "php": "8.4.3",
     "symfony": "8.0.4",
-    "packages": {"c975l/config-bundle": "1.2.3", "easycorp/easyadmin-bundle": "5.1.0"},
+    "packages": {"c975l/core-bundle": "1.2.3", "easycorp/easyadmin-bundle": "5.1.0"},
     "dependencies": {"doctrine/orm": "3.6.1", "dompdf/dompdf": "3.1.0", "twig/twig": "3.21.1"},
     "checks": {
         "counts": {"ok": 42, "warning": 3, "error": 1, "skipped": 0},

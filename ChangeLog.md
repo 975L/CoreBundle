@@ -1,5 +1,13 @@
 # ChangeLog
 
+## v1.86.1
+
+Corrected stale references to the former packages
+
+- `UiBundle/README.md` and `ConfigBundle/README.md` name ConfigBundle, UiBundle or `c975l/core-bundle` (02/11/2026)
+- `bin/ci.sh` and `README.md`: vendor stays at its `composer.lock`, no symlink (02/11/2026)
+- `README.md`: `bin/ci.sh` takes the latest Lizard, not a pinned one (02/11/2026)
+
 ## v1.86.0
 
 Added the activity log: who did what and when in the back office

@@ -81,13 +81,13 @@ composer qa
 
 `rector` runs `--dry-run`, so it reports rather than rewrites, over the same sets `SymfonyMigrate.sh` gives a site. It covers `scaffold/` next to each bundle's own code: what is left unmodernised here gets rewritten in the application, where the rewritten file no longer matches the hash `ScaffoldInstaller` recorded, and the site is then told forever it customized a file it never touched.
 
-A development machine's `vendor/` symlinks the sibling repositories, which expose code no tag has published yet — code the CI never sees. `bin/ci.sh` replays `composer qa` on a copy of the repository whose dependencies are resolved from Packagist, uncommitted changes included:
+A development machine's `vendor/` stays at the versions of its `composer.lock`, which can lag behind Packagist — where the CI resolves everything. `bin/ci.sh` replays `composer qa` on a copy of the repository whose dependencies are resolved from Packagist, uncommitted changes included:
 
 ```bash
 bin/ci.sh
 ```
 
-The quality tools themselves are not dependencies of the bundle — PHPStan aside, which `require-dev` carries for its deprecation rules: the CI installs them with `setup-php`, which always takes the latest release, where a development machine keeps whatever it installed the day it installed it. `bin/ci.sh` installs them fresh too, and prints the six versions it ran with — Lizard excepted, pinned in both because its counting changed between releases and one release alone matches the thresholds Codacy reads — a rule removed upstream since is otherwise still enforced here, and a rule added since is missed.
+The quality tools themselves are not dependencies of the bundle — PHPStan aside, which `require-dev` carries for its deprecation rules: the CI installs them with `setup-php`, which always takes the latest release, where a development machine keeps whatever it installed the day it installed it. `bin/ci.sh` installs them fresh too, and prints the versions it ran with, Lizard included: a rule removed upstream since is otherwise still enforced here, and a rule added since is missed.
 
 ## Migrating from `c975l/config-bundle` / `c975l/ui-bundle`
 
