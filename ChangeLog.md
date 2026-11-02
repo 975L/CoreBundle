@@ -1,5 +1,12 @@
 # ChangeLog
 
+## v1.86.3
+
+Added the contract of a social content chosen by its planned date
+
+- Added `Contract\DatedSocialContentSourceInterface`, a source handing the content of a post's planned date (02/11/2026)
+- `UiBundle/README.md`: the dated source (02/11/2026)
+
 ## v1.86.2
 
 ConfigService: configs read as database rows, never stale entities
