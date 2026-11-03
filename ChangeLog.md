@@ -1,5 +1,14 @@
 # ChangeLog
 
+## v1.86.4
+
+CI tests PHP 8.5 and 8.6, bin/ci.sh replays them locally
+
+- CI runs the tests on PHP 8.5 and 8.6 besides the quality job on 8.4 (03/11/2026)
+- `bin/ci.sh` runs the tests on each other PHP version installed locally (03/11/2026)
+- `README.md`: the PHP versions `bin/ci.sh` replays (03/11/2026)
+- PHPStan analyses for PHP 8.4 whichever version runs it (03/11/2026)
+
 ## v1.86.3
 
 Added the contract of a social content chosen by its planned date

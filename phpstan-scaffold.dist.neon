@@ -6,6 +6,9 @@ includes:
 parameters:
     level: 6
 
+    # The oldest PHP composer.json accepts, as the CI runs it: left out, PHPStan takes the version running it and accepts locally a syntax the CI refuses
+    phpVersion: 80400
+
     # The ignored patterns below are shared by every c975L bundle, so not all of them apply to each one
     reportUnmatchedIgnoredErrors: false
 

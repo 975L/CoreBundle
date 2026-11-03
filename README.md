@@ -81,7 +81,7 @@ composer qa
 
 `rector` runs `--dry-run`, so it reports rather than rewrites, over the same sets `SymfonyMigrate.sh` gives a site. It covers `scaffold/` next to each bundle's own code: what is left unmodernised here gets rewritten in the application, where the rewritten file no longer matches the hash `ScaffoldInstaller` recorded, and the site is then told forever it customized a file it never touched.
 
-A development machine's `vendor/` stays at the versions of its `composer.lock`, which can lag behind Packagist — where the CI resolves everything. `bin/ci.sh` replays `composer qa` on a copy of the repository whose dependencies are resolved from Packagist, uncommitted changes included:
+A development machine's `vendor/` stays at the versions of its `composer.lock`, which can lag behind Packagist — where the CI resolves everything. `bin/ci.sh` replays `composer qa` on a copy of the repository whose dependencies are resolved from Packagist, uncommitted changes included, then the tests on each other PHP version it finds installed among 8.4, 8.5 and 8.6, those the CI runs them on:
 
 ```bash
 bin/ci.sh
