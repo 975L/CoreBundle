@@ -259,7 +259,7 @@
 
 .ui-drop-target {
   border-color: var(--bs-primary, #0d6efd) !important;
-  background-color: rgba(13, 110, 253, 0.06);
+  background-color: color-mix(in srgb, var(--bs-primary, #0d6efd) 6%, transparent);
 }
 
 .form-group.field-collection .accordion-body > .row > div,

@@ -17,7 +17,7 @@
 // Toggled by ea-sortable.js on every other eligible field when a compatible drag starts
 .ui-drop-target {
     border-color: var(--bs-primary, #0d6efd) !important;
-    background-color: rgba(13, 110, 253, 0.06);
+    background-color: color-mix(in srgb, var(--bs-primary, #0d6efd) 6%, transparent);
 }
 
 // EasyAdmin lays out every field of a collection entry as flex items (the column wrapper of its own form_row, then a 20% label + a "flex: 1" .form-widget), and a flex item defaults to "min-width: auto" - it can never shrink below its content. The block kind picker is a <select> whose intrinsic width is that of its longest option label ("Colonnes flexibles (Titre de section...)"), so each nesting level of blocks-in-blocks renders wider than the box holding it and the deepest one spills out of the panel. Letting those items shrink to 0 is what keeps a nested block inside its parent.

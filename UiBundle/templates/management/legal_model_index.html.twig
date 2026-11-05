@@ -39,7 +39,7 @@
                         <td>{{ row.extra ?: '-' }}</td>
                         <td>
                             {% if row.drifted > 0 %}
-                                <twig:ea:Badge variant="info">{{ ('label.legal_drift_count'|trans({'%count%': row.drifted}, 'ui')) }}</twig:ea:Badge>
+                                <twig:ea:Badge color="info">{{ ('label.legal_drift_count'|trans({'%count%': row.drifted}, 'ui')) }}</twig:ea:Badge>
                             {% else %}
                                 -
                             {% endif %}
@@ -47,11 +47,11 @@
                         <td class="text-nowrap">
                             {# A block whose model this bundle no longer ships has nothing to customize: the screen 404s on it, so it is named as such rather than linked #}
                             {% if row.known %}
-                                <twig:ea:Button htmlElement="a" href="{{ path('management_ui_legal_model_customize', {block: row.block.id}) }}" variant="outline-primary" size="sm" data-legal-model-customize>
+                                <twig:ea:Button htmlElement="a" href="{{ path('management_ui_legal_model_customize', {block: row.block.id}) }}" color="primary" variant="outline" size="sm" data-legal-model-customize>
                                     {{ ('label.legal_customize'|trans({}, 'ui')) }}
                                 </twig:ea:Button>
                             {% else %}
-                                <twig:ea:Badge variant="warning">{{ ('label.legal_model_unknown'|trans({}, 'ui')) }}</twig:ea:Badge>
+                                <twig:ea:Badge color="warning">{{ ('label.legal_model_unknown'|trans({}, 'ui')) }}</twig:ea:Badge>
                             {% endif %}
                         </td>
                     </tr>

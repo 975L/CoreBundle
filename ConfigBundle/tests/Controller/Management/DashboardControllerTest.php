@@ -32,6 +32,8 @@ use c975L\UiBundle\Management\PaginatorPageSize;
 use c975L\UiBundle\Registry\FormThemeRegistry;
 use c975L\UiBundle\Registry\ScriptAdminRegistry;
 use c975L\UiBundle\Registry\StylesheetManagementRegistry;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Option\ThemeColor;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Theme;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Asset\Packages;
 use Symfony\Component\HttpFoundation\Request;
@@ -163,6 +165,46 @@ class DashboardControllerTest extends TestCase
             static fn ($localeDto) => $localeDto->getName(),
             $controller->configureDashboard()->getAsDto()->getLocales(),
         );
+    }
+
+    // The back office takes the site's primary colour, and the common look around it
+    public function testTheBackOfficeTakesTheSitePrimaryColour(): void
+    {
+        $theme = $this->createController(false, [], ['theme-color-primary' => 'rgb(28, 87, 140)'])->configureDashboard()->getAsDto()->getTheme();
+
+        $this->assertSame('rgb(28, 87, 140)', $theme?->getPrimaryColor());
+        $this->assertSame('0.375rem', $theme->getRadius());
+    }
+
+    // Dark mode takes the site's dark-mode primary colour, the light one when it is empty
+    public function testDarkModeTakesTheSiteDarkModePrimaryColour(): void
+    {
+        $theme = $this->createController(false, [], ['theme-color-primary' => '#0a2d6b', 'theme-color-primary-dark-mode' => '#7fb2ff'])->configureDashboard()->getAsDto()->getTheme();
+        $this->assertSame('#7fb2ff', $theme?->getDarkPrimaryColor());
+
+        $theme = $this->createController(false, [], ['theme-color-primary' => '#0a2d6b'])->configureDashboard()->getAsDto()->getTheme();
+        $this->assertSame('#0a2d6b', $theme?->getPrimaryColor());
+        $this->assertNull($theme->getDarkPrimaryColor());
+    }
+
+    // A dark-mode colour EasyAdmin does not take is dropped alone, the site's primary colour staying
+    public function testARefusedDarkModeColourIsDroppedAlone(): void
+    {
+        $theme = $this->createController(false, [], ['theme-color-primary' => '#0a2d6b', 'theme-color-primary-dark-mode' => 'rgba(127, 178, 255, 0.5)'])->configureDashboard()->getAsDto()->getTheme();
+
+        $this->assertSame('#0a2d6b', $theme?->getPrimaryColor());
+        $this->assertNull($theme->getDarkPrimaryColor());
+    }
+
+    // A colour EasyAdmin does not take, or none at all, gives way to teal rather than breaking the back office
+    public function testAColourEasyAdminRefusesGivesWayToTeal(): void
+    {
+        $teal = Theme::new()->primaryColor(ThemeColor::Teal)->getAsDto()->getPrimaryColor();
+
+        foreach (['rgba(28, 87, 140, 0.5)', null] as $colour) {
+            $theme = $this->createController(false, [], ['theme-color-primary' => $colour])->configureDashboard()->getAsDto()->getTheme();
+            $this->assertSame($teal, $theme?->getPrimaryColor());
+        }
     }
 
     // The back office's own floor, read by LocaleListener and MaintenanceListener rather than spelt again in each

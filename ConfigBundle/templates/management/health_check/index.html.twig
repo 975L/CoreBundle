@@ -13,11 +13,11 @@
     <div class="mb-3 d-flex gap-2">
         <form method="post" action="{{ path('management_health_check_run') }}">
             <input type="hidden" name="_token" value="{{ csrf_token('management_health_check_run') }}">
-            <twig:ea:Button variant="primary">{{ 'action.health_check_run'|trans({}, 'config') }}</twig:ea:Button>
+            <twig:ea:Button color="primary">{{ 'action.health_check_run'|trans({}, 'config') }}</twig:ea:Button>
         </form>
-        <twig:ea:Button htmlElement="a" href="{{ path('management_health_check_export') }}" variant="outline-secondary">{{ 'action.health_check_export'|trans({}, 'config') }}</twig:ea:Button>
+        <twig:ea:Button htmlElement="a" href="{{ path('management_health_check_export') }}">{{ 'action.health_check_export'|trans({}, 'config') }}</twig:ea:Button>
         {# The diagnosis, where the export beside it is the dated audit trace: same run, every row needing action carrying the checkers' own details #}
-        <twig:ea:Button htmlElement="a" href="{{ path('management_health_check_report') }}" variant="outline-secondary">{{ 'action.health_check_report'|trans({}, 'config') }}</twig:ea:Button>
+        <twig:ea:Button htmlElement="a" href="{{ path('management_health_check_report') }}">{{ 'action.health_check_report'|trans({}, 'config') }}</twig:ea:Button>
     </div>
 
     {% if runProgress %}

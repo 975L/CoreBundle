@@ -104,7 +104,7 @@
             </trans-unit>
             <trans-unit id="GaAjAQb">
                 <source>description.theme_color_primary</source>
-                <target>Color principal (botones, títulos, enlaces). Vacío = color por defecto</target>
+                <target>Color principal (botones, títulos, enlaces, back-office). Vacío = color por defecto</target>
             </trans-unit>
             <trans-unit id="9N1ZUqN">
                 <source>description.theme_color_primary_dark_mode</source>

@@ -69,6 +69,8 @@ class LeafletContractTest extends TestCase
             // Same reason as LayoutAuditor: the sandbox refuses to start for the user a CI image runs as
             'noSandbox' => true,
             'windowSize' => [900, 700],
+            // The full suite keeps the machine busy, and opening a tab has been seen taking past chrome-php's 5s default
+            'sendSyncDefaultTimeout' => 20000,
         ]);
 
         $fixture = tempnam(sys_get_temp_dir(), 'leaflet') . '.html';

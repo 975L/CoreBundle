@@ -15,7 +15,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
-use EasyCorp\Bundle\EasyAdminBundle\Twig\Component\Option\ButtonVariant;
+use EasyCorp\Bundle\EasyAdminBundle\Twig\Component\Option\ButtonColor;
 use PHPUnit\Framework\TestCase;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -113,7 +113,7 @@ class EasyAdminActionHelperTest extends TestCase
 
         $this->assertSame('action.move_to_trash', $action->getLabel()->getMessage());
         $this->assertSame('fa fa-box-archive', $action->getIcon());
-        $this->assertSame(ButtonVariant::Warning, $action->getVariant());
+        $this->assertSame(ButtonColor::Warning, $action->getColor());
         $this->assertFalse($action->getConfirmationMessage() ?? false);
     }
 
@@ -126,7 +126,7 @@ class EasyAdminActionHelperTest extends TestCase
 
         $this->assertSame('action.delete_permanently', $action->getLabel()->getMessage());
         $this->assertSame('fa fa-trash', $action->getIcon());
-        $this->assertSame(ButtonVariant::Danger, $action->getVariant());
+        $this->assertSame(ButtonColor::Danger, $action->getColor());
         $this->assertFalse($action->getConfirmationMessage() ?? false);
     }
 

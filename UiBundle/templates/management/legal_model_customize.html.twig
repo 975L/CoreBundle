@@ -15,7 +15,7 @@
             <strong>{{ unit.title|default(unit.id) }}</strong>
             <code class="ml-2">{{ unit.id }}</code>
             {% if drifted[unit.id] is defined %}
-                <twig:ea:Badge variant="info" class="ml-2">{{ ('label.legal_drift'|trans({}, 'ui')) }}</twig:ea:Badge>
+                <twig:ea:Badge color="info" class="ml-2">{{ ('label.legal_drift'|trans({}, 'ui')) }}</twig:ea:Badge>
             {% endif %}
         </div>
         <div class="card-body">
@@ -33,7 +33,7 @@
 
             <div class="d-flex align-items-center legal-model-row-actions">
                 {{ form_row(row.hidden) }}
-                <twig:ea:Button type="button" variant="outline-secondary" size="sm" data-action="legal-model#reset">
+                <twig:ea:Button type="button" size="sm" data-action="legal-model#reset">
                     {{ ('label.legal_unit_reset'|trans({}, 'ui')) }}
                 </twig:ea:Button>
             </div>
@@ -88,7 +88,7 @@
                     <div class="card mb-3">
                         <div class="card-body">
                             {{ form_widget(section) }}
-                            <twig:ea:Button type="button" variant="outline-danger" size="sm" data-action="legal-model#remove">
+                            <twig:ea:Button type="button" color="danger" variant="outline" size="sm" data-action="legal-model#remove">
                                 {{ ('label.legal_extra_remove'|trans({}, 'ui')) }}
                             </twig:ea:Button>
                         </div>
@@ -96,12 +96,12 @@
                 {% endfor %}
             </div>
 
-            <twig:ea:Button type="button" variant="outline-secondary" class="mb-3" data-action="legal-model#add">
+            <twig:ea:Button type="button" class="mb-3" data-action="legal-model#add">
                 {{ ('label.legal_extra_add'|trans({}, 'ui')) }}
             </twig:ea:Button>
 
             <div>
-                <twig:ea:Button variant="primary" data-legal-model-submit>{{ ('label.save'|trans({}, 'ui')) }}</twig:ea:Button>
+                <twig:ea:Button color="primary" data-legal-model-submit>{{ ('label.save'|trans({}, 'ui')) }}</twig:ea:Button>
             </div>
         {{ form_end(form) }}
     </div>

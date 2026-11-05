@@ -37,6 +37,10 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Assets;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Option\Font;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Option\GrayScale;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Option\ThemeColor;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Theme;
 use EasyCorp\Bundle\EasyAdminBundle\Config\UserMenu;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
 use Symfony\Component\Asset\Packages;
@@ -133,10 +137,39 @@ class DashboardController extends AbstractDashboardController
             ->setTitle('<img src="/favicon.ico">' . $this->configService->get('site-name'))
             ->setFaviconPath('/favicon.ico')
             ->setTranslationDomain('config')
+            ->setTheme($this->theme())
         ;
 
         // EasyAdmin's own language selector, which names each language in its own, and nothing at all below two declared locales - it only appends "?_locale=xx" and reads it back nowhere, so LocaleListener is what keeps the choice
         return $this->siteLocales->isMultilingual() ? $dashboard->setLocales($this->siteLocales->all()) : $dashboard;
+    }
+
+    // One look for every site's back office, in the site's own primary colour (its dark-mode one in dark mode) so that each is told apart at a glance - a dark colour EasyAdmin does not take is dropped alone, a light one gives way to EasyAdmin's teal (empty, with an alpha channel, or not in hex, rgb(), hsl() or oklch())
+    private function theme(): Theme
+    {
+        $theme = Theme::new()
+            ->grays(GrayScale::SLATE)
+            ->radius('lg')
+            ->spacing('md')
+            ->font(base: Font::AtkinsonHyperlegibleNext)
+        ;
+
+        $primary = (string) $this->configService->get('theme-color-primary');
+        $dark = (string) $this->configService->get('theme-color-primary-dark-mode');
+
+        return $this->withPrimaryColor($theme, $primary, '' === $dark ? null : $dark)
+            ?? $this->withPrimaryColor($theme, $primary, null)
+            ?? $theme->primaryColor(ThemeColor::Teal);
+    }
+
+    // The theme in these colours, or null when EasyAdmin refuses one of them
+    private function withPrimaryColor(Theme $theme, string $color, ?string $dark): ?Theme
+    {
+        try {
+            return $theme->primaryColor($color, $dark);
+        } catch (\InvalidArgumentException) {
+            return null;
+        }
     }
 
     // The account's own page, where a site with an administrator alone changes its address and password too (see AccountController), then "View as" one entry per level below the account's own, and the way back while one is previewed (see RolePreview) - read off the user's real roles, isGranted() already answering for the previewed level

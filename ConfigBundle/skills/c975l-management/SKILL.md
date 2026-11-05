@@ -222,6 +222,12 @@ and the container compilation of every production site breaks otherwise.
   On a screen holding a recycle bin, `trashBatchDelete($actions, $trash)` words EasyAdmin's batch Delete "Move to the recycle bin" (warning) on the list and
   "Delete permanently" (danger) in the bin - its confirmation is EasyAdmin's batch modal, never an `askConfirmation()` on the batch action, which EasyAdmin ignores.
   Its controller then `use`s `Controller\Management\Trait\TrashBatchDeleteTrait` (holding `$configService` and `$translator`): the bin's batch is refused below `site-role-admin` before the first row, and one flash counts what went for good.
+- **Do not hard-code Bootstrap's blue in a management stylesheet** — the back office takes the site's primary colour (its dark-mode one in dark mode): `var(--bs-primary)`,
+  a tint as `color-mix(in srgb, var(--bs-primary) 8%, transparent)`, never `#0d6efd` nor `--bs-primary-rgb`.
+- **Do not leave an app-like custom page under EasyAdmin's prose** — a page extending `@EasyAdmin/page/content.html.twig` gets article
+  margins and image sizing since EasyAdmin 5.9: put `data-ea-not-prose` on the wrapper of a grid, a calendar or cards of pictures.
+- **Do not pass a colour in the `variant` of `<twig:ea:Button>` or `<twig:ea:Badge>`** — deprecated since EasyAdmin 5.9 (5.7 for a badge): `color="danger"`,
+  and `variant` for the style only (`solid`, `outline`, `light`, `ghost`, `link`).
 - **Do not leave a `TestCase` subclass inside a scanned `src/`.**
 
 ## Activity log

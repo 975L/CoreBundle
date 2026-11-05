@@ -60,7 +60,7 @@ export default class extends Controller {
     removeButton() {
         const button = document.createElement("button");
         button.type = "button";
-        button.className = "btn btn-sm btn-outline-danger";
+        button.className = "btn btn-danger btn-outline btn-sm";
         button.dataset.action = "legal-model#remove";
 
         // Same inner span as EasyAdmin's Button component renders on the stored sections

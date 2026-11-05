@@ -3,6 +3,11 @@
         "date": "2026-11-05",
         "description": [
             {
+                "en": "The back office has a new look: easier to read, with your site's main colour, and still in light or dark mode as you prefer.",
+                "fr": "Le back-office change de style : plus lisible, aux couleurs principales de votre site, et toujours en mode clair ou sombre selon votre préférence.",
+                "es": "El back-office cambia de estilo: más legible, con el color principal de su sitio, y siempre en modo claro u oscuro según su preferencia."
+            },
+            {
                 "en": "The \"Continue with Apple\" and \"Continue with Google\" buttons no longer stop on the offline page for visitors who have already been on the site.",
                 "fr": "Les boutons « Continuer avec Apple » et « Continuer avec Google » ne s'arrêtent plus sur la page hors connexion pour les visiteurs déjà venus sur le site.",
                 "es": "Los botones «Continuar con Apple» y «Continuar con Google» ya no se detienen en la página sin conexión para los visitantes que ya han estado en el sitio."

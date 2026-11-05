@@ -55,6 +55,8 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
+use EasyCorp\Bundle\EasyAdminBundle\Twig\Component\Option\ButtonColor;
+use EasyCorp\Bundle\EasyAdminBundle\Twig\Component\Option\ButtonVariant;
 use PHPUnit\Framework\TestCase;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
@@ -1075,6 +1077,23 @@ class ConfigCrudControllerTest extends TestCase
             ->getAction(Crud::PAGE_INDEX, 'toggleSensitive');
 
         $this->assertTrue($toggle->isDisplayed());
+    }
+
+    // Drawn as config_crud_groups.html.twig draws it: warning, outline while hidden and solid while shown
+    public function testTheSensitiveToggleIsAWarningButtonSolidOnlyWhileShown(): void
+    {
+        foreach (['0' => ButtonVariant::Outline, '1' => ButtonVariant::Solid] as $showSensitive => $variant) {
+            $requestStack = new RequestStack([new Request(['group' => 'general', 'showSensitive' => (string) $showSensitive])]);
+
+            $toggle = $this->createController(requestStack: $requestStack)
+                ->configureActions(Actions::new()->add(Crud::PAGE_INDEX, Action::EDIT))
+                ->getAsDto(Crud::PAGE_INDEX)
+                ->getAction(Crud::PAGE_INDEX, 'toggleSensitive');
+
+            $this->assertSame(ButtonColor::Warning, $toggle->getColor());
+            $this->assertSame($variant, $toggle->getButtonVariant());
+            $this->assertSame('btn-sm', $toggle->getAddedCssClass());
+        }
     }
 
     // Detail adds no information beyond what edit already shows (sensitive values are revealed there too) - disabled entirely, alongside new/delete since configs are fixed by the bundles' import json

@@ -461,6 +461,10 @@ The bundle registers a management dashboard at `/management`. Navigate to **Conf
 
 Theme CSS variables (colors, fonts, light/dark mode, declared by a bundle like any other entry) sit under the `theme` group — reachable the same way, via **Config**'s "pick a group" screen, at the same `site-role-admin` permission as every other group (no dedicated page, no separate permission tier).
 
+### Look
+
+Every site's back office shares one EasyAdmin theme, set in `DashboardController::configureDashboard()`: slate grays, `lg` corners, the default density and Atkinson Hyperlegible Next, served by EasyAdmin itself. Its primary colour is the site's own `theme-color-primary`, so that each back office is told apart at a glance, and `theme-color-primary-dark-mode` in dark mode when it is filled (a dark value EasyAdmin does not take is dropped alone); a primary value EasyAdmin does not take (empty, with an alpha channel, or written other than in hexadecimal, `rgb()`, `hsl()` or `oklch()`) gives way to teal. Light or dark follows the system, the user menu switching it. A bundle's management stylesheet reads that colour as `var(--bs-primary)`, a tint of it as `color-mix(in srgb, var(--bs-primary) 8%, transparent)` - never Bootstrap's blue nor `--bs-primary-rgb`, which stay blue.
+
 Any entry with a `severity` and an empty `value` shows up as a colored alert (danger/warning/info) right on the `/management` home page, each linking directly to its edit form — as does a `sensitive` entry holding a value the site can no longer decrypt.
 
 ### Rows per page

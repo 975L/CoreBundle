@@ -104,7 +104,7 @@
             </trans-unit>
             <trans-unit id="GaAjAQb">
                 <source>description.theme_color_primary</source>
-                <target>Couleur principale (boutons, titres, liens). Vide = couleur par défaut</target>
+                <target>Couleur principale (boutons, titres, liens, back-office). Vide = couleur par défaut</target>
             </trans-unit>
             <trans-unit id="9N1ZUqN">
                 <source>description.theme_color_primary_dark_mode</source>

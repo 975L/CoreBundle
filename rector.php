@@ -34,4 +34,6 @@ return RectorConfig::configure()
     ->withSkip([
         AddParamBasedOnParentClassMethodRector::class,
         ReadOnlyClassRector::class,
+        // MakerBundle templates open on <?= to print the generated file's own <?php tag, so Rector cannot parse them and they must stay that way
+        __DIR__ . '/UiBundle/src/Resources/skeleton',
     ]);

@@ -3085,7 +3085,7 @@ Only the file a row *names* is looked for, never one derived from it: a thumbnai
 
 ## Theme
 
-The site's colors, fonts and light/dark mode are admin-editable config keys of the `theme` group, declared here because the `--c975l-*` custom properties they compile to are the ones this bundle's own CSS reads: `theme-color-primary`, `theme-color-secondary`, their two `-dark-mode` counterparts, `theme-color-background`, `theme-color-text`, `theme-font-family-title`/`-body`/`-accent` and `theme-mode` (`auto`/`light`/`dark`).
+The site's colors, fonts and light/dark mode are admin-editable config keys of the `theme` group, declared here because the `--c975l-*` custom properties they compile to are the ones this bundle's own CSS reads: `theme-color-primary`, `theme-color-secondary`, their two `-dark-mode` counterparts, `theme-color-background`, `theme-color-text`, `theme-font-family-title`/`-body`/`-accent` and `theme-mode` (`auto`/`light`/`dark`). `theme-color-primary` is also the back office's primary colour (see ConfigBundle's [Look](https://github.com/975L/CoreBundle/blob/main/ConfigBundle/README.md#look)).
 
 The four base colors and the three families are **loaded with the very value SiteBundle's stylesheet falls
 back on** — `#0a2d6b`, `#0a7ba3`, `#fbfcff`, `#04122c`, then `sans-serif`, `sans-serif` and `monospace` — so

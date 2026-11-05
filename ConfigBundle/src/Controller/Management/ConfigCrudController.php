@@ -60,6 +60,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\TextEditorField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Filter\ChoiceFilter;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
+use EasyCorp\Bundle\EasyAdminBundle\Twig\Component\Option\ButtonVariant;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
@@ -439,20 +440,22 @@ class ConfigCrudController extends AbstractCrudController
             unset($params['showSensitive']);
             $sensitiveLabel = t('label.hide_sensitive', [], 'config');
             $sensitiveIcon = 'fa fa-eye-slash';
-            $sensitiveCss = 'btn btn-warning btn-sm';
         } else {
             $params['showSensitive'] = 1;
             $sensitiveLabel = t('label.show_sensitive', [], 'config');
             $sensitiveIcon = 'fa fa-eye';
-            $sensitiveCss = 'btn btn-outline-warning btn-sm';
         }
 
         $toggleAction = Action::new('toggleSensitive', $sensitiveLabel, $sensitiveIcon)
             ->linkToUrl('?' . http_build_query($params))
-            ->addCssClass($sensitiveCss)
+            ->asWarningAction()
+            ->addCssClass('btn-sm')
             ->createAsGlobalAction()
             // Dead in the "to fill in" view, which lists sensitive and non-sensitive entries together and so ignores the toggle (see createIndexQueryBuilder())
             ->displayIf(fn (): bool => self::GROUP_EMPTY !== $this->currentGroup());
+
+        // Solid while the sensitive entries are shown, outline otherwise, as config_crud_groups.html.twig draws it - Action itself has no setter for the style
+        $toggleAction->getAsDto()->setVariant($showSensitive ? ButtonVariant::Solid : ButtonVariant::Outline);
 
         // Reachable once a group is selected, or once a cross-group search query has bypassed the "pick a group" screen (see index()) - unsets both "group" and "query" to go back to it cleanly
         $backToGroupsAction = Action::new('groups', t('label.config', [], 'config'), 'fas fa-layer-group')

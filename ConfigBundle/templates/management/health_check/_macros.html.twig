@@ -1,9 +1,9 @@
 {# Shared by the global Health check page (_table.html.twig, index.html.twig) and any other bundle/screen embedding a scoped subset of results (e.g. c975l/site-bundle's per-page health check tab) - keep this the single place these render, rather than reimplementing them per screen #}
 
-{# Status pill: HealthCheckResult::STATUS_OK/WARNING/ERROR/SKIPPED mapped to EasyAdmin's Badge variants (success/warning/danger/secondary) - "skipped" ("not verifiable": no verdict could be reached, either because the check never ran or because the target is up and turns automated probes down) stays neutral rather than reading as a warning/error, there being nothing an editor can fix on such a row #}
+{# Status pill: HealthCheckResult::STATUS_OK/WARNING/ERROR/SKIPPED mapped to EasyAdmin's Badge colors (success/warning/danger/secondary) - "skipped" ("not verifiable": no verdict could be reached, either because the check never ran or because the target is up and turns automated probes down) stays neutral rather than reading as a warning/error, there being nothing an editor can fix on such a row #}
 {% macro status_badge(status) %}
-    {% set variant = status == 'ok' ? 'success' : (status == 'warning' ? 'warning' : (status == 'skipped' ? 'secondary' : 'danger')) %}
-    <twig:ea:Badge variant="{{ variant }}">{{ ('label.health_check_status_' ~ status)|trans({}, 'config') }}</twig:ea:Badge>
+    {% set color = status == 'ok' ? 'success' : (status == 'warning' ? 'warning' : (status == 'skipped' ? 'secondary' : 'danger')) %}
+    <twig:ea:Badge color="{{ color }}">{{ ('label.health_check_status_' ~ status)|trans({}, 'config') }}</twig:ea:Badge>
 {% endmacro %}
 
 {# One SVG ring per Lighthouse category (performance/accessibility/best-practices/seo) - same red/orange/green thresholds and colors as Lighthouse's own report (score>=90 green, >=50 orange, else red). Hollow center (no fill, no in-ring number) with only the 5px outer stroke colored, so the ring itself reads clearly instead of looking like a solid disc - the category name and score are spelled out as text underneath instead. SVG stroke-dasharray/-dashoffset are plain attributes, not inline CSS, so this stays compatible with a strict style-src CSP (no style="" needed) - see sass/management.scss for the .lh-gauge-* rules #}

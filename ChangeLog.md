@@ -1,5 +1,19 @@
 # ChangeLog
 
+## v1.87.0
+
+One EasyAdmin theme for every back office, in the site's primary colour
+
+- ConfigBundle: `DashboardController` sets one EasyAdmin theme in the site's `theme-color-primary`, teal when EasyAdmin refuses it (05/11/2026)
+- ConfigBundle: the back office's dark mode takes `theme-color-primary-dark-mode` when it is filled (05/11/2026)
+- ConfigBundle: the sensitive entries toggle of a config list is drawn as the one of the groups page (05/11/2026)
+- Requires `easycorp/easyadmin-bundle` ^5.9 (05/11/2026)
+- UiBundle: a field ready for a dragged block is tinted with the theme's primary colour (05/11/2026)
+- ConfigBundle, UiBundle: EasyAdmin buttons and badges take their colour in `color`, `variant` keeping only their style (05/11/2026)
+- ConfigBundle README, `c975l-management` skill: the back office's look, its colour in stylesheets and EasyAdmin's prose (05/11/2026)
+- UiBundle: `theme-color-primary`'s description and README name the back office (05/11/2026)
+- UiBundle: `LeafletContractTest` waits 20s for Chrome instead of 5s (05/11/2026)
+
 ## v1.86.7
 
 A session Chrome no longer knows no longer fails a browser test
