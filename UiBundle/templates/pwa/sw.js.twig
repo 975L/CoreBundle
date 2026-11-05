@@ -29,7 +29,14 @@ self.addEventListener("fetch", (event) => {
     // A page, loaded by the browser or by a Turbo visit, which asks for html without being a navigation - a frame or a prefetch is a fragment, never answered with a whole page. A downloaded copy is only the fallback: online, a page is always the server's
     const isFragment = request.headers.has("Turbo-Frame") || (request.headers.get("Sec-Purpose") || request.headers.get("X-Sec-Purpose") || "").includes("prefetch");
     if ("navigate" === request.mode || (!isFragment && (request.headers.get("Accept") || "").includes("text/html"))) {
-        event.respondWith(fetch(request).catch(() => downloaded(request).then((copy) => copy || offlinePage())));
+        // Online, a failed Turbo visit is most often a redirection off the site, no lost network: the failure goes back to Turbo, which loads the address as a real navigation, answered by the offline page if the server is truly out of reach
+        event.respondWith(fetch(request).catch((error) => {
+            if ("navigate" !== request.mode && self.navigator.onLine) {
+                throw error;
+            }
+
+            return downloaded(request).then((copy) => copy || offlinePage());
+        }));
         return;
     }
 

@@ -64,6 +64,12 @@ class OAuthLoginComponentTest extends TestCase
         $this->assertStringContainsString('{provider: provider.key, redirect: redirect}', $component);
     }
 
+    // The route redirects to the provider's site, which Turbo's fetch() can't follow: the button is a real navigation or the sign-in never leaves the site
+    public function testTheComponentLeavesTurbo(): void
+    {
+        $this->assertStringContainsString('rel="nofollow" data-turbo="false">', $this->component());
+    }
+
     // A site that configured no provider must render nothing at all, its login page staying exactly as it was
     public function testTheComponentRendersNothingWithoutAProvider(): void
     {

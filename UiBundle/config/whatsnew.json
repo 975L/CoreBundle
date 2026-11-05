@@ -1,5 +1,15 @@
 [
     {
+        "date": "2026-11-05",
+        "description": [
+            {
+                "en": "A link of your site leading on to another site no longer stops on the offline page for visitors who have already been on the site.",
+                "fr": "Un lien de votre site qui mène vers un autre site ne s'arrête plus sur la page hors connexion pour les visiteurs déjà venus sur le site.",
+                "es": "Un enlace de su sitio que lleva a otro sitio ya no se detiene en la página sin conexión para los visitantes que ya han estado en el sitio."
+            }
+        ]
+    },
+    {
         "date": "2026-11-01",
         "description": [
             {

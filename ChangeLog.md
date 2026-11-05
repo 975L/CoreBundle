@@ -1,5 +1,13 @@
 # ChangeLog
 
+## v1.86.6
+
+Sign-in with Apple or Google no longer stops on the offline page
+
+- ConfigBundle: `OAuthLogin` buttons carry `data-turbo="false"` (05/11/2026)
+- UiBundle: service worker hands a Turbo visit failing online back to Turbo instead of the offline page (05/11/2026)
+- `ConfigBundle/README.md`, `UiBundle/README.md`, `c975l-users` skill: both behaviours (05/11/2026)
+
 ## v1.86.5
 
 Composer states why a PHP version failed to resolve

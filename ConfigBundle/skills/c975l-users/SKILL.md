@@ -169,7 +169,9 @@ return a value. A provider reads its own credentials (`OAuthCredentialTrait::cre
 config slug), may add consent parameters (`getAuthorizationParameters()`) and reads the identity from
 the token endpoint's whole answer (`fetchIdentity(array $token)`). `AppleOAuthLoginProvider` needs the
 four `login-apple-*` configs, signs its client secret itself (ES256) and gets its answer posted:
-`config_oauth_check_posted` turns that POST into a GET so the session cookie comes along.
+`config_oauth_check_posted` turns that POST into a GET so the session cookie comes along. The buttons
+carry `data-turbo="false"`, Turbo's `fetch()` being unable to follow the redirection to the provider:
+an override of the component keeps it.
 
 Every account created through `UserRegistrar` also notifies the site's own `email-to` address, in
 `kernel.default_locale`. Uncheck `user-creation-notification` to stop it. It never gets in the way of

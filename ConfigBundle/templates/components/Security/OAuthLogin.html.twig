@@ -10,8 +10,8 @@
     <div class="text text-center oauth-login">
         <p class="oauth-login-separator">{{ 'label.or'|trans({}, 'config') }}</p>
         {% for provider in providers %}
-            {# Apple dictates its button, black with its mark in white, so it takes its own variant rather than the site's secondary colour #}
-            <a class="btn btn-large {{ 'apple' == provider.key ? 'btn-apple' : 'btn-secondary' }}" href="{{ path('config_oauth_connect', redirect ? {provider: provider.key, redirect: redirect} : {provider: provider.key}) }}" rel="nofollow">
+            {# Apple dictates its button, black with its mark in white, so it takes its own variant rather than the site's secondary colour. Out of Turbo: its fetch() can't follow the redirection to the provider's site, which only a real navigation can reach #}
+            <a class="btn btn-large {{ 'apple' == provider.key ? 'btn-apple' : 'btn-secondary' }}" href="{{ path('config_oauth_connect', redirect ? {provider: provider.key, redirect: redirect} : {provider: provider.key}) }}" rel="nofollow" data-turbo="false">
                 {# Inlined rather than served as an asset: a provider's mark is part of this button and of nothing else, and an <img> would be one more file to install in every site plus one more source to allow through the CSP #}
                 {% if 'google' == provider.key %}
                     <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true" focusable="false">

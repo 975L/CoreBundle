@@ -33,8 +33,20 @@ class PwaDownloadsTest extends TestCase
     {
         $worker = $this->read(self::WORKER);
 
-        $this->assertStringContainsString('fetch(request).catch(() => downloaded(request).then((copy) => copy || offlinePage()))', $worker);
+        $this->assertStringContainsString('return downloaded(request).then((copy) => copy || offlinePage());', $worker);
         $this->assertStringContainsString('ignoreVary: true', $worker);
+    }
+
+    // A Turbo visit failing online is a redirection off the site, not a lost network: answering it with the offline page would stop a sign-in at a provider on "Offline"
+    public function testAFailedTurboVisitIsNotCalledOfflineWhileOnline(): void
+    {
+        $worker = $this->read(self::WORKER);
+
+        $this->assertStringContainsString("if (\"navigate\" !== request.mode && self.navigator.onLine) {\n                throw error;", $worker);
+        $this->assertLessThan(
+            strpos($worker, 'return downloaded(request).then((copy) => copy || offlinePage());'),
+            strpos($worker, 'throw error;'),
+        );
     }
 
     // Online, a recording or a script's own request never goes through the worker, so a site keeps its speed; offline, an audio element's ranges are answered from the stored file
