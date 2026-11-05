@@ -6,6 +6,11 @@
                 "en": "The \"Continue with Apple\" and \"Continue with Google\" buttons no longer stop on the offline page for visitors who have already been on the site.",
                 "fr": "Les boutons « Continuer avec Apple » et « Continuer avec Google » ne s'arrêtent plus sur la page hors connexion pour les visiteurs déjà venus sur le site.",
                 "es": "Los botones «Continuar con Apple» y «Continuar con Google» ya no se detienen en la página sin conexión para los visitantes que ya han estado en el sitio."
+            },
+            {
+                "en": "The dashboard now warns you when a protected setting holding a list can no longer be read, as it already did for the other protected settings.",
+                "fr": "Le tableau de bord vous prévient désormais lorsqu'un réglage protégé contenant une liste ne peut plus être lu, comme il le faisait déjà pour les autres réglages protégés.",
+                "es": "El panel ahora le avisa cuando un ajuste protegido que contiene una lista ya no se puede leer, como ya hacía con los demás ajustes protegidos."
             }
         ]
     },

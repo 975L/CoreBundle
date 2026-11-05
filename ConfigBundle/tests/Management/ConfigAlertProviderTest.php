@@ -134,6 +134,56 @@ class ConfigAlertProviderTest extends TestCase
         $this->assertSame(Config::SEVERITY_DANGER, $alerts[0]['severity']);
     }
 
+    // A sensitive value holding a list was read and decrypted: no alert, and no conversion of the list to text
+    public function testGetAlertsLeavesASensitiveConfigHoldingAListAlone(): void
+    {
+        $repository = $this->createStub(ConfigRepository::class);
+        $repository->method('findRequiringAttention')->willReturn([]);
+        $repository->method('findSensitiveWithValue')->willReturn([$this->createConfig(13, 'item-feeds', Config::SEVERITY_DANGER)]);
+
+        $values = ['item-feeds' => ['item-1' => 'https://example.org/feed']];
+        $provider = new ConfigAlertProvider(
+            $repository,
+            new ConfigEntryLink($this->createStub(AdminUrlGeneratorInterface::class), $this->createConfigService($values)),
+            $this->createResolver(),
+            $this->createConfigService($values),
+            $this->createTranslator(),
+        );
+
+        // PHP's warning on an array cast fails the test, phpunit.xml.dist not failing on warnings
+        set_error_handler(static function (int $level, string $message): never {
+            throw new \ErrorException($message, 0, $level);
+        });
+
+        try {
+            $this->assertSame([], $provider->getAlerts());
+        } finally {
+            restore_error_handler();
+        }
+    }
+
+    // A sensitive list that could not be decrypted reads as an empty list (see ConfigService::castValue()): filled in the database, empty for everything reading it
+    public function testGetAlertsReportsASensitiveListFilledButUnreadable(): void
+    {
+        $repository = $this->createStub(ConfigRepository::class);
+        $repository->method('findRequiringAttention')->willReturn([]);
+        $repository->method('findSensitiveWithValue')->willReturn([$this->createConfig(14, 'item-feeds', Config::SEVERITY_DANGER)]);
+
+        $values = ['item-feeds' => []];
+        $provider = new ConfigAlertProvider(
+            $repository,
+            new ConfigEntryLink($this->createStub(AdminUrlGeneratorInterface::class), $this->createConfigService($values)),
+            $this->createResolver(),
+            $this->createConfigService($values),
+            $this->createTranslator(),
+        );
+
+        $alerts = $provider->getAlerts();
+
+        $this->assertCount(1, $alerts);
+        $this->assertSame('description.config_unreadable', $alerts[0]['description']);
+    }
+
     // The dashboard renders for an editor now, who has no business reading the site's own settings - both kinds of alert carry the admin bar so AlertBuilder drops them for that user
     public function testEveryAlertCarriesTheAdminRole(): void
     {

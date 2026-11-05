@@ -42,9 +42,10 @@ class ConfigAlertProvider implements AlertProviderInterface
             ];
         }
 
-        // A value ConfigService could not decrypt is left empty for everything reading it, while the entry still shows as filled everywhere - the site then behaves as if the setting had never been given (an api key silently gone, see ConfigService::loadAll()) and nothing said so
+        // A value ConfigService could not decrypt is left empty for everything reading it, while the entry still shows as filled everywhere - the site then behaves as if the setting had never been given (an api key silently gone, see ConfigService::loadAll()) and nothing said so. A json setting reads as an empty list then, which a list stored empty on purpose cannot be told from
         foreach ($this->configRepository->findSensitiveWithValue() as $config) {
-            if ('' !== (string) $this->configService->get($config->getSlug())) {
+            $value = $this->configService->get($config->getSlug());
+            if (is_array($value) ? [] !== $value : '' !== (string) $value) {
                 continue;
             }
 

@@ -130,8 +130,9 @@ instead of the half second a fresh page costs:
 
 A Chrome upgraded while the suite runs, or a renderer taken for its memory, destroys the tab — and
 every scenario left then answered `The session is destroyed` without ever running. A scenario meeting a
-`TargetDestroyed` is given a browser and a tab of its own and run **once** again, the docroot and its
-server being kept, since they are what the bundles already copied are served from.
+`TargetDestroyed`, or an `EvaluationFailed` carrying Chrome's `-32001` when Chrome answers before
+chrome-php has read the loss, is given a browser and a tab of its own and run **once** again, the docroot
+and its server being kept, since they are what the bundles already copied are served from.
 
 **A renderer that crashes rather than a tab that goes away reads as a timeout and is not replayed**,
 being indistinguishable from a scenario that never settles.

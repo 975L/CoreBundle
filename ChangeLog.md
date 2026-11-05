@@ -1,5 +1,15 @@
 # ChangeLog
 
+## v1.86.7
+
+A session Chrome no longer knows no longer fails a browser test
+
+- `Testing\JsCase` replays a scenario on Chrome's `-32001` as on a destroyed target (05/11/2026)
+- `UiBundle/README.md`, `c975l-js-testing` skill: that behaviour (05/11/2026)
+- `UiBundle/README.md` no longer counts the browser scenarios (05/11/2026)
+- ConfigBundle: `ConfigAlertProvider` no longer converts a sensitive list to text (05/11/2026)
+- ConfigBundle: `ConfigAlertProvider` reports a sensitive list that could not be decrypted (05/11/2026)
+
 ## v1.86.6
 
 Sign-in with Apple or Google no longer stops on the offline page

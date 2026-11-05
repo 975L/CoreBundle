@@ -13,6 +13,7 @@ namespace c975L\UiBundle\Testing;
 use HeadlessChromium\Browser;
 use HeadlessChromium\BrowserFactory;
 use HeadlessChromium\Exception\CommunicationException;
+use HeadlessChromium\Exception\EvaluationFailed;
 use HeadlessChromium\Exception\OperationTimedOut;
 use HeadlessChromium\Exception\TargetDestroyed;
 use HeadlessChromium\Page;
@@ -29,6 +30,9 @@ abstract class JsCase extends TestCase
 
     // How long a scenario may take to settle before it is called a failure rather than left hanging the suite
     private const int TIMEOUT_MS = 5000;
+
+    // The code Chrome answers with for a session it no longer knows, heard before chrome-php has read that the session went away
+    private const string SESSION_NOT_FOUND = '-32001';
 
     private static ?Browser $browser = null;
 
@@ -70,7 +74,11 @@ abstract class JsCase extends TestCase
     {
         try {
             $answer = $this->runScenario($html, $controllers, $probe, $options);
-        } catch (TargetDestroyed) {
+        } catch (TargetDestroyed | EvaluationFailed $failure) {
+            if ($failure instanceof EvaluationFailed && !str_contains($failure->getMessage(), self::SESSION_NOT_FOUND)) {
+                throw $failure;
+            }
+
             // The tab the whole run shares has gone away under it - Chrome upgraded while the suite was running, a renderer taken for its memory - and every scenario after this one would read the same dead session
             $this->reopen();
             $answer = $this->runScenario($html, $controllers, $probe, $options);
