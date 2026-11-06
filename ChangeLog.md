@@ -1,5 +1,11 @@
 # ChangeLog
 
+## v1.87.1
+
+A Chrome that times out on its way up is launched once more
+
+- `Testing\JsCase` launches Chrome again when its startup times out (06/11/2026)
+
 ## v1.87.0
 
 One EasyAdmin theme for every back office, in the site's primary colour

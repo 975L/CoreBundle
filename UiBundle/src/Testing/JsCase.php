@@ -417,8 +417,8 @@ abstract class JsCase extends TestCase
                 // Chrome keeps a tab's shared memory under /dev/shm, and an image that sizes it small kills the tab instead of saying so
                 'customFlags' => ['--disable-dev-shm-usage'],
             ]);
-        } catch (CommunicationException | OperationTimedOut $exception) {
-            if ($attempts <= 1) {
+        } catch (\Exception $exception) {
+            if ($attempts <= 1 || !self::diedOnItsWayUp($exception)) {
                 throw $exception;
             }
 
@@ -427,6 +427,14 @@ abstract class JsCase extends TestCase
 
             return self::launch($attempts - 1);
         }
+    }
+
+    // A launch worth trying again: chrome-php wraps the startup timeout into a plain RuntimeException, so the timeout is looked for behind it too (run 42107645886)
+    private static function diedOnItsWayUp(\Throwable $exception): bool
+    {
+        return $exception instanceof CommunicationException
+            || $exception instanceof OperationTimedOut
+            || $exception->getPrevious() instanceof OperationTimedOut;
     }
 
     // The bundles' assets copied under a docroot rather than served from the working tree: the copy is where the bare "@hotwired/stimulus" every controller imports is rewritten towards the vendored fixture, which is the only thing standing between a controller and a browser that has never heard of an import map
