@@ -1,5 +1,13 @@
 # ChangeLog
 
+## v1.87.2
+
+Updated vanilla-cookieconsent to 3.3.0
+
+### UiBundle
+
+- vanilla-cookieconsent updated from 3.2.1 to 3.3.0 (06/11/2026)
+
 ## v1.87.1
 
 A Chrome that times out on its way up is launched once more
