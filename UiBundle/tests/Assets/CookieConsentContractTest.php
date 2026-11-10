@@ -81,13 +81,18 @@ class CookieConsentContractTest extends JsCase
         $seen = $this->banner(
             'const seen = [];
              const record = (event) => seen.push(event.type);
+             const until = async (type) => {
+                 for (let attempt = 0; attempt < 100 && !seen.includes(type); attempt += 1) {
+                     await new Promise((r) => setTimeout(r, 20));
+                 }
+             };
              window.addEventListener("cc:onConsent", record);
              window.addEventListener("cc:onChange", record);
              __start__
              CookieConsent.acceptCategory("content");
-             await new Promise((r) => setTimeout(r, 100));
+             await until("cc:onConsent");
              CookieConsent.acceptCategory([]);
-             await new Promise((r) => setTimeout(r, 100));
+             await until("cc:onChange");
              window.removeEventListener("cc:onConsent", record);
              window.removeEventListener("cc:onChange", record);
 

@@ -20,13 +20,20 @@ use c975L\UiBundle\Service\MediaTranslator;
 use c975L\UiBundle\Service\TranslationFormContext;
 use c975L\UiBundle\Service\VideoPosterImporter;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Event\PostSetDataEvent;
 use Symfony\Component\Form\Event\PostSubmitEvent;
 use Symfony\Component\Form\Event\PreSetDataEvent;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
+use Symfony\Component\Form\Extension\Core\Type\FormType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormConfigInterface;
+use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\Form\FormInterface;
+use Symfony\Component\Form\Forms;
 use Symfony\Component\Form\ResolvedFormTypeInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -1140,5 +1147,37 @@ class BlockTypeTest extends TestCase
         new \ReflectionMethod(BlockType::class, 'onPreSetData')->invoke($type, new PreSetDataEvent($form, $block), null, $locale);
 
         return $added;
+    }
+
+    // A kind adding a field back in its own PRE_SET_DATA (Collection's "limit") gets it pruned all the same: the mapper gives "data" its data again after the block's PRE_SET_DATA, and the field left there is rendered on a language screen, then refused on submission as an extra one, which rejects the whole page
+    public function testAFieldAKindAddsWhenGivenItsDataIsPrunedAllTheSame(): void
+    {
+        $kindType = new class extends AbstractType {
+            public function buildForm(FormBuilderInterface $builder, array $options): void
+            {
+                $builder->add('title', TextType::class)->add('limit', IntegerType::class);
+                $builder->addEventListener(FormEvents::PRE_SET_DATA, static fn (FormEvent $event) => $event->getForm()->add('limit', IntegerType::class));
+            }
+        };
+
+        $registry = $this->createStub(BlockRegistry::class);
+        $registry->method('getTranslatable')->willReturn(['title']);
+        $registry->method('getTranslatableCollections')->willReturn([]);
+        $type = new BlockType($registry, $this->createRouter());
+        $keepFields = new \ReflectionMethod($type, 'keepTranslatableFields');
+        $keepLate = new \ReflectionMethod($type, 'keepTranslatableOnceGivenData');
+
+        // The same two steps BlockType takes on a language screen: "data" added and pruned from the block's PRE_SET_DATA, pruned again on its POST_SET_DATA
+        $factory = Forms::createFormFactoryBuilder()->addType($kindType)->getFormFactory();
+        $form = $factory->createBuilder(FormType::class, null, ['data_class' => Block::class])
+            ->addEventListener(FormEvents::PRE_SET_DATA, static function (FormEvent $event) use ($kindType, $type, $keepFields): void {
+                $event->getForm()->add('data', $kindType::class, ['mapped' => false, 'data' => ['title' => 'Hello', 'limit' => 3]]);
+                $keepFields->invoke($type, $event->getForm()->get('data'), 'collection');
+            })
+            ->addEventListener(FormEvents::POST_SET_DATA, static fn (PostSetDataEvent $event) => $keepLate->invoke($type, $event))
+            ->getForm();
+        $form->setData($this->createBlockWithId(7, ['title' => 'Bonjour', 'limit' => 3]));
+
+        $this->assertSame(['title'], array_keys($form->get('data')->all()));
     }
 }

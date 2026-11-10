@@ -95,9 +95,9 @@ class BlockType extends AbstractType
         // Load the sub-form `data` dynamically according to the block kind
         $builder->addEventListener(FormEvents::PRE_SET_DATA, fn (PreSetDataEvent $event) => $this->onPreSetData($event, $options['context'], $options['translation_locale']));
 
-        // Filter the collections of a language screen again, once Symfony has given "data" its own data: that is when a collection builds its entries (ResizeFormListener, on POST_SET_DATA), and an unmapped sub-form is given its data by the mapper this event follows - so whatever was taken off an entry beforehand is put back moments later
+        // Filter a language screen again, once Symfony has given "data" its own data: that is when a collection builds its entries (ResizeFormListener, on POST_SET_DATA), and an unmapped sub-form is given its data by the mapper this event follows, running its kind's PRE_SET_DATA again - so whatever was taken off beforehand is put back moments later
         if (null !== $options['translation_locale']) {
-            $builder->addEventListener(FormEvents::POST_SET_DATA, fn (PostSetDataEvent $event) => $this->keepTranslatableCollections($event));
+            $builder->addEventListener(FormEvents::POST_SET_DATA, fn (PostSetDataEvent $event) => $this->keepTranslatableOnceGivenData($event));
         }
 
         // Re-add the sub-form `data` BEFORE Symfony maps submitted values (PRE_SUBMIT), so the correct FormType is in place when the mapping happens.
@@ -719,8 +719,8 @@ class BlockType extends AbstractType
         }
     }
 
-    // The other half of keepTranslatableFields, run late: a collection's entries do not exist when "data" is added, and are rebuilt from scratch every time it is given its data, so the entries are pruned here rather than there
-    private function keepTranslatableCollections(PostSetDataEvent $event): void
+    // The other half of keepTranslatableFields, run late: "data" is given its data again by the mapper this event follows, which builds a collection's entries from scratch and runs the kind's own PRE_SET_DATA once more - Collection adds its "limit" back there. Pruned only before, those would be rendered, then refused on submission as fields the form never declared
+    private function keepTranslatableOnceGivenData(PostSetDataEvent $event): void
     {
         $block = $event->getData();
         $form = $event->getForm();
@@ -729,20 +729,12 @@ class BlockType extends AbstractType
             return;
         }
 
-        $kind = (string) $block->getKind();
-        $data = $form->get('data');
-
-        foreach ($this->registry->getTranslatableCollections($kind) as $collection => $keys) {
-            if ($data->has($collection)) {
-                $this->keepTranslatableEntries($data->get($collection), $keys);
-            }
-        }
+        $this->pruneUntranslatable($form->get('data'), (string) $block->getKind());
     }
 
     // A language screen offers what a language can change and nothing else: a colour, a link target or an image has one value for the whole site, and rendering it here would invite an editor to set it per language, which nothing would then read
     private function keepTranslatableFields(FormInterface $data, string $kind): void
     {
-        $translatable = $this->registry->getTranslatable($kind);
         $collections = $this->registry->getTranslatableCollections($kind);
 
         // Locked before that read, while the collections still hold no entry: their size is what a language screen must not change, and rebuilding one afterwards would throw away the entries just built
@@ -756,6 +748,15 @@ class BlockType extends AbstractType
         if ([] !== $collections) {
             $data->getData();
         }
+
+        $this->pruneUntranslatable($data, $kind);
+    }
+
+    // Takes off "data" every field a language cannot change, and off each entry of a translatable collection whatever is not prose
+    private function pruneUntranslatable(FormInterface $data, string $kind): void
+    {
+        $translatable = $this->registry->getTranslatable($kind);
+        $collections = $this->registry->getTranslatableCollections($kind);
 
         // Named first, then removed: taking children off the form being walked skips every other one
         foreach (array_keys($data->all()) as $name) {

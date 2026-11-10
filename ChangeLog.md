@@ -1,5 +1,14 @@
 # ChangeLog
 
+## v1.88.2
+
+A page holding a Collection block saves again in another language
+
+### UiBundle
+
+- Language screen: fields a kind adds back when given its data (Collection's `limit`) pruned again, no longer refused as extra fields (10/11/2026)
+- `CookieConsentContractTest`: waits for `cc:onConsent` and `cc:onChange` instead of a fixed 100 ms (10/11/2026)
+
 ## v1.88.1
 
 Login throttling documented over 15 minutes
