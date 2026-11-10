@@ -630,7 +630,7 @@ Your own config is merged over the prepended one, so it is what applies. Should 
 
 ### Login throttling
 
-`c975l:site:create` also inserts `login_throttling: { max_attempts: 5 }` onto the `main` firewall in `config/packages/security.yaml` (same step as `user_checker` above), using Symfony's built-in rate limiter for `/login` - no custom code involved. If your site predates this or uses a differently-named firewall, add it yourself:
+`c975l:site:create` also inserts `login_throttling: { max_attempts: 5, interval: '15 minutes' }` onto the `main` firewall in `config/packages/security.yaml` (same step as `user_checker` above), using Symfony's built-in rate limiter for `/login` - no custom code involved. If your site predates this or uses a differently-named firewall, add it yourself:
 
 ```yaml
 security:
@@ -638,6 +638,7 @@ security:
         main:
             login_throttling:
                 max_attempts: 5
+                interval: '15 minutes'
 ```
 
 `LoginRequestSubscriber` sits in front of that, needing no configuration: a POST to the `app_login` route carrying no usable `_username` is sent straight back to the form. Scanners post to `/login` with none of the expected fields, and Symfony's `FormLoginAuthenticator` answers that with a `BadRequestHttpException` — a legitimate 400, but one the kernel logs at `ERROR` level, so a few bots a night are enough to bury the real errors of a production log. Nothing is let through: such a request could never authenticate anyone, it just gets the redirect a failed login would have gotten anyway. A site whose login route is named otherwise than `app_login` (the scaffold's own name) simply never sees the subscriber act.

@@ -130,7 +130,7 @@ security:
     firewalls:
         main:
             user_checker: App\Security\UserChecker
-            login_throttling: { max_attempts: 5 }
+            login_throttling: { max_attempts: 5, interval: '15 minutes' }
     access_control:
         - { path: ^/management, roles: IS_AUTHENTICATED_FULLY }
 ```

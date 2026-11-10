@@ -1,5 +1,13 @@
 # ChangeLog
 
+## v1.88.1
+
+Login throttling documented over 15 minutes
+
+### ConfigBundle
+
+- `README.md`, `c975l-users` skill: `login_throttling` example counts attempts over 15 minutes (10/11/2026)
+
 ## v1.88.0
 
 A native app's opening pictures among the site graphics
