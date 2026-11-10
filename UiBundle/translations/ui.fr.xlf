@@ -1150,6 +1150,10 @@
                 <source>label.app_install_play_store_help</source>
                 <target>À cocher une fois l'application publiée sur le Play Store - le lien se déduit du nom de package saisi dans la configuration</target>
             </trans-unit>
+            <trans-unit id="KtCNl05">
+                <source>label.app_opening</source>
+                <target>Ouverture de l'application mobile</target>
+            </trans-unit>
             <trans-unit id="Gn_ANPq">
                 <source>label.app_screenshot</source>
                 <target>Capture de l'application</target>
@@ -3388,7 +3392,7 @@
             </trans-unit>
             <trans-unit id="MwU6S3V">
                 <source>label.info_site_graphic</source>
-                <target>Graphiques globaux du site : favicon, icône Apple Touch, image Open Graph par défaut, logo et images d'erreur. Chaque rôle (sauf image d'erreur) ne peut être utilisé qu'une seule fois ; remplacez le fichier pour le mettre à jour.</target>
+                <target>Graphiques globaux du site : favicon, icône Apple Touch, image Open Graph par défaut, logo, images d'erreur, captures et ouvertures d'application. Chaque rôle ne peut être utilisé qu'une seule fois, sauf ces trois derniers qui en accueillent plusieurs ; remplacez le fichier pour le mettre à jour.</target>
             </trans-unit>
             <trans-unit id="tuC.GA7">
                 <source>label.information</source>

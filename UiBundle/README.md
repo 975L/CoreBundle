@@ -46,7 +46,7 @@ See it in action at [bundles.975l.com/pages/ui-bundle](https://bundles.975l.com/
 - One-click duplication of a block or a media row in EasyAdmin, including its files
 - A block set aside in one click: kept whole in the database, rendered nowhere, brought back the same way
 - Live preview of a newly picked image in EasyAdmin, before saving
-- Site-wide media roles (favicon, apple-touch-icon, app-icon, og-image, logo, the two watermark signatures, error-image pool) with their own admin screen, retrievable anywhere via `site_media()`
+- Site-wide media roles (favicon, apple-touch-icon, app-icon, og-image, logo, the two watermark signatures, error-image pool, a native app's app-opening pool) with their own admin screen, retrievable anywhere via `site_media()`
 - A shared error page for every status code, showing one of the site's error images or one shipped with the bundle
 - Watermarking on upload for entities that opt in, the dark or light signature picked on the luminance of the very corner it lands in
 - Admin-editable theme (colors, fonts, light/dark mode) compiled to CSS custom properties, and inlinable into emails
@@ -2993,7 +2993,10 @@ Media::ROLE_WATERMARK_ON_LIGHT; // 'watermark-on-light'
 Media::ROLE_WATERMARK_ON_DARK;  // 'watermark-on-dark'
 Media::ROLE_ERROR_IMAGE;        // 'error-image', repeatable
 Media::ROLE_APP_SCREENSHOT;     // 'app-screenshot', repeatable
+Media::ROLE_APP_OPENING;        // 'app-opening', repeatable
 ```
+
+`app-opening` holds the pictures a native app shows full screen as it opens, stored 1600px wide for a tablet in portrait. Nothing here reads them: the API handing out the app's content does (BookBundle's listening JSON, as `openings`). A pool rather than a singleton, so changing the picture is uploading another and deleting the old one, each upload getting its own url that no app cache mistakes for the previous one.
 
 `logo-on-dark` is the same logo drawn for a dark page, and the one role of the set a site is expected to leave empty: a logo whose lettering is black disappears into a dark navbar, and no filter lightens it without flattening the colours around that lettering. It is resized to the same 600px as `logo` and read through `site_media('logo-on-dark')`; a consumer falls back to `logo` when none was uploaded (see SiteBundle's navbar, which paints one or the other by theme).
 
@@ -3026,9 +3029,9 @@ Retrieve it anywhere in Twig with the `site_media()` function, which returns `nu
 
 ## Site graphics
 
-The favicon, Apple touch icon, logo, its dark-background twin, default Open Graph image, the two watermark signatures and the error-image pool are `Media` rows carrying a `role` (see [Site-wide media](#site-wide-media-favicon-logo-og-image) above for the roles themselves and how they are stored). `Controller\Management\SiteGraphicCrudController` is the screen that fills them, under *Management → Advanced → Site graphics*, gated by `site-role-editor`.
+The favicon, Apple touch icon, logo, its dark-background twin, default Open Graph image, the two watermark signatures and the error-image, app-screenshot and app-opening pools are `Media` rows carrying a `role` (see [Site-wide media](#site-wide-media-favicon-logo-og-image) above for the roles themselves and how they are stored). `Controller\Management\SiteGraphicCrudController` is the screen that fills them, under *Management → Advanced → Site graphics*, gated by `site-role-editor`.
 
-The index shows one button per graphic still missing: each opens the upload form with the role already picked and the choice frozen, so only the file is left to choose. `SiteGraphicAlertProvider` raises the same thing as a dashboard alert, for the four a site can't do without, plus the `app-icon` while `ui-pwa-enabled` is on — the dark logo and the two watermark signatures are offered as buttons but never nagged about, a site signing nothing, or drawing a logo that reads on both grounds, being a perfectly finished site. The buttons disappear once the eight singleton graphics exist — `error-image` is a pool, added through the plain "new" action, and so is `app-screenshot`, the screens the installed app's install dialog shows (see [The installable web app](#the-installable-web-app)).
+The index shows one button per graphic still missing: each opens the upload form with the role already picked and the choice frozen, so only the file is left to choose. `SiteGraphicAlertProvider` raises the same thing as a dashboard alert, for the four a site can't do without, plus the `app-icon` while `ui-pwa-enabled` is on — the dark logo and the two watermark signatures are offered as buttons but never nagged about, a site signing nothing, or drawing a logo that reads on both grounds, being a perfectly finished site. The buttons disappear once the eight singleton graphics exist — `error-image` is a pool, added through the plain "new" action, and so are `app-screenshot`, the screens the installed app's install dialog shows (see [The installable web app](#the-installable-web-app)), and `app-opening`, a native app's opening pictures.
 
 **The error page draws from the pool.** `templates/bundles/TwigBundle/Exception/error.html.twig` is registered as TwigBundle's own error template, so every site shows the same page: the message of its status code (`error.text_<code>` in the `ui` domain, `error.text` otherwise) and one `error-image` drawn by `site_random_media()`, else one of the six `images/error-*.webp` shipped here. It extends the site's `layout.html.twig`, and a site's own `templates/bundles/TwigBundle/Exception/` is still searched first.
 

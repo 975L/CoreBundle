@@ -1,5 +1,15 @@
 # ChangeLog
 
+## v1.88.0
+
+A native app's opening pictures among the site graphics
+
+### UiBundle
+
+- `app-opening` site graphic role, a pool of pictures stored 1600px wide (10/11/2026)
+- Site graphics help text names every repeatable role (10/11/2026)
+- `README.md`, `c975l-media` skill: the `app-opening` role (10/11/2026)
+
 ## v1.87.2
 
 Updated vanilla-cookieconsent to 3.3.0

@@ -57,6 +57,16 @@ class MediaTest extends TestCase
         $this->assertContains(Media::ROLE_LOGO_ON_DARK, Media::getSingletonRoles());
     }
 
+    // A native app's opening picture fills a tablet in portrait, and stays a pool each upload of which gets its own url
+    public function testTheAppOpeningIsARepeatableRoleStoredWide(): void
+    {
+        $media = new Media()->setRole(Media::ROLE_APP_OPENING);
+
+        $this->assertSame(1600, $media->getImageWidth());
+        $this->assertFalse($media->isSingletonRole());
+        $this->assertSame('medias/site/app-opening', $media->getVichMediaPath());
+    }
+
     // Hero crops tightly via CSS object-fit:cover (see sass/_page-sections.scss) - needs a wider stored image than other block kinds to avoid pixelating on retina displays
     public function testGetImageWidthUsesBlockKindMaxWidthsForHero(): void
     {

@@ -1150,6 +1150,10 @@
                 <source>label.app_install_play_store_help</source>
                 <target>Marcar una vez publicada la aplicación en Play Store - el enlace se deduce del nombre de paquete indicado en la configuración</target>
             </trans-unit>
+            <trans-unit id="KtCNl05">
+                <source>label.app_opening</source>
+                <target>Apertura de la aplicación móvil</target>
+            </trans-unit>
             <trans-unit id="Gn_ANPq">
                 <source>label.app_screenshot</source>
                 <target>Captura de la aplicación</target>
@@ -3388,7 +3392,7 @@
             </trans-unit>
             <trans-unit id="MwU6S3V">
                 <source>label.info_site_graphic</source>
-                <target>Gráficos globales del sitio: favicon, icono Apple Touch, imagen Open Graph por defecto, logo e imágenes de error. Cada rol (salvo la imagen de error) solo puede usarse una vez; reemplace el archivo para actualizarlo.</target>
+                <target>Gráficos globales del sitio: favicon, icono Apple Touch, imagen Open Graph por defecto, logo, imágenes de error, capturas y aperturas de la aplicación. Cada rol solo puede usarse una vez, salvo estos tres últimos, que admiten varios; reemplace el archivo para actualizarlo.</target>
             </trans-unit>
             <trans-unit id="tuC.GA7">
                 <source>label.information</source>

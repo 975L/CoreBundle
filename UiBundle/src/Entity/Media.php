@@ -50,6 +50,8 @@ class Media implements DrawableMediaInterface, VichImageResizableInterface, Vich
     public const ROLE_ERROR_IMAGE = 'error-image';
     // The screens an installed web app shows in Android's install dialog (see PwaController), a phone in portrait read as "narrow"
     public const ROLE_APP_SCREENSHOT = 'app-screenshot';
+    // The pictures a native app shows full screen as it opens, read by whatever API hands them out (see BookBundle's ListenJsonController): a pool, so changing it is uploading another, each upload carrying its own url
+    public const ROLE_APP_OPENING = 'app-opening';
 
     private const array SINGLETON_ROLES = [
         self::ROLE_FAVICON,
@@ -73,6 +75,8 @@ class Media implements DrawableMediaInterface, VichImageResizableInterface, Vich
     private const array MAX_WIDTHS = [
         self::ROLE_LOGO => 600,
         self::ROLE_LOGO_ON_DARK => 600,
+        // Full screen on a tablet in portrait, far wider than a block's picture
+        self::ROLE_APP_OPENING => 1600,
     ];
 
     // Block kinds needing a wider stored image than IMAGE_WIDTH (block medias all share role=null, so MAX_WIDTHS above can't key on them). Hero crops tightly via CSS object-fit:cover into a 4/3.2 box and can display up to 520px CSS-wide - on a retina/2x display that needs ~1040 native pixels, and the default 800 falls short, visibly pixelating once cover crops further into the image

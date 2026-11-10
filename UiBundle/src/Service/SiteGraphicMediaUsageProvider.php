@@ -29,6 +29,7 @@ class SiteGraphicMediaUsageProvider implements MediaUsageProviderInterface
         Media::ROLE_LOGO_ON_DARK => 'label.logo_on_dark',
         Media::ROLE_ERROR_IMAGE => 'label.error_image',
         Media::ROLE_APP_SCREENSHOT => 'label.app_screenshot',
+        Media::ROLE_APP_OPENING => 'label.app_opening',
     ];
 
     public function __construct(

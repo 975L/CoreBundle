@@ -1150,6 +1150,10 @@
                 <source>label.app_install_play_store_help</source>
                 <target>Tick once the app is published on the Play Store - the link is derived from the package name set in the configuration</target>
             </trans-unit>
+            <trans-unit id="KtCNl05">
+                <source>label.app_opening</source>
+                <target>Mobile app opening</target>
+            </trans-unit>
             <trans-unit id="Gn_ANPq">
                 <source>label.app_screenshot</source>
                 <target>App screenshot</target>
@@ -3388,7 +3392,7 @@
             </trans-unit>
             <trans-unit id="MwU6S3V">
                 <source>label.info_site_graphic</source>
-                <target>Site-wide graphics: favicon, Apple Touch icon, default Open Graph image, logo and error images. Each role (except error image) can only be used once; replace the file to update it.</target>
+                <target>Site-wide graphics: favicon, Apple Touch icon, default Open Graph image, logo, error images, app screenshots and openings. Each role can only be used once, except those last three, which take several; replace the file to update it.</target>
             </trans-unit>
             <trans-unit id="tuC.GA7">
                 <source>label.information</source>

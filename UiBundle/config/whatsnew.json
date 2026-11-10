@@ -1,5 +1,15 @@
 [
     {
+        "date": "2026-11-10",
+        "description": [
+            {
+                "en": "The site graphics take the opening pictures of your mobile app: upload one as \"Mobile app opening\" and the app shows it as it opens, without a new version of the app.",
+                "fr": "Les graphiques du site accueillent les illustrations d'ouverture de votre application mobile : déposez-en une comme « Ouverture de l'application mobile » et l'application l'affiche à son ouverture, sans nouvelle version de l'application.",
+                "es": "Los gráficos del sitio admiten las ilustraciones de apertura de su aplicación móvil: suba una como «Apertura de la aplicación móvil» y la aplicación la muestra al abrirse, sin nueva versión de la aplicación."
+            }
+        ]
+    },
+    {
         "date": "2026-11-05",
         "description": [
             {
