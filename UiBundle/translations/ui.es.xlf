@@ -30,6 +30,10 @@
                 <source>description.email_attachments</source>
                 <target>Documentos que acompañan a este correo. Un documento legal se adjunta tal como lo publica el sitio, y el PDF se regenera en cuanto cambia su texto.</target>
             </trans-unit>
+            <trans-unit id="Y0TOVwV">
+                <source>description.guided_project_ui_age_verification_setup</source>
+                <target>Conectar go.cam para que un contenido reservado a mayores de edad espere detrás de una verificación de edad anónima.</target>
+            </trans-unit>
             <trans-unit id="FczgMxS">
                 <source>description.guided_project_ui_ai_assistant</source>
                 <target>Configurar la clave de Donovan (Writer), y luego probarla en el área de texto de la propia pantalla antes de pulsar ese botón bajo un campo real</target>
@@ -105,6 +109,22 @@
             <trans-unit id="iRWj.uH">
                 <source>description.guided_project_ui_theme_colors</source>
                 <target>El color de la marca, para una página clara y para una oscura.</target>
+            </trans-unit>
+            <trans-unit id="vp.RJ6y">
+                <source>description.guided_step_ui_age_verification_setup_entry</source>
+                <target>Empiece por el identificador de socio.</target>
+            </trans-unit>
+            <trans-unit id="4B4B5U5">
+                <source>description.guided_step_ui_age_verification_setup_headers</source>
+                <target>Las cabeceras del sitio aún deben dejar entrar el marco de go.cam (frame-src, cámara, micrófono y llaves de acceso), un ajuste de nelmio_security.yaml descrito en el README de UiBundle. A partir de ahí, todo contenido declarado para mayores de 18 años espera detrás de la verificación.</target>
+            </trans-unit>
+            <trans-unit id="3GN0uDS">
+                <source>description.guided_step_ui_age_verification_setup_open</source>
+                <target>Tres entradas « Verificación de edad go.cam » la encienden: identificador de socio, clave de cifrado y clave de firma, que figuran en la página « Standard implementation » del área de socios de go.cam. Mientras falte una, ningún contenido queda cerrado.</target>
+            </trans-unit>
+            <trans-unit id="F1GtmBp">
+                <source>description.guided_step_ui_age_verification_setup_value</source>
+                <target>Pegue el valor tal como lo da go.cam. Las dos claves son secretas: son ellas las que garantizan que el resultado de una verificación procede de go.cam.</target>
             </trans-unit>
             <trans-unit id="VoJ0CnM">
                 <source>description.guided_step_ui_ai_assistant_action</source>
@@ -753,6 +773,10 @@
             <trans-unit id="iro8szH">
                 <source>label.after_label</source>
                 <target>Etiqueta Después</target>
+            </trans-unit>
+            <trans-unit id="stu0yY9">
+                <source>label.age_gate_verify</source>
+                <target>Verificar mi edad</target>
             </trans-unit>
             <trans-unit id="M0SU0On">
                 <source>label.ai_assistant_ask</source>
@@ -2630,6 +2654,10 @@
                 <source>label.group_justify_start</source>
                 <target>A la izquierda</target>
             </trans-unit>
+            <trans-unit id="I0ISDzu">
+                <source>label.guided_project_ui_age_verification_setup</source>
+                <target>Configurar la verificación de edad</target>
+            </trans-unit>
             <trans-unit id="KU6CCFk">
                 <source>label.guided_project_ui_ai_assistant</source>
                 <target>Hacer que Donovan reformule un texto</target>
@@ -2705,6 +2733,26 @@
             <trans-unit id="nLPO1rp">
                 <source>label.guided_project_ui_theme_colors</source>
                 <target>Elegir los colores del sitio</target>
+            </trans-unit>
+            <trans-unit id="K_ygE4N">
+                <source>label.guided_step_ui_age_verification_setup_entry</source>
+                <target>Abrir una entrada</target>
+            </trans-unit>
+            <trans-unit id="Gbub5rO">
+                <source>label.guided_step_ui_age_verification_setup_headers</source>
+                <target>Dejar entrar a go.cam</target>
+            </trans-unit>
+            <trans-unit id="SWenAZ_">
+                <source>label.guided_step_ui_age_verification_setup_open</source>
+                <target>El grupo Legal de los ajustes</target>
+            </trans-unit>
+            <trans-unit id="QX05FIK">
+                <source>label.guided_step_ui_age_verification_setup_save</source>
+                <target>Guardar y pasar a la entrada siguiente</target>
+            </trans-unit>
+            <trans-unit id="OSigVcJ">
+                <source>label.guided_step_ui_age_verification_setup_value</source>
+                <target>Introducir el valor</target>
             </trans-unit>
             <trans-unit id="71qjK16">
                 <source>label.guided_step_ui_ai_assistant_action</source>
@@ -4829,6 +4877,14 @@
             <trans-unit id="PK5gbBx">
                 <source>review.verified</source>
                 <target>Opinión verificada</target>
+            </trans-unit>
+            <trans-unit id="2aw0QJh">
+                <source>text.age_gate</source>
+                <target>Este contenido está reservado a personas mayores de edad. La verificación se hace con go.cam, en su dispositivo: solo sabemos que es mayor de edad, nunca quién es.</target>
+            </trans-unit>
+            <trans-unit id="SMjIvie">
+                <source>text.age_gate_failed</source>
+                <target>No se pudo confirmar la verificación. Vuelva a cargar la página para intentarlo de nuevo.</target>
             </trans-unit>
             <trans-unit id="JDNzJh4">
                 <source>text.calculator_estimate</source>

@@ -66,6 +66,7 @@ See it in action at [bundles.975l.com/pages/ui-bundle](https://bundles.975l.com/
 - Visitor ratings for anything at all - a book, a photo, an article - one widget, one table, no mapping on the rated entity, and a scale of 1 turning the whole thing into a "like"
 - Visitor reviews on those same terms - a written opinion held back until it is read, a score feeding the very average the stars feed, a "verified" badge a bundle has to vouch for, and the reviews a platform exports sitting beside them
 - A wishlist for anything at all, on the same terms: one heart, one table, no mapping on the entity put aside, and a list started anonymously that follows the visitor to their account the moment they sign in
+- Adult-only content held behind a go.cam age verification (double anonymity): one component around it, three keys, and the site never learns who the visitor is
 - Calculators built entirely in the back-office: a form whose named results are arithmetic formulas an admin types, computed server-side and kept in step as the sliders move, placed anywhere with the `form` block
 - Block content translated per language on a site declaring several (`site_translation` table, one screen per language, no column and no migration on the blocks themselves), the medias' own texts included, the default language staying where it was written
 - Donovan translating as well as rephrasing: the rich-text toolbar offers each declared language beside the rephrasing styles, on the same key and the same budget
@@ -1459,6 +1460,43 @@ $builder->add('captcha', CaptchaType::class, [
 ]);
 ```
 
+### Age verification
+
+What a site sells or shows to adults only waits behind a [go.cam](https://go.cam) verification - double anonymity, as the French Arcom framework asks: go.cam estimates the visitor's age on their own device (a selfie, an identity document or its NFC chip, never an e-mail), and the site only ever learns "of age", never who they are.
+
+| Piece | Role |
+| --- | --- |
+| `Service\AgeVerifier` | go.cam's protocol, recoded rather than vendored (their hosted SDK ships with no licence): the request sealed with the partner's keys, the result opened and believed only when signed, carrying the nonce the gate drew, recent, and a success - never go.cam's own `isPayloadValid` |
+| `Controller\AgeVerificationController` | `ui_age_verification_confirm`, where the gate posts the result: marks the session verified and leaves a signed `ui_age_verified` cookie for 30 days, as long as go.cam keeps its own |
+| `<twig:c975LUi:AgeGate age="...">` | The gate itself, in place of its content |
+| `assets/js/age-gate.js` | The `age-gate` Stimulus controller: loads go.cam's frame unseen, lays it over the page on the click, posts the result, reloads the page |
+
+Three ConfigBundle keys drive it, under the *legal* group, from the "Standard implementation" page of the go.cam partner area: `age-verification-partner-id`, `age-verification-cipher-key` and `age-verification-hmac-key`. With any of them missing, `age_gate_closed()` answers false and every gate renders its content: a site selling nothing for adults never sees one. The "Hosted implementation" go.cam also offers decides in the browser alone and is not used. No postback url is needed either, the signed result travelling through the browser - go.cam's postback carries no signature.
+
+```twig
+<twig:c975LUi:AgeGate age="{{ item.age }}">
+    {# What only an adult may see #}
+</twig:c975LUi:AgeGate>
+```
+
+The gate carries a nonce drawn once into the session and spent on success, which the result has to bring back - a result obtained by someone else cannot be replayed, and two tabs share it. The url also seals the visitor's request (time, ip, page), so a gate never sits inside a cached fragment, and the page holding one opens a session. A result is accepted up to an hour after the page was drawn. Several gates on a page share one go.cam frame, loaded once.
+
+The site's own headers have to let go.cam's frame in, the app owning its policy (see `config/packages/nelmio_security.yaml`):
+
+```yaml
+nelmio_security:
+    permissions_policy:
+        policies:
+            camera: ['self', 'https://go.cam']
+            microphone: ['self', 'https://go.cam']
+            publickey_credentials_get: ['self', 'https://go.cam']
+            publickey_credentials_create: ['self', 'https://go.cam']
+    csp:
+        enforce:
+            frame-src:
+                - 'https://go.cam'
+```
+
 ---
 
 ## Visitor ratings
@@ -2131,6 +2169,7 @@ Block templates are thin adapters around a set of Symfony UX Twig components liv
 | Component | Purpose |
 | --- | --- |
 | `<twig:c975LUi:Alert:AgeWarning>` | The sentence going with an age restriction, from `site-age-warning`. Takes the `age` the item declares and the `locale` it is read in, a book sheet rendering in the book's own rather than in the visitor's. **Carries its own guard**: an item declaring no age, and a site leaving that setting empty, render nothing, so a calling template needs no `if` of its own. Called with no `age` at all, it reads the setting as it always did |
+| `<twig:c975LUi:AgeGate>` | What only an adult may see, held behind a go.cam age verification: takes the `age` the item declares and renders its content as is for an item under 18, on a site without go.cam keys, and for a visitor already verified - the gate in its place otherwise, never next to it. **Never inside a cached fragment** (see [Age verification](#age-verification)) |
 | `<twig:c975LUi:Alert:Alert>` | Alert box marked by a colored left edge (`--alert-{type}-accent`), its type named above the text by a small uppercase word (`--alert-{type}-label`, keys `label.alert_{type}` of the `ui` domain); `label="false"` drops the word |
 | `<twig:c975LUi:Article:Article>` | Single article (title/content/media) |
 | `<twig:c975LUi:Article:Articles>` | Loops `Article` over a collection |

@@ -430,6 +430,40 @@
         "description": "description.url_cookies_policy"
     },
     {
+        "label": "label.age_verification_partner_id",
+        "slug": "age-verification-partner-id",
+        "feature": true,
+        "sensitive": true,
+        "restricted": true,
+        "value": null,
+        "kind": "text",
+        "group": "legal",
+        "severity": null,
+        "description": "description.age_verification_partner_id"
+    },
+    {
+        "label": "label.age_verification_cipher_key",
+        "slug": "age-verification-cipher-key",
+        "sensitive": true,
+        "restricted": true,
+        "value": null,
+        "kind": "text",
+        "group": "legal",
+        "severity": null,
+        "description": "description.age_verification_cipher_key"
+    },
+    {
+        "label": "label.age_verification_hmac_key",
+        "slug": "age-verification-hmac-key",
+        "sensitive": true,
+        "restricted": true,
+        "value": null,
+        "kind": "text",
+        "group": "legal",
+        "severity": null,
+        "description": "description.age_verification_hmac_key"
+    },
+    {
         "label": "label.site_enable_cookie_consent",
         "slug": "site-enable-cookie-consent",
         "sensitive": false,

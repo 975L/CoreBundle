@@ -11,6 +11,8 @@ app.register('menu', MenuController);
 // Dynamic import() so AssetMapper marks these lazy: an importmap entry, but no <link rel="modulepreload">
 // Keys are the Stimulus identifiers as registered, matching what the templates write in data-controller
 const LAZY_CONTROLLERS = {
+    // Kebab-case identifier, same reason as cookie-consent below: the "data-age-gate-*-value" bindings are derived from it
+    'age-gate': () => import('./js/age-gate.js'),
     blockEditOverlay: () => import('./js/block-edit-overlay.js'),
     captcha: () => import('./js/captcha.js'),
     // Kebab-case identifier on purpose - Stimulus derives value attribute names from the identifier as registered, so a camelCase one silently breaks every "data-cookie-consent-*-value" binding

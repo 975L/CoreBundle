@@ -82,6 +82,7 @@ class UiGuidedProjectProvider implements GuidedProjectProviderInterface
         $projects[] = $this->pwaSetupProject();
         $projects[] = $this->pwaPlayStoreProject();
         $projects[] = $this->themeColorsProject();
+        $projects[] = $this->ageVerificationSetupProject();
 
         return $projects;
     }
@@ -1173,6 +1174,57 @@ class UiGuidedProjectProvider implements GuidedProjectProviderInterface
                     'label' => 'label.guided_step_ui_theme_colors_dark',
                     'description' => 'description.guided_step_ui_theme_colors_dark',
                     'narration' => 'narration.guided_step_ui_theme_colors_dark',
+                ],
+            ],
+        ];
+    }
+
+    // Three keys from the go.cam partner area put every content declared 18+ behind the age verification, but the site's own headers have to let go.cam's frame in first - the closing step only names them, the app owning its policy
+    private function ageVerificationSetupProject(): array
+    {
+        return [
+            'slug' => 'ui-age-verification-setup',
+            'label' => 'label.guided_project_ui_age_verification_setup',
+            'description' => 'description.guided_project_ui_age_verification_setup',
+            'translation_domain' => 'ui',
+            'order' => 3200,
+            // The three "age-verification-*" keys are restricted: ConfigCrudController keeps them out of the list below this role
+            'role' => 'ROLE_SUPER_ADMIN',
+            'steps' => [
+                [
+                    'label' => 'label.guided_step_ui_age_verification_setup_open',
+                    'description' => 'description.guided_step_ui_age_verification_setup_open',
+                    'narration' => 'narration.guided_step_ui_age_verification_setup_open',
+                    // Straight onto the "legal" group, sensitive entries shown: all three keys are, and hidden otherwise
+                    'url' => $this->adminUrlGenerator
+                        ->unsetAll()
+                        ->setController(ConfigCrudController::class)
+                        ->setAction(Action::INDEX)
+                        ->set('group', 'legal')
+                        ->set('showSensitive', 1)
+                        ->generateUrl(),
+                ],
+                [
+                    'label' => 'label.guided_step_ui_age_verification_setup_entry',
+                    'description' => 'description.guided_step_ui_age_verification_setup_entry',
+                    'narration' => 'narration.guided_step_ui_age_verification_setup_entry',
+                    'highlight' => '.action-edit',
+                ],
+                [
+                    'label' => 'label.guided_step_ui_age_verification_setup_value',
+                    'description' => 'description.guided_step_ui_age_verification_setup_value',
+                    'narration' => 'narration.guided_step_ui_age_verification_setup_value',
+                    'highlight' => '[data-guided-config-value]',
+                ],
+                [
+                    'label' => 'label.guided_step_ui_age_verification_setup_save',
+                    'narration' => 'narration.guided_step_ui_age_verification_setup_save',
+                    'highlight' => '.action-saveAndReturn',
+                ],
+                [
+                    'label' => 'label.guided_step_ui_age_verification_setup_headers',
+                    'description' => 'description.guided_step_ui_age_verification_setup_headers',
+                    'narration' => 'narration.guided_step_ui_age_verification_setup_headers',
                 ],
             ],
         ];

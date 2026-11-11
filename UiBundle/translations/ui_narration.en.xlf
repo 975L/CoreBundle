@@ -22,6 +22,26 @@
                 <source>narration.forms</source>
                 <target>"Forms" holds the forms of the site, contact, sign-up or calculator, each with its fields and the action it triggers on submit.</target>
             </trans-unit>
+            <trans-unit id="Tqyp_I4">
+                <source>narration.guided_step_ui_age_verification_setup_entry</source>
+                <target>Click the pencil of the partner id.</target>
+            </trans-unit>
+            <trans-unit id="4_cNrVr">
+                <source>narration.guided_step_ui_age_verification_setup_headers</source>
+                <target>Last step: the site's headers have to let go.cam's frame in, a setting the README describes. From then on, any content declared 18+ waits behind the verification.</target>
+            </trans-unit>
+            <trans-unit id="SR.cMx8">
+                <source>narration.guided_step_ui_age_verification_setup_open</source>
+                <target>Here are the settings, opened on the Legal group: the three "go.cam age verification" entries switch the verification on, with the values of the go.cam partner area.</target>
+            </trans-unit>
+            <trans-unit id="WhEywpU">
+                <source>narration.guided_step_ui_age_verification_setup_save</source>
+                <target>Save.</target>
+            </trans-unit>
+            <trans-unit id="0EwSH1a">
+                <source>narration.guided_step_ui_age_verification_setup_value</source>
+                <target>Paste the value go.cam gives, then do the same for both keys.</target>
+            </trans-unit>
             <trans-unit id="WPAsuLp">
                 <source>narration.guided_step_ui_ai_assistant_action</source>
                 <target>Your site speaks several languages: this list picks between rephrasing the text and translating it into one of them. Leave "Rephrase" for this first try, a translation runs the same way.</target>

@@ -1,5 +1,15 @@
 [
     {
+        "date": "2026-11-11",
+        "description": [
+            {
+                "en": "Content reserved for adults can wait behind an anonymous age verification by go.cam: fill in the three go.cam keys in the configuration, and the visitor proves their age on their own device, without the site ever learning who they are.",
+                "fr": "Un contenu réservé aux majeurs peut attendre derrière une vérification d'âge anonyme par go.cam : renseignez les trois clés go.cam dans la configuration, et le visiteur prouve son âge sur son propre appareil, sans que le site sache jamais qui il est.",
+                "es": "Un contenido reservado a mayores de edad puede esperar detrás de una verificación de edad anónima de go.cam: introduzca las tres claves go.cam en la configuración, y el visitante demuestra su edad en su propio dispositivo, sin que el sitio sepa nunca quién es."
+            }
+        ]
+    },
+    {
         "date": "2026-11-10",
         "description": [
             {

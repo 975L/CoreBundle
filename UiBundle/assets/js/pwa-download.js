@@ -57,6 +57,6 @@ export default class extends Controller {
         const files = [...document.querySelectorAll('link[rel="stylesheet"][href], link[rel="modulepreload"][href], img[src]')].map((element) => element.href || element.src);
         const urls = [this.pageUrl(), ...[...this.urlsValue, ...modules].map((url) => new URL(url, origin).href), ...files];
 
-        return [...new Set(urls.filter((url) => url.startsWith(origin + "/") && !url.endsWith("/sw.js")))];
+        return [...new Set(urls.filter((url) => url.startsWith(`${origin}/`) && !url.endsWith("/sw.js")))];
     }
 }

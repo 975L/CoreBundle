@@ -2,6 +2,18 @@
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
     <file source-language="fr" target-language="fr" datatype="plaintext" original="site_config.fr.xlf">
         <body>
+            <trans-unit id="ez6O9sd">
+                <source>description.age_verification_cipher_key</source>
+                <target>Clé de chiffrement (« Cipher key ») du compte partenaire go.cam</target>
+            </trans-unit>
+            <trans-unit id="e92qaxk">
+                <source>description.age_verification_hmac_key</source>
+                <target>Clé de signature (« Hmac key ») du compte partenaire go.cam, qui garantit qu'un résultat vient bien de go.cam</target>
+            </trans-unit>
+            <trans-unit id="_kdWuPL">
+                <source>description.age_verification_partner_id</source>
+                <target>Identifiant du compte partenaire go.cam (page « Standard implementation » de l'espace partenaire). Avec les deux clés, il ferme derrière une vérification d'âge tout contenu déclaré pour 18 ans et plus</target>
+            </trans-unit>
             <trans-unit id="f2Stp0E">
                 <source>description.ai_assistant_dashboard_endpoint</source>
                 <target>URL du backend IA pour les questions du tableau de bord. Vide = désactivé (aucun backend fourni par défaut).</target>
@@ -221,6 +233,18 @@
             <trans-unit id="_yJHDs0">
                 <source>description.watermark_width</source>
                 <target>Largeur du filigrane, en pourcentage de la largeur de l'image (13.75 reproduit une signature de 330 px sur une image de 2400 px).</target>
+            </trans-unit>
+            <trans-unit id="vgaDDW_">
+                <source>label.age_verification_cipher_key</source>
+                <target>Vérification d'âge go.cam : clé de chiffrement</target>
+            </trans-unit>
+            <trans-unit id="MkD9r0J">
+                <source>label.age_verification_hmac_key</source>
+                <target>Vérification d'âge go.cam : clé de signature</target>
+            </trans-unit>
+            <trans-unit id="5XCRL17">
+                <source>label.age_verification_partner_id</source>
+                <target>Vérification d'âge go.cam : identifiant partenaire</target>
             </trans-unit>
             <trans-unit id="Fd2PHDs">
                 <source>label.ai_assistant_dashboard_not_enabled</source>

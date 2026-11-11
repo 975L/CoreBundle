@@ -1,5 +1,19 @@
 # ChangeLog
 
+## v1.89.0
+
+Adult-only content behind a go.cam age verification
+
+### UiBundle
+
+- `AgeVerifier`: go.cam's iframe protocol, requests sealed and results checked for signature, session nonce, age and success (11/11/2026)
+- `ui_age_verification_confirm` route marks the visitor verified and leaves a signed `ui_age_verified` cookie for 30 days (11/11/2026)
+- `<twig:c975LUi:AgeGate>` component and `age-gate` Stimulus controller, the content rendered only once verified, one go.cam frame per page (11/11/2026)
+- `age_gate_closed()` and `age_verification_url()` Twig functions (11/11/2026)
+- `age-verification-partner-id`, `age-verification-cipher-key` and `age-verification-hmac-key` config keys (11/11/2026)
+- `ui-age-verification-setup` guided project: the three go.cam keys, then the headers the site opens (11/11/2026)
+- `README.md`, `c975l-ui-assets` skill: the age verification and the headers a site opens for go.cam (11/11/2026)
+
 ## v1.88.2
 
 A page holding a Collection block saves again in another language

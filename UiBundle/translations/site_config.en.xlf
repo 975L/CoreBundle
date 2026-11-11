@@ -2,6 +2,18 @@
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
     <file source-language="en" target-language="en" datatype="plaintext" original="site_config.en.xlf">
         <body>
+            <trans-unit id="ez6O9sd">
+                <source>description.age_verification_cipher_key</source>
+                <target>Cipher key of the go.cam partner account</target>
+            </trans-unit>
+            <trans-unit id="e92qaxk">
+                <source>description.age_verification_hmac_key</source>
+                <target>Signing key ("Hmac key") of the go.cam partner account, which proves a result really comes from go.cam</target>
+            </trans-unit>
+            <trans-unit id="_kdWuPL">
+                <source>description.age_verification_partner_id</source>
+                <target>go.cam partner account id (the "Standard implementation" page of the partner area). With both keys, it puts any content declared 18+ behind an age verification</target>
+            </trans-unit>
             <trans-unit id="f2Stp0E">
                 <source>description.ai_assistant_dashboard_endpoint</source>
                 <target>URL of the AI backend receiving dashboard questions. Empty = disabled (no default backend shipped).</target>
@@ -221,6 +233,18 @@
             <trans-unit id="_yJHDs0">
                 <source>description.watermark_width</source>
                 <target>Watermark width, as a percentage of the image width (13.75 reproduces a 330px signature on a 2400px image).</target>
+            </trans-unit>
+            <trans-unit id="vgaDDW_">
+                <source>label.age_verification_cipher_key</source>
+                <target>go.cam age verification: cipher key</target>
+            </trans-unit>
+            <trans-unit id="MkD9r0J">
+                <source>label.age_verification_hmac_key</source>
+                <target>go.cam age verification: signing key</target>
+            </trans-unit>
+            <trans-unit id="5XCRL17">
+                <source>label.age_verification_partner_id</source>
+                <target>go.cam age verification: partner id</target>
             </trans-unit>
             <trans-unit id="Fd2PHDs">
                 <source>label.ai_assistant_dashboard_not_enabled</source>

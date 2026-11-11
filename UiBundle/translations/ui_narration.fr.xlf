@@ -22,6 +22,26 @@
                 <source>narration.forms</source>
                 <target>« Formulaires » tient les formulaires du site, contact, inscription ou calculateur, chacun avec ses champs et l'action qu'il déclenche à l'envoi.</target>
             </trans-unit>
+            <trans-unit id="Tqyp_I4">
+                <source>narration.guided_step_ui_age_verification_setup_entry</source>
+                <target>Cliquez sur le crayon de l'identifiant partenaire.</target>
+            </trans-unit>
+            <trans-unit id="4_cNrVr">
+                <source>narration.guided_step_ui_age_verification_setup_headers</source>
+                <target>Dernière étape : les en-têtes du site doivent laisser entrer le cadre de go.cam, un réglage que décrit le README. Ensuite, tout contenu déclaré pour 18 ans et plus attend derrière la vérification.</target>
+            </trans-unit>
+            <trans-unit id="SR.cMx8">
+                <source>narration.guided_step_ui_age_verification_setup_open</source>
+                <target>Voici les réglages, ouverts sur le groupe Légal : les trois entrées « Vérification d'âge go.cam » allument la vérification, avec les valeurs de l'espace partenaire go.cam.</target>
+            </trans-unit>
+            <trans-unit id="WhEywpU">
+                <source>narration.guided_step_ui_age_verification_setup_save</source>
+                <target>Enregistrez.</target>
+            </trans-unit>
+            <trans-unit id="0EwSH1a">
+                <source>narration.guided_step_ui_age_verification_setup_value</source>
+                <target>Collez la valeur donnée par go.cam, puis faites de même pour les deux clés.</target>
+            </trans-unit>
             <trans-unit id="WPAsuLp">
                 <source>narration.guided_step_ui_ai_assistant_action</source>
                 <target>Votre site parle plusieurs langues : cette liste choisit entre reformuler le texte et le traduire dans l'une d'elles. Laissez « Reformuler » pour ce premier essai, la traduction se lance de la même façon.</target>

@@ -2,6 +2,18 @@
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
     <file source-language="es" target-language="es" datatype="plaintext" original="site_config.es.xlf">
         <body>
+            <trans-unit id="ez6O9sd">
+                <source>description.age_verification_cipher_key</source>
+                <target>Clave de cifrado («Cipher key») de la cuenta de socio go.cam</target>
+            </trans-unit>
+            <trans-unit id="e92qaxk">
+                <source>description.age_verification_hmac_key</source>
+                <target>Clave de firma («Hmac key») de la cuenta de socio go.cam, que garantiza que un resultado procede de go.cam</target>
+            </trans-unit>
+            <trans-unit id="_kdWuPL">
+                <source>description.age_verification_partner_id</source>
+                <target>Identificador de la cuenta de socio go.cam (página «Standard implementation» del área de socios). Con las dos claves, coloca todo contenido declarado para mayores de 18 años detrás de una verificación de edad</target>
+            </trans-unit>
             <trans-unit id="f2Stp0E">
                 <source>description.ai_assistant_dashboard_endpoint</source>
                 <target>URL del backend IA que recibe las preguntas del panel. Vacío = desactivado (sin backend por defecto).</target>
@@ -221,6 +233,18 @@
             <trans-unit id="_yJHDs0">
                 <source>description.watermark_width</source>
                 <target>Ancho de la marca de agua, en porcentaje del ancho de la imagen (13.75 reproduce una firma de 330 px en una imagen de 2400 px).</target>
+            </trans-unit>
+            <trans-unit id="vgaDDW_">
+                <source>label.age_verification_cipher_key</source>
+                <target>Verificación de edad go.cam: clave de cifrado</target>
+            </trans-unit>
+            <trans-unit id="MkD9r0J">
+                <source>label.age_verification_hmac_key</source>
+                <target>Verificación de edad go.cam: clave de firma</target>
+            </trans-unit>
+            <trans-unit id="5XCRL17">
+                <source>label.age_verification_partner_id</source>
+                <target>Verificación de edad go.cam: identificador de socio</target>
             </trans-unit>
             <trans-unit id="Fd2PHDs">
                 <source>label.ai_assistant_dashboard_not_enabled</source>
