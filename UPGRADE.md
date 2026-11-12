@@ -1,5 +1,9 @@
 # UPGRADE
 
+## v1.90.2
+
+**AVIF is refused on the way in**: an upload, a language's file, a content or site graphics import and a demo placeholder no longer take an avif, read off its name and its bytes. Nothing to migrate: an avif already stored is served as before, and its language files still leave the disk with it. A site's own form reusing `AllowedUploadExtension` refuses it too.
+
 ## v1.90.0
 
 **Age verification is a connector**: `age-verification-provider` names the service, `gocam` by default (the one shipped): a provider whose own entries are empty closes no gate. **`age-verification-partner-id`, `-cipher-key` and `-hmac-key` are now `age-verification-gocam-*`**: nothing to do on a site, `c975l:config:load-all`, run at deploy, renames the rows and keeps their values (`former_slugs`), and seeds `age-verification-provider` with `gocam`. **Constructors**: `AgeVerifier` takes the tagged `c975l.age_verification_provider` services: nothing to do with autowiring. A gate's markup carries `data-age-gate-provider-value`: a site overriding `AgeGate.html.twig` has to write it.

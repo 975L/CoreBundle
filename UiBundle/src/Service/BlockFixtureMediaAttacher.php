@@ -225,7 +225,7 @@ class BlockFixtureMediaAttacher
 
         // Read within the slot's own family rather than from one flat list: .ogg and .webm are container formats naming an audio file as readily as a video one, and only the slot being filled can settle it. A video declared as .ogg tagged "audio/ogg" is picked up by no template at all (blocks/Video.html.twig sorts a block's medias by mimetype), and tagging it "video/mp4" instead would have the browser skip a <source> whose type lies about the file
         $extensions = [
-            'image/' => ['webp' => 'image/webp', 'jpg' => 'image/jpeg', 'jpeg' => 'image/jpeg', 'png' => 'image/png', 'gif' => 'image/gif', 'avif' => 'image/avif', 'svg' => 'image/svg+xml'],
+            'image/' => ['webp' => 'image/webp', 'jpg' => 'image/jpeg', 'jpeg' => 'image/jpeg', 'png' => 'image/png', 'gif' => 'image/gif', 'svg' => 'image/svg+xml'],
             'video/' => ['mp4' => 'video/mp4', 'webm' => 'video/webm', 'ogv' => 'video/ogg', 'ogg' => 'video/ogg', 'mov' => 'video/quicktime'],
             'audio/' => ['mp3' => 'audio/mpeg', 'ogg' => 'audio/ogg', 'oga' => 'audio/ogg', 'webm' => 'audio/webm', 'wav' => 'audio/wav', 'm4a' => 'audio/mp4'],
             'application/' => ['pdf' => 'application/pdf'],

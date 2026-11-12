@@ -221,6 +221,17 @@ class BlockFixtureMediaAttacherTest extends TestCase
         $this->assertSame('image/jpeg', $block->getMedia()->last()->getMimeType());
     }
 
+    // An avif is refused everywhere a new file comes in, a demo's placeholder included: one declared anyway is tagged as the slot's own default, never "image/avif"
+    public function testAnAvifPlaceholderIsNotTaggedAsSuch(): void
+    {
+        $attacher = $this->createAttacher(['image/*'], media: ['images' => ['showcase/photo-1.avif']]);
+        $block = new Block()->setKind('image');
+
+        $attacher->attach($block, 'image');
+
+        $this->assertSame('image/webp', $block->getMedia()->first()->getMimeType());
+    }
+
     // .ogg names an audio file as readily as a video one, so the extension alone can't tell - the slot the file was declared for does, and tagging a video "audio/ogg" would have blocks/Video.html.twig render no player at all
     public function testAnAmbiguousExtensionIsReadWithinItsOwnSlotFamily(): void
     {

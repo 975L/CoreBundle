@@ -187,6 +187,17 @@ class MediaTranslatorTest extends TestCase
         $this->assertSame([[null, null, 'medias/site/block-portfolio_grid-12-en.webp', self::MEDIA_ID, 'en']], $translator->takePendingFiles());
     }
 
+    // An avif is refused for a new language file or an import, yet one already stored is still known as a language's own, so it can be taken off the disk
+    public function testAnAvifIsOnlyKnownAsAFileAlreadyStored(): void
+    {
+        $path = 'medias/site/block-portfolio_grid-12-en-1a2b3c4d.avif';
+
+        $this->assertFalse(MediaTranslator::isTranslatedFilePath($path, 'block-portfolio_grid-12.webp'));
+        $this->assertTrue(MediaTranslator::isTranslatedFilePath($path, stored: true));
+        $this->assertTrue(MediaTranslator::isTranslatedFilePath('medias/site/block-portfolio_grid-12-en-1a2b3c4d.webp', 'block-portfolio_grid-12.webp'));
+        $this->assertFalse(MediaTranslator::isTranslatedFilePath('medias/site/index-en-1a2b3c4d.php', stored: true));
+    }
+
     // A language screen saved without touching the picture keeps the one that language already has
     public function testNoFileAndNoRemovalStagesNothing(): void
     {

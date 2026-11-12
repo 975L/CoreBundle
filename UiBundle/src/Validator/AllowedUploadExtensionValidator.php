@@ -29,13 +29,40 @@ class AllowedUploadExtensionValidator extends ConstraintValidator
             return;
         }
 
-        $extension = strtolower($value instanceof UploadedFile ? $value->getClientOriginalExtension() : $value->getExtension());
-        if ('' === $extension || \in_array($extension, AllowedUploadExtension::EXTENSIONS, true)) {
+        if (self::isAllowed($value)) {
             return;
         }
 
         $this->context->buildViolation($constraint->message)
-            ->setParameter('%extension%', $extension)
+            ->setParameter('%extension%', self::shownExtension($value))
             ->addViolation();
+    }
+
+    // What the message names: the type read off the bytes when that is what is refused, so an avif named "photo.jpg" is not told ".jpg" is refused
+    private static function shownExtension(File $file): string
+    {
+        $mimeType = (string) $file->getMimeType();
+
+        return self::hasRefusedType($file) ? substr($mimeType, (int) strpos($mimeType, '/') + 1) : self::extension($file);
+    }
+
+    // Whether a file's bytes are of a type no site takes in anymore, whatever it is named: asked by a form here, and by an import, which reaches no form
+    public static function hasRefusedType(File $file): bool
+    {
+        return \in_array($file->getMimeType(), AllowedUploadExtension::REFUSED_MIME_TYPES, true);
+    }
+
+    // Its name on the list, or no extension at all, and bytes of no refused type
+    private static function isAllowed(File $file): bool
+    {
+        $extension = self::extension($file);
+
+        return ('' === $extension || \in_array($extension, AllowedUploadExtension::EXTENSIONS, true)) && !self::hasRefusedType($file);
+    }
+
+    // The name the browser sent for an upload, the file's own otherwise
+    private static function extension(File $file): string
+    {
+        return strtolower($file instanceof UploadedFile ? $file->getClientOriginalExtension() : $file->getExtension());
     }
 }

@@ -1,5 +1,18 @@
 # ChangeLog
 
+## v1.90.2
+
+AVIF refused on the way in, config cache emptied before block tags
+
+- `JsonLdBuilder::plainText()`: a line break or a block tag becomes a space, two lines no longer glued together (12/11/2026)
+- `AllowedUploadExtension`: `avif` off the list, and `REFUSED_MIME_TYPES` refusing an avif by its bytes whatever its name (12/11/2026)
+- `AllowedUploadExtensionValidator::hasRefusedType()`, asked by `BlockDataImporter` and `SiteGraphicImportProvider`, which leave an avif out (12/11/2026)
+- `MediaTranslationType`: a language's file limited to `MediaTranslator::FILE_MIME_TYPES` and checked by `AllowedUploadExtension` (12/11/2026)
+- `MediaTranslator::isTranslatedFilePath()`: avif refused, still known with `stored: true` so an existing file leaves the disk (12/11/2026)
+- `BlockFixtureMediaAttacher`: an avif placeholder no longer tagged `image/avif` (12/11/2026)
+- `ConfigCacheListener`: the config cache emptied on postFlush of a `Config`, ahead of the other bundles' tag invalidations (12/11/2026)
+- `MapBehaviourTest`: a failed map load waited for rather than timed, the test no longer flaky under load (12/11/2026)
+
 ## v1.90.1
 
 Backup tests independent of the machine's rclone and MySQL client

@@ -1,5 +1,15 @@
 [
     {
+        "date": "2026-11-12",
+        "description": [
+            {
+                "en": "AVIF images are no longer accepted, whether sent from a form or brought in by an import: send a WebP, JPEG or PNG instead. The AVIF images already on your site keep showing as before.",
+                "fr": "Les images AVIF ne sont plus acceptées, qu'elles soient envoyées depuis un formulaire ou arrivent par un import : envoyez plutôt un WebP, un JPEG ou un PNG. Les images AVIF déjà présentes sur votre site restent affichées comme avant.",
+                "es": "Las imágenes AVIF ya no se aceptan, tanto si se envían desde un formulario como si llegan por una importación: envíe en su lugar un WebP, un JPEG o un PNG. Las imágenes AVIF ya presentes en su sitio se siguen mostrando como antes."
+            }
+        ]
+    },
+    {
         "date": "2026-11-11",
         "description": [
             {

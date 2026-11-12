@@ -73,4 +73,10 @@ class JsonLdBuilderTest extends TestCase
     {
         $this->assertSame('Le pont sur le Fier est détruit.', new JsonLdBuilder()->plainText("<p>Le pont sur&nbsp; le Fier\nest d&eacute;truit.</p>"));
     }
+
+    // A line break or a block boundary keeps the words apart, an inline tag does not split a word
+    public function testPlainTextKeepsLinesApartAndInlineTagsJoined(): void
+    {
+        $this->assertSame('Books item-1 - 2013 item-2 - 2015 End', new JsonLdBuilder()->plainText('<div>Books<br>item-1 - 20<strong>13</strong><br/>item-2 - 2015</div><p>End</p>'));
+    }
 }

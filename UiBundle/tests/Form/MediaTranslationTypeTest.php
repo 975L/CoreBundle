@@ -12,6 +12,8 @@ namespace c975L\UiBundle\Tests\Form;
 
 use c975L\UiBundle\Entity\Media;
 use c975L\UiBundle\Form\MediaTranslationType;
+use c975L\UiBundle\Service\MediaTranslator;
+use c975L\UiBundle\Validator\AllowedUploadExtension;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Form\Extension\Validator\ValidatorExtension;
 use Symfony\Component\Form\Forms;
@@ -71,7 +73,9 @@ class MediaTranslationTypeTest extends TestCase
         $plain = $factory->create(MediaTranslationType::class, [], ['media' => $media])->get('file');
         $shared = $factory->create(MediaTranslationType::class, [], ['media' => $media, 'og_image' => true])->get('file');
 
-        $this->assertSame(['image/*'], $plain->getConfig()->getOption('constraints')[0]->mimeTypes);
+        $this->assertSame(MediaTranslator::FILE_MIME_TYPES, $plain->getConfig()->getOption('constraints')[0]->mimeTypes);
+        $this->assertNotContains('image/avif', MediaTranslator::FILE_MIME_TYPES);
+        $this->assertInstanceOf(AllowedUploadExtension::class, $plain->getConfig()->getOption('constraints')[1]);
         $constraint = $shared->getConfig()->getOption('constraints')[0];
         $this->assertSame(MediaTranslationType::OG_IMAGE_MIME_TYPES, $constraint->mimeTypes);
         $this->assertSame(2000000, $constraint->maxSize);

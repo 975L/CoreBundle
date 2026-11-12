@@ -12,6 +12,7 @@ namespace c975L\UiBundle\Form;
 
 use c975L\UiBundle\Entity\Media;
 use c975L\UiBundle\Service\MediaTranslator;
+use c975L\UiBundle\Validator\AllowedUploadExtension;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
@@ -70,15 +71,15 @@ class MediaTranslationType extends AbstractType
         // A share image goes out as it is dropped, never through the conversion its own form gives it (see VichImageResizeListener): only the formats every network reads, and nothing heavy enough to be refused by one
         $constraint = $options['og_image']
             ? new FileConstraint(maxSize: '2M', mimeTypes: self::OG_IMAGE_MIME_TYPES)
-            : new FileConstraint(mimeTypes: ['image/*']);
+            : new FileConstraint(mimeTypes: MediaTranslator::FILE_MIME_TYPES);
 
         $builder->add('file', FileType::class, [
             'label' => 'label.translated_file',
             'help' => 'text.translated_file',
             'translation_domain' => 'ui',
             'required' => false,
-            'constraints' => [$constraint],
-            'attr' => ['accept' => $options['og_image'] ? implode(',', self::OG_IMAGE_MIME_TYPES) : 'image/*'],
+            'constraints' => [$constraint, new AllowedUploadExtension()],
+            'attr' => ['accept' => implode(',', $options['og_image'] ? self::OG_IMAGE_MIME_TYPES : MediaTranslator::FILE_MIME_TYPES)],
         ]);
 
         if (null !== $options['translated_file']) {

@@ -26,6 +26,13 @@ class MediaTranslator
     // The file a language shows instead of the media's own, stored as a translation like the texts but never offered as one: its value is a path, not a sentence (see stageFile)
     public const string FILE = 'filename';
 
+    // What a language's file may be, read off its bytes by the form (see MediaTranslationType): the images stageFile names a file after, so nothing it writes escapes isTranslatedFilePath
+    public const array FILE_MIME_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml', 'image/bmp', 'image/x-ms-bmp', 'image/tiff', 'image/x-icon', 'image/vnd.microsoft.icon'];
+
+    // The extensions of those images, and avif on top for a file already stored: refused at the door, still known to be a language's own so it can be taken off the disk
+    private const string FILE_EXTENSIONS = 'bmp|gif|ico|jpe?g|png|svg|tiff?|webp';
+    private const string STORED_FILE_EXTENSIONS = 'avif|' . self::FILE_EXTENSIONS;
+
     // The files a form has just been given, written by MediaTranslationFileListener once the flush that saves their block goes through, the same wait the texts get (see ContentTranslator::stage)
     /** @var list<array{0: File|null, 1: string|null, 2: string|null, 3: int, 4: string}> file, target, previous, media id, locale */
     private array $pendingFiles = [];
@@ -154,10 +161,11 @@ class MediaTranslator
         return is_string($path) && '' !== $path && !str_contains($path, '..') && !str_starts_with($path, '/');
     }
 
-    // Whether a path read back from a row or an archive is named the way stageFile names a language's file, an image after the media's own when $mediaFilename is known: anything else ("index.php") is never written nor removed
-    public static function isTranslatedFilePath(mixed $path, ?string $mediaFilename = null): bool
+    // Whether a path read back from a row or an archive is named the way stageFile names a language's file, an image after the media's own when $mediaFilename is known: anything else ("index.php") is never written nor removed. $stored also knows a file of a format no longer accepted, which only a removal asks for
+    public static function isTranslatedFilePath(mixed $path, ?string $mediaFilename = null, bool $stored = false): bool
     {
-        if (!self::isPublicPath($path) || 1 !== preg_match('/^(.+)-[a-z]{2}(?:_[A-Z]{2})?-[0-9a-f]{8}\.(?:avif|bmp|gif|ico|jpe?g|png|svg|tiff?|webp)$/', basename($path), $matches)) {
+        $extensions = $stored ? self::STORED_FILE_EXTENSIONS : self::FILE_EXTENSIONS;
+        if (!self::isPublicPath($path) || 1 !== preg_match('/^(.+)-[a-z]{2}(?:_[A-Z]{2})?-[0-9a-f]{8}\.(?:' . $extensions . ')$/', basename($path), $matches)) {
             return false;
         }
 

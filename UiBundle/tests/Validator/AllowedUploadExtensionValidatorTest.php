@@ -11,8 +11,10 @@
 namespace c975L\UiBundle\Tests\Validator;
 
 use c975L\UiBundle\Validator\AllowedUploadExtension;
+use c975L\UiBundle\Validator\AllowedUploadExtensionValidator;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Validation;
 
@@ -50,7 +52,7 @@ class AllowedUploadExtensionValidatorTest extends TestCase
     /** @return iterable<array{string}> */
     public static function refused(): iterable
     {
-        foreach (['x.php', 'x.PHP', 'x.jpg.php', 'x.phtml', 'x.phar', 'x.html', 'x.htm', 'x.shtml', 'x.xhtml', 'x.xml', 'x.js', 'x.mjs', 'x.gpx', 'x.kml', '.htaccess', 'x.ini', 'x.sh'] as $name) {
+        foreach (['x.php', 'x.PHP', 'x.jpg.php', 'x.phtml', 'x.phar', 'x.html', 'x.htm', 'x.shtml', 'x.xhtml', 'x.xml', 'x.js', 'x.mjs', 'x.gpx', 'x.kml', '.htaccess', 'x.ini', 'x.sh', 'x.avif', 'x.AVIF'] as $name) {
             yield $name => [$name];
         }
     }
@@ -67,6 +69,26 @@ class AllowedUploadExtensionValidatorTest extends TestCase
         foreach (['x.jpg', 'X.JPG', 'x.svg', 'x.pdf', 'x.mp3', 'x.mp4', 'x.woff2', 'x.vtt', 'x.epub', 'x.zip', 'x.heic', 'x.jfif', 'x.m4b', 'x.mkv', 'x.7z', 'archive.tar.gz', 'noextension'] as $name) {
             yield $name => [$name];
         }
+    }
+
+    // An avif is refused by its bytes too, whatever name the phone or the editor gave it, and the message names what it really is
+    public function testAnAvifIsRefusedWhateverItIsNamed(): void
+    {
+        file_put_contents($this->path, "\x00\x00\x00\x1cftypavif\x00\x00\x00\x00avifmif1miaf");
+
+        foreach (['photo.jpg', 'noextension'] as $name) {
+            $violations = $this->violations($name);
+
+            $this->assertCount(1, $violations, $name);
+            $this->assertSame('avif', $violations[0]->getParameters()['%extension%']);
+        }
+        $this->assertTrue(AllowedUploadExtensionValidator::hasRefusedType(new File($this->path)));
+    }
+
+    // An import reaches no form, so it asks the bytes the same question: anything else is no refused type
+    public function testOtherBytesAreNoRefusedType(): void
+    {
+        $this->assertFalse(AllowedUploadExtensionValidator::hasRefusedType(new File($this->path)));
     }
 
     // Nothing was uploaded: the field stays optional

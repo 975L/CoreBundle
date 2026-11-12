@@ -97,7 +97,7 @@ class MediaTranslationFileListener
     private function unlink(string $path, int $id, string $locale): void
     {
         // Read back from a row an import may have written: a path leaving public/, or not named as a language's file, is nobody's media
-        if (!MediaTranslator::isTranslatedFilePath($path)) {
+        if (!MediaTranslator::isTranslatedFilePath($path, stored: true)) {
             return;
         }
 

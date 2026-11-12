@@ -14,6 +14,7 @@ use c975L\ConfigBundle\Management\ArchivePath;
 use c975L\ConfigBundle\Management\ImportProviderInterface;
 use c975L\UiBundle\Entity\Media;
 use c975L\UiBundle\Repository\MediaRepository;
+use c975L\UiBundle\Validator\AllowedUploadExtensionValidator;
 use c975L\UiBundle\Validator\FixedIconFormat;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -47,8 +48,8 @@ class SiteGraphicImportProvider implements ImportProviderInterface
             $path = null !== $filesDir ? ArchivePath::resolve($filesDir, $item['file'] ?? null) : null;
             $file = null !== $path ? new ReplacingFile($path, true, false, false) : null;
 
-            // The upload form's own FixedIconFormat check, run on a throwaway row: a file the conversion can't handle would otherwise be stored as markup under an .ico/.png/.webp name, and the row it would replace keeps its current file
-            if (null !== $file && !$this->isConvertible($item['role'], $file)) {
+            // The upload form's own FixedIconFormat check, run on a throwaway row: a file the conversion can't handle would otherwise be stored as markup under an .ico/.png/.webp name, and the row it would replace keeps its current file. A file of a refused type (an avif) is skipped the same way
+            if (null !== $file && (AllowedUploadExtensionValidator::hasRefusedType($file) || !$this->isConvertible($item['role'], $file))) {
                 continue;
             }
 

@@ -65,10 +65,11 @@ class JsonLdBuilder
         ];
     }
 
-    // One line of plain text out of a rich field. Entities are decoded before the whitespace is collapsed, and the non-breaking space an editor leaves behind, which "\s" does not match, is collapsed with it
+    // One line of plain text out of a rich field. A line break or a block tag becomes a space before the tags go, so two lines never glue together; entities are decoded before the whitespace is collapsed, and the non-breaking space an editor leaves behind, which "\s" does not match, is collapsed with it
     public function plainText(mixed $html): string
     {
-        $text = html_entity_decode(strip_tags((string) $html), \ENT_QUOTES | \ENT_HTML5, 'UTF-8');
+        $spaced = preg_replace('/<\/?(?:br|div|p|li|ul|ol|h[1-6]|blockquote|pre|tr|td|th|figure|figcaption)\b[^>]*>/i', ' $0', (string) $html);
+        $text = html_entity_decode(strip_tags((string) $spaced), \ENT_QUOTES | \ENT_HTML5, 'UTF-8');
 
         return trim((string) preg_replace('/[\s\x{00A0}]+/u', ' ', $text));
     }

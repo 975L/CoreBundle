@@ -18,7 +18,7 @@ class AllowedUploadExtension extends Constraint
 {
     public const array EXTENSIONS = [
         // Images
-        'jpg', 'jpeg', 'jpe', 'jfif', 'png', 'gif', 'webp', 'avif', 'ico', 'svg', 'bmp', 'tif', 'tiff', 'heic', 'heif',
+        'jpg', 'jpeg', 'jpe', 'jfif', 'png', 'gif', 'webp', 'ico', 'svg', 'bmp', 'tif', 'tiff', 'heic', 'heif',
         // Documents
         'pdf', 'txt', 'csv', 'rtf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'odt', 'ods', 'odp', 'epub', 'mobi',
         // Archives
@@ -32,6 +32,9 @@ class AllowedUploadExtension extends Constraint
         // Data
         'vtt', 'srt', 'ics',
     ];
+
+    // What is refused whatever the file is named, read off its bytes: avif, which a site never takes in anymore, an avif already stored being served as before
+    public const array REFUSED_MIME_TYPES = ['image/avif'];
 
     public string $message = 'label.upload_extension_not_allowed';
 }

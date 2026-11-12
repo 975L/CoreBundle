@@ -73,17 +73,17 @@ class BlockDataImporterTest extends TestCase
         ], null);
     }
 
-    // A language's file the archive names after anything but the media's own never reaches a row, the translated texts beside it going through
+    // A language's file the archive names after anything but the media's own, or in a refused format (avif), never reaches a row, the translated texts beside it going through
     public function testBuildMediaDropsATranslatedFileNotNamedAfterTheMedia(): void
     {
         $copier = $this->createMock(TranslationCopier::class);
         $copier->expects($this->once())
             ->method('carry')
-            ->with('ui_media', $this->isInstanceOf(Media::class), ['en' => ['label' => 'Shop', 'filename' => 'medias/hero-en-1a2b3c4d.webp'], 'fr' => ['label' => 'Boutique']]);
+            ->with('ui_media', $this->isInstanceOf(Media::class), ['en' => ['label' => 'Shop', 'filename' => 'medias/hero-en-1a2b3c4d.webp'], 'fr' => ['label' => 'Boutique'], 'es' => ['label' => 'Tienda']]);
 
         new BlockDataImporter($this->createStub(EntityManagerInterface::class), $this->createStub(FormBlockDependencyRegistry::class), $this->createStub(ValidatorInterface::class), $copier)->buildMedia([
             'originalFilename' => 'hero.webp',
-            'translations' => ['en' => ['label' => 'Shop', 'filename' => 'medias/hero-en-1a2b3c4d.webp'], 'fr' => ['label' => 'Boutique', 'filename' => 'index.php']],
+            'translations' => ['en' => ['label' => 'Shop', 'filename' => 'medias/hero-en-1a2b3c4d.webp'], 'fr' => ['label' => 'Boutique', 'filename' => 'index.php'], 'es' => ['label' => 'Tienda', 'filename' => 'medias/hero-es-1a2b3c4d.avif']],
         ], null);
     }
 
@@ -319,6 +319,19 @@ class BlockDataImporterTest extends TestCase
         $this->assertInstanceOf(ReplacingFile::class, $kept);
         $this->assertFalse($kept->isRemoveReplacedFile());
         $this->assertFalse($kept->isRemoveReplacedFileOnError());
+
+        new Filesystem()->remove($root);
+    }
+
+    // An avif is refused at the import as at the upload: the media comes in without its file, as one missing from the archive does
+    public function testBuildMediaLeavesAnAvifOut(): void
+    {
+        $root = sys_get_temp_dir() . '/block_data_importer_test_' . bin2hex(random_bytes(4));
+        mkdir($root . '/files', 0777, true);
+        file_put_contents($root . '/files/photo.jpg', "\x00\x00\x00\x1cftypavif\x00\x00\x00\x00avifmif1miaf");
+        $importer = new BlockDataImporter($this->createStub(EntityManagerInterface::class), $this->createStub(FormBlockDependencyRegistry::class), $this->createStub(ValidatorInterface::class));
+
+        $this->assertNull($importer->buildMedia(['file' => 'files/photo.jpg'], $root)->getFile());
 
         new Filesystem()->remove($root);
     }

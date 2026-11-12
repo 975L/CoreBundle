@@ -17,9 +17,11 @@ use c975L\UiBundle\Entity\Translation;
 use c975L\UiBundle\Registry\FormBlockDependencyRegistry;
 use c975L\UiBundle\Service\MediaTranslator;
 use c975L\UiBundle\Service\TranslationCopier;
+use c975L\UiBundle\Validator\AllowedUploadExtensionValidator;
 use c975L\UiBundle\Validator\FixedIconFormat;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Vich\UploaderBundle\FileAbstraction\ReplacingFile;
 
@@ -143,8 +145,9 @@ class BlockDataImporter
             return;
         }
 
+        // A file of a refused type (an avif) is left out, the media coming in without it as a missing one does
         $file = ArchivePath::resolve($filesDir, $mediaData['file'] ?? null);
-        if (null !== $file) {
+        if (null !== $file && !AllowedUploadExtensionValidator::hasRefusedType(new File($file))) {
             $media->setFile(new ReplacingFile($file, true, false, false));
         }
 

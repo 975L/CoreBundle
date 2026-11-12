@@ -56,6 +56,25 @@ class SiteGraphicImportProviderTest extends TestCase
         new Filesystem()->remove($filesDir);
     }
 
+    // An avif is refused at the import as at the upload, whatever it is named, the existing row keeping its current file
+    public function testImportSkipsAnAvif(): void
+    {
+        $filesDir = $this->createFilesDir('files/logo.png', "\x00\x00\x00\x1cftypavif\x00\x00\x00\x00avifmif1miaf");
+        $existing = new Media()->setRole(Media::ROLE_OG_IMAGE);
+
+        $mediaRepository = $this->createStub(MediaRepository::class);
+        $mediaRepository->method('findOneByRole')->willReturn($existing);
+
+        $provider = new SiteGraphicImportProvider($this->createStub(EntityManagerInterface::class), $mediaRepository, $this->validator());
+
+        $result = $provider->import([['role' => Media::ROLE_OG_IMAGE, 'file' => 'files/logo.png']], $filesDir);
+
+        $this->assertSame(['created' => 0, 'updated' => 0], $result);
+        $this->assertNull($existing->getFile());
+
+        new Filesystem()->remove($filesDir);
+    }
+
     // A path leaving the extracted folder is ignored, and the archive's copy is never removed by Vich
     public function testImportIgnoresAPathOutsideTheArchiveAndKeepsTheArchivesCopy(): void
     {

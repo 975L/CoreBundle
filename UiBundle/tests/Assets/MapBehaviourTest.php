@@ -218,7 +218,11 @@ class MapBehaviourTest extends JsCase
     public function testALibraryThatCannotBeLoadedLeavesTheListOnScreen(): void
     {
         $state = $this->map(
-            'return { canvas: root.querySelector("[data-ui-map-target=canvas]").hidden, list: root.querySelectorAll("[data-ui-map-target=list] li").length };',
+            // The failed load is waited for rather than timed: under load, restore runs after a fixed settle
+            'for (let i = 0; i < 60 && !root.querySelector("[data-ui-map-target=canvas]").hidden; i++) {
+                 await new Promise((r) => setTimeout(r, 50));
+             }
+             return { canvas: root.querySelector("[data-ui-map-target=canvas]").hidden, list: root.querySelectorAll("[data-ui-map-target=list] li").length };',
             // Its own copy of the controller: the loader is kept for the life of the document, so a map drawn by an earlier scenario would hand this one a library already in place
             ['script' => 'http://127.0.0.1:1/leaflet.js', 'fresh' => true]
         );
@@ -251,7 +255,11 @@ class MapBehaviourTest extends JsCase
     public function testAMapThatCouldNotBeDrawnKeepsTheListRatherThanThePicker(): void
     {
         $state = $this->map(
-            'return { picker: root.querySelector("[data-ui-map-target=select]").hidden, list: root.querySelector("[data-ui-map-target=list]").hidden };',
+            // The failed load is waited for rather than timed: under load, restore runs after a fixed settle
+            'for (let i = 0; i < 60 && !root.querySelector("[data-ui-map-target=select]").hidden; i++) {
+                 await new Promise((r) => setTimeout(r, 50));
+             }
+             return { picker: root.querySelector("[data-ui-map-target=select]").hidden, list: root.querySelector("[data-ui-map-target=list]").hidden };',
             ['script' => 'http://127.0.0.1:1/leaflet.js', 'fresh' => true, 'select' => true]
         );
 

@@ -116,6 +116,21 @@ class MediaTranslationFileListenerTest extends TestCase
         $this->assertFileDoesNotExist($file);
     }
 
+    // Avif is refused for a new language file, yet one stored before still leaves the disk with its media
+    public function testAnAvifStoredBeforeIsStillTakenAway(): void
+    {
+        $file = $this->createPublicFile('block-hero-12-es-1a2b3c4d.avif');
+        $repository = $this->createStub(TranslationRepository::class);
+        $repository->method('findByOwner')->willReturn(['es' => ['filename' => 'medias/site/block-hero-12-es-1a2b3c4d.avif']]);
+        $repository->method('isValueUsedElsewhere')->willReturn(false);
+        $listener = new MediaTranslationFileListener($this->createTranslator([]), $repository, $this->projectDir);
+
+        $listener->preRemove(new PreRemoveEventArgs($this->createMedia(), $this->createStub(EntityManagerInterface::class)));
+        $listener->postFlush($this->createStub(PostFlushEventArgs::class));
+
+        $this->assertFileDoesNotExist($file);
+    }
+
     // A new picture on the media takes back every language's own, made for the one being replaced: no language goes on sharing a banner nobody shows anymore
     public function testANewPictureTakesTheLanguagesFilesBack(): void
     {
