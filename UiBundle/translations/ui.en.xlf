@@ -3776,7 +3776,7 @@
             </trans-unit>
             <trans-unit id="_qHZoUh">
                 <source>label.map_csp_refused</source>
-                <target>The Google map will not draw: the site's security policy does not name its hosts (%directives%). The browser refuses the request without a word, and only the list of places stays on screen.</target>
+                <target>The map will not draw in full: the site's security policy does not name its provider's hosts (%directives%). The browser refuses the request without a word, and only grey tiles or the list of places stay on screen.</target>
             </trans-unit>
             <trans-unit id="PZ3TL80">
                 <source>label.map_diagnostic_csp</source>

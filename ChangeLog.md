@@ -1,5 +1,11 @@
 # ChangeLog
 
+## v1.90.4
+
+map-csp health check worded for every map provider
+
+- `label.map_csp_refused`: the sentence no longer names Google, a refused OpenStreetMap tile host being reported too (12/11/2026)
+
 ## v1.90.3
 
 HeadlessChrome launches Chrome without a fatal error after a failed start

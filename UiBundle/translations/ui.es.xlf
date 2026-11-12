@@ -3776,7 +3776,7 @@
             </trans-unit>
             <trans-unit id="_qHZoUh">
                 <source>label.map_csp_refused</source>
-                <target>El mapa de Google no se dibujará: la política de seguridad del sitio no nombra sus servidores (%directives%). El navegador rechaza la petición sin decir nada y solo queda en pantalla la lista de lugares.</target>
+                <target>El mapa no se dibujará entero: la política de seguridad del sitio no nombra los servidores de su proveedor (%directives%). El navegador rechaza la petición sin decir nada y en pantalla solo quedan teselas grises o la lista de lugares.</target>
             </trans-unit>
             <trans-unit id="PZ3TL80">
                 <source>label.map_diagnostic_csp</source>

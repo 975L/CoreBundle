@@ -19,8 +19,8 @@ use c975L\UiBundle\Tests\Map\MapResolverFactory;
 use PHPUnit\Framework\TestCase;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-// The row that breaks a silence: a Google map fetched from a host the site's own policy does not name is refused by the browser without a word, and all that stays on screen is the list of places
-// What it must not do is speak on a site that never chose Google - the provider is picked in a back-office, and a policy widened for a map nobody asked for is a policy widened for nothing
+// The row that breaks a silence: a map fetched from a host the site's own policy does not name is refused by the browser without a word, and all that stays on screen is a grey grid or the list of places
+// What it must not do is ask a site for the hosts of a provider it never chose - the provider is picked in a back-office, and a policy widened for a map nobody asked for is a policy widened for nothing
 class MapCspHealthCheckProviderTest extends TestCase
 {
     private const string ALLOWED = "default-src 'self'; script-src 'self' https://maps.googleapis.com; img-src 'self' https://maps.googleapis.com https://maps.gstatic.com; connect-src 'self' https://maps.googleapis.com";

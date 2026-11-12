@@ -3776,7 +3776,7 @@
             </trans-unit>
             <trans-unit id="_qHZoUh">
                 <source>label.map_csp_refused</source>
-                <target>La carte Google ne se dessinera pas : la politique de sécurité du site ne nomme pas ses hôtes (%directives%). Le navigateur refuse la requête sans un mot, et seule la liste des lieux reste à l'écran.</target>
+                <target>La carte ne se dessinera pas en entier : la politique de sécurité du site ne nomme pas les hôtes de son fournisseur (%directives%). Le navigateur refuse la requête sans un mot, et il ne reste à l'écran que des tuiles grises ou la liste des lieux.</target>
             </trans-unit>
             <trans-unit id="PZ3TL80">
                 <source>label.map_diagnostic_csp</source>
