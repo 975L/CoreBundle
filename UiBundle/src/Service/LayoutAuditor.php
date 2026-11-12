@@ -54,7 +54,7 @@ class LayoutAuditor
      */
     public function audit(string $url, array $widths = self::DEFAULT_WIDTHS): array
     {
-        $browser = new BrowserFactory($this->chromeBinary)->createBrowser([
+        $browser = HeadlessChrome::launch($this->chromeBinary, [
             'headless' => true,
             // The managed server and most CI images run as a user Chrome's sandbox refuses to start for
             'noSandbox' => true,

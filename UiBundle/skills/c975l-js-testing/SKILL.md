@@ -189,6 +189,9 @@ or `/usr/bin/google-chrome` is not executable, so a checkout without Chrome stay
   page it carries is one that leaves the next scenario something.
 - **Do not catch a dead session yourself and retry** — the harness replays a destroyed tab once, and a
   second replay hides a scenario that genuinely never settles.
+- **Do not launch Chrome through `BrowserFactory::createBrowser()`** — use `HeadlessChrome::launch()`:
+  chrome-php's shutdown kill crashes on a launch that timed out halfway, and the retry that worked
+  still exits in 255.
 - **Do not publish a shared static before what it names is usable**, when editing the harness itself: a
   docroot whose server never answered sends every later test to port 0, and a page that never finished
   being mounted is handed to every scenario left in the run.

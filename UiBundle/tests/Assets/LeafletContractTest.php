@@ -10,6 +10,7 @@
 
 namespace c975L\UiBundle\Tests\Assets;
 
+use c975L\UiBundle\Service\HeadlessChrome;
 use HeadlessChromium\BrowserFactory;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\TestCase;
@@ -64,7 +65,7 @@ class LeafletContractTest extends TestCase
      */
     private function build(): array
     {
-        $browser = new BrowserFactory('/usr/bin/google-chrome')->createBrowser([
+        $browser = HeadlessChrome::launch('/usr/bin/google-chrome', [
             'headless' => true,
             // Same reason as LayoutAuditor: the sandbox refuses to start for the user a CI image runs as
             'noSandbox' => true,

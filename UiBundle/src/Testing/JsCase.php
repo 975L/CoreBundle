@@ -10,6 +10,7 @@
 
 namespace c975L\UiBundle\Testing;
 
+use c975L\UiBundle\Service\HeadlessChrome;
 use HeadlessChromium\Browser;
 use HeadlessChromium\BrowserFactory;
 use HeadlessChromium\Exception\CommunicationException;
@@ -409,14 +410,7 @@ abstract class JsCase extends TestCase
     private static function launch(int $attempts = 2): Browser
     {
         try {
-            return new BrowserFactory(self::CHROME)->createBrowser([
-                'headless' => true,
-                // Same reason as LayoutAuditor: the sandbox refuses to start for the user a CI image runs as
-                'noSandbox' => true,
-                'windowSize' => [1200, 900],
-                // Chrome keeps a tab's shared memory under /dev/shm, and an image that sizes it small kills the tab instead of saying so
-                'customFlags' => ['--disable-dev-shm-usage'],
-            ]);
+            return HeadlessChrome::launch(self::CHROME, static::browserOptions());
         } catch (\Exception $exception) {
             if ($attempts <= 1 || !self::diedOnItsWayUp($exception)) {
                 throw $exception;
@@ -427,6 +421,20 @@ abstract class JsCase extends TestCase
 
             return self::launch($attempts - 1);
         }
+    }
+
+    // What the browser is launched with, protected so a test describing the harness can make a launch fail on its way up
+    /** @return array<string, mixed> */
+    protected static function browserOptions(): array
+    {
+        return [
+            'headless' => true,
+            // Same reason as LayoutAuditor: the sandbox refuses to start for the user a CI image runs as
+            'noSandbox' => true,
+            'windowSize' => [1200, 900],
+            // Chrome keeps a tab's shared memory under /dev/shm, and an image that sizes it small kills the tab instead of saying so
+            'customFlags' => ['--disable-dev-shm-usage'],
+        ];
     }
 
     // A launch worth trying again: chrome-php wraps the startup timeout into a plain RuntimeException, so the timeout is looked for behind it too (run 42107645886)

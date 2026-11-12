@@ -1,5 +1,13 @@
 # ChangeLog
 
+## v1.90.3
+
+HeadlessChrome launches Chrome without a fatal error after a failed start
+
+- `HeadlessChrome::launch()`: Chrome started as `BrowserFactory` does, its shutdown kill registered only once the browser exists (12/11/2026)
+- `JsCase`, `LayoutAuditor`, `LeafletContractTest`: the browser launched through `HeadlessChrome`, a retried launch no longer exiting in 255 (12/11/2026)
+- `JsCase::browserOptions()`: the launch options, protected (12/11/2026)
+
 ## v1.90.2
 
 AVIF refused on the way in, config cache emptied before block tags
