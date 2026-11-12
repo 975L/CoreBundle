@@ -43,6 +43,33 @@ class UserTest extends TestCase
         $this->assertStringNotContainsString('$argon2id$hashedPassword', (string) $data["\0App\\Entity\\User\0password"]);
     }
 
+    // The firewall compares the session's copy, its password reduced to a crc32c by __serialize(), with the account reloaded from the database
+    public function testTheSessionCopyEqualsTheAccountItWasMadeFrom(): void
+    {
+        $user = $this->account();
+
+        $this->assertTrue($this->sessionCopy($user)->isEqualTo($user));
+    }
+
+    // An account disabled from the back office loses its open sessions on their next request
+    public function testADisabledAccountIsNoLongerTheSessionUser(): void
+    {
+        $user = $this->account();
+        $session = $this->sessionCopy($user);
+
+        $this->assertFalse($session->isEqualTo($user->setIsEnabled(false)));
+    }
+
+    // A new password, a role taken away or another address end the session too
+    public function testAChangedPasswordRoleOrAddressIsNoLongerTheSessionUser(): void
+    {
+        $session = $this->sessionCopy($this->account());
+
+        $this->assertFalse($session->isEqualTo($this->account()->setPassword('$argon2id$another')));
+        $this->assertFalse($session->isEqualTo($this->account()->setRoles([])));
+        $this->assertFalse($session->isEqualTo($this->account()->setEmail('other@example.test')));
+    }
+
     public function testFluentSettersReturnSameInstance(): void
     {
         $user = new User();
@@ -62,5 +89,17 @@ class UserTest extends TestCase
 
         $this->assertFalse($user->isVerified());
         $this->assertFalse($user->isEnabled());
+    }
+
+    // An enabled admin account, as the database holds it
+    private function account(): User
+    {
+        return new User()->setEmail('user@example.test')->setPassword('$argon2id$hashedPassword')->setRoles(['ROLE_ADMIN'])->setIsEnabled(true);
+    }
+
+    // The account as the session stores it between two requests
+    private function sessionCopy(User $user): User
+    {
+        return unserialize(serialize($user));
     }
 }

@@ -4,6 +4,12 @@
     text-align: center;
 }
 
+// A click made before go.cam's models loaded: the frame opens on its own once they have
+.age-gate [aria-busy] {
+    cursor: progress;
+    opacity: 0.7;
+}
+
 .age-gate__error {
     color: var(--alert-danger-color, #9c3a44);
 }

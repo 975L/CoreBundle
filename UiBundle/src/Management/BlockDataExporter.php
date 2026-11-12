@@ -17,6 +17,7 @@ use c975L\UiBundle\Entity\Translation;
 use c975L\UiBundle\Listener\VichPdfThumbnailListener;
 use c975L\UiBundle\Repository\TranslationRepository;
 use c975L\UiBundle\Service\MediaTranslator;
+use c975L\UiBundle\Storage\PrivateDirectory;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 // Shared Block/Media serialization for every Sync export carrying a Block collection (Page, Menu) - keeps the recursive container-slot walk in one place instead of duplicated per entity. Mirrors BlockDataImporter on the way back in
@@ -76,7 +77,9 @@ class BlockDataExporter
             return null;
         }
 
-        $registered = ArchiveFileRegistrar::register($this->projectDir, $filename, $files);
+        // A members-only document lives under private/, its thumbnail beside it (see MediaMembersOnlyListener)
+        $directory = PrivateDirectory::resolve($media) ?? 'public';
+        $registered = ArchiveFileRegistrar::register($this->projectDir, $filename, $files, $directory);
         if (null === $registered) {
             return null;
         }
@@ -85,7 +88,7 @@ class BlockDataExporter
         $thumbnail = null;
         $webpFilename = VichPdfThumbnailListener::toWebpPath($filename);
         if ($webpFilename !== $filename) {
-            $registeredThumbnail = ArchiveFileRegistrar::register($this->projectDir, $webpFilename, $files);
+            $registeredThumbnail = ArchiveFileRegistrar::register($this->projectDir, $webpFilename, $files, $directory);
             $thumbnail = $registeredThumbnail['archivePath'] ?? null;
         }
 
@@ -100,6 +103,7 @@ class BlockDataExporter
             'above' => $media->isAbove(),
             'credits' => $media->getCredits(),
             'rightsReserved' => $media->isRightsReserved(),
+            'membersOnly' => $media->isMembersOnly(),
             'position' => $media->getPosition(),
             'url' => $media->getUrl(),
             'description' => $media->getDescription(),

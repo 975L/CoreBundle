@@ -12,6 +12,7 @@ namespace c975L\UiBundle\Entity;
 
 use c975L\UiBundle\Repository\AiSearchAnswerRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 // A question a visitor asked the site search and what it answered, kept so the same question is not paid for twice and the admin sees what is searched for - and what found nothing. No ip, no session, no account: the question alone, purged after "ui-ai-assistant-site-retention-days" since a visitor may well have typed something personal into it
 #[ORM\Entity(repositoryClass: AiSearchAnswerRepository::class)]
@@ -36,6 +37,7 @@ class AiSearchAnswer
     private bool $found = false;
 
     #[ORM\Column(length: 40)]
+    #[Assert\Length(max: 40)]
     private string $indexVersion = '';
 
     #[ORM\Column]
@@ -50,10 +52,13 @@ class AiSearchAnswer
     public function __construct(
         // sha256 of the locale and the normalized question
         #[ORM\Column(length: 64, unique: true)]
+        #[Assert\Length(max: 64)]
         private string $questionHash,
         #[ORM\Column(length: 300)]
+        #[Assert\Length(max: 300)]
         private string $question,
         #[ORM\Column(length: 10)]
+        #[Assert\Length(max: 10)]
         private string $locale,
     ) {
         $this->createdAt = new \DateTimeImmutable();

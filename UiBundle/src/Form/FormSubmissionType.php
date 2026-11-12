@@ -40,6 +40,7 @@ use Symfony\Component\Validator\Constraints\Email;
 use Symfony\Component\Validator\Constraints\Image;
 use Symfony\Component\Validator\Constraints\IsTrue;
 use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints\Range;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 // Builds a plain Symfony form from a c975L\UiBundle\Entity\Form's FormField collection - one input per field, keyed by FormField::getName(), unmapped to any entity (see FormController, which hands the submitted array straight to FormActionRegistry). Also adds the same protections every c975L bundle's own public forms already share: honeypot, captcha (site-wide config, same keys contact/register/reset already read - see CaptchaType), receive-copy (per-Form, see Form::$actionConfig's "offerReceiveCopy") - all three switched off by the "protections" option for a calculator given no action, which submits nothing
@@ -142,7 +143,21 @@ class FormSubmissionType extends AbstractType
             $constraints = [...$constraints, ...($field->getMaxFiles() > 1 ? [new Count(max: $field->getMaxFiles()), new All([$image])] : [$image])];
         }
 
-        return $constraints;
+        return [...$constraints, ...$this->boundsConstraints($field)];
+    }
+
+    // The min and max of a number or a slider weighed by the server too, the HTML attributes being only a hint a forged POST ignores
+    private function boundsConstraints(FormField $field): array
+    {
+        if (!in_array($field->getType(), [FormField::TYPE_NUMBER, FormField::TYPE_RANGE], true)) {
+            return [];
+        }
+
+        if (null === $field->getMinValue() && null === $field->getMaxValue()) {
+            return [];
+        }
+
+        return [new Range(min: $field->getMinValue(), max: $field->getMaxValue())];
     }
 
     // What every field is given whatever its type: its label, whether it must be answered, and the attributes of its input
@@ -174,11 +189,7 @@ class FormSubmissionType extends AbstractType
 
         // A calculator shows a result before the visitor touches anything, which takes a starting value on every field - never overriding a prefill, which is the visitor's own data
         if (!$prefilled && null !== $field->getDefaultValue()) {
-            if (FormField::TYPE_CHECKBOX === $field->getType()) {
-                $fieldOptions['data'] = filter_var($field->getDefaultValue(), FILTER_VALIDATE_BOOLEAN);
-            } elseif ($this->acceptsDefaultValue($field)) {
-                $fieldOptions['data'] = $this->formTranslator->getDefaultValue($field);
-            }
+            $this->applyDefaultValue($fieldOptions, $field);
         }
 
         // A choice field's options are pairs the admin typed, the value being what an expression sees (e.g. 1.15 for "+15 %") - "choices" wants them the other way round
@@ -223,11 +234,26 @@ class FormSubmissionType extends AbstractType
         }
     }
 
+    // The starting value a field opens on, read in the visitor's language: it is the translated value that reaches the input, so it is the one weighed
+    private function applyDefaultValue(array &$fieldOptions, FormField $field): void
+    {
+        if (FormField::TYPE_CHECKBOX === $field->getType()) {
+            $fieldOptions['data'] = filter_var($field->getDefaultValue(), FILTER_VALIDATE_BOOLEAN);
+
+            return;
+        }
+
+        $default = $this->formTranslator->getDefaultValue($field);
+        if ($this->acceptsDefaultValue($field, $default)) {
+            $fieldOptions['data'] = $default;
+        }
+    }
+
     // A default value is stored as a plain string, which only some types' transformer takes as is: a date wants a \DateTimeInterface and a number a numeric string, and both throw on render rather than on submit - setData() lets a TransformationFailedException through where submit() catches it, so an admin's stray default would 500 the public page
-    private function acceptsDefaultValue(FormField $field): bool
+    private function acceptsDefaultValue(FormField $field, ?string $default): bool
     {
         return match ($field->getType()) {
-            FormField::TYPE_NUMBER => is_numeric($field->getDefaultValue()),
+            FormField::TYPE_NUMBER => is_numeric($default),
             FormField::TYPE_TEXT, FormField::TYPE_TEXTAREA, FormField::TYPE_EMAIL, FormField::TYPE_URL, FormField::TYPE_TEL, FormField::TYPE_RANGE, FormField::TYPE_CHOICE => true,
             default => false,
         };

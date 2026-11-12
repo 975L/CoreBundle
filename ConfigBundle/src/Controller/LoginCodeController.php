@@ -47,6 +47,11 @@ class LoginCodeController extends AbstractController
             return $this->redirect($request->getBasePath() . '/');
         }
 
+        // An account out of codes for the day is logged out before typing anything
+        if ($this->loginCode->isExhausted($request->getSession())) {
+            return $this->exhausted($request);
+        }
+
         $form = $this->createForm(LoginCodeType::class);
         $form->handleRequest($request);
 
@@ -88,15 +93,21 @@ class LoginCodeController extends AbstractController
         }
 
         if (LoginCode::EXHAUSTED === $result) {
-            $this->loginCode->finish($session);
-            $response = $this->security->logout(false) ?? $this->redirect($request->getBasePath() . '/');
-            $this->addFlash('danger', $this->translator->trans('flash.login_code_exhausted', [], 'config'));
-
-            return $response;
+            return $this->exhausted($request);
         }
 
         $form->get('code')->addError(new FormError($this->translator->trans('text.login_code_' . $result, [], 'config')));
 
         return null;
+    }
+
+    // The wait ended and the session logged out, too many codes having been wrong
+    private function exhausted(Request $request): Response
+    {
+        $this->loginCode->finish($request->getSession());
+        $response = $this->security->logout(false) ?? $this->redirect($request->getBasePath() . '/');
+        $this->addFlash('danger', $this->translator->trans('flash.login_code_exhausted', [], 'config'));
+
+        return $response;
     }
 }

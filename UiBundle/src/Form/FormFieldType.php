@@ -50,8 +50,10 @@ class FormFieldType extends AbstractType
         }
 
         $builder
+            // An emptied label arrives as '' rather than null, so NotBlank refuses it instead of the setter throwing
             ->add('label', TextType::class, [
                 'label' => 'label.field_label',
+                'empty_data' => '',
             ])
             ->add('placeholder', TextType::class, [
                 'label' => 'label.field_placeholder',

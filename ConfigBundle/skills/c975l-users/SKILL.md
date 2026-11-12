@@ -149,7 +149,8 @@ sets both on confirmation, and dispatches `UserCreatedEvent` the first time only
 account becomes usable, which `OAuthUserResolver` also marks when it creates an account or takes over
 one never confirmed. An account registered and never confirmed dispatches nothing. `isVerified` is readonly in the back office — only that confirmation may
 set it — while `isEnabled` stays editable, which is how an account is locked out without being
-deleted. On an account nobody confirmed, `isEnabled` is frozen too
+deleted, its open sessions included: the scaffolded `User` is an `EquatableInterface` whose `isEqualTo()`
+compares identifier, password crc32c, roles and `isEnabled`. On an account nobody confirmed, `isEnabled` is frozen too
 (`UserCrudController::editsAnUnverifiedAccount()`): unverified and disabled are the very same state on
 a fresh sign-up, so the two cannot be told apart afterwards and the registration resend would hand the
 account its way back in. **Such an account is deleted, not disabled.**
@@ -182,11 +183,12 @@ the registration itself.
 `login-admin-code` (bool, off by default, not restricted, flipped by the dashboard tile `LoginCodeShortcutController::TOGGLE_ROUTE`) makes `LoginCodeSubscriber` hold a password login
 (`app_login` only) of an account granted `site-role-admin` on `config_login_code` until the 6-digit code
 `LoginCode` emailed (template `login_code`, `{{ code }}`) is typed; every other route redirects there, the
-logout and `_`-prefixed routes aside. 10 minutes per code, a resend per minute, 5 wrong codes log out.
+logout and `_`-prefixed routes aside. 10 minutes per code, a resend per minute, 5 wrong codes log out, and
+the `c975l_login_code` limiter counts failures per account (20 per 24 h) across password logins.
 `TrustedDevice` then sets a 30-day cookie signed with `kernel.secret` over the identifier, the expiry and the
 password hash — no table, and a password change forgets every browser. A code that cannot be sent lets the
 login through (logged), so a mailer outage never locks the admin out. The held login's remember-me badge is
-disabled, so no cookie skips the code. The `config-login-code` guided project walks the tile.
+disabled at priority -48 (after `CheckRememberMeConditionsListener`, -32), so no cookie skips the code. The `config-login-code` guided project walks the tile.
 
 ## Inactive accounts
 

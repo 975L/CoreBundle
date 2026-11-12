@@ -21,6 +21,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\Range;
 
 // Each item comes from the chosen source, rendered as a never-persisted "collection_item" Block - see Collection.html.twig. No item is entered here: source/limit only pick which external collection to pull from and how many of its items to show
 class CollectionType extends AbstractType
@@ -133,6 +134,9 @@ class CollectionType extends AbstractType
             'help' => null === $total ? 'label.collection_limit_help' : 'label.collection_limit_help_total',
             'help_translation_parameters' => null === $total ? [] : ['%total%' => $total],
             'required' => false,
+            'attr' => ['min' => 1],
+            // A zero or negative limit would reach setMaxResults() or array_slice() and break the public page
+            'constraints' => [new Range(min: 1)],
         ];
     }
 

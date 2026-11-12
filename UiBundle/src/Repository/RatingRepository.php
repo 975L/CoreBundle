@@ -11,16 +11,20 @@
 namespace c975L\UiBundle\Repository;
 
 use c975L\UiBundle\Entity\Rating;
+use c975L\UiBundle\Listener\RatingCacheListener;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
 /**
  * @extends ServiceEntityRepository<Rating>
  */
 class RatingRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
-    {
+    public function __construct(
+        ManagerRegistry $registry,
+        private readonly TagAwareCacheInterface $cache,
+    ) {
         parent::__construct($registry, Rating::class);
     }
 
@@ -92,7 +96,7 @@ class RatingRepository extends ServiceEntityRepository
             return 0;
         }
 
-        return (int) $this->createQueryBuilder('r')
+        $deleted = (int) $this->createQueryBuilder('r')
             ->delete()
             ->andWhere('r.ownerType = :ownerType')
             ->andWhere('r.ownerId IN (:ownerIds)')
@@ -101,5 +105,15 @@ class RatingRepository extends ServiceEntityRepository
             ->getQuery()
             ->execute()
         ;
+
+        // A bulk DELETE passes by RatingCacheListener: the averages these owners showed are emptied here
+        if (0 < $deleted) {
+            $this->cache->invalidateTags([
+                RatingCacheListener::typeCacheTag($ownerType),
+                ...array_map(static fn (int $ownerId): string => RatingCacheListener::cacheTag($ownerType, $ownerId), $ownerIds),
+            ]);
+        }
+
+        return $deleted;
     }
 }

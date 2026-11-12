@@ -12,6 +12,7 @@ namespace c975L\UiBundle\Tests\Twig;
 
 use c975L\ConfigBundle\Security\Voter\BackOfficeAccessVoter;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
+use c975L\UiBundle\Tests\Map\MapResolverFactory;
 use c975L\UiBundle\Twig\MapExtension;
 use PHPUnit\Framework\TestCase;
 use Symfony\Bundle\SecurityBundle\Security;
@@ -23,8 +24,8 @@ class MapExtensionTest extends TestCase
         $settings = $this->settings('leaflet', '');
 
         $this->assertSame('leaflet', $settings['provider']);
-        $this->assertStringContainsString('tile.openstreetmap.org', $settings['tileUrl']);
-        $this->assertNotSame('', $settings['attribution']);
+        $this->assertStringContainsString('tile.openstreetmap.org', $settings['settings']['tileUrl']);
+        $this->assertNotSame('', $settings['settings']['attribution']);
         $this->assertFalse($settings['needsConsent']);
         $this->assertTrue($settings['usable']);
     }
@@ -32,14 +33,14 @@ class MapExtensionTest extends TestCase
     // A key set while the site draws with OpenStreetMap is a key the pages would publish for nothing
     public function testTheKeyIsNotPublishedByAProviderThatDoesNotUseIt(): void
     {
-        $this->assertSame('', $this->settings('leaflet', 'AIza-secret')['apiKey']);
+        $this->assertArrayNotHasKey('apiKey', $this->settings('leaflet', 'AIza-secret')['settings']);
     }
 
     public function testGoogleCarriesItsKeyAndItsConsent(): void
     {
         $settings = $this->settings('google', 'AIza-secret');
 
-        $this->assertSame('AIza-secret', $settings['apiKey']);
+        $this->assertSame('AIza-secret', $settings['settings']['apiKey']);
         $this->assertTrue($settings['needsConsent']);
         $this->assertTrue($settings['usable']);
     }
@@ -59,14 +60,20 @@ class MapExtensionTest extends TestCase
     // A visitor is shown the list of places and told nothing about a key or a security policy they cannot change
     public function testAVisitorIsNeverToldWhyAMapIsMissing(): void
     {
-        $this->assertFalse($this->settings('google', '')['diagnostic']);
-        $this->assertFalse($this->settings('google', '', null)['diagnostic'], 'A site running without security still says why the map is missing, on every page of it.');
+        $this->assertFalse($this->extension(false)->diagnostic());
+        $this->assertFalse($this->extension(null)->diagnostic(), 'A site running without security still says why the map is missing, on every page of it.');
     }
 
     // Whoever placed the block is looking at the page, not at a health check they have no reason to open
     public function testWhoeverMayActOnItIsToldWhyAMapIsMissing(): void
     {
-        $this->assertTrue($this->settings('google', '', true)['diagnostic']);
+        $this->assertTrue($this->extension(true)->diagnostic());
+    }
+
+    // The settings are written into a cached block, so nothing in them depends on who is looking
+    public function testTheSettingsHoldNothingThatDependsOnTheVisitor(): void
+    {
+        $this->assertSame(['provider', 'settings', 'needsConsent', 'usable'], array_keys($this->settings('google', '', true)));
     }
 
     // A point saved without coordinates has nowhere to be drawn, and Twig's own filter would keep the original keys - which encodes the payload as a JSON object the controller reads as no points at all
@@ -104,9 +111,15 @@ class MapExtensionTest extends TestCase
         $this->assertArrayNotHasKey('icon', $points[1], 'A place naming no image carries an empty one, where the map expects nothing at all and draws its own pin.');
     }
 
+    // The link under each place opens the provider's own map
+    public function testThePlaceUrlFollowsTheProvider(): void
+    {
+        $this->assertStringStartsWith('https://www.openstreetmap.org/?mlat=45.9', $this->points()->placeUrl(['latitude' => 45.9, 'longitude' => 6.1]));
+    }
+
     private function points(): MapExtension
     {
-        return new MapExtension($this->createStub(ConfigServiceInterface::class));
+        return new MapExtension(MapResolverFactory::create($this->createStub(ConfigServiceInterface::class)));
     }
 
     private function settings(string $provider, string $apiKey, ?bool $granted = false): array
@@ -117,8 +130,19 @@ class MapExtensionTest extends TestCase
             ['ui-map-google-api-key', $apiKey],
         ]);
 
+        return new MapExtension(MapResolverFactory::create($configService), $this->security($granted))->settings();
+    }
+
+    private function extension(?bool $granted): MapExtension
+    {
+        return new MapExtension(MapResolverFactory::create($this->createStub(ConfigServiceInterface::class)), $this->security($granted));
+    }
+
+    // Null for a site running without security, which then answers no one
+    private function security(?bool $granted): ?Security
+    {
         if (null === $granted) {
-            return new MapExtension($configService)->settings();
+            return null;
         }
 
         $security = $this->createStub(Security::class);
@@ -126,6 +150,6 @@ class MapExtensionTest extends TestCase
             static fn (mixed $attribute): bool => $granted && BackOfficeAccessVoter::ACCESS === $attribute
         );
 
-        return new MapExtension($configService, $security)->settings();
+        return $security;
     }
 }

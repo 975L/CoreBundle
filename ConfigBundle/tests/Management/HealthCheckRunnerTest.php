@@ -257,6 +257,20 @@ class HealthCheckRunnerTest extends TestCase
         $this->assertSame(['files-ui' => 1], $runner->run());
     }
 
+    // A url longer than its column is stored cut, so the purge is handed it cut too, or the row just written would be deleted on the spot
+    public function testRunPurgesOnTheUrlsAsTheyAreStored(): void
+    {
+        $long = 'https://example.com/' . str_repeat('a', 300);
+        $provider = $this->createExhaustiveProvider('redirect-chains', [
+            ['url' => $long, 'label' => 'Long', 'status' => HealthCheckResult::STATUS_OK, 'summary' => 'found'],
+        ]);
+
+        $repository = $this->createMock(HealthCheckResultRepository::class);
+        $repository->expects($this->once())->method('deleteByKindNotInUrls')->with('redirect-chains', [mb_substr($long, 0, 255)])->willReturn(0);
+
+        new HealthCheckRunner([$provider], $this->createStub(EntityManagerInterface::class), $repository)->run();
+    }
+
     // Every other provider checks a fixed set of urls that never disappears, and its history is the point
     public function testRunNeverPurgesForAProviderThatIsNotExhaustive(): void
     {

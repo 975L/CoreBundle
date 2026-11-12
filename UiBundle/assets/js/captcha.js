@@ -7,9 +7,14 @@
  */
 import { Controller } from "@hotwired/stimulus";
 
-// Fills in c975L\UiBundle\Form\CaptchaType's hidden field with a reCAPTCHA v3 token, without costing anything to a visitor who never touches the form. Google's api.js weighs ~765 KB and ~1.5 s of main thread, so it is only fetched on the first interaction with the form, and the token itself is only asked for on submit - which also makes it always fresh, where a token grabbed on page load expires after two minutes
+// Each captcha provider's browser side, by the slug its PHP provider answers (see CaptchaProviderInterface): load(siteKey) resolving once it can mint, token(siteKey, action) resolving to the token
+const DRIVERS = {
+    recaptcha: () => import("./captcha-recaptcha.js"),
+};
+
+// Fills in c975L\UiBundle\Form\CaptchaType's hidden field with the provider's token, without costing anything to a visitor who never touches the form: its script is only fetched on the first interaction with the form, and the token itself is only asked for on submit - which also makes it always fresh, where a token grabbed on page load may expire. Generic: loading and minting are the driver's business
 export default class extends Controller {
-    static values = { siteKey: String, action: String };
+    static values = { provider: String, siteKey: String, action: String };
 
     connect() {
         this.form = this.element.form;
@@ -35,22 +40,21 @@ export default class extends Controller {
         this.form?.removeEventListener("submit", this.onSubmit);
     }
 
-    // Injects Google's api.js once, and resolves when grecaptcha is usable
+    // Loads the provider's driver and script once, resolving to the driver when it can mint a token. An unknown provider rejects, which submits the form with an empty token for the server to judge
     warmUp() {
         if (!this.loading) {
-            this.loading = new Promise((resolve, reject) => {
-                const script = document.createElement("script");
-                script.src = `https://www.google.com/recaptcha/api.js?render=${encodeURIComponent(this.siteKeyValue)}`;
-                script.async = true;
-                script.defer = true;
-                script.addEventListener("load", () => (window.grecaptcha ? window.grecaptcha.ready(resolve) : reject()));
-                script.addEventListener("error", reject);
-                document.head.appendChild(script);
-            // A failed load must not be cached: a blocker lifted, a network back up, and the next submit deserves its own script tag rather than replaying this rejection forever
-            }).catch((error) => {
-                this.loading = null;
-                throw error;
-            });
+            const driver = DRIVERS[this.providerValue];
+            this.loading = (driver ? driver() : Promise.reject(new Error(`Unknown captcha provider "${this.providerValue}".`)))
+                .then(async ({ default: captcha }) => {
+                    await captcha.load(this.siteKeyValue);
+
+                    return captcha;
+                })
+                // A failed load must not be cached: a blocker lifted, a network back up, and the next submit deserves its own script tag rather than replaying this rejection forever
+                .catch((error) => {
+                    this.loading = null;
+                    throw error;
+                });
         }
 
         return this.loading;
@@ -71,10 +75,10 @@ export default class extends Controller {
         const submitter = event.submitter;
 
         try {
-            await this.warmUp();
-            this.element.value = await window.grecaptcha.execute(this.siteKeyValue, { action: this.actionValue });
+            const captcha = await this.warmUp();
+            this.element.value = await captcha.token(this.siteKeyValue, this.actionValue);
         } catch {
-            // Blocked, offline or refused by Google: the form is submitted all the same, with an empty token. Deciding what an unverifiable submission is worth belongs to the server (see CaptchaValidator), not to a visitor stuck on a page that silently refuses to submit
+            // Blocked, offline or refused by the provider: the form is submitted all the same, with an empty token. Deciding what an unverifiable submission is worth belongs to the server (see CaptchaValidator), not to a visitor stuck on a page that silently refuses to submit
         }
 
         // Reset right after: requestSubmit() dispatches "submit" synchronously (the pass this flag lets through), then either navigates away - in which case nothing below matters - or was stopped by the browser's own field validation, and the next attempt must fetch a fresh token rather than reuse one that may have expired in the meantime

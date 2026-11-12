@@ -3,9 +3,34 @@
         "date": "2026-11-11",
         "description": [
             {
-                "en": "Content reserved for adults can wait behind an anonymous age verification by go.cam: fill in the three go.cam keys in the configuration, and the visitor proves their age on their own device, without the site ever learning who they are.",
-                "fr": "Un contenu réservé aux majeurs peut attendre derrière une vérification d'âge anonyme par go.cam : renseignez les trois clés go.cam dans la configuration, et le visiteur prouve son âge sur son propre appareil, sans que le site sache jamais qui il est.",
-                "es": "Un contenido reservado a mayores de edad puede esperar detrás de una verificación de edad anónima de go.cam: introduzca las tres claves go.cam en la configuración, y el visitante demuestra su edad en su propio dispositivo, sin que el sitio sepa nunca quién es."
+                "en": "Content reserved for adults can wait behind an anonymous age verification: choose the service in the configuration (go.cam is provided) and fill in its keys, and the visitor proves their age on their own device, without the site ever learning who they are.",
+                "fr": "Un contenu réservé aux majeurs peut attendre derrière une vérification d'âge anonyme : choisissez l'outil dans la configuration (go.cam est fourni) et renseignez ses clés, et le visiteur prouve son âge sur son propre appareil, sans que le site sache jamais qui il est.",
+                "es": "Un contenido reservado a mayores de edad puede esperar detrás de una verificación de edad anónima: elija el servicio en la configuración (go.cam viene incluido) e introduzca sus claves, y el visitante demuestra su edad en su propio dispositivo, sin que el sitio sepa nunca quién es."
+            },
+            {
+                "en": "The anti-bot check of the forms, the audience measurement and the maps each name their service in the configuration (reCAPTCHA, Matomo, OpenStreetMap or Google Maps are provided): your current settings are kept as they are, and the link to a place on a contact block now opens the map service your site uses.",
+                "fr": "La protection anti-robots des formulaires, la mesure d'audience et les cartes nomment chacune leur outil dans la configuration (reCAPTCHA, Matomo, OpenStreetMap ou Google Maps sont fournis) : vos réglages actuels sont conservés tels quels, et le lien vers un lieu d'un bloc de contact ouvre désormais le service de cartes de votre site.",
+                "es": "La protección antirrobots de los formularios, la medición de audiencia y los mapas nombran cada uno su servicio en la configuración (reCAPTCHA, Matomo, OpenStreetMap o Google Maps vienen incluidos): sus ajustes actuales se conservan tal cual, y el enlace a un lugar de un bloque de contacto abre ahora el servicio de mapas de su sitio."
+            },
+            {
+                "en": "A visitor who ticks \"receive a copy\" while signed out now only gets a short acknowledgement, never the text they typed: your site can no longer be used to send a message to someone else.",
+                "fr": "Un visiteur qui coche « recevoir une copie » sans être connecté ne reçoit plus qu'un court accusé de réception, jamais le texte qu'il a saisi : votre site ne peut plus servir à envoyer un message à quelqu'un d'autre.",
+                "es": "Un visitante que marca «recibir una copia» sin haber iniciado sesión solo recibe ahora un breve acuse de recibo, nunca el texto que escribió: su sitio ya no puede servir para enviar un mensaje a otra persona."
+            },
+            {
+                "en": "Maps and videos from another service always wait for the visitor's agreement, even on a site without a cookie banner.",
+                "fr": "Les cartes et les vidéos d'un autre service attendent toujours l'accord du visiteur, même sur un site sans bandeau cookies.",
+                "es": "Los mapas y los vídeos de otro servicio esperan siempre el consentimiento del visitante, incluso en un sitio sin banner de cookies."
+            },
+            {
+                "en": "The legal models are updated: the terms of sales ship to the destinations offered at checkout, a consumer keeps the court of their own home, and the privacy policy describes the age verification and OpenStreetMap maps.",
+                "fr": "Les modèles légaux sont mis à jour : les CGV livrent vers les destinations proposées à la commande, un consommateur garde le tribunal de son domicile, et la politique de confidentialité décrit la vérification d'âge et les cartes OpenStreetMap.",
+                "es": "Los modelos legales se actualizan: las condiciones de venta envían a los destinos propuestos en el pedido, un consumidor conserva el tribunal de su domicilio y la política de privacidad describe la verificación de edad y los mapas de OpenStreetMap."
+            },
+            {
+                "en": "Three new guided projects walk you through plugging in the forms' captcha, the audience measurement and the map service, from the choice of the service to its keys.",
+                "fr": "Trois nouveaux projets guidés vous accompagnent pour brancher le captcha des formulaires, la mesure d'audience et le service de cartes, du choix de l'outil à ses clés.",
+                "es": "Tres nuevos proyectos guiados le acompañan para conectar el captcha de los formularios, la medición de audiencia y el servicio de mapas, desde la elección del servicio hasta sus claves."
             }
         ]
     },

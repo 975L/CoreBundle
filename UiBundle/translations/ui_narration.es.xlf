@@ -24,15 +24,15 @@
             </trans-unit>
             <trans-unit id="Tqyp_I4">
                 <source>narration.guided_step_ui_age_verification_setup_entry</source>
-                <target>Haga clic en el lápiz del identificador de socio.</target>
+                <target>Haga clic en el lápiz del servicio.</target>
             </trans-unit>
             <trans-unit id="4_cNrVr">
                 <source>narration.guided_step_ui_age_verification_setup_headers</source>
-                <target>Último paso: las cabeceras del sitio deben dejar entrar el marco de go.cam, un ajuste que describe el README. A partir de ahí, todo contenido declarado para mayores de 18 años espera detrás de la verificación.</target>
+                <target>Último paso: las cabeceras del sitio deben dejar entrar el marco del servicio, un ajuste que describe el README. Después, todo contenido declarado para mayores de 18 años espera detrás de la verificación.</target>
             </trans-unit>
             <trans-unit id="SR.cMx8">
                 <source>narration.guided_step_ui_age_verification_setup_open</source>
-                <target>Estos son los ajustes, abiertos en el grupo Legal: las tres entradas « Verificación de edad go.cam » encienden la verificación, con los valores del área de socios de go.cam.</target>
+                <target>Estos son los ajustes, abiertos en el grupo Legal: «Verificación de edad: servicio» elige el servicio, go.cam por ejemplo, y las entradas con su nombre reciben los valores de su área de socios.</target>
             </trans-unit>
             <trans-unit id="WhEywpU">
                 <source>narration.guided_step_ui_age_verification_setup_save</source>
@@ -40,7 +40,7 @@
             </trans-unit>
             <trans-unit id="0EwSH1a">
                 <source>narration.guided_step_ui_age_verification_setup_value</source>
-                <target>Pegue el valor que da go.cam y haga lo mismo con las dos claves.</target>
+                <target>Elija el servicio, guarde y luego pegue uno a uno los valores que le da.</target>
             </trans-unit>
             <trans-unit id="WPAsuLp">
                 <source>narration.guided_step_ui_ai_assistant_action</source>
@@ -118,6 +118,26 @@
                 <source>narration.guided_step_ui_ai_search_setup_value</source>
                 <target>Escriba su valor en este campo. La clave API sigue siendo suya: cada pregunta se factura en su cuenta del proveedor.</target>
             </trans-unit>
+            <trans-unit id="JaHxgAC">
+                <source>narration.guided_step_ui_analytics_setup_entry</source>
+                <target>Haga clic en el lápiz del servicio.</target>
+            </trans-unit>
+            <trans-unit id="LpQgtO0">
+                <source>narration.guided_step_ui_analytics_setup_open</source>
+                <target>Estos son los ajustes, abiertos en el grupo Analítica: «Medición de audiencia: servicio» elige el servicio, Matomo por ejemplo, y las entradas con su nombre reciben su dirección y el identificador del sitio.</target>
+            </trans-unit>
+            <trans-unit id="OcwG1qH">
+                <source>narration.guided_step_ui_analytics_setup_policy</source>
+                <target>Último paso: revise la política de cookies, que nombra ahora el servicio en uso.</target>
+            </trans-unit>
+            <trans-unit id="FvHLfdD">
+                <source>narration.guided_step_ui_analytics_setup_save</source>
+                <target>Guarde.</target>
+            </trans-unit>
+            <trans-unit id="6sIWQmC">
+                <source>narration.guided_step_ui_analytics_setup_value</source>
+                <target>Elija el servicio, guarde y luego introduzca uno a uno los valores que le muestra.</target>
+            </trans-unit>
             <trans-unit id="9klQ1Xs">
                 <source>narration.guided_step_ui_calculator_action</source>
                 <target>Elija después si se envía: deje la acción vacía para un simple cálculo, o elija «enviar un email» para que el visitante pida un presupuesto con sus resultados.</target>
@@ -165,6 +185,26 @@
             <trans-unit id="gGlIQUe">
                 <source>narration.guided_step_ui_calculator_save_fields</source>
                 <target>Guarde antes de escribir la menor fórmula: el nombre de las variables se deriva de las etiquetas, y solo aparece una vez guardados los campos.</target>
+            </trans-unit>
+            <trans-unit id="YvIXnF8">
+                <source>narration.guided_step_ui_captcha_setup_entry</source>
+                <target>Haga clic en el lápiz del servicio.</target>
+            </trans-unit>
+            <trans-unit id="zRYeGKU">
+                <source>narration.guided_step_ui_captcha_setup_headers</source>
+                <target>Último paso: las cabeceras del sitio deben dejar entrar al servicio, un ajuste que describe el README. Después, cada formulario público se puntúa mientras se rellena.</target>
+            </trans-unit>
+            <trans-unit id="bFehqVa">
+                <source>narration.guided_step_ui_captcha_setup_open</source>
+                <target>Estos son los ajustes, abiertos en el grupo Seguridad: «Captcha: servicio» elige el servicio, reCAPTCHA por ejemplo, y las entradas con su nombre reciben sus claves.</target>
+            </trans-unit>
+            <trans-unit id="rkVBjnI">
+                <source>narration.guided_step_ui_captcha_setup_save</source>
+                <target>Guarde.</target>
+            </trans-unit>
+            <trans-unit id="8.x1IjK">
+                <source>narration.guided_step_ui_captcha_setup_value</source>
+                <target>Elija el servicio, guarde y luego pegue una a una las claves que le da.</target>
             </trans-unit>
             <trans-unit id="upqcYyp">
                 <source>narration.guided_step_ui_content_export_import</source>
@@ -353,6 +393,26 @@
             <trans-unit id="4MRnqsr">
                 <source>narration.guided_step_ui_legal_model_unit</source>
                 <target>Cada tarjeta es una sección. Dele su propio título, reescriba su texto, o marque la casilla que la oculta en la página publicada.</target>
+            </trans-unit>
+            <trans-unit id="Gs0AtcH">
+                <source>narration.guided_step_ui_map_setup_entry</source>
+                <target>Haga clic en el lápiz del proveedor.</target>
+            </trans-unit>
+            <trans-unit id="HRNVOrB">
+                <source>narration.guided_step_ui_map_setup_headers</source>
+                <target>Último paso: las cabeceras del sitio deben nombrar los hosts del proveedor, que el health check enumera. Después, cada mapa se dibuja con él.</target>
+            </trans-unit>
+            <trans-unit id="hYrdJ9r">
+                <source>narration.guided_step_ui_map_setup_open</source>
+                <target>Estos son los ajustes, abiertos en el grupo Interfaz: «Proveedor de mapas» elige quién dibuja los mapas, OpenStreetMap sin clave y Google con la suya.</target>
+            </trans-unit>
+            <trans-unit id="gwhoRPL">
+                <source>narration.guided_step_ui_map_setup_save</source>
+                <target>Guarde.</target>
+            </trans-unit>
+            <trans-unit id="AsI6qJG">
+                <source>narration.guided_step_ui_map_setup_value</source>
+                <target>Elija el proveedor, guarde y luego pegue su clave si la pide.</target>
             </trans-unit>
             <trans-unit id="9AgZZLS">
                 <source>narration.guided_step_ui_media_add_alt</source>

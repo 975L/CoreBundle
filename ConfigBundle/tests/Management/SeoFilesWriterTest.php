@@ -350,7 +350,7 @@ class SeoFilesWriterTest extends TestCase
     {
         $this->createWriter([], [
             'seo-robots-disallow' => ['/private/', '', ['nested'], 42],
-            'seo-robots-ai-crawlers' => ['GPTBot', '', ['nested'], 42],
+            'seo-robots-ai-crawlers' => ['GPTBot', '', ['nested'], 42, "X\nUser-agent: *\nDisallow: /"],
         ])->write();
 
         $robots = $this->read('robots.txt');

@@ -15,6 +15,7 @@ use c975L\UiBundle\Management\FontImportProvider;
 use c975L\UiBundle\Repository\FontRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
+use Vich\UploaderBundle\FileAbstraction\ReplacingFile;
 
 class FontImportProviderTest extends TestCase
 {
@@ -102,6 +103,46 @@ class FontImportProviderTest extends TestCase
         $this->assertSame('new-font-bytes', file_get_contents($file->getPathname()));
 
         unlink($file->getPathname());
+        rmdir($filesDir . '/files');
+        rmdir($filesDir);
+    }
+
+    // A manifest naming a file outside the extracted folder, or one that is not a font, leaves the row's file alone
+    public function testImportIgnoresAPathLeavingTheArchiveOrAFileThatIsNoFont(): void
+    {
+        $filesDir = $this->createFilesDir('files/secret.env', 'APP_SECRET=x');
+        $outside = \dirname($filesDir) . '/' . basename($filesDir) . '-outside.woff2';
+        file_put_contents($outside, 'outside');
+
+        foreach (['files/secret.env', '../' . basename($outside), $outside] as $path) {
+            $existing = new Font()->setName('Roboto')->setWeight(400)->setStyle('normal');
+            $provider = new FontImportProvider($this->createStub(EntityManagerInterface::class), $this->createFontRepository($existing));
+            $provider->import([['name' => 'Roboto', 'weight' => 400, 'style' => 'normal', 'file' => $path]], $filesDir);
+
+            $this->assertNull($existing->getFile(), $path);
+        }
+
+        unlink($outside);
+        unlink($filesDir . '/files/secret.env');
+        rmdir($filesDir . '/files');
+        rmdir($filesDir);
+    }
+
+    // Vich is told to leave the archive's copy where it is, on success as on error
+    public function testImportedFileIsNeverRemovedByVich(): void
+    {
+        $filesDir = $this->createFilesDir('files/roboto.woff2', 'bytes');
+        $existing = new Font()->setName('Roboto')->setWeight(400)->setStyle('normal');
+        $provider = new FontImportProvider($this->createStub(EntityManagerInterface::class), $this->createFontRepository($existing));
+
+        $provider->import([['name' => 'Roboto', 'weight' => 400, 'style' => 'normal', 'file' => 'files/roboto.woff2']], $filesDir);
+        $file = $existing->getFile();
+
+        $this->assertInstanceOf(ReplacingFile::class, $file);
+        $this->assertFalse($file->isRemoveReplacedFile());
+        $this->assertFalse($file->isRemoveReplacedFileOnError());
+
+        unlink($filesDir . '/files/roboto.woff2');
         rmdir($filesDir . '/files');
         rmdir($filesDir);
     }

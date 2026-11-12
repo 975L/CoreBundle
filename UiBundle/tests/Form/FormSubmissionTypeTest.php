@@ -11,6 +11,7 @@
 namespace c975L\UiBundle\Tests\Form;
 
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
+use c975L\UiBundle\Captcha\RecaptchaProvider;
 use c975L\UiBundle\Entity\FormField;
 use c975L\UiBundle\Form\CaptchaType;
 use c975L\UiBundle\Form\FormSubmissionType;
@@ -50,6 +51,7 @@ use Symfony\Component\Validator\Constraints\Email;
 use Symfony\Component\Validator\Constraints\Image;
 use Symfony\Component\Validator\Constraints\IsTrue;
 use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints\Range;
 use Symfony\Component\Validator\Validation;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -73,12 +75,14 @@ class FormSubmissionTypeTest extends TestCase
     {
         $configService = $this->createStub(ConfigServiceInterface::class);
         $configService->method('hasParameter')->willReturnMap([
-            ['recaptcha3-site-key', $recaptcha],
-            ['recaptcha3-secret-key', $recaptcha],
+            ['captcha-provider', true],
+            ['captcha-recaptcha-site-key', $recaptcha],
+            ['captcha-recaptcha-secret-key', $recaptcha],
         ]);
         $configService->method('get')->willReturnMap([
-            ['recaptcha3-site-key', $recaptcha ? 'site-key' : null],
-            ['recaptcha3-secret-key', $recaptcha ? 'secret-key' : null],
+            ['captcha-provider', 'recaptcha'],
+            ['captcha-recaptcha-site-key', $recaptcha ? 'site-key' : null],
+            ['captcha-recaptcha-secret-key', $recaptcha ? 'secret-key' : null],
         ]);
         $configService->method('getContainerParameter')->willReturn(null);
 
@@ -90,7 +94,7 @@ class FormSubmissionTypeTest extends TestCase
         $translator->method('trans')->willReturn('read');
         $translator->method('getLocale')->willReturn('fr');
 
-        $captchaVerifier = new CaptchaVerifier($this->createStub(HttpClientInterface::class), $configService, $requestStack);
+        $captchaVerifier = new CaptchaVerifier($configService, $requestStack, [new RecaptchaProvider($this->createStub(HttpClientInterface::class), $configService)]);
 
         return new FormSubmissionType(new FormBotProtection($configService), $requestStack, $translator, $captchaVerifier, $formTranslator ?? new FormTranslator());
     }
@@ -586,6 +590,70 @@ class FormSubmissionTypeTest extends TestCase
         $this->assertSame('Annecy', $added['city']['options']['data']);
         $this->assertSame('7.5', $added['conso']['options']['data']);
         $this->assertTrue($added['optin']['options']['data']);
+    }
+
+    // The translated default is the one injected into the input, so it is the one weighed: a source "1.5" translated "1,5" would 500 the page in that language
+    public function testATranslatedDefaultANumberFieldWouldRefuseIsIgnored(): void
+    {
+        $field = $this->buildField('conso', FormField::TYPE_NUMBER, false);
+        $field->setDefaultValue('1.5');
+        new \ReflectionProperty(FormField::class, 'id')->setValue($field, 3);
+
+        $contentTranslator = $this->createStub(ContentTranslator::class);
+        $contentTranslator->method('isActive')->willReturn(true);
+        $contentTranslator->method('translate')->willReturnCallback(
+            static fn (string $ownerType, ?int $ownerId, array $values, array $fields): array => array_merge($values, in_array('defaultValue', $fields, true) ? ['defaultValue' => '1,5'] : [])
+        );
+
+        $added = [];
+        $builder = $this->createStub(FormBuilderInterface::class);
+        $builder->method('add')->willReturnCallback(function (string $name, ?string $type = null, array $options = []) use (&$added, $builder) {
+            $added[$name] = ['type' => $type, 'options' => $options];
+
+            return $builder;
+        });
+
+        $this->createType(false, new FormTranslator($contentTranslator))
+            ->buildForm($builder, ['fields' => [$field], 'offerReceiveCopy' => false, 'prefill' => [], 'protections' => false]);
+
+        $this->assertArrayNotHasKey('data', $added['conso']['options']);
+    }
+
+    // The bounds of a number or a slider are weighed by the server too, a forged POST ignoring the HTML attributes
+    public function testTheBoundsOfANumberOrRangeFieldAreEnforcedByTheServer(): void
+    {
+        $number = $this->buildField('quantity', FormField::TYPE_NUMBER, false);
+        $number->setMinValue(1)->setMaxValue(10);
+        $range = $this->buildField('km-an', FormField::TYPE_RANGE, false);
+        $range->setMinValue(5000);
+
+        $added = $this->buildAddedFields([$number, $range]);
+
+        $numberRange = $this->rangeOf($added['quantity']['options']['constraints']);
+        $this->assertSame(1.0, $numberRange?->min);
+        $this->assertSame(10.0, $numberRange?->max);
+        $rangeRange = $this->rangeOf($added['km-an']['options']['constraints']);
+        $this->assertSame(5000.0, $rangeRange?->min);
+        $this->assertNull($rangeRange?->max);
+    }
+
+    // A number field without any bound accepts any value, as before
+    public function testANumberFieldWithoutBoundsGetsNoRange(): void
+    {
+        $added = $this->buildAddedFields([$this->buildField('conso', FormField::TYPE_NUMBER, false)]);
+
+        $this->assertNull($this->rangeOf($added['conso']['options']['constraints']));
+    }
+
+    private function rangeOf(array $constraints): ?Range
+    {
+        foreach ($constraints as $constraint) {
+            if ($constraint instanceof Range) {
+                return $constraint;
+            }
+        }
+
+        return null;
     }
 
     public function testNonPrefilledFieldHasNoDataOrReadonlyAttr(): void

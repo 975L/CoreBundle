@@ -11,6 +11,7 @@
 namespace c975L\UiBundle\Tests\Validator\Constraints;
 
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
+use c975L\UiBundle\Captcha\RecaptchaProvider;
 use c975L\UiBundle\Service\CaptchaVerifier;
 use c975L\UiBundle\Validator\Constraints\Captcha;
 use c975L\UiBundle\Validator\Constraints\CaptchaValidator;
@@ -25,8 +26,9 @@ use Symfony\Component\Validator\Test\ConstraintValidatorTestCase;
 class CaptchaValidatorTest extends ConstraintValidatorTestCase
 {
     private const array KEYS = [
-        'recaptcha3-site-key' => 'site-key',
-        'recaptcha3-secret-key' => 'secret-key',
+        'captcha-provider' => 'recaptcha',
+        'captcha-recaptcha-site-key' => 'site-key',
+        'captcha-recaptcha-secret-key' => 'secret-key',
     ];
 
     /** @var array<string, mixed> */
@@ -46,7 +48,7 @@ class CaptchaValidatorTest extends ConstraintValidatorTestCase
 
         $httpClient = new MockHttpClient(new MockResponse(json_encode(['success' => $this->tokenAccepted, 'score' => 0.9], \JSON_THROW_ON_ERROR)));
 
-        return new CaptchaValidator(new CaptchaVerifier($httpClient, $configService, $requestStack));
+        return new CaptchaValidator(new CaptchaVerifier($configService, $requestStack, [new RecaptchaProvider($httpClient, $configService)]));
     }
 
     // The verifier is built in createValidator(), which setUp() already ran - a test needing other config rebuilds it before validating

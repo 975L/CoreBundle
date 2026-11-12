@@ -66,6 +66,23 @@ class PlayServiceTest extends TestCase
         $this->assertSame(['book:12 u42', 'book:12 u42'], $persisted);
     }
 
+    // However many things a handover names, it adds no more plays than its batch
+    public function testAHandoverAddsNoMoreThanItsBatch(): void
+    {
+        $repository = $this->createStub(PlayRepository::class);
+        $repository->method('countsByHolder')->willReturn([]);
+
+        $persisted = 0;
+        $entityManager = $this->createStub(EntityManagerInterface::class);
+        $entityManager->method('persist')->willReturnCallback(static function () use (&$persisted): void {
+            ++$persisted;
+        });
+
+        new PlayService($repository, $this->createStub(PlayTotalRepository::class), $entityManager)->raise('u42', ['book:1' => 500, 'book:2' => 500, 'book:3' => 500]);
+
+        $this->assertSame(200, $persisted);
+    }
+
     // An app's word proves nothing: its play is in its holder's list and its own count, and never reaches the total the pages show
     public function testAnAppsPlayStaysOutOfThePublicTotal(): void
     {

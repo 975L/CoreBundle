@@ -68,25 +68,24 @@
 	{% endif %}
 
 	{# The providers some features hand data to, each named only when this site uses it - the payment one and the site's own coming from PaymentBundle and from the app's templates/legal/, when they exist. No section at all when none is used #}
-	{% set captchaUsed = captcha_configured() %}
+	{% set captchaProvider = captcha_provider() %}
 	{% set oauthNames = oauth_login_providers()|map(provider => provider.name)|join(' or ') %}
 	{% set mapSettings = ui_map_settings() %}
-	{% set googleMapsUsed = 'google' == mapSettings.provider and mapSettings.usable %}
+	{% set mapParagraph %}{% if mapSettings.usable %}{% include '@c975LUi/models/france/providers/map-' ~ mapSettings.provider ~ '.en.html.twig' ignore missing %}{% endif %}{% endset %}
+	{% set ageProvider = age_verification_provider() %}
+	{% set ageParagraph %}{% if ageProvider %}{% include '@c975LUi/models/france/providers/age-verification-' ~ ageProvider.slug ~ '.en.html.twig' ignore missing %}{% endif %}{% endset %}
 	{% set otherProviders %}
 		{% include '@c975LPayment/legal/privacy-policy.en.html.twig' ignore missing %}
 		{% include 'legal/privacy-policy.en.html.twig' ignore missing %}
 	{% endset %}
-	{% if captchaUsed or oauthNames or googleMapsUsed or otherProviders|trim is not empty %}
+	{% if captchaProvider or oauthNames or mapParagraph|trim is not empty or ageParagraph|trim is not empty or otherProviders|trim is not empty %}
 	<section data-legal-id="third-parties">
 		<h2>Third-party services</h2>
 		<div>
 			Some features of <strong>{{ legal_var('site-name') }}</strong> rely on service providers, which then receive only the data their service needs. Some may process it outside the European Union, under the safeguards provided by the GDPR (adequacy decision or standard contractual clauses).
 		</div>
-		{% if captchaUsed %}
-		<h3 data-legal-id="third-parties.recaptcha">Form protection (Google reCAPTCHA)</h3>
-		<div>
-			Forms are protected against bots by Google reCAPTCHA. When a form is sent, Google receives your IP address and information about your browser and browsing, to estimate whether a human sent it. This data is processed under <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Google's privacy policy</a>.
-		</div>
+		{% if captchaProvider %}
+		{% include ['@c975LUi/models/france/providers/captcha-' ~ captchaProvider.slug ~ '.en.html.twig', '@c975LUi/models/france/providers/captcha.en.html.twig'] %}
 		{% endif %}
 		{% if oauthNames %}
 		<h3 data-legal-id="third-parties.oauth">Sign-in with {{ oauthNames }}</h3>
@@ -94,12 +93,8 @@
 			If you choose to sign in with {{ oauthNames }}, the chosen service sends us your email address, which it has verified; we keep nothing else. That service then knows that you use <strong>{{ legal_var('site-name') }}</strong>.
 		</div>
 		{% endif %}
-		{% if googleMapsUsed %}
-		<h3 data-legal-id="third-parties.google-maps">Maps (Google Maps)</h3>
-		<div>
-			Maps are displayed by Google Maps, only once you have accepted third-party content. Google then receives your IP address and may set its own cookies.
-		</div>
-		{% endif %}
+		{{ mapParagraph }}
+		{{ ageParagraph }}
 		{{ otherProviders }}
 	</section>
 	{% endif %}

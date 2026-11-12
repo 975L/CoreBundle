@@ -114,8 +114,8 @@ export default class extends Controller {
     }
 
     done(request) {
-        // Only a transfer that never landed: a request cut short (status 0) or a server that broke on it. A form the server rejects comes back as html holding its validation errors - Symfony renders an invalid one again with a 422 - and belongs to restore(), not to a message telling the user to check a connection that worked
-        if (0 === request.status || request.status >= 500) {
+        // Only a transfer that never landed: a request cut short (status 0), one the web server refused as too large (413) or a server that broke on it. A form the server rejects comes back as html holding its validation errors - Symfony renders an invalid one again with a 422 - and belongs to restore(), not to a message telling the user to check a connection that worked
+        if (0 === request.status || 413 === request.status || request.status >= 500) {
             this.failed();
 
             return;
@@ -149,9 +149,9 @@ export default class extends Controller {
         const parsed = new DOMParser().parseFromString(html, "text/html");
         const form = this.form.id ? parsed.getElementById(this.form.id) : parsed.querySelector("form");
 
-        // A response holding no form of its own is one this controller can't read: the screen is loaded again rather than left on a bar that will never move
+        // A response holding no form of its own is one this controller can't read: told as a failure, the selection kept and the submit handed back, rather than left on a bar that will never move
         if (!form) {
-            window.location.reload();
+            this.failed();
 
             return;
         }

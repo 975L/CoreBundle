@@ -165,6 +165,19 @@ class AppLibraryControllerTest extends TestCase
         $this->assertSame(['toggle book:12', 'raise {"book:12":4}'], $this->calls);
     }
 
+    // A device's token is no account: what it says it held is not taken in, a made-up token writing nothing
+    public function testATokenTakesNothingIn(): void
+    {
+        $response = $this->createController()->library($this->request([
+            'token' => self::TOKEN,
+            'favorites' => ['book:12'],
+            'plays' => ['book:12' => 500],
+        ]));
+
+        $this->assertSame(200, $response->getStatusCode());
+        $this->assertSame([], $this->calls);
+    }
+
     // Handed over again, a favorite already on the list is not taken back out
     public function testAFavoriteAlreadyHeldIsLeftAlone(): void
     {

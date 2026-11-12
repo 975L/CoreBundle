@@ -1,0 +1,6 @@
+{# <twig:c975LUi:Analytics:Tracker/> #}
+{# Self-sufficient fragment carrying its own "is it enabled" guard, so the minimal shell measures audience without SiteBundle (see @c975LUi/layout.html.twig). Deliberately outside the cookie banner: meant for a consent-exempt setup (Matomo's, which its configuration entry describes), a provider configured otherwise being gated by the caller before its settings are filled #}
+{% set provider = analytics_provider() %}
+{% if provider %}
+    <div data-controller="analytics" data-analytics-provider-value="{{ provider.slug }}" data-analytics-settings-value="{{ provider.settings|json_encode }}" hidden></div>
+{% endif %}

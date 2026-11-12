@@ -10,6 +10,7 @@
 
 namespace c975L\ConfigBundle\Management;
 
+use c975L\ConfigBundle\Service\AiCrawlerListClient;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Filesystem\Filesystem;
@@ -88,7 +89,11 @@ class SeoFilesWriter
 
     private function robotsContext(): array
     {
-        $aiCrawlers = $this->stringList($this->configService->get('seo-robots-ai-crawlers'));
+        // Product tokens only, as the community list is read: a user agent typed with a line break would write its own lines into robots.txt
+        $aiCrawlers = array_values(array_filter(
+            $this->stringList($this->configService->get('seo-robots-ai-crawlers')),
+            static fn (string $agent): bool => 1 === preg_match(AiCrawlerListClient::USER_AGENT_PATTERN, $agent)
+        ));
 
         return [
             // Everything below describes a site meant to be indexed, and the template drops the lot rather than mixing a "Disallow: /" into it: a robots.txt holding both that and an "Allow: /" leaves the site open, RFC 9309 settling a tie between two rules of equal length in favour of the least restrictive one

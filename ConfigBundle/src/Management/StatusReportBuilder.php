@@ -114,37 +114,53 @@ class StatusReportBuilder
 
         $counts = array_fill_keys(HealthCheckResult::STATUSES, 0);
         $issues = [];
+        $acknowledged = 0;
         $lastRunAt = null;
 
         foreach ($rows as $row) {
             ++$counts[$row->getStatus()];
 
-            if (null === $lastRunAt || $row->getCheckedAt() > $lastRunAt) {
+            // The backups write their row every 6 hours: counted, they would keep the date fresh while the health check cron itself is dead
+            if (BackupResultRecorder::KIND !== $row->getKind() && (null === $lastRunAt || $row->getCheckedAt() > $lastRunAt)) {
                 $lastRunAt = $row->getCheckedAt();
             }
 
             // Errors only: a site in warning is a site to improve, and its own dashboard already lists where. What has to travel is what needs acting on today - the warning count still shows in "counts", so a site drifting is visible without carrying every row it drifted on
             if (HealthCheckResult::STATUS_ERROR === $row->getStatus()) {
-                $issues[] = [
-                    'kind' => $row->getKind(),
-                    'url' => $row->getUrl(),
-                    'summary' => $row->getSummary(),
-                    'errors' => $this->getErrors($row),
-                ];
+                $acknowledged += null !== $row->getAcknowledgedAt() ? 1 : 0;
+                $issues[] = $this->getIssue($row);
             }
         }
 
         return [
             'counts' => $counts,
+            // The errors among "counts" an admin declared dealt with, each issue carrying its own acknowledgedAt, so a console tells an error still to act on from a false positive already seen
+            'acknowledged' => $acknowledged,
             'lastRunAt' => $lastRunAt?->format(\DateTimeInterface::ATOM),
             'issues' => \array_slice($issues, 0, self::MAX_ISSUES),
             'issuesTruncated' => \count($issues) > self::MAX_ISSUES,
         ];
     }
 
-    // The checker's own messages when it lists them under "errors", as the W3C checks do - strings only, capped in number and in length, never the rest of the payload. An added key: a receiver reading a site not updated yet simply finds none
+    // One row in error as it travels, with the date an admin acknowledged it when they did
+    private function getIssue(HealthCheckResult $row): array
+    {
+        return [
+            'kind' => $row->getKind(),
+            'url' => $row->getUrl(),
+            'summary' => $row->getSummary(),
+            'errors' => $this->getErrors($row),
+            'acknowledgedAt' => $row->getAcknowledgedAt()?->format(\DateTimeInterface::ATOM),
+        ];
+    }
+
+    // The checker's own messages when it lists them under "errors", as the W3C checks do - strings only, capped in number and in length, never the rest of the payload. An added key: a receiver reading a site not updated yet simply finds none. None for a backup, whose messages are mysqldump's, tar's and rclone's raw output naming the database, its user and its host
     private function getErrors(HealthCheckResult $row): array
     {
+        if (BackupResultRecorder::KIND === $row->getKind()) {
+            return [];
+        }
+
         $errors = array_values(array_filter((array) (($row->getDetails() ?? [])['errors'] ?? []), is_string(...)));
 
         return array_map(

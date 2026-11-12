@@ -113,8 +113,8 @@ square original. A grid wanting square tiles uses `object-fit: cover`, which sta
 file cropped square could never give the pixels back.
 
 The derivatives are plain files Vich knows nothing about, so **`MediaFileRemoveListener` removes them**
-with the stored file, on a delete as on a replacing upload — never write a listener of your own for
-them. `getThumbnailSize()` returning `0` asks for no thumbnail at all, for an image no grid shows.
+with the stored file, on a delete as on a replacing upload — and a PDF's `.webp` first page with it, public
+or members-only — never write a listener of your own for them. `getThumbnailSize()` returning `0` asks for no thumbnail at all, for an image no grid shows.
 
 A photo is straightened from its EXIF orientation tag once, before anything is measured, and
 everything written is webp, a format saved without EXIF, so nothing downstream rotates it twice.

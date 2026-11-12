@@ -14,11 +14,12 @@ namespace c975L\UiBundle\Model;
 final class EmailSendRequest
 {
     /**
-     * @param ?string           $bcc         a blind copy, invisible to the recipient - unlike copyToEmail, which sends a second, separate message. What a shop keeping a record of every order email needs
-     * @param bool              $wrapLayout  only meaningful alongside "template": renders it and wraps the result through EmailLayoutRegistry before sending, so a bundle's own email body comes out in the site's branded layout without that template having to {% extends %} a path it would have to know. The body template must then render the body alone, with no layout of its own. Ignored on an "html" request, already-rendered markup being the caller's own call
-     * @param ?string           $text        a plain-text body, written by the caller with no template - what a system email (a digest, an alert) needs. Sent as such, with its HTML twin in the site's layout when one is registered (see EmailService)
-     * @param EmailAttachment[] $attachments files travelling with the message. Appended last, like $text before it, so the positional signature stays what it was. A copy sent to copyToEmail carries them too - it is the same message, sent to a second address
-     * @param ?string           $preface     a plain sentence EmailService writes ahead of an html or a template body, escaped, whichever template the body comes from. What a message needs saying about itself, a template of a site's own knowing nothing of it
+     * @param ?string               $bcc         a blind copy, invisible to the recipient - unlike copyToEmail, which sends a second, separate message. What a shop keeping a record of every order email needs
+     * @param bool                  $wrapLayout  only meaningful alongside "template": renders it and wraps the result through EmailLayoutRegistry before sending, so a bundle's own email body comes out in the site's branded layout without that template having to {% extends %} a path it would have to know. The body template must then render the body alone, with no layout of its own. Ignored on an "html" request, already-rendered markup being the caller's own call
+     * @param ?string               $text        a plain-text body, written by the caller with no template - what a system email (a digest, an alert) needs. Sent as such, with its HTML twin in the site's layout when one is registered (see EmailService)
+     * @param EmailAttachment[]     $attachments files travelling with the message. Appended last, like $text before it, so the positional signature stays what it was. A copy sent to copyToEmail carries them too - it is the same message, sent to a second address
+     * @param array<string, string> $headers     extra headers set on the message (e.g. "List-Unsubscribe" and "List-Unsubscribe-Post" on a reminder), name => value. A name that is not a plain header name, one EmailService sets itself (From, To, Subject...), or a value spanning several lines is dropped. Left off the copy sent to copyToEmail, which is another recipient's message
+     * @param ?string               $preface     a plain sentence EmailService writes ahead of an html or a template body, escaped, whichever template the body comes from. What a message needs saying about itself, a template of a site's own knowing nothing of it
      */
     public function __construct(
         public readonly string $subject,
@@ -37,6 +38,7 @@ final class EmailSendRequest
         public readonly ?string $text = null,
         public readonly array $attachments = [],
         public readonly ?string $preface = null,
+        public readonly array $headers = [],
     ) {
     }
 }

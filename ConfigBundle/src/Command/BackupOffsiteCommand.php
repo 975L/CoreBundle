@@ -82,12 +82,12 @@ class BackupOffsiteCommand extends Command
             return Command::SUCCESS;
         }
 
+        // A failure, as for c975l:config:backup: a site meant to send its backups offsite that cannot is to be told. One whose backups are pulled by an outside machine drops the task from its schedule and records the pull with --ack
         $reason = $this->offsiteSynchronizer->getUnavailabilityReason();
         if (null !== $reason) {
-            // Not a failure: an install that has an outside machine pull is configured exactly like this, and the dashboard already alerts on its own if nothing has left the server for too long
-            $io->warning($reason);
+            $io->error($reason);
 
-            return Command::SUCCESS;
+            return Command::FAILURE;
         }
 
         $paths = $this->pathCollector->getPaths(BackupPath::MODE_MIRROR);

@@ -12,6 +12,7 @@ namespace c975L\UiBundle\Entity;
 
 use c975L\UiBundle\Repository\PlayTotalRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 // How many times something was played to its end, by anyone: the site's own listeners on a ticket under the thing's owner type, and its apps' on their word under "app:" + that type (see PlayService::APP_TOTAL_PREFIX), signed in or not. A count and nobody's, kept apart from Play - whose rows are one holder's and are handed over to an account when it connects, which would count the same listens twice
 #[ORM\Entity(repositoryClass: PlayTotalRepository::class)]
@@ -25,6 +26,7 @@ class PlayTotal
     private ?int $id = null;
 
     #[ORM\Column(length: 50)]
+    #[Assert\Length(max: 50)]
     private string $ownerType;
 
     #[ORM\Column]

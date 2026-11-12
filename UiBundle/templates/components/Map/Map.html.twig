@@ -9,35 +9,22 @@
     <section class="ui-map ui-map--{{ height|default('medium') }}"{% if id is defined and id %} id="{{ id }}"{% endif %}>
         {% if title is defined and title %}<h2 class="ui-map__title">{{ title }}</h2>{% endif %}
         {# Kebab-case identifier on both sides: Stimulus doesn't dasherize the identifier, only the value name #}
+        {# Cached with the block (see MapCacheTagProvider): nothing here depends on who is looking. Why a map is missing is told by the controller alone, from the sentences the layout hands whoever may act on it (see _diagnostic.html.twig) #}
         <div class="ui-map__frame"
+             data-controller="ui-map"
+             data-ui-map-usable-value="{{ settings.usable ? 'true' : 'false' }}"
              {% if settings.usable %}
-                 data-controller="ui-map"
                  data-ui-map-provider-value="{{ settings.provider }}"
-                 data-ui-map-api-key-value="{{ settings.apiKey }}"
-                 data-ui-map-tile-url-value="{{ settings.tileUrl }}"
-                 {# Served by this bundle, so a site has no package to require and no script host to open in its policy - the urls are asset()-resolved for the cache busting #}
-                 data-ui-map-script-value="{{ asset('bundles/c975lui/js/leaflet.js') }}"
-                 data-ui-map-stylesheet-value="{{ asset('bundles/c975lui/css/leaflet.css') }}"
-                 data-ui-map-attribution-value="{{ settings.attribution }}"
+                 {# What the provider's driver draws with (see MapProviderInterface::getSettings()): a tile server and this bundle's own copy of Leaflet, or a browser key #}
+                 data-ui-map-settings-value="{{ settings.settings|json_encode }}"
                  data-ui-map-needs-consent-value="{{ settings.needsConsent ? 'true' : 'false' }}"
                  data-ui-map-zoom-value="{{ zoom|default(13) }}"
                  data-ui-map-points-value="{{ points|json_encode }}"
-                 {# Only for whoever may act on it: a visitor's page carries neither the sentences nor the element they would be written into #}
-                 {% if settings.diagnostic %}
-                     data-ui-map-diagnostic-value="{{ 'label.map_diagnostic_refused'|trans({}, 'ui') }}"
-                     data-ui-map-diagnostic-csp-value="{{ 'label.map_diagnostic_csp'|trans({}, 'ui') }}"
-                 {% endif %}
              {% endif %}>
             {# Filled by the controller once the library is there - left empty and out of the flow otherwise, the list below being what the visitor reads #}
             <div class="ui-map__canvas" data-ui-map-target="canvas" hidden></div>
-            {# Why the map is not there, in place and at once, for whoever placed the block - a health check is read by somebody who went looking, and the person who has just chosen a provider is looking at the page. Never rendered for a visitor: a missing key and a security policy are not theirs to fix, and the list of places is the content either way #}
-            {% if settings.diagnostic %}
-                {% if not settings.usable %}
-                    <p class="ui-map__diagnostic">{{ 'label.map_diagnostic_no_key'|trans({}, 'ui') }}</p>
-                {% else %}
-                    <p class="ui-map__diagnostic" data-ui-map-target="diagnostic" hidden></p>
-                {% endif %}
-            {% endif %}
+            {# Why the map is not there, in place and at once, for whoever placed the block - a health check is read by somebody who went looking, and the person who has just chosen a provider is looking at the page. Left empty and hidden for a visitor: a missing key and a security policy are not theirs to fix, and the list of places is the content either way #}
+            <p class="ui-map__diagnostic" data-ui-map-target="diagnostic" hidden></p>
             {# Consent still to be given, for a provider that costs one: shown by the controller, never on a map drawn from tiles that write no cookie #}
             <div class="ui-map__prompt" data-ui-map-target="consent" hidden>
                 <p>{{ 'label.map_consent_required'|trans({}, 'ui') }}</p>
@@ -61,8 +48,8 @@
                             <span class="ui-map__place-label">{{ point.label }}</span>
                         {% endif %}
                         {% if point.text is defined and point.text %}<span class="ui-map__place-text">{{ point.text }}</span>{% endif %}
-                        {# The place on a map anyone can open, coordinates and all - the one link that works whether or not this page ever drew a map of its own #}
-                        <a class="ui-map__place-link" href="https://www.openstreetmap.org/?mlat={{ point.latitude }}&amp;mlon={{ point.longitude }}#map=16/{{ point.latitude }}/{{ point.longitude }}" target="_blank" rel="noopener">{{ 'label.map_see_on_map'|trans({}, 'ui') }}</a>
+                        {# The place on the provider's own map, coordinates and all - the one link that works whether or not this page ever drew a map of its own #}
+                        <a class="ui-map__place-link" href="{{ ui_map_place_url(point) }}" target="_blank" rel="noopener">{{ 'label.map_see_on_map'|trans({}, 'ui') }}</a>
                     </li>
                 {% endfor %}
             </ul>

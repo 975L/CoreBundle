@@ -40,7 +40,7 @@ class AppLibraryController extends AbstractController
     ) {
     }
 
-    // Everything this holder put aside and played, which is what an app shows on a new phone once connected. An app used before it was connected sends along what it held alone ("favorites" and "plays", under the keys of the answer), for the account to take it in
+    // Everything this holder put aside and played, which is what an app shows on a new phone once connected. An app used before it was connected sends along what it held alone ("favorites" and "plays", under the keys of the answer), for the account to take it in; a device's token alone takes nothing in
     #[Route('/library', name: 'ui_app_library', methods: ['POST'])]
     public function library(Request $request): Response
     {
@@ -49,8 +49,11 @@ class AppLibraryController extends AbstractController
             return $holder;
         }
 
-        $body = self::body($request);
-        $this->takeIn($holder, $body['favorites'] ?? null, $body['plays'] ?? null);
+        // Only an account takes a handover in: an app hands over once connected, and a token anyone can make up would write as many rows as it names
+        if (1 !== preg_match(FavoriteService::TOKEN_PATTERN, $holder)) {
+            $body = self::body($request);
+            $this->takeIn($holder, $body['favorites'] ?? null, $body['plays'] ?? null);
+        }
 
         return $this->answer($holder);
     }

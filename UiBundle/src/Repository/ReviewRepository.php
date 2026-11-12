@@ -12,17 +12,21 @@ namespace c975L\UiBundle\Repository;
 
 use c975L\UiBundle\Entity\Review;
 use c975L\UiBundle\Enum\ReviewStatus;
+use c975L\UiBundle\Service\ReviewCollectionSourceProvider;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
 /**
  * @extends ServiceEntityRepository<Review>
  */
 class ReviewRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
-    {
+    public function __construct(
+        ManagerRegistry $registry,
+        private readonly TagAwareCacheInterface $cache,
+    ) {
         parent::__construct($registry, Review::class);
     }
 
@@ -139,7 +143,7 @@ class ReviewRepository extends ServiceEntityRepository
     // Drops what was written about a thing that no longer exists. Called by whoever owns that thing, this bundle hearing about neither (same reasoning as deleteForOwner() on ratings)
     public function deleteForOwner(string $ownerType, int $ownerId): int
     {
-        return (int) $this->createQueryBuilder('r')
+        $deleted = (int) $this->createQueryBuilder('r')
             ->delete()
             ->andWhere('r.ownerType = :ownerType')
             ->andWhere('r.ownerId = :ownerId')
@@ -148,6 +152,13 @@ class ReviewRepository extends ServiceEntityRepository
             ->getQuery()
             ->execute()
         ;
+
+        // A bulk DELETE passes by ReviewCacheInvalidationListener: the wall of reviews is emptied here, or it keeps showing those of a thing gone
+        if (0 < $deleted) {
+            $this->cache->invalidateTags([ReviewCollectionSourceProvider::CACHE_TAG]);
+        }
+
+        return $deleted;
     }
 
     // The published scores written here that nothing verified, whose rating may still stand under their author's address (see ReviewService::rekeyLegacyRating())

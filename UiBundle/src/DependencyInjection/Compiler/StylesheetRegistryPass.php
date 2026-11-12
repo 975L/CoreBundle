@@ -48,8 +48,13 @@ class StylesheetRegistryPass implements CompilerPassInterface
     private function tagUntaggedProviders(ContainerBuilder $container): void
     {
         foreach ($container->getDefinitions() as $definition) {
-            $class = $definition->getClass();
-            if (!$class || $definition->hasTag('ui.stylesheet')) {
+            // Same rules as AbstractProviderPass: an abstract ".abstract.instanceof." parent is no service, and a provider matched by an instanceof conditional holds its class on that parent
+            if ($definition->isAbstract() || $definition->hasTag('ui.stylesheet')) {
+                continue;
+            }
+
+            $class = AbstractProviderPass::resolveClass($container, $definition);
+            if (!$class) {
                 continue;
             }
 

@@ -13,6 +13,7 @@ namespace c975L\UiBundle\Tests\Twig;
 use c975L\UiBundle\Entity\Block;
 use c975L\UiBundle\Model\CollectionItem;
 use c975L\UiBundle\Registry\CollectionSourceRegistry;
+use c975L\UiBundle\Service\BlockCacheInvalidator;
 use c975L\UiBundle\Service\BlockRenderContext;
 use c975L\UiBundle\Twig\BlockExtension;
 use c975L\UiBundle\Twig\CollectionRuntime;
@@ -156,6 +157,21 @@ class CollectionRuntimeTest extends TestCase
 
         $cache->invalidateTags(['guild_characters']);
         $runtime->renderItems('guild.characters', 1, null, null, 'random');
+    }
+
+    // The "empty the blocks cache" tile and a deployment reach the random lists too, which no source tag would after a template change
+    public function testARandomListIsRenderedAgainOnceTheWholeBlocksCacheIsEmptied(): void
+    {
+        $sourceRegistry = $this->createMock(CollectionSourceRegistry::class);
+        $sourceRegistry->expects($this->exactly(2))->method('items')->willReturn([new CollectionItem('Item 1', slug: 'item-1')]);
+        $sourceRegistry->method('cacheTags')->willReturn(['guild_characters']);
+
+        $cache = new TagAwareAdapter(new ArrayAdapter());
+        $runtime = $this->createRuntime($sourceRegistry, $this->createStub(BlockExtension::class), new Request(), $cache);
+
+        $runtime->renderItems('guild.characters', null, null, null, 'random');
+        $cache->invalidateTags([BlockCacheInvalidator::CACHE_TAG_ALL]);
+        $runtime->renderItems('guild.characters', null, null, null, 'random');
     }
 
     // Anything but "random" is the source's own order, and the limit stays the source's business - the very query it runs

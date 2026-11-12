@@ -25,16 +25,33 @@ class VideoIframeBehaviourTest extends JsCase
     private const string BANNER = '<div data-controller="cookie-consent"></div>';
 
     // A consent library standing where vanilla-cookieconsent stands, answering the two questions the controller asks it. The real one is exercised by CookieConsentContractTest, which is what says these two names are still the right ones
+    // A page with no banner, and no accord left by an earlier scenario in the visit's storage
+    private const string NO_BANNER = 'delete window.CookieConsent; sessionStorage.removeItem("c975l-consent-content");';
+
     private const string CONSENT = 'window.CookieConsent = {
         granted: %s,
         acceptedCategory(category) { return "content" === category && this.granted; },
         acceptCategory(category) { this.granted = "content" === category; window.dispatchEvent(new CustomEvent("cc:onChange")); },
     };';
 
-    // No banner at all on the page: a site that uses none must not have its content held back for an answer nobody will ever be asked for
-    public function testASiteWithoutABannerGetsItsPlayerWithoutBeingAskedAnything(): void
+    // No banner at all on the page: the visitor is still asked in place before a platform is reached, and the accord is kept for the visit
+    public function testASiteWithoutABannerAsksInPlaceAndKeepsTheAccord(): void
     {
-        $this->assertSame(self::SRC, $this->framed($this->markup(), ['before' => 'delete window.CookieConsent;', 'settle' => 250]), 'A site with no consent banner never gets its video framed at all.');
+        $this->assertNull($this->framed($this->markup(), ['before' => self::NO_BANNER, 'settle' => 250]), 'A site with no consent banner framed its player without asking anything.');
+
+        $state = $this->observe(
+            $this->markup(),
+            ['videoIframe' => 'video-iframe'],
+            'root.querySelector("[data-action=\'videoIframe#accept\']").click();
+             await new Promise((r) => setTimeout(r, 200));
+             const state = { src: root.querySelector("iframe")?.getAttribute("src") ?? null, kept: sessionStorage.getItem("c975l-consent-content") };
+             sessionStorage.removeItem("c975l-consent-content");
+
+             return state;',
+            ['before' => self::NO_BANNER, 'settle' => 250]
+        );
+
+        $this->assertSame(['src' => self::SRC, 'kept' => '1'], $state, 'The accord given in place did not frame the player, or was not kept for the visit.');
     }
 
     // The failure this whole arrangement exists to prevent
@@ -65,8 +82,11 @@ class VideoIframeBehaviourTest extends JsCase
              root.querySelector("[data-videoiframe-src-value]").scrollIntoView();
              await new Promise((r) => setTimeout(r, 200));
 
-             return { before, after: !!root.querySelector("iframe") };',
-            ['before' => 'delete window.CookieConsent;', 'settle' => 250]
+             const after = !!root.querySelector("iframe");
+             sessionStorage.removeItem("c975l-consent-content");
+
+             return { before, after };',
+            ['before' => self::NO_BANNER . ' sessionStorage.setItem("c975l-consent-content", "1");', 'settle' => 250]
         );
 
         $this->assertFalse($state['before'], 'A player four thousand pixels below the fold was framed on load, which is the megabyte this deferral exists to save.');

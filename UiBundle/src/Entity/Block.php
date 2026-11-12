@@ -17,6 +17,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: BlockRepository::class)]
 #[ORM\Table(name: 'site_block')]
@@ -29,6 +30,7 @@ class Block implements \Stringable
     private ?int $id = null;
 
     #[ORM\Column(length: 50, nullable: true)]
+    #[Assert\Length(max: 50)]
     private ?string $kind = null;
 
     #[ORM\Column(nullable: true)]
@@ -39,6 +41,7 @@ class Block implements \Stringable
 
     // Entrance animation played once the block scrolls into view (see AnimationChoiceType)
     #[ORM\Column(length: 30, nullable: true)]
+    #[Assert\Length(max: 30)]
     private ?string $animation = null;
 
     // Kept on the page, rendered nowhere: a block set aside to see the page without it, instead of being deleted and rebuilt (see block-hide.js and BlockExtension::renderBlock)

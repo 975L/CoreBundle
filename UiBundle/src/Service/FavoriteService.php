@@ -19,6 +19,7 @@ use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 // Everything a wishlist decides, kept out of FavoriteController so the controller only ever deals with http - same split as RatingService, whose voter key this one holds its list by
 class FavoriteService
@@ -34,6 +35,12 @@ class FavoriteService
     ) {
     }
 
+    // The key an account's list and plays are held under
+    public static function holderOf(UserInterface $user): string
+    {
+        return 'u' . $user->getId();
+    }
+
     /**
      * Whose list this is, as the single opaque key Favorite::$holder stores.
      *
@@ -45,7 +52,7 @@ class FavoriteService
     {
         $user = $this->security->getUser();
         if ($user instanceof UserInterface && null !== $user->getId()) {
-            return 'u' . $user->getId();
+            return self::holderOf($user);
         }
 
         return null !== $token && 1 === preg_match(self::TOKEN_PATTERN, $token) ? $token : null;
@@ -79,6 +86,11 @@ class FavoriteService
     public function toggle(string $ownerType, int $ownerId, string $holder): array
     {
         $favorite = $this->favoriteRepository->findOneByHolder($ownerType, $ownerId, $holder);
+
+        // Only a thing this site can show is put aside, or any url would file a row for nothing; taking one back out is always allowed, even once it is gone
+        if (null === $favorite && [] === $this->favoriteItemRegistry->resolve([$ownerType => [$ownerId]])) {
+            throw new NotFoundHttpException();
+        }
 
         if (null === $favorite) {
             $this->entityManager->persist(new Favorite()

@@ -12,6 +12,7 @@ namespace c975L\ConfigBundle\Tests\Management;
 
 use c975L\ConfigBundle\Entity\HealthCheckResult;
 use c975L\ConfigBundle\Entity\Redirect;
+use c975L\ConfigBundle\Management\HealthCheckExhaustiveInterface;
 use c975L\ConfigBundle\Management\RedirectChainHealthCheckProvider;
 use c975L\ConfigBundle\Repository\RedirectRepository;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
@@ -60,7 +61,8 @@ class RedirectChainHealthCheckProviderTest extends TestCase
         $this->assertSame('redirect-chains', $provider->getKind());
     }
 
-    public function testRunChecksReturnsEmptyArrayWithoutASiteUrl(): void
+    // Thrown rather than returned empty: the kind is exhaustive, so an empty run would clear every row it wrote
+    public function testRunChecksThrowsWithoutASiteUrl(): void
     {
         $provider = new RedirectChainHealthCheckProvider(
             $this->createRepository([$this->createRedirect('/old', '/new')]),
@@ -68,7 +70,16 @@ class RedirectChainHealthCheckProviderTest extends TestCase
             $this->createTranslator(),
         );
 
-        $this->assertSame([], $provider->runChecks());
+        $this->expectException(\RuntimeException::class);
+        $provider->runChecks();
+    }
+
+    // Every redirect is read, so the row of one deleted is dropped by the runner rather than kept forever
+    public function testItIsExhaustive(): void
+    {
+        $provider = new RedirectChainHealthCheckProvider($this->createRepository([]), $this->createSiteUrlResolver(null), $this->createTranslator());
+
+        $this->assertInstanceOf(HealthCheckExhaustiveInterface::class, $provider);
     }
 
     public function testRunChecksStatusIsOkForADirectRedirect(): void

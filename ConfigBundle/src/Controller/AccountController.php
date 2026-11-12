@@ -183,10 +183,10 @@ class AccountController extends AbstractController
         return true;
     }
 
-    // The confirmation AccountDeleteController reads, drawn in the page's dialog. Null where it would refuse: a User it cannot anonymize, and the site's owner
+    // The confirmation AccountDeleteController reads, drawn in the page's dialog. Null where it would refuse: a User it cannot anonymize, and the site's owner, read off its own roles as a role preview lowers isGranted()
     private function deleteForm(mixed $user): ?FormInterface
     {
-        if (!$user instanceof InactivityAwareInterface || $this->isGranted('ROLE_SUPER_ADMIN')) {
+        if (!$user instanceof InactivityAwareInterface || \in_array('ROLE_SUPER_ADMIN', $user->getRoles(), true)) {
             return null;
         }
 

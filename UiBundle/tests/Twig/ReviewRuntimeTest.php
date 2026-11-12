@@ -13,10 +13,13 @@ namespace c975L\UiBundle\Tests\Twig;
 use c975L\UiBundle\Entity\Review;
 use c975L\UiBundle\Model\CollectionItem;
 use c975L\UiBundle\Repository\ReviewRepository;
+use c975L\UiBundle\Service\BlockCacheInvalidator;
 use c975L\UiBundle\Service\ReviewService;
 use c975L\UiBundle\Service\ReviewTokenSigner;
 use c975L\UiBundle\Twig\ReviewRuntime;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Cache\Adapter\ArrayAdapter;
+use Symfony\Component\Cache\Adapter\TagAwareAdapter;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -90,6 +93,28 @@ class ReviewRuntimeTest extends TestCase
         );
 
         $this->assertSame('<section class="reviews"></section>', (string) $runtime->section('book', 12));
+    }
+
+    // The "empty the blocks cache" tile and a deployment reach the reviews section too, which only a review event emptied before
+    public function testTheSectionIsRenderedAgainOnceTheWholeBlocksCacheIsEmptied(): void
+    {
+        $twig = $this->createMock(Environment::class);
+        $twig->expects($this->exactly(2))->method('render')->willReturn('<section class="reviews"></section>');
+        $cache = new TagAwareAdapter(new ArrayAdapter());
+        $runtime = new ReviewRuntime(
+            $this->createStub(ReviewRepository::class),
+            $this->enabledService(true),
+            $this->signer(),
+            $this->urlGenerator(),
+            $twig,
+            $cache,
+            new RequestStack([new Request()]),
+        );
+
+        $runtime->section('book', 12);
+        $runtime->section('book', 12);
+        $cache->invalidateTags([BlockCacheInvalidator::CACHE_TAG_ALL]);
+        $runtime->section('book', 12);
     }
 
     // A site collecting no reviews draws no section at all, and nothing about it is stored - the sheets carry no condition of their own any more

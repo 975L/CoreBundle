@@ -53,12 +53,12 @@ class SvgTextWarningListener
             return;
         }
 
-        // Only punctuation is built here, the sentence itself staying in the catalogue
-        $families = $this->svgTextDetector->fontFamilies($absolutePath);
+        // Only punctuation is built here, the sentence itself staying in the catalogue; the file's own names are escaped, EasyAdmin rendering flashes raw
+        $families = array_map(htmlspecialchars(...), $this->svgTextDetector->fontFamilies($absolutePath));
         $session->getFlashBag()->add('warning', $this->translator->trans(
             'text.svg_text_not_vectorized',
             [
-                '%filename%' => $filename,
+                '%filename%' => htmlspecialchars($filename),
                 '%fonts%' => [] === $families ? '' : ' (' . implode(', ', $families) . ')',
             ],
             'ui',

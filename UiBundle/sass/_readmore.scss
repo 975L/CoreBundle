@@ -4,8 +4,16 @@
     margin: 1em auto;
 }
 
-.readmore-toggle {
-    display: none;
+// Out of sight through .sr-only but kept in the tab order, so the keyboard opens the text too. Held where it stands rather than thrown off the page, so focusing it scrolls nowhere
+.readmore .readmore-toggle {
+    top: auto;
+    left: auto;
+}
+
+// The focus shows on the link the checkbox stands for
+.readmore-toggle:focus-visible ~ .readmore-toggle-label {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
 }
 
 .readmore-content {
@@ -47,6 +55,7 @@
 }
 
 // A text ending inside the folded measure has nothing the link could open, and no selector can ask whether the clamp above clamped anything: readmore.js measures the box and adds this class, which is why the label is written visible and hidden after rather than the other way round - a browser running no JS keeps a link that costs at most a click turning nothing, where the reverse would fold a long text behind a link never shown
-.readmore--complete .readmore-toggle-label {
+.readmore--complete .readmore-toggle-label,
+.readmore--complete .readmore-toggle {
     display: none;
 }

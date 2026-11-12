@@ -13,7 +13,7 @@ namespace c975L\UiBundle\Tests\Assets;
 use c975L\UiBundle\Testing\JsCase;
 use PHPUnit\Framework\Attributes\Group;
 
-// assets/js/age-gate.js with go.cam never reached: its frame loads a blank page, and its messages are dispatched by the probe with go.cam's origin
+// assets/js/age-gate.js with go.cam's driver (assets/js/age-gate-gocam.js) and go.cam never reached: its frame loads a blank page, and its messages are dispatched by the probe with go.cam's origin
 #[Group('browser')]
 class AgeGateBehaviourTest extends JsCase
 {
@@ -22,36 +22,53 @@ class AgeGateBehaviourTest extends JsCase
         window.fetch = (url, init) => { window.__posted.push({ url, body: init.body }); return Promise.resolve(new Response("{}", { status: 400 })); };';
 
     // What go.cam sends, from its frame and its origin unless the scenario says otherwise
-    private const string SEND = 'const frame = document.querySelector(".age-gate__frame");
+    private const string SEND = 'await new Promise((resolve) => { const wait = () => (document.querySelector(".age-gate__frame") ? resolve() : setTimeout(wait, 10)); wait(); });
+        const frame = document.querySelector(".age-gate__frame");
         const send = (name, data = {}, origin = "https://go.cam") => window.dispatchEvent(new MessageEvent("message", { origin, source: frame.contentWindow, data: { name, data } }));';
 
-    // The button waits for go.cam's models, then opens the frame over the page
-    public function testTheButtonOpensTheFrameOnceGoCamIsReady(): void
+    // Clickable at once: a click before go.cam's models loaded marks the button busy, and the frame opens the moment they have
+    public function testAClickBeforeGoCamIsReadyOpensTheFrameOnceItIs(): void
     {
         $state = $this->gate(self::SEND . '
             const button = root.querySelector("button");
-            const before = button.disabled;
-            send("avs.onResourcesLoaded");
+            const clickable = !button.disabled;
             button.click();
+            const busy = button.hasAttribute("aria-busy");
+            const openEarly = frame.classList.contains("age-gate__frame--open");
+            send("avs.onResourcesLoaded");
 
-            return { before, after: button.disabled, open: frame.classList.contains("age-gate__frame--open") };');
+            return { clickable, busy, openEarly, open: frame.classList.contains("age-gate__frame--open"), busyAfter: button.hasAttribute("aria-busy") };');
 
-        $this->assertTrue($state['before'], 'The button can be clicked before go.cam is ready, opening an empty frame.');
-        $this->assertFalse($state['after'], 'go.cam said it was ready and the button stayed disabled.');
-        $this->assertTrue($state['open'], 'The click did not lay the frame over the page.');
+        $this->assertTrue($state['clickable'], 'The button waits for go.cam before it can be clicked.');
+        $this->assertTrue($state['busy'], 'A click before go.cam was ready left the button saying nothing.');
+        $this->assertFalse($state['openEarly'], 'The frame opened before go.cam was ready, empty.');
+        $this->assertTrue($state['open'], 'go.cam got ready and the click made before was forgotten.');
+        $this->assertFalse($state['busyAfter'], 'The button stayed busy once the frame was open.');
+    }
+
+    public function testAClickOnceGoCamIsReadyOpensTheFrameAtOnce(): void
+    {
+        $state = $this->gate(self::SEND . '
+            send("avs.onResourcesLoaded");
+            root.querySelector("button").click();
+
+            return frame.classList.contains("age-gate__frame--open");');
+
+        $this->assertTrue($state, 'The click did not lay the frame over the page.');
     }
 
     // Any page can post a message to this window: only go.cam's are read
     public function testAMessageFromAnotherOriginIsIgnored(): void
     {
         $state = $this->gate(self::SEND . '
+            root.querySelector("button").click();
             send("avs.onResourcesLoaded", {}, "https://elsewhere.example");
             send("avs.onVerificationSuccess", { status: true, payload: "forged" }, "https://elsewhere.example");
             await new Promise((r) => setTimeout(r, 60));
 
-            return { disabled: root.querySelector("button").disabled, posted: window.__posted.length };');
+            return { open: frame.classList.contains("age-gate__frame--open"), posted: window.__posted.length };');
 
-        $this->assertTrue($state['disabled'], 'A message from another origin enabled the button.');
+        $this->assertFalse($state['open'], 'A message from another origin opened the frame.');
         $this->assertSame(0, $state['posted'], 'A message from another origin was posted to the server as a result.');
     }
 
@@ -76,27 +93,36 @@ class AgeGateBehaviourTest extends JsCase
             const frames = document.querySelectorAll(".age-gate__frame").length;
             send("avs.onResourcesLoaded");
             const buttons = [...root.querySelectorAll("button")];
-            const enabled = buttons.every((button) => !button.disabled);
             buttons[2].click();
             const open = frame.classList.contains("age-gate__frame--open");
             send("avs.onVerificationSuccess", { payload: "sealed-result" });
             await new Promise((r) => setTimeout(r, 60));
 
-            return { frames, enabled, open, posted: window.__posted.length, errors: [...root.querySelectorAll(".age-gate__error")].filter((error) => !error.hidden).length };', 3);
+            return { frames, open, posted: window.__posted.length, errors: [...root.querySelectorAll(".age-gate__error")].filter((error) => !error.hidden).length };', 3);
 
         $this->assertSame(1, $state['frames'], 'Each gate loaded its own go.cam frame.');
-        $this->assertTrue($state['enabled'], 'go.cam said it was ready and a gate kept its button disabled.');
         $this->assertTrue($state['open'], 'The third gate\'s button did not open the shared frame.');
         $this->assertSame(1, $state['posted'], 'One result was posted more than once.');
         $this->assertSame(3, $state['errors'], 'A refused result left a gate silent.');
     }
 
-    private function gate(string $probe, int $count = 1): mixed
+    // A provider with no driver never answers: the click says so at once instead of leaving the button busy
+    public function testAClickWithNoDriverShowsTheError(): void
+    {
+        $state = $this->gate('const button = root.querySelector("button");
+            button.click();
+
+            return { busy: button.hasAttribute("aria-busy"), error: root.querySelector(".age-gate__error").hidden };', 1, 'unknown');
+
+        $this->assertSame(['busy' => false, 'error' => false], $state, 'A provider with no driver left the button busy and the visitor told nothing.');
+    }
+
+    private function gate(string $probe, int $count = 1, string $provider = 'gocam'): mixed
     {
         return $this->observe(
-            str_repeat('<div class="age-gate" data-controller="age-gate" data-age-gate-url-value="about:blank" data-age-gate-confirm-value="/age-verification">
+            str_repeat('<div class="age-gate" data-controller="age-gate" data-age-gate-provider-value="' . $provider . '" data-age-gate-url-value="about:blank" data-age-gate-confirm-value="/age-verification">
                 <p class="age-gate__text">text</p>
-                <button type="button" data-age-gate-target="button" data-action="age-gate#open" disabled>Verify</button>
+                <button type="button" data-age-gate-target="button" data-action="age-gate#open">Verify</button>
                 <p class="age-gate__error" data-age-gate-target="error" hidden>failed</p>
             </div>', $count),
             ['age-gate' => 'age-gate'],

@@ -52,7 +52,7 @@ class SliderBehaviourTest extends JsCase
     public function testEachChangeIsAnnouncedButTheOpeningSlideIsNot(): void
     {
         $this->assertSame('', $this->slider('return state();')['said'], 'The slider announces a change on opening, over a slide the reader has not been moved from.');
-        $this->assertSame('Item 2 of 3', $this->slider('next(); return state();')['said'], 'A change of slide is not announced, so a screen reader is told nothing at all.');
+        $this->assertSame('Diapositive 2 sur 3', $this->slider('next(); return state();')['said'], 'A change of slide is not announced, so a screen reader is told nothing at all.');
     }
 
     // A dot is a jump to its own slide, whichever way that is
@@ -61,7 +61,7 @@ class SliderBehaviourTest extends JsCase
         $state = $this->slider('root.querySelectorAll(".slider-dot")[2].click(); await tick(); return state();');
 
         $this->assertSame(2, $state['active'], 'A dot does not take the slider to its own slide.');
-        $this->assertSame('Item 3 of 3', $state['said']);
+        $this->assertSame('Diapositive 3 sur 3', $state['said']);
     }
 
     // Whatever turns a slide tells it, so a script following the slider (BookBundle's reader, the voice of an album) need not listen to every gesture one by one
@@ -108,6 +108,23 @@ class SliderBehaviourTest extends JsCase
         );
     }
 
+    // Autoplay turns the slides in silence, a live region speaking every few seconds talking over the page
+    public function testAutoplayAnnouncesNothing(): void
+    {
+        $played = $this->slider('await new Promise((r) => setTimeout(r, 260)); return state();', 120);
+
+        $this->assertGreaterThan(0, $played['active']);
+        $this->assertSame('', $played['said'], 'Autoplay announces every slide it turns.');
+    }
+
+    // The dot of the shown slide is marked in the page's language, never in English
+    public function testTheCurrentDotIsMarkedInThePagesLanguage(): void
+    {
+        $labels = $this->slider('next(); return [...root.querySelectorAll(".slider-dot")].map((d) => d.getAttribute("aria-label"));');
+
+        $this->assertSame(['Slide 1', 'Slide 2 (actuelle)', 'Slide 3'], $labels);
+    }
+
     // Left alone it plays; hovered it stops, because a slide changing under a reader is the whole reason the pause exists
     public function testItPlaysOnItsOwnAndStopsUnderThePointer(): void
     {
@@ -138,7 +155,7 @@ class SliderBehaviourTest extends JsCase
 
         $this->assertSame(0, $stopped['active'], 'The slider went on playing after being stopped.');
         $this->assertSame('start', $stopped['action'], 'The button does not turn into a start button once it has stopped the slider.');
-        $this->assertStringContainsString('Start', (string) $stopped['label'], 'The button goes on announcing itself as a stop button after stopping the slider.');
+        $this->assertSame('Démarrer l\'animation', $stopped['label'], 'The button goes on announcing itself as a stop button after stopping the slider.');
     }
 
     // An open zoom keeps its slide: hidden under it, the dialog would vanish while the page stays inert. Opened without showModal(), whose focus move would pause the slider through another path
@@ -209,9 +226,11 @@ class SliderBehaviourTest extends JsCase
         return sprintf(
             '<div class="slider" id="slider-1" data-controller="slider" data-slider-id="slider-1"%s>
                 <div class="slider-list">%s</div>
-                <button type="button" class="slider-prev">Prev</button>
-                <button type="button" class="slider-next">Next</button>
-                <button type="button" class="slider-play-pause" data-action="stop" aria-label="Stop the slider"></button>
+                <div class="slider-controls" data-slider-announce-label="Diapositive %%current%% sur %%total%%" data-slider-current-label="actuelle" data-slider-start-label="Démarrer l\'animation" data-slider-stop-label="Arrêter l\'animation">
+                    <button type="button" class="slider-prev">Prev</button>
+                    <button type="button" class="slider-next">Next</button>
+                    <button type="button" class="slider-play-pause" data-action="stop" aria-label="Arrêter l\'animation"></button>
+                </div>
                 %s
             </div>',
             null !== $duration ? sprintf(' data-slider-duration="%d"', $duration) : '',

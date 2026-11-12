@@ -10,6 +10,7 @@
 
 namespace c975L\UiBundle\Listener;
 
+use c975L\ConfigBundle\Entity\Config;
 use c975L\UiBundle\Entity\Review;
 use c975L\UiBundle\Service\ReviewCollectionSourceProvider;
 use Doctrine\Bundle\DoctrineBundle\Attribute\AsDoctrineListener;
@@ -20,13 +21,15 @@ use Doctrine\ORM\Event\PreRemoveEventArgs;
 use Doctrine\ORM\Events;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
-// The cache tag ReviewCollectionSourceProvider declares on its items: a "collection" block showing reviews only renders fresh because the tag is emptied when the entity changes, which a sync doing nothing else than persisting rows gets for free - as does a moderator publishing one
+// The cache tag ReviewCollectionSourceProvider declares on its items: a "collection" block showing reviews only renders fresh because the tag is emptied when the entity changes, which a sync doing nothing else than persisting rows gets for free - as does a moderator publishing one, or "ui-enable-reviews" switched off, which a cached wall of reviews would otherwise outlive
 #[AsDoctrineListener(event: Events::postPersist)]
 #[AsDoctrineListener(event: Events::postUpdate)]
 #[AsDoctrineListener(event: Events::preRemove)]
 #[AsDoctrineListener(event: Events::postFlush)]
 class ReviewCacheInvalidationListener
 {
+    private const string ENABLE_SLUG = 'ui-enable-reviews';
+
     // The per-entity events only raise this flag: a sync importing 500 reviews would empty the same tag 500 times, where one call after the flush says exactly the same thing
     private bool $pending = false;
 
@@ -60,9 +63,10 @@ class ReviewCacheInvalidationListener
         $this->cache->invalidateTags([ReviewCollectionSourceProvider::CACHE_TAG]);
     }
 
+    // A review written or moderated, or the setting turning the reviews on and off
     private function markPending(object $entity): void
     {
-        if ($entity instanceof Review) {
+        if ($entity instanceof Review || ($entity instanceof Config && self::ENABLE_SLUG === $entity->getSlug())) {
             $this->pending = true;
         }
     }

@@ -15,6 +15,7 @@ use c975L\UiBundle\Entity\Media;
 use c975L\UiBundle\Management\BlockDataExporter;
 use c975L\UiBundle\Repository\TranslationRepository;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Filesystem\Filesystem;
 
 class BlockDataExporterTest extends TestCase
 {
@@ -246,5 +247,25 @@ class BlockDataExporterTest extends TestCase
         rmdir($projectDir . '/public/medias');
         rmdir($projectDir . '/public');
         rmdir($projectDir);
+    }
+
+    // A members-only document is read from private/, its thumbnail beside it, and keeps its status on the way to the other site
+    public function testExportMediaReadsAMembersOnlyDocumentFromPrivateAndCarriesTheFlag(): void
+    {
+        $projectDir = sys_get_temp_dir() . '/block_data_exporter_test_' . bin2hex(random_bytes(4));
+        mkdir($projectDir . '/private/medias/site', 0777, true);
+        file_put_contents($projectDir . '/private/medias/site/report.pdf', 'pdf');
+        file_put_contents($projectDir . '/private/medias/site/report.webp', 'webp');
+        $media = new Media()->setFilename('medias/site/report.pdf')->setMembersOnly(true);
+
+        $files = [];
+        $data = new BlockDataExporter($projectDir)->exportMedia($media, $files);
+
+        $this->assertNotNull($data);
+        $this->assertTrue($data['membersOnly']);
+        $this->assertSame($projectDir . '/private/medias/site/report.pdf', $files[$data['file']]);
+        $this->assertSame($projectDir . '/private/medias/site/report.webp', $files[$data['thumbnail']]);
+
+        new Filesystem()->remove($projectDir);
     }
 }

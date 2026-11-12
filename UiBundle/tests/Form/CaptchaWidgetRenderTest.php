@@ -11,6 +11,7 @@
 namespace c975L\UiBundle\Tests\Form;
 
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
+use c975L\UiBundle\Captcha\RecaptchaProvider;
 use c975L\UiBundle\Form\CaptchaType;
 use c975L\UiBundle\Service\CaptchaVerifier;
 use Symfony\Bridge\Twig\Extension\FormExtension;
@@ -31,8 +32,9 @@ use Twig\RuntimeLoader\FactoryRuntimeLoader;
 class CaptchaWidgetRenderTest extends FormIntegrationTestCase
 {
     private const array KEYS = [
-        'recaptcha3-site-key' => 'site-key',
-        'recaptcha3-secret-key' => 'secret-key',
+        'captcha-provider' => 'recaptcha',
+        'captcha-recaptcha-site-key' => 'site-key',
+        'captcha-recaptcha-secret-key' => 'secret-key',
     ];
 
     /** @var array<string, mixed> */
@@ -49,7 +51,7 @@ class CaptchaWidgetRenderTest extends FormIntegrationTestCase
 
         $requestStack = new RequestStack([new Request()]);
 
-        return [new CaptchaType(new CaptchaVerifier(new MockHttpClient(), $configService, $requestStack))];
+        return [new CaptchaType(new CaptchaVerifier($configService, $requestStack, [new RecaptchaProvider(new MockHttpClient(), $configService)]))];
     }
 
     private function renderWidget(): string
@@ -83,6 +85,7 @@ class CaptchaWidgetRenderTest extends FormIntegrationTestCase
         $this->assertStringContainsString('type="hidden"', $html);
         $this->assertStringNotContainsString('type="text"', $html);
         $this->assertStringContainsString('data-controller="captcha"', $html);
+        $this->assertStringContainsString('data-captcha-provider-value="recaptcha"', $html);
         $this->assertStringContainsString('data-captcha-site-key-value="site-key"', $html);
         $this->assertStringContainsString('data-captcha-action-value="contact"', $html);
     }

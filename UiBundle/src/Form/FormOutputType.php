@@ -24,6 +24,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Length;
+use Symfony\Component\Validator\Constraints\NotBlank;
 
 // Entry type for the "outputs" CollectionField of a Form (see FormCrudController), sortable by the admin-wide ea-sortable.js like the fields above it - and sortable for a reason the fields don't have: an expression only sees the outputs placed before it, so moving a row changes what it can read
 class FormOutputType extends AbstractType
@@ -46,10 +47,11 @@ class FormOutputType extends AbstractType
         }
 
         $builder
+            // An emptied label arrives as '' rather than null, so NotBlank refuses it instead of the setter throwing; the column's own width, like the expression below, is refused here rather than truncated on the way to the database
             ->add('label', TextType::class, [
                 'label' => 'label.output_label',
-                // The column's own width, like the expression below - refused here rather than truncated on the way to the database
-                'constraints' => [new Length(max: 100)],
+                'empty_data' => '',
+                'constraints' => [new NotBlank(), new Length(max: 100)],
             ])
             // Validated on save against this Form's own variables (see ValidExpressionsValidator), never at render time - a formula that can't be evaluated is refused on the screen it was typed on
             ->add('expression', TextType::class, [

@@ -12,6 +12,7 @@ namespace c975L\UiBundle\Entity;
 
 use c975L\UiBundle\Repository\PlayRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 // One time a visitor listened to, or watched, something to its end - a story, a film. Named rather than related and held under the same key as a Favorite ("u42" or the token a device keeps, see FavoriteService::resolveHolder()), so what was played anonymously follows its holder to the account they sign in to. One row per play and no unique constraint: how many times is the whole point, and when is what a reward for listening will be counted from
 #[ORM\Entity(repositoryClass: PlayRepository::class)]
@@ -26,12 +27,14 @@ class Play
     private ?int $id = null;
 
     #[ORM\Column(length: 50)]
+    #[Assert\Length(max: 50)]
     private string $ownerType;
 
     #[ORM\Column]
     private int $ownerId;
 
     #[ORM\Column(length: 40)]
+    #[Assert\Length(max: 40)]
     private string $holder;
 
     #[ORM\Column]

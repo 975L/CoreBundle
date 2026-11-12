@@ -1,6 +1,6 @@
 ---
 name: c975l-ui-assets
-description: "Use this skill when a stylesheet, a script, a font or a design token is involved in a Symfony application built on the c975L ecosystem — how a bundle gets its CSS and JS onto the page without a link tag, how the theme tokens resolve, what the scaffolded theme files own, and which helpers a satellite bundle must reuse rather than rewrite. Triggers on: ui.stylesheet, ui.script, BundleStylesheetProviderInterface, BundleScriptProviderInterface, bundle_stylesheets, StylesheetCacheWarmer, site.css, site-theme.css, ThemeVariablesCssListener, theme_variables_css, tokens, --viewport-width, --card-width-compact, --card-grid-min, --card-grid-gap, picture grid, ui-defaults layer, ScaffoldThemeTest, scaffold themes, --primary-ink, PrimaryInkRoleTest, ink tokens, --input-placeholder-color, --label-color, EmailStylesheetTest, resolve_css_variables, CssVariableResolver, emails.css, text-muted, FontProviderInterface, font_preloads, FontFilenameParser, font filename, family name, variable font, importmap, handlers.js, UniqueSlug, BuildFileWriter, c975l_ui.build_dir, BuildDirPass, BlockFocusUrl, pointer-sort, sort-icon, ea-sortable, ui.collection.reordered, PositionSorter, ea-index-sort, infinite-scroll, scroll-buttons, --back-pull-size, --back-pull-opacity, --back-pull-color, backTop, pullDown, infiniteScroll, Paginator, Pagination, paginate, paginateSlice, SQL pagination, PAGE_PARAMETER, KnpPaginatorBundle, toc.js, --icon-filter, layout.html.twig, page layout, bodyClass, bodyClasses, bodyControllers, headingDisplayed, robots, alternates, hreflang, feeds(), atom+xml, summarySocialNetwork, ogImage, ogImageAlt, csp-nonce, csp_nonce, format-detection, telephone=no, preconnect, site-preconnect, matomo_enabled, MatomoExtension, domain_verifications, DomainVerificationExtension, ui-domain-verifications, p:domain_verify, facebook-domain-verification, msvalidate.01, Analytics:Matomo, ui_can_hold_flash, flashes, block content, block container, block header, block footer, ignore_missing, Basket:Navbar, basket bar, PaymentBundle, StylesheetProvider, block-thumbs.min.css, block-picker, :has(), nested :has, display contents, block-animation, block-editable, SectionRhythmTest, blocks--tight, form--section, Dialog:Dialog, dialog, commandfor, show-modal, pwa_enabled, PwaExtension, manifest, service worker, sw.js, ui_pwa_icon, maskable, assetlinks.json, ui_pwa_asset_links, ui-pwa-android-package, ui-pwa-android-fingerprint, ui-pwa-description, TWA, Play Store, display-mode standalone, beforeinstallprompt, install button, app_install, AppInstallType, pwa_play_store_url, pwa_screenshots, pwa#install, pwa-ios-install, apple-touch-icon, ui-pwa-orientation, Pwa:Download, pwa-download, pwa-downloads, ui_pwa_downloads, offline download, c975l-pwa-downloads, AgeGate, AgeVerifier, age_gate_closed, age_verification_url, age-verification-partner-id, go.cam, age verification, adult content."
+description: "Use this skill when a stylesheet, a script, a font or a design token is involved in a Symfony application built on the c975L ecosystem — how a bundle gets its CSS and JS onto the page without a link tag, how the theme tokens resolve, what the scaffolded theme files own, and which helpers a satellite bundle must reuse rather than rewrite. Triggers on: ui.stylesheet, ui.script, BundleStylesheetProviderInterface, BundleScriptProviderInterface, bundle_stylesheets, StylesheetCacheWarmer, site.css, site-theme.css, ThemeVariablesCssListener, theme_variables_css, tokens, --viewport-width, --card-width-compact, --card-grid-min, --card-grid-gap, picture grid, ui-defaults layer, ScaffoldThemeTest, scaffold themes, --primary-ink, PrimaryInkRoleTest, ink tokens, --input-placeholder-color, --label-color, EmailStylesheetTest, resolve_css_variables, CssVariableResolver, emails.css, text-muted, FontProviderInterface, font_preloads, FontFilenameParser, font filename, family name, variable font, importmap, handlers.js, UniqueSlug, BuildFileWriter, c975l_ui.build_dir, BuildDirPass, BlockFocusUrl, pointer-sort, sort-icon, ea-sortable, ui.collection.reordered, PositionSorter, ea-index-sort, infinite-scroll, scroll-buttons, --back-pull-size, --back-pull-opacity, --back-pull-color, backTop, pullDown, infiniteScroll, Paginator, Pagination, paginate, paginateSlice, SQL pagination, PAGE_PARAMETER, KnpPaginatorBundle, toc.js, --icon-filter, layout.html.twig, page layout, bodyClass, bodyClasses, bodyControllers, headingDisplayed, robots, alternates, hreflang, feeds(), atom+xml, summarySocialNetwork, ogImage, ogImageAlt, csp-nonce, csp_nonce, format-detection, telephone=no, preconnect, site-preconnect, analytics_provider, analytics_enabled, AnalyticsExtension, AnalyticsTracker, AnalyticsProviderInterface, MatomoProvider, analytics-provider, analytics-matomo-url, domain_verifications, DomainVerificationExtension, ui-domain-verifications, p:domain_verify, facebook-domain-verification, msvalidate.01, Analytics:Tracker, Analytics:Order, ui_can_hold_flash, flashes, block content, block container, block header, block footer, ignore_missing, Basket:Navbar, basket bar, PaymentBundle, StylesheetProvider, block-thumbs.min.css, block-picker, :has(), nested :has, display contents, block-animation, block-editable, SectionRhythmTest, blocks--tight, form--section, Dialog:Dialog, dialog, commandfor, show-modal, pwa_enabled, PwaExtension, manifest, service worker, sw.js, ui_pwa_icon, maskable, assetlinks.json, ui_pwa_asset_links, ui-pwa-android-package, ui-pwa-android-fingerprint, ui-pwa-description, TWA, Play Store, display-mode standalone, beforeinstallprompt, install button, app_install, AppInstallType, pwa_play_store_url, pwa_screenshots, pwa#install, pwa-ios-install, apple-touch-icon, ui-pwa-orientation, Pwa:Download, pwa-download, pwa-downloads, ui_pwa_downloads, offline download, c975l-pwa-downloads, AgeGate, AgeVerifier, AgeVerificationProviderInterface, GoCamProvider, age-gate-gocam.js, age_gate_closed, age_verification_url, age_verification_provider, age-verification-provider, age-verification-gocam-partner-id, go.cam, age verification, adult content."
 ---
 
 # c975L UiBundle — stylesheets, scripts and tokens
@@ -99,10 +99,15 @@ one of them.
   pointing nowhere useful. `FormatDetectionMetaTest` asserts it on the shipped template.
 - **`bodyClasses`/`bodyClass` land on `<body>`**, not on the content: a screen laid on its own background - a
   photo gallery, a reader - paints the navbar and the footer with it too.
-- **Preconnects** merge the `site-preconnect` list with Matomo's origin, that one gated on
-  `matomo_enabled()`: tracking off means no connection opened to a third party the site sends nothing to.
-  The same function guards `<twig:c975LUi:Analytics:Matomo />`, and a bundle pushing a measure of its own
-  asks it too rather than re-reading `site-matomo-url` and `site-matomo-id`.
+- **Preconnects** merge the `site-preconnect` list with the origin of the audience measurement provider in
+  use (`analytics_provider().origin`): tracking off means no connection opened to a third party the site
+  sends nothing to. **Audience measurement is a connector**: `analytics-provider` names the service
+  (Matomo, `analytics-matomo-url`/`-id`, ships), a new one is a `Contract\AnalyticsProviderInterface`
+  (auto-tagged `c975l.analytics_provider`) plus a driver in `assets/js/analytics.js` (`start(settings)`,
+  `trackOrder(order)`) and its section in `templates/models/france/providers/analytics-<slug>.*.html.twig`.
+  `<twig:c975LUi:Analytics:Tracker />` counts the page view, `<twig:c975LUi:Analytics:Order order="..."/>`
+  a paid order in a neutral shape; **a bundle pushing a measure renders that component, never a
+  service's own queue (`_paq`) nor its keys**.
 - **Domain verifications are a setting, not a template edit**: `ui-domain-verifications` holds `name=value`
   pairs separated by commas, printed by the layout as one `<meta>` each through `domain_verifications()`
   (`Twig\DomainVerificationExtension`). A new service (Pinterest, Meta, Bing) is one more pair; Google is
@@ -285,13 +290,17 @@ every bundle that copies it.
 ## Content for adults only
 
 `<twig:c975LUi:AgeGate age="{{ item.age }}">…</twig:c975LUi:AgeGate>` holds what only an adult may
-see behind a go.cam verification: under 18, no `age-verification-partner-id` (and its two keys) set,
-or a visitor already verified, and the content renders as is. `AgeVerifier` alone decides, from the
-signed result go.cam hands the browser - never from what go.cam's script says in the page. A bundle
-gating a purchase or a download asks `AgeVerifier::isGateClosed($age)` rather than reading the
-session itself. The gate carries the session's nonce and the visitor's request: **never inside a cached fragment**. The site
-opens its `frame-src` and its `camera`/`microphone`/`publickey-credentials-*` permissions to
-`https://go.cam` (see the README's "Age verification").
+see behind an age verification: under 18, no service in use (`age-verification-provider` empty, or
+naming one whose credentials are missing), or a visitor already verified, and the content renders as
+is. The service is a connector (`AgeVerificationProviderInterface`, go.cam shipped as `gocam` with its
+driver `assets/js/age-gate-gocam.js`): **never write a service's name, url or protocol into the gate,
+a template or a satellite bundle** - a new service is a new provider and a new driver (README, "Adding
+an age verification provider"). `AgeVerifier` alone decides, from the result the provider vouches for
+and the session's nonce; a bundle gating a purchase or a download asks
+`AgeVerifier::isGateClosed($age)` rather than reading the session itself. The gate carries the
+session's nonce and the visitor's request: **never inside a cached fragment**. The site opens its
+`frame-src` and its `camera`/`microphone`/`publickey-credentials-*` permissions to the service's
+origin (see the README's "Age verification").
 
 ## Do not
 

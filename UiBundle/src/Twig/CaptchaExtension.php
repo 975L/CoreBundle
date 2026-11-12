@@ -10,6 +10,7 @@
 
 namespace c975L\UiBundle\Twig;
 
+use c975L\UiBundle\Contract\CaptchaProviderInterface;
 use c975L\UiBundle\Service\CaptchaVerifier;
 use Twig\Attribute\AsTwigFunction;
 
@@ -20,10 +21,17 @@ class CaptchaExtension
     ) {
     }
 
-    // Whether the site's forms send their visitors to Google reCAPTCHA, what the privacy policy has to say
+    // Whether the site's forms send their visitors to a captcha service, what the privacy policy has to say
     #[AsTwigFunction('captcha_configured')]
     public function isConfigured(): bool
     {
         return $this->captchaVerifier->isConfigured();
+    }
+
+    // The captcha service in use, for the privacy policy paragraph its slug picks and the name it tells
+    #[AsTwigFunction('captcha_provider')]
+    public function getProvider(): ?CaptchaProviderInterface
+    {
+        return $this->captchaVerifier->getProvider();
     }
 }

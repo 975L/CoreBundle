@@ -57,10 +57,11 @@ class BlockCacheInvalidationListenerTest extends TestCase
         $media->setBlock($block);
 
         $calls = [];
-        new BlockCacheInvalidationListener($this->createRecordingCache($calls))
-            ->postPersist(new PostPersistEventArgs($media, $this->createEntityManager()));
+        $listener = new BlockCacheInvalidationListener($this->createRecordingCache($calls));
+        $listener->postPersist(new PostPersistEventArgs($media, $this->createEntityManager()));
+        $listener->postFlush();
 
-        $this->assertSame([['media_singletons', 'media_roles'], ['block_9']], $calls);
+        $this->assertSame([['media_singletons', 'media_roles', 'block_9']], $calls);
     }
 
     // A translation is a row of another table: nothing touches the block, whose render in that language would go on being served as it stands
@@ -78,7 +79,11 @@ class BlockCacheInvalidationListenerTest extends TestCase
         $cache = $this->createMock(TagAwareCacheInterface::class);
         $cache->expects($this->once())->method('invalidateTags')->with(['block_9']);
 
-        new BlockCacheInvalidationListener($cache)->postUpdate(new PostUpdateEventArgs($translation, $em));
+        $listener = new BlockCacheInvalidationListener($cache);
+
+        $listener->postUpdate(new PostUpdateEventArgs($translation, $em));
+
+        $listener->postFlush();
     }
 
     // A media's translation names the media, not the block - and the cache entry is the block's. A language screen changes no mapped property of the block, so no postUpdate fires for it, and the entry never expires: the cards would go on being served in the writing language until a cache clear
@@ -97,7 +102,11 @@ class BlockCacheInvalidationListenerTest extends TestCase
         $cache = $this->createMock(TagAwareCacheInterface::class);
         $cache->expects($this->once())->method('invalidateTags')->with(['block_7']);
 
-        new BlockCacheInvalidationListener($cache)->postUpdate(new PostUpdateEventArgs($translation, $em));
+        $listener = new BlockCacheInvalidationListener($cache);
+
+        $listener->postUpdate(new PostUpdateEventArgs($translation, $em));
+
+        $listener->postFlush();
     }
 
     // A row left behind by a media that is gone: nothing to invalidate, and nothing to throw over either
@@ -114,7 +123,11 @@ class BlockCacheInvalidationListenerTest extends TestCase
         $cache = $this->createMock(TagAwareCacheInterface::class);
         $cache->expects($this->never())->method('invalidateTags');
 
-        new BlockCacheInvalidationListener($cache)->postUpdate(new PostUpdateEventArgs($translation, $em));
+        $listener = new BlockCacheInvalidationListener($cache);
+
+        $listener->postUpdate(new PostUpdateEventArgs($translation, $em));
+
+        $listener->postFlush();
     }
 
     // The translations of the other bundles - a page's own title - do not go through the blocks cache
@@ -128,7 +141,11 @@ class BlockCacheInvalidationListenerTest extends TestCase
         $cache = $this->createMock(TagAwareCacheInterface::class);
         $cache->expects($this->never())->method('invalidateTags');
 
-        new BlockCacheInvalidationListener($cache)->postUpdate(new PostUpdateEventArgs($translation, $em));
+        $listener = new BlockCacheInvalidationListener($cache);
+
+        $listener->postUpdate(new PostUpdateEventArgs($translation, $em));
+
+        $listener->postFlush();
     }
 
     public function testPostUpdateInvalidatesTheBlockOwnTag(): void
@@ -138,8 +155,11 @@ class BlockCacheInvalidationListenerTest extends TestCase
         $cache = $this->createMock(TagAwareCacheInterface::class);
         $cache->expects($this->once())->method('invalidateTags')->with(['block_42']);
 
-        new BlockCacheInvalidationListener($cache)
-            ->postUpdate(new PostUpdateEventArgs($block, $this->createEntityManager()));
+        $listener = new BlockCacheInvalidationListener($cache);
+
+        $listener->postUpdate(new PostUpdateEventArgs($block, $this->createEntityManager()));
+
+        $listener->postFlush();
     }
 
     // Media::getBlock() already returns null by the time the listener fires (PHP-side removal runs before flush) - the original, pre-removal reference is only found via the unit of work snapshot
@@ -152,10 +172,11 @@ class BlockCacheInvalidationListenerTest extends TestCase
         $unitOfWork->method('getOriginalEntityData')->willReturn(['block' => $block]);
 
         $calls = [];
-        new BlockCacheInvalidationListener($this->createRecordingCache($calls))
-            ->preRemove(new PreRemoveEventArgs($media, $this->createEntityManager($unitOfWork)));
+        $listener = new BlockCacheInvalidationListener($this->createRecordingCache($calls));
+        $listener->preRemove(new PreRemoveEventArgs($media, $this->createEntityManager($unitOfWork)));
+        $listener->postFlush();
 
-        $this->assertSame([['media_singletons', 'media_roles'], ['block_7']], $calls);
+        $this->assertSame([['media_singletons', 'media_roles', 'block_7']], $calls);
     }
 
     // What actually happens on an orphan removal: computeChangeSets() has already overwritten the snapshot with the null the collection removal wrote, and only the change set still holds the block the media was taken out of
@@ -169,10 +190,11 @@ class BlockCacheInvalidationListenerTest extends TestCase
         $unitOfWork->method('getOriginalEntityData')->willReturn(['block' => null]);
 
         $calls = [];
-        new BlockCacheInvalidationListener($this->createRecordingCache($calls))
-            ->preRemove(new PreRemoveEventArgs($media, $this->createEntityManager($unitOfWork)));
+        $listener = new BlockCacheInvalidationListener($this->createRecordingCache($calls));
+        $listener->preRemove(new PreRemoveEventArgs($media, $this->createEntityManager($unitOfWork)));
+        $listener->postFlush();
 
-        $this->assertSame([['media_singletons', 'media_roles'], ['block_24']], $calls);
+        $this->assertSame([['media_singletons', 'media_roles', 'block_24']], $calls);
     }
 
     // Same overwriting, one level up: a slot dropped from its container leaves that container's html holding it verbatim
@@ -189,8 +211,11 @@ class BlockCacheInvalidationListenerTest extends TestCase
         $cache = $this->createMock(TagAwareCacheInterface::class);
         $cache->expects($this->once())->method('invalidateTags')->with(['block_13', 'block_12']);
 
-        new BlockCacheInvalidationListener($cache)
-            ->preRemove(new PreRemoveEventArgs($slot, $this->createEntityManager($unitOfWork)));
+        $listener = new BlockCacheInvalidationListener($cache);
+
+        $listener->preRemove(new PreRemoveEventArgs($slot, $this->createEntityManager($unitOfWork)));
+
+        $listener->postFlush();
     }
 
     public function testPreRemoveUsesTheMediaLiveBlockReferenceWhenStillPresent(): void
@@ -200,10 +225,11 @@ class BlockCacheInvalidationListenerTest extends TestCase
         $media->setBlock($block);
 
         $calls = [];
-        new BlockCacheInvalidationListener($this->createRecordingCache($calls))
-            ->preRemove(new PreRemoveEventArgs($media, $this->createEntityManager()));
+        $listener = new BlockCacheInvalidationListener($this->createRecordingCache($calls));
+        $listener->preRemove(new PreRemoveEventArgs($media, $this->createEntityManager()));
+        $listener->postFlush();
 
-        $this->assertSame([['media_singletons', 'media_roles'], ['block_3']], $calls);
+        $this->assertSame([['media_singletons', 'media_roles', 'block_3']], $calls);
     }
 
     // No block to reach, only the role tags: the media may have just left a role, which it no longer shows
@@ -215,8 +241,9 @@ class BlockCacheInvalidationListenerTest extends TestCase
         $unitOfWork->method('getOriginalEntityData')->willReturn([]);
 
         $calls = [];
-        new BlockCacheInvalidationListener($this->createRecordingCache($calls))
-            ->postUpdate(new PostUpdateEventArgs($media, $this->createEntityManager($unitOfWork)));
+        $listener = new BlockCacheInvalidationListener($this->createRecordingCache($calls));
+        $listener->postUpdate(new PostUpdateEventArgs($media, $this->createEntityManager($unitOfWork)));
+        $listener->postFlush();
 
         $this->assertSame([['media_singletons', 'media_roles']], $calls);
     }
@@ -226,8 +253,11 @@ class BlockCacheInvalidationListenerTest extends TestCase
         $cache = $this->createMock(TagAwareCacheInterface::class);
         $cache->expects($this->never())->method('invalidateTags');
 
-        new BlockCacheInvalidationListener($cache)
-            ->postUpdate(new PostUpdateEventArgs(new \stdClass(), $this->createEntityManager()));
+        $listener = new BlockCacheInvalidationListener($cache);
+
+        $listener->postUpdate(new PostUpdateEventArgs(new \stdClass(), $this->createEntityManager()));
+
+        $listener->postFlush();
     }
 
     // Singleton-role Media (logo, favicon...) is never attached to a Block (see Media::$block's own comment) - it needs the role tags instead of "block_{id}", since MediaExtension caches these across requests separately (see MediaExtension::preloadSingletonRoles())
@@ -239,8 +269,9 @@ class BlockCacheInvalidationListenerTest extends TestCase
         $unitOfWork->method('getOriginalEntityData')->willReturn([]);
 
         $calls = [];
-        new BlockCacheInvalidationListener($this->createRecordingCache($calls))
-            ->postUpdate(new PostUpdateEventArgs($media, $this->createEntityManager($unitOfWork)));
+        $listener = new BlockCacheInvalidationListener($this->createRecordingCache($calls));
+        $listener->postUpdate(new PostUpdateEventArgs($media, $this->createEntityManager($unitOfWork)));
+        $listener->postFlush();
 
         $this->assertSame([['media_singletons', 'media_roles']], $calls);
     }
@@ -254,8 +285,9 @@ class BlockCacheInvalidationListenerTest extends TestCase
         $unitOfWork->method('getOriginalEntityData')->willReturn([]);
 
         $calls = [];
-        new BlockCacheInvalidationListener($this->createRecordingCache($calls))
-            ->postUpdate(new PostUpdateEventArgs($media, $this->createEntityManager($unitOfWork)));
+        $listener = new BlockCacheInvalidationListener($this->createRecordingCache($calls));
+        $listener->postUpdate(new PostUpdateEventArgs($media, $this->createEntityManager($unitOfWork)));
+        $listener->postFlush();
 
         $this->assertSame([['media_singletons', 'media_roles']], $calls);
     }
@@ -270,8 +302,11 @@ class BlockCacheInvalidationListenerTest extends TestCase
         $cache = $this->createMock(TagAwareCacheInterface::class);
         $cache->expects($this->once())->method('invalidateTags')->with(['block_102', 'block_101', 'block_100']);
 
-        new BlockCacheInvalidationListener($cache)
-            ->postUpdate(new PostUpdateEventArgs($slot, $this->createEntityManager()));
+        $listener = new BlockCacheInvalidationListener($cache);
+
+        $listener->postUpdate(new PostUpdateEventArgs($slot, $this->createEntityManager()));
+
+        $listener->postFlush();
     }
 
     // Adding a slot is what makes the propagation necessary rather than merely tidy: the new row's id was never a tag of its container's entry, so nothing else would ever reach it
@@ -283,8 +318,11 @@ class BlockCacheInvalidationListenerTest extends TestCase
         $cache = $this->createMock(TagAwareCacheInterface::class);
         $cache->expects($this->once())->method('invalidateTags')->with(['block_201', 'block_200']);
 
-        new BlockCacheInvalidationListener($cache)
-            ->postPersist(new PostPersistEventArgs($slot, $this->createEntityManager()));
+        $listener = new BlockCacheInvalidationListener($cache);
+
+        $listener->postPersist(new PostPersistEventArgs($slot, $this->createEntityManager()));
+
+        $listener->postFlush();
     }
 
     // Block::removeSlot() nulls the owning side well before flush() runs, exactly as removeMedia() does - the pre-flush snapshot is what still holds the container the slot was taken out of
@@ -301,8 +339,11 @@ class BlockCacheInvalidationListenerTest extends TestCase
         $cache = $this->createMock(TagAwareCacheInterface::class);
         $cache->expects($this->once())->method('invalidateTags')->with(['block_301', 'block_300']);
 
-        new BlockCacheInvalidationListener($cache)
-            ->preRemove(new PreRemoveEventArgs($slot, $this->createEntityManager($unitOfWork)));
+        $listener = new BlockCacheInvalidationListener($cache);
+
+        $listener->preRemove(new PreRemoveEventArgs($slot, $this->createEntityManager($unitOfWork)));
+
+        $listener->postFlush();
     }
 
     // A container and one of its own slots pointing back at each other would otherwise spin forever up the chain
@@ -315,8 +356,34 @@ class BlockCacheInvalidationListenerTest extends TestCase
         $cache = $this->createMock(TagAwareCacheInterface::class);
         $cache->expects($this->once())->method('invalidateTags')->with(['block_401', 'block_400']);
 
+        $listener = new BlockCacheInvalidationListener($cache);
+
+        $listener->postUpdate(new PostUpdateEventArgs($second, $this->createEntityManager()));
+
+        $listener->postFlush();
+    }
+
+    // Invalidated inside the transaction, a concurrent request would cache the old state again, with no expiry: nothing goes before the commit
+    public function testNothingIsInvalidatedBeforeTheFlush(): void
+    {
+        $cache = $this->createMock(TagAwareCacheInterface::class);
+        $cache->expects($this->never())->method('invalidateTags');
+
         new BlockCacheInvalidationListener($cache)
-            ->postUpdate(new PostUpdateEventArgs($second, $this->createEntityManager()));
+            ->postUpdate(new PostUpdateEventArgs($this->createBlockWithId(42), $this->createEntityManager()));
+    }
+
+    // A whole page saved is one call, each tag once, and the next flush starts empty
+    public function testOneFlushEmptiesEveryTagOnceAndOnlyOnce(): void
+    {
+        $calls = [];
+        $listener = new BlockCacheInvalidationListener($this->createRecordingCache($calls));
+        $listener->postUpdate(new PostUpdateEventArgs($this->createBlockWithId(42), $this->createEntityManager()));
+        $listener->postUpdate(new PostUpdateEventArgs($this->createBlockWithId(42), $this->createEntityManager()));
+        $listener->postFlush();
+        $listener->postFlush();
+
+        $this->assertSame([['block_42']], $calls);
     }
 
     private function createBlockWithId(int $id): Block

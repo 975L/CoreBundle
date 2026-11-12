@@ -339,8 +339,8 @@ class SendEmailFormActionTest extends TestCase
         $this->assertSame('visitor@example.com', $captured->copyToEmail);
     }
 
-    // A typed address proves nothing: it gets the message under a fixed sentence, on a request of its own, and none of the files somebody chose to send
-    public function testATypedAddressGetsTheMessageWithoutItsAttachmentsAndUnderTheNotice(): void
+    // A typed address proves nothing: the message to the site keeps its attachments, and the address only gets a fixed acknowledgement carrying nothing the visitor typed, so the site relays no visitor's text to anyone
+    public function testATypedAddressOnlyGetsAFixedAcknowledgement(): void
     {
         $sent = [];
         $emailService = $this->createStub(EmailService::class);
@@ -354,30 +354,29 @@ class SendEmailFormActionTest extends TestCase
         file_put_contents($path, 'bytes');
         $photo = new UploadedFile($path, 'plaque.jpg', 'image/jpeg', null, true);
 
-        $form = $this->buildForm('contact', ['senderEmailField' => 'email', 'offerReceiveCopy' => true], ['email' => 'Email', 'message' => 'Message']);
+        $form = $this->buildForm('contact', ['senderEmailField' => 'email', 'offerReceiveCopy' => true, 'subject' => 'Contact'], ['email' => 'Email', 'message' => 'Message']);
         $form->addField(new FormField()->setName('photos')->setLabel('Photos')->setType(FormField::TYPE_IMAGE)->setMaxValue(3));
 
-        $this->createAction($emailService)->handle($form, ['email' => 'visitor@example.com', 'message' => 'Hello', 'photos' => [$photo], 'receiveCopy' => true]);
+        $this->createAction($emailService)->handle($form, ['email' => 'visitor@example.com', 'message' => 'Buy cheap pills', 'photos' => [$photo], 'receiveCopy' => true]);
         unlink($path);
 
         $this->assertCount(2, $sent);
         $this->assertNull($sent[0]->copyToEmail);
         $this->assertCount(1, $sent[0]->attachments);
-        $this->assertNull($sent[0]->preface);
 
         $this->assertSame('visitor@example.com', $sent[1]->to);
         $this->assertSame('visitor@example.com', $sent[1]->toName);
         $this->assertNull($sent[1]->replyTo);
         $this->assertSame([], $sent[1]->attachments);
-        $this->assertSame('text.form_copy_notice', $sent[1]->preface);
-        $this->assertSame($sent[0]->subject, $sent[1]->subject);
-        $this->assertSame($sent[0]->template, $sent[1]->template);
-        $this->assertSame('Hello', $sent[1]->context['fields']['Message']);
-        $this->assertTrue($sent[1]->wrapLayout);
+        $this->assertSame([], $sent[1]->context);
+        $this->assertNull($sent[1]->template);
+        $this->assertNull($sent[1]->html);
+        $this->assertSame('label.form_acknowledgement_subject', $sent[1]->subject);
+        $this->assertSame('text.form_acknowledgement', $sent[1]->text);
     }
 
-    // The very body the site received, when an EmailTemplate composes it
-    public function testACopyToATypedAddressCarriesTheBodyOfANamedTemplate(): void
+    // Nor does a named EmailTemplate's body reach a typed address
+    public function testATypedAddressNeverGetsTheBodyOfANamedTemplate(): void
     {
         $sent = [];
         $emailService = $this->createStub(EmailService::class);
@@ -393,8 +392,28 @@ class SendEmailFormActionTest extends TestCase
         $form = $this->buildForm('contact', ['emailTemplate' => 'x', 'senderEmailField' => 'email', 'offerReceiveCopy' => true], ['email' => 'Email']);
         $this->createAction($emailService, $emailTemplateRepository, $emailTemplateRenderer)->handle($form, ['email' => 'visitor@example.com', 'receiveCopy' => true]);
 
-        $this->assertSame('<p>Compiled</p>', $sent[1]->html);
-        $this->assertSame('text.form_copy_notice', $sent[1]->preface);
+        $this->assertSame('<p>Compiled</p>', $sent[0]->html);
+        $this->assertNull($sent[1]->html);
+        $this->assertSame('text.form_acknowledgement', $sent[1]->text);
+    }
+
+    // A date field reads as a date in the visitor's language, a \DateTime being something no email body can print
+    public function testADateFieldReadsAsALongDate(): void
+    {
+        $captured = null;
+        $emailService = $this->createStub(EmailService::class);
+        $emailService->method('send')->willReturnCallback(function (EmailSendRequest $request) use (&$captured): bool {
+            $captured = $request;
+
+            return true;
+        });
+
+        $form = $this->buildForm('booking', null, []);
+        $form->addField(new FormField()->setName('day')->setLabel('Day')->setType(FormField::TYPE_DATE));
+
+        $this->createAction($emailService)->handle($form, ['day' => new \DateTime('2026-03-14')]);
+
+        $this->assertSame('14 mars 2026', $captured->context['fields']['Day']);
     }
 
     // The account's own address stays one message and its whole copy: attachments, and no notice to explain anything to its owner

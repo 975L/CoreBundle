@@ -34,7 +34,9 @@ class Paginator
      */
     public function paginate(array $items, int $page, int $perPage): Pagination
     {
-        $page = max(1, $page);
+        // Never past the page after the last one, which stays empty: a huge "?p=" would overflow the offset into a float that array_slice() refuses
+        $size = max(1, $perPage);
+        $page = min(max(1, $page), intdiv(count($items) + $size - 1, $size) + 1);
 
         return $this->paginateSlice(array_slice($items, ($page - 1) * $perPage, $perPage), $page, $perPage, count($items));
     }

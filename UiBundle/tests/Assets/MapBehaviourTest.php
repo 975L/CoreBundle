@@ -20,6 +20,9 @@ class MapBehaviourTest extends JsCase
 {
     private const string BANNER = '<div data-controller="cookie-consent"></div>';
 
+    // What the layout renders for whoever may act on a missing map, outside every cached block
+    private const string DIAGNOSTIC = '<div id="ui-map-diagnostic" hidden data-refused="La carte n\'a pas pu etre chargee." data-csp="La politique du site (%directive%) refuse les hotes de Google." data-no-key="Aucune cle pour cette carte."></div>';
+
     private const string CONSENT = 'window.CookieConsent = {
         granted: %s,
         acceptedCategory(category) { return "content" === category && this.granted; },
@@ -177,6 +180,24 @@ class MapBehaviourTest extends JsCase
         );
     }
 
+    // A page with no banner still asks before Google is reached, and the accord given in place draws the map and is kept for the visit
+    public function testAPageWithNoBannerAsksInPlaceAndKeepsTheAccord(): void
+    {
+        $state = $this->map(
+            'const before = { drawn: !!root.querySelector(".leaflet-container"), prompt: !root.querySelector("[data-ui-map-target=consent]").hidden };
+             root.querySelector("[data-action=\'ui-map#accept\']").click();
+             await new Promise((r) => setTimeout(r, 300));
+             const after = { drawn: !!root.querySelector(".leaflet-container"), prompt: !root.querySelector("[data-ui-map-target=consent]").hidden, kept: sessionStorage.getItem("c975l-consent-content") };
+             sessionStorage.removeItem("c975l-consent-content");
+
+             return { before, after };',
+            ['needsConsent' => 'true', 'head' => 'sessionStorage.removeItem("c975l-consent-content");']
+        );
+
+        $this->assertSame(['drawn' => false, 'prompt' => true], $state['before'], 'A map needing consent was drawn on a page with no banner, before anything was asked.');
+        $this->assertSame(['drawn' => true, 'prompt' => false, 'kept' => '1'], $state['after'], 'The accord given in place did not draw the map, or was not kept for the visit.');
+    }
+
     // "cc:onConsent" fires on every load once the choice is known, so a returning visitor gets the map without clicking again
     public function testConsentGivenAfterwardsDrawsTheMapAndTakesThePromptAway(): void
     {
@@ -274,17 +295,28 @@ class MapBehaviourTest extends JsCase
         $this->assertFalse($said['hidden'], 'The reason was written where nobody can read it.');
     }
 
-    // A visitor is shown the list of places and told nothing about a key or a policy that is not theirs to change - the element is not even rendered for them
+    // A visitor is shown the list of places and told nothing about a key or a policy that is not theirs to change - the page carries no sentence to tell it with
     public function testAVisitorIsToldNothingAtAll(): void
     {
         $this->assertSame(
-            0,
+            ['text' => '', 'hidden' => true],
             $this->map(
-                'return root.querySelectorAll(".ui-map__diagnostic").length;',
+                'const element = root.querySelector(".ui-map__diagnostic"); return { text: element.textContent, hidden: element.hidden };',
                 ['script' => 'http://127.0.0.1:1/leaflet.js', 'fresh' => true]
             ),
             'A visitor is shown why a map is missing, on a site whose content is the list of places under it.'
         );
+    }
+
+    // A provider missing its key draws nothing, and whoever may add it is told so in place - the controller then loads nothing
+    public function testAMapWithNoKeySaysSoToWhoeverMayActOnIt(): void
+    {
+        $said = $this->map(
+            'const element = root.querySelector(".ui-map__diagnostic"); return { text: element.textContent, hidden: element.hidden, canvas: root.querySelector(".ui-map__canvas").hidden };',
+            ['diagnostic' => true, 'usable' => 'false']
+        );
+
+        $this->assertSame(['text' => 'Aucune cle pour cette carte.', 'hidden' => false, 'canvas' => true], $said);
     }
 
     // A policy refusing Google's host blocks the fetch and leaves nothing a script can read afterwards: this event is the only account of it, and naming the directive is what makes the sentence actionable
@@ -309,8 +341,20 @@ class MapBehaviourTest extends JsCase
              window.scrollTo(0, 3000);
              await new Promise((r) => setTimeout(r, 1200));
 
-             return root.querySelector("[data-ui-map-target=diagnostic]").textContent;',
-            ['script' => 'http://127.0.0.1:1/leaflet.js', 'fresh' => true, 'diagnostic' => true, 'below' => true]
+             try {
+                 return root.querySelector("[data-ui-map-target=diagnostic]").textContent;
+             } finally {
+                 document.head.append = window.__headAppend;
+             }',
+            [
+                'provider' => 'google',
+                'fresh' => true,
+                'diagnostic' => true,
+                'below' => true,
+                // Google's script refused as the policy would, without ever reaching the network
+                'head' => 'window.__headAppend = document.head.append;
+                    document.head.append = function (...nodes) { nodes.forEach((node) => "SCRIPT" === node.tagName && setTimeout(() => node.onerror?.())); };',
+            ]
         );
 
         $this->assertSame(
@@ -528,12 +572,15 @@ class MapBehaviourTest extends JsCase
             'consent' => 'false',
             'head' => '',
             'select' => false,
+            'usable' => 'true',
         ], $options);
 
         $points = $options['points'];
         $banner = $options['banner'] ? self::BANNER : '';
         // A block below the fold is not drawn until it is scrolled to, which is the only window a scenario has to say something before the load is attempted
         $banner .= $options['below'] ? '<div class="ui-map__spacer"></div>' : '';
+        // The sentences the layout hands the back-office alone (see components/Map/_diagnostic.html.twig)
+        $banner .= $options['diagnostic'] ? self::DIAGNOSTIC : '';
 
         $items = '';
         foreach (json_decode($points, true, 512, \JSON_THROW_ON_ERROR) as $point) {
@@ -544,28 +591,30 @@ class MapBehaviourTest extends JsCase
             sprintf(
                 '%s<div class="ui-map" data-controller="ui-map"
                      data-ui-map-provider-value="%s"
-                     data-ui-map-script-value="%s"
-                     data-ui-map-stylesheet-value="%s"
-                     data-ui-map-tile-url-value="https://127.0.0.1:1/{z}/{x}/{y}.png"
-                     data-ui-map-attribution-value="OpenStreetMap"
+                     data-ui-map-settings-value="%s"
                      data-ui-map-needs-consent-value="%s"
                      data-ui-map-zoom-value="11"
-                     data-ui-map-diagnostic-value="La carte n\'a pas pu etre chargee."
-                     data-ui-map-diagnostic-csp-value="La politique du site (%%directive%%) refuse les hotes de Google."
+                     data-ui-map-usable-value="%s"
                      data-ui-map-points-value="%s">
                     <div data-ui-map-target="canvas" class="ui-map__canvas" hidden></div>
                     <div data-ui-map-target="consent" hidden><button type="button" data-action="ui-map#accept">Accepter</button></div>
-                    %s
+                        <p class="ui-map__diagnostic" data-ui-map-target="diagnostic" hidden></p>
                     %s
                     <ul data-ui-map-target="list">%s</ul>
                 </div>',
                 $banner,
                 $options['provider'],
-                $options['script'],
-                $this->url('public/css/leaflet.css'),
+                // What each provider hands its driver, both at once: a driver reads its own keys alone
+                htmlspecialchars(json_encode([
+                    'script' => $options['script'],
+                    'stylesheet' => $this->url('public/css/leaflet.css'),
+                    'tileUrl' => 'https://127.0.0.1:1/{z}/{x}/{y}.png',
+                    'attribution' => 'OpenStreetMap',
+                    'apiKey' => 'key',
+                ], \JSON_THROW_ON_ERROR | \JSON_UNESCAPED_SLASHES), \ENT_QUOTES),
                 $options['needsConsent'],
+                $options['usable'],
                 htmlspecialchars($points, \ENT_QUOTES),
-                $options['diagnostic'] ? '<p class="ui-map__diagnostic" data-ui-map-target="diagnostic" hidden></p>' : '',
                 $options['select'] ? '<select class="ui-map__select" data-ui-map-target="select" data-action="change->ui-map#locate" hidden><option value="">Choisir un lieu</option><option value="0">Annecy</option><option value="1">Chamonix</option></select>' : '',
                 $items
             ),

@@ -112,14 +112,14 @@ class BackupDigestCommandTest extends TestCase
         $this->assertNotNull($this->sentEmail);
     }
 
-    // No backup is configured here, so a weekly "nothing ran" alarm would be pure noise
-    public function testNothingIsSentWhenTheBackupIsNotConfigured(): void
+    // A site meant to be backed up whose backup is not configured fails, as c975l:config:backup does, with nothing sent
+    public function testAnUnconfiguredBackupIsAFailure(): void
     {
         $tester = new CommandTester($this->createCommand(BackupDigestBuilder::STATUS_NONE, ['site-backup-database' => '']));
         $tester->execute([]);
 
         $this->assertNull($this->sentEmail);
-        $this->assertSame(Command::SUCCESS, $tester->getStatusCode());
+        $this->assertSame(Command::FAILURE, $tester->getStatusCode());
     }
 
     // A digest nobody receives is a digest that doesn't exist, and the scheduler is the only one left to tell

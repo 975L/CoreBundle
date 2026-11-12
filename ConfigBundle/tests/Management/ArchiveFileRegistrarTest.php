@@ -66,4 +66,21 @@ class ArchiveFileRegistrarTest extends TestCase
         $this->assertNull(ArchiveFileRegistrar::register($this->projectDir, 'media/gone.jpg', $files));
         $this->assertSame([], $files);
     }
+
+    // A file kept out of the web root (a members-only document) is read from the directory the caller names
+    public function testRegisterReadsAFileFromTheDirectoryGiven(): void
+    {
+        mkdir($this->projectDir . '/private/media', 0777, true);
+        file_put_contents($this->projectDir . '/private/media/report.pdf', 'binary');
+        $files = [];
+
+        $public = ArchiveFileRegistrar::register($this->projectDir, 'media/report.pdf', $files);
+        $registered = ArchiveFileRegistrar::register($this->projectDir, 'media/report.pdf', $files, 'private');
+        unlink($this->projectDir . '/private/media/report.pdf');
+        rmdir($this->projectDir . '/private/media');
+        rmdir($this->projectDir . '/private');
+
+        $this->assertNull($public);
+        $this->assertSame($this->projectDir . '/private/media/report.pdf', $files[$registered['archivePath']]);
+    }
 }

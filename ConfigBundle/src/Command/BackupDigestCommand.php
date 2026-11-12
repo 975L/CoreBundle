@@ -63,11 +63,11 @@ class BackupDigestCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        // No backup is configured, so none is expected to have run: reporting on a week of nothing would raise a weekly false alarm on every install that simply doesn't back up from here
+        // A site meant to be backed up whose backup is not configured is a failure, as c975l:config:backup itself reports it; one backed up elsewhere drops the task from its schedule
         if ('' === (string) $this->configService->get('site-backup-database')) {
-            $io->note('site-backup-database is not configured, nothing to report on.');
+            $io->error('site-backup-database is not configured, there is no backup to report on.');
 
-            return Command::SUCCESS;
+            return Command::FAILURE;
         }
 
         $days = max(1, (int) $input->getOption('days'));

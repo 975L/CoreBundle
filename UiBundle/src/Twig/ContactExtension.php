@@ -11,14 +11,14 @@
 namespace c975L\UiBundle\Twig;
 
 use c975L\UiBundle\Service\ContactSnippetBuilder;
-use c975L\UiBundle\Service\GoogleMapsLinkBuilder;
+use c975L\UiBundle\Service\MapLinkBuilder;
 use Twig\Attribute\AsTwigFunction;
 
 class ContactExtension
 {
     public function __construct(
         private readonly ContactSnippetBuilder $snippetBuilder,
-        private readonly GoogleMapsLinkBuilder $googleMapsLinkBuilder,
+        private readonly MapLinkBuilder $mapLinkBuilder,
     ) {
     }
 
@@ -49,11 +49,11 @@ class ContactExtension
         return $week;
     }
 
-    // The place's address on Google Maps, built from the block's own coordinates or postal address - empty when it holds neither. A plain link anyone opens, which costs nothing and loads no script: the Maps JavaScript API the "map" block draws with is the other, billed half of Google Maps
-    #[AsTwigFunction('google_maps_url')]
-    public function googleMapsUrl(array $data): string
+    // The place's address on the map service the site draws with, built from the block's own coordinates or postal address - empty when it holds neither. A plain link anyone opens, which costs nothing and loads no script
+    #[AsTwigFunction('map_place_url')]
+    public function mapPlaceUrl(array $data): string
     {
-        return $this->googleMapsLinkBuilder->build($data) ?? '';
+        return $this->mapLinkBuilder->build($data) ?? '';
     }
 
     // Returns the <script type="application/ld+json"> payload for a "contact_details" block, empty when there is nothing to publish

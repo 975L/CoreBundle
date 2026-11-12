@@ -217,7 +217,7 @@ class BlockFixtureProvider implements BlockFixtureProviderInterface
                     ],
                     'priceRange' => '€€',
                     'mapUrl' => '',
-                    // The showcase shows the button as an editor gets it without going to Google at all - built from the coordinates below (see GoogleMapsLinkBuilder)
+                    // The showcase shows the button as an editor gets it without searching anything - built from the coordinates below (see MapLinkBuilder)
                     'googleMapsLink' => true,
                     'latitude' => '48.8566',
                     'longitude' => '2.3522',

@@ -33,6 +33,7 @@ use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Asset\Packages;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class MediaCrudControllerTest extends TestCase
@@ -110,6 +111,38 @@ class MediaCrudControllerTest extends TestCase
         $disabled = $this->configureActions($this->createController())->getAsDto(null)->getDisabledActions();
 
         $this->assertContains(Action::DETAIL, $disabled);
+    }
+
+    // EasyAdmin's batch delete goes straight to deleteEntity(), past delete()'s guard and its explanation
+    public function testConfigureActionsDisablesBatchDelete(): void
+    {
+        $disabled = $this->configureActions($this->createController())->getAsDto(null)->getDisabledActions();
+
+        $this->assertContains(Action::BATCH_DELETE, $disabled);
+    }
+
+    // A media still attached somewhere is refused by the server, whatever reaches deleteEntity()
+    public function testDeleteEntityRefusesAMediaStillInUse(): void
+    {
+        $controller = $this->createController(mediaUsageRegistry: $this->registryReporting([
+            1 => [['label' => 'Home page', 'url' => '/management/block/edit']],
+        ]));
+
+        $entityManager = $this->createMock(EntityManagerInterface::class);
+        $entityManager->expects($this->never())->method('remove');
+
+        $this->expectException(AccessDeniedException::class);
+
+        $controller->deleteEntity($entityManager, $this->mediaWithId(1));
+    }
+
+    // An orphan media goes as before
+    public function testDeleteEntityRemovesAnUnusedMedia(): void
+    {
+        $entityManager = $this->createMock(EntityManagerInterface::class);
+        $entityManager->expects($this->once())->method('remove');
+
+        $this->createController()->deleteEntity($entityManager, $this->mediaWithId(1));
     }
 
     // A real EasyAdmin runtime pre-populates the default actions before calling configureActions() - update() there assumes EDIT/DELETE already exist on PAGE_INDEX

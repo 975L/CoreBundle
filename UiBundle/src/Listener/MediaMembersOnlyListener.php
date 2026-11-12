@@ -16,11 +16,13 @@ use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Events;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Contracts\Service\ResetInterface;
 
 // Moves a stored PDF, and its thumbnail with it, between public/ and Media::MEMBERS_ONLY_DIRECTORY when its "members only" box is ticked or unticked without a new upload - an upload lands where the flag says on its own (see VichImageResizeListener), a file already on disk has nobody else to take it across. Deferred to postFlush like MediaFileRemoveListener, so a flush that throws leaves the file where its row still says it is
 #[AsDoctrineListener(event: Events::preUpdate)]
 #[AsDoctrineListener(event: Events::postFlush)]
-class MediaMembersOnlyListener
+#[AsDoctrineListener(event: Events::onClear)]
+class MediaMembersOnlyListener implements ResetInterface
 {
     private const string PUBLIC_DIRECTORY = 'public';
 
@@ -68,5 +70,16 @@ class MediaMembersOnlyListener
     private function path(string $directory, string $filename): string
     {
         return $this->projectDir . '/' . $directory . '/' . $filename;
+    }
+
+    // A flush that threw leaves its moves behind: cleared with the entity manager, and between two messages of a worker, so the next flush never moves the file of a row that kept its old flag
+    public function onClear(): void
+    {
+        $this->reset();
+    }
+
+    public function reset(): void
+    {
+        $this->pendingMoves = [];
     }
 }

@@ -12,6 +12,7 @@ namespace c975L\UiBundle\Service;
 
 use c975L\UiBundle\Contract\PdfGeneratorInterface;
 use c975L\UiBundle\Entity\Block;
+use c975L\UiBundle\Registry\BlockLocationRegistry;
 use c975L\UiBundle\Repository\BlockRepository;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Twig\Environment;
@@ -30,6 +31,7 @@ class LegalDocument
         private readonly BlockRepository $blockRepository,
         private readonly PdfGeneratorInterface $pdfGenerator,
         private readonly Environment $twig,
+        private readonly BlockLocationRegistry $blockLocationRegistry,
         #[Autowire(param: 'kernel.cache_dir')]
         private readonly string $cacheDir,
     ) {
@@ -91,16 +93,38 @@ class LegalDocument
         return $this->renderer->render($model, $data['latestUpdate'] ?? null, (array) ($data['customization'] ?? []), $locale);
     }
 
-    // The first block carrying that model, in id order: a site publishing the same contract twice is misconfigured, and picking the older of the two is at least stable between two requests
+    // The block the site publishes that model with: a hidden one, or one on a page unpublished or in the trash, is not the text a customer reads - among the rest the oldest, stable between two requests; a block no provider locates (no page management installed) is kept, having no page to be unpublished
     private function block(string $model): ?Block
     {
-        foreach ($this->blockRepository->findByKind(self::BLOCK_KIND) as $block) {
-            if (($block->getData()['model'] ?? null) === $model) {
+        $candidates = array_values(array_filter(
+            $this->blockRepository->findByKind(self::BLOCK_KIND),
+            static fn (Block $block): bool => !$block->isHidden() && ($block->getData()['model'] ?? null) === $model,
+        ));
+        if ([] === $candidates) {
+            return null;
+        }
+
+        // Located through its top-level block: a page locates the blocks it holds directly, not the ones nested in a container
+        $roots = array_map(self::root(...), $candidates);
+        $locations = $this->blockLocationRegistry->getLocations($roots);
+        foreach ($candidates as $index => $block) {
+            if ($locations[(int) $roots[$index]->getId()]['published'] ?? false) {
                 return $block;
             }
         }
 
-        return null;
+        // Only when nothing locates any of them: a block placed on a page that is not published never stands in for it
+        return [] === $locations ? $candidates[0] : null;
+    }
+
+    // The block a page holds directly, the one given when it is not nested
+    private static function root(Block $block): Block
+    {
+        while (null !== $block->getParentBlock()) {
+            $block = $block->getParentBlock();
+        }
+
+        return $block;
     }
 
     // The previous renders of that same document go with it: the directory holds one file per document, not one per revision - what was sent is in the customer's mailbox, not here
@@ -116,6 +140,10 @@ class LegalDocument
             @unlink($stale);
         }
 
-        file_put_contents($file, $pdf);
+        // Written aside then renamed: a confirmation sent meanwhile finds either no file or the whole of it, never a truncated PDF
+        $temporary = $file . '.' . bin2hex(random_bytes(4)) . '.tmp';
+        if (false === file_put_contents($temporary, $pdf) || !rename($temporary, $file)) {
+            @unlink($temporary);
+        }
     }
 }

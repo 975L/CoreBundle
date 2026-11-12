@@ -11,11 +11,14 @@
 namespace c975L\UiBundle\Form\Block;
 
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Event\PreSetDataEvent;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\Range;
 
 class ProgressBarType extends AbstractType
 {
@@ -32,12 +35,23 @@ class ProgressBarType extends AbstractType
                     'min' => 0,
                     'max' => 100,
                 ],
+                'constraints' => [new Range(min: 0, max: 100)],
             ])
             ->add('text', CheckboxType::class, [
                 'label' => 'label.show_percent',
                 'required' => false,
-                'data' => true,
             ]);
+
+        // "Show the percentage" ticked for a new bar only: the field's own "data" option would tick it again on every save, discarding a bar switched off
+        $builder->addEventListener(
+            FormEvents::PRE_SET_DATA,
+            static function (PreSetDataEvent $event): void {
+                $data = $event->getData();
+                $data = is_array($data) ? $data : [];
+                $data['text'] ??= true;
+                $event->setData($data);
+            }
+        );
     }
 
     public function configureOptions(OptionsResolver $resolver): void

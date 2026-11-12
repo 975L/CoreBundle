@@ -12,6 +12,7 @@ namespace c975L\UiBundle\Entity;
 
 use c975L\UiBundle\Repository\FavoriteRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 // One thing one visitor put aside - a product, a book, a photo. Named rather than related, exactly like Rating: a bundle gets a wishlist without mapping anything on its own entity, and this bundle never hears about what it holds (see FavoriteItemProviderInterface, which is what turns a row back into something a page can draw)
 #[ORM\Entity(repositoryClass: FavoriteRepository::class)]
@@ -27,6 +28,7 @@ class Favorite implements \Stringable
 
     // The same vocabulary Rating stores and BlockOwnerResolverInterface round-trips, so a bundle naming its products "shop_product" once is named that everywhere
     #[ORM\Column(length: 50)]
+    #[Assert\Length(max: 50)]
     private string $ownerType;
 
     #[ORM\Column]
@@ -34,6 +36,7 @@ class Favorite implements \Stringable
 
     // Whose list this is, as one opaque key: "u42" for an authenticated visitor, a random token held by their browser otherwise (see FavoriteService::resolveHolder()). One column for both, which is what lets a list built anonymously be handed over to an account without moving it anywhere (see FavoriteService::merge())
     #[ORM\Column(length: 40)]
+    #[Assert\Length(max: 40)]
     private string $holder;
 
     #[ORM\Column]

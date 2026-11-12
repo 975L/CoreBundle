@@ -18,7 +18,7 @@ use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-// A hidden field carrying the reCAPTCHA v3 token, rendered by form/captcha_theme.html.twig and filled in by the "captcha" Stimulus controller - replaces karser/karser-recaptcha3-bundle's Recaptcha3Type. Unlike it, nothing is loaded from Google until the visitor actually touches the form (see assets/js/captcha.js)
+// A hidden field carrying the token of the captcha provider in use (see CaptchaVerifier), rendered by form/captcha_theme.html.twig and filled in by the "captcha" Stimulus controller - nothing is loaded from the provider until the visitor actually touches the form (see assets/js/captcha.js)
 class CaptchaType extends AbstractType
 {
     public function __construct(private readonly CaptchaVerifier $captchaVerifier)
@@ -28,6 +28,7 @@ class CaptchaType extends AbstractType
     public function buildView(FormView $view, FormInterface $form, array $options): void
     {
         $view->vars['enabled'] = $this->captchaVerifier->isEnabled();
+        $view->vars['provider'] = $this->captchaVerifier->getProvider()?->getSlug();
         $view->vars['site_key'] = $this->captchaVerifier->getSiteKey();
         $view->vars['action_name'] = $options['action_name'];
     }
@@ -35,7 +36,7 @@ class CaptchaType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            // "action_name" is reported to Google alongside the token, letting the admin console break scores down per form
+            // "action_name" is reported to the provider alongside the token, letting its console break scores down per form
             'action_name' => 'form',
             'mapped' => false,
             'constraints' => [new Captcha()],

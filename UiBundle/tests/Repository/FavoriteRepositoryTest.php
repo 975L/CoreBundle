@@ -80,6 +80,17 @@ class FavoriteRepositoryTest extends TestCase
         $this->assertSame([39], $parameters['ownerIds']);
     }
 
+    // An account erased loses its whole list in one query
+    public function testAHoldersListIsErasedWhole(): void
+    {
+        $parameters = [];
+        $repository = $this->deletingRepository(3, $parameters, $calls);
+
+        $this->assertSame(3, $repository->deleteByHolder('u42'));
+        $this->assertSame(1, $calls);
+        $this->assertSame(['holder' => 'u42'], $parameters);
+    }
+
     public function testAnEmptySetDeletesNothing(): void
     {
         $repository = $this->createPartialMock(FavoriteRepository::class, ['createQueryBuilder']);

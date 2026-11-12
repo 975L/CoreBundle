@@ -27,6 +27,14 @@ class LegalModelTemplatesTest extends TestCase
 {
     private const array LOCALES = ['fr', 'en', 'es'];
 
+    // The provider each connector is stubbed with, whose own paragraph (models/france/providers/<kind>-<slug>) the model includes
+    private const array PROVIDERS = [
+        'captcha' => ['slug' => 'recaptcha', 'name' => 'Google reCAPTCHA'],
+        'analytics' => ['slug' => 'matomo', 'name' => 'Matomo', 'settings' => ['url' => 'https://stats.example.com', 'id' => '1']],
+        'map' => ['slug' => 'google'],
+        'age-verification' => ['slug' => 'gocam', 'name' => 'go.cam'],
+    ];
+
     // Shared, so the legal_var() binding below and the renderer switch marker mode on the same instance
     private ?LegalModelPlaceholders $placeholders = null;
 
@@ -159,13 +167,62 @@ class LegalModelTemplatesTest extends TestCase
         }
     }
 
+    // A provider shipping no paragraph of its own is still named, by the generic one, rather than leaving the policy silent on where the data goes
+    public function testACaptchaProviderWithoutItsOwnParagraphGetsTheGenericOne(): void
+    {
+        foreach (self::LOCALES as $locale) {
+            $html = $this->twig(['slug' => 'other', 'name' => 'Other Captcha'])->render(
+                sprintf('@c975LUi/models/france/privacy-policy.%s.html.twig', $locale),
+                ['latestUpdate' => '2026-01-01'],
+            );
+
+            $this->assertStringContainsString('data-legal-id="third-parties.captcha"', $html);
+            $this->assertStringContainsString('Other Captcha', $html);
+            $this->assertStringNotContainsString('third-parties.recaptcha', $html);
+        }
+    }
+
+    // Every third party a page hands the visitor's data to is named: the age verification service loaded on display, and the tile server a Leaflet map draws from
+    public function testTheAgeVerificationServiceAndTheTileServerAreNamed(): void
+    {
+        foreach (self::LOCALES as $locale) {
+            $html = $this->twig(map: ['provider' => 'leaflet', 'usable' => true])->render(
+                sprintf('@c975LUi/models/france/privacy-policy.%s.html.twig', $locale),
+                ['latestUpdate' => '2026-01-01'],
+            );
+
+            $this->assertStringContainsString('data-legal-id="third-parties.age-verification"', $html);
+            $this->assertStringContainsString('data-legal-id="third-parties.openstreetmap"', $html);
+            $this->assertStringNotContainsString('third-parties.google-maps', $html);
+        }
+    }
+
+    // The legal notice block is cached whoever renders it first: a member's view would list the pages kept for members to every anonymous visitor after them
+    public function testTheLegalNoticeListsOnlyPublicPages(): void
+    {
+        $legalPages = [
+            ['slug' => 'privacy', 'title' => 'Public page', 'membersOnly' => false],
+            ['slug' => 'members', 'title' => 'Members page', 'membersOnly' => true],
+        ];
+
+        foreach (self::LOCALES as $locale) {
+            $html = $this->twig(legalPages: $legalPages)->render(
+                sprintf('@c975LUi/models/france/legal-notice.%s.html.twig', $locale),
+                ['latestUpdate' => '2026-01-01'],
+            );
+
+            $this->assertStringContainsString('Public page', $html);
+            $this->assertStringNotContainsString('Members page', $html);
+        }
+    }
+
     private function renderer(): LegalModelRenderer
     {
         return new LegalModelRenderer($this->twig(), $this->placeholders(), new LegalModelCatalog());
     }
 
     // The models' own Twig environment, with the handful of things they call that come from the app stubbed down to what the markup needs
-    private function twig(): Environment
+    private function twig(array $captchaProvider = self::PROVIDERS['captcha'], array $legalPages = [], array $map = ['provider' => 'google', 'usable' => true]): Environment
     {
         $placeholders = $this->placeholders();
 
@@ -180,10 +237,12 @@ class LegalModelTemplatesTest extends TestCase
         // On, so the site search section the privacy policy holds is rendered and customized with the rest
         $twig->addFunction(new TwigFunction('ai_search_configured', static fn (): bool => true));
         // Every third-party provider used, so the "third-parties" section and all its units render
-        $twig->addFunction(new TwigFunction('captcha_configured', static fn (): bool => true));
+        $twig->addFunction(new TwigFunction('captcha_provider', static fn (): array => $captchaProvider));
+        $twig->addFunction(new TwigFunction('analytics_provider', static fn (): array => self::PROVIDERS['analytics']));
+        $twig->addFunction(new TwigFunction('age_verification_provider', static fn (): array => self::PROVIDERS['age-verification']));
         $twig->addFunction(new TwigFunction('oauth_login_providers', static fn (): array => [['name' => 'Google']]));
-        $twig->addFunction(new TwigFunction('ui_map_settings', static fn (): array => ['provider' => 'google', 'usable' => true]));
-        $twig->addFunction(new TwigFunction('site_legal_pages', static fn (): array => []));
+        $twig->addFunction(new TwigFunction('ui_map_settings', static fn (): array => $map));
+        $twig->addFunction(new TwigFunction('site_legal_pages', static fn (): array => $legalPages));
         $twig->addFunction(new TwigFunction('path', static fn (): string => '/'));
         $twig->addFilter(new TwigFilter('trans', static fn (string $key): string => $key));
 
@@ -200,9 +259,22 @@ class LegalModelTemplatesTest extends TestCase
         return $this->placeholders ??= new LegalModelPlaceholders($config);
     }
 
+    // The model as rendered reads it, each provider paragraph it includes inlined for the stubbed provider, and a paragraph captured into a variable read where it is printed
     private static function read(string $model, string $locale): string
     {
-        return (string) file_get_contents(sprintf('%s/templates/models/%s.%s.html.twig', \dirname(__DIR__, 2), $model, $locale));
+        $source = (string) file_get_contents(sprintf('%s/templates/models/%s.%s.html.twig', \dirname(__DIR__, 2), $model, $locale));
+        $source = (string) preg_replace_callback(
+            "/\\{% include \\[?'@c975LUi\\/models\\/(france\\/providers\\/)([a-z-]+?)-' ~ [a-zA-Z]+\\.(?:slug|provider).*?%\\}/",
+            static fn (array $match): string => (string) file_get_contents(sprintf('%s/templates/models/%s%s-%s.%s.html.twig', \dirname(__DIR__, 2), $match[1], $match[2], self::PROVIDERS[$match[2]]['slug'], $locale)),
+            $source,
+        );
+
+        preg_match_all('/\{% set (\w+) %\}(.*?)\{% endset %\}/s', $source, $captures, \PREG_SET_ORDER);
+        foreach ($captures as [$capture, $name, $content]) {
+            $source = str_replace([$capture, '{{ ' . $name . ' }}'], ['', $content], $source);
+        }
+
+        return $source;
     }
 
     private static function identifiers(string $model, string $locale): array

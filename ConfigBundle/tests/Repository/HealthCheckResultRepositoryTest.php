@@ -12,9 +12,16 @@ namespace c975L\ConfigBundle\Tests\Repository;
 
 use c975L\ConfigBundle\Entity\HealthCheckResult;
 use c975L\ConfigBundle\Repository\HealthCheckResultRepository;
+use Doctrine\DBAL\DriverManager;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\ORMSetup;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\QueryBuilder;
+use Doctrine\ORM\Tools\SchemaTool;
+use Doctrine\Persistence\ManagerRegistry;
 use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
+use PHPUnit\Framework\Attributes\RequiresPhpExtension;
 use PHPUnit\Framework\TestCase;
 
 // What findLatestPerUrlAndKindIn() answers for: the row a run reads back for each (url, kind) of a whole batch of urls, in one query (see ExternalLinkCheckSchedule)
@@ -52,12 +59,51 @@ class HealthCheckResultRepositoryTest extends TestCase
         $this->assertSame([['/a', '/b']], $asked);
     }
 
+    // The dashboard alert's aggregate, run on a real SQLite database: the latest row of each (url, kind) counted per status, acknowledged rows and older runs left out
+    #[RequiresPhpExtension('pdo_sqlite')]
+    public function testCountLatestUnacknowledgedPerStatusCountsTheLatestRowsOnly(): void
+    {
+        $entityManager = $this->createEntityManager();
+        $rows = [
+            $this->row('/a', 'urls-site', '2026-08-01')->setStatus(HealthCheckResult::STATUS_OK),
+            $this->row('/a', 'urls-site', '2026-08-25')->setStatus(HealthCheckResult::STATUS_ERROR),
+            $this->row('/b', 'urls-site', '2026-08-24')->setStatus(HealthCheckResult::STATUS_ERROR)->setAcknowledgedAt(new \DateTime('2026-08-26')),
+            $this->row('/c', 'urls-site', '2026-08-20')->setStatus(HealthCheckResult::STATUS_WARNING),
+            $this->row('/c', 'security-headers', '2026-08-23')->setStatus(HealthCheckResult::STATUS_WARNING),
+        ];
+        foreach ($rows as $row) {
+            $entityManager->persist($row);
+        }
+        $entityManager->flush();
+
+        $registry = $this->createStub(ManagerRegistry::class);
+        $registry->method('getManagerForClass')->willReturn($entityManager);
+        $counts = new HealthCheckResultRepository($registry)->countLatestUnacknowledgedPerStatus();
+
+        $this->assertSame([HealthCheckResult::STATUS_ERROR, HealthCheckResult::STATUS_WARNING], array_keys($counts));
+        $this->assertSame(1, $counts[HealthCheckResult::STATUS_ERROR]['count']);
+        $this->assertSame('2026-08-25', $counts[HealthCheckResult::STATUS_ERROR]['lastCheckedAt']->format('Y-m-d'));
+        $this->assertSame(2, $counts[HealthCheckResult::STATUS_WARNING]['count']);
+        $this->assertSame('2026-08-23', $counts[HealthCheckResult::STATUS_WARNING]['lastCheckedAt']->format('Y-m-d'));
+    }
+
     public function testFindLatestPerUrlAndKindInQueriesNothingOnAnEmptyList(): void
     {
         $repository = $this->createPartialMock(HealthCheckResultRepository::class, ['createQueryBuilder']);
         $repository->expects($this->never())->method('createQueryBuilder');
 
         $this->assertSame([], $repository->findLatestPerUrlAndKindIn([]));
+    }
+
+    // An in-memory SQLite database holding the health check table alone
+    private function createEntityManager(): EntityManagerInterface
+    {
+        $config = ORMSetup::createAttributeMetadataConfig([\dirname(__DIR__, 2) . '/src/Entity'], true);
+        $config->enableNativeLazyObjects(true);
+        $entityManager = new EntityManager(DriverManager::getConnection(['driver' => 'pdo_sqlite', 'memory' => true], $config), $config);
+        new SchemaTool($entityManager)->createSchema([$entityManager->getClassMetadata(HealthCheckResult::class)]);
+
+        return $entityManager;
     }
 
     // Runs findLatestPerUrlAndKindIn() against a repository whose query answers $rows, collecting into $asked the parameters each query was given

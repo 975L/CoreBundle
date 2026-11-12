@@ -20,6 +20,8 @@ use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
+use Symfony\Component\RateLimiter\RateLimiterFactory;
+use Symfony\Component\RateLimiter\Storage\InMemoryStorage;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\AccessDecisionManagerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -103,6 +105,37 @@ class LoginCodeTest extends TestCase
         $this->assertSame(LoginCode::VALID, $loginCode->verify($session, $this->codes[1]));
     }
 
+    // Twenty wrong codes in a day lock the account, logging in again with the password parking it exhausted without sending anything
+    public function testWrongCodesAreCountedAcrossLogins(): void
+    {
+        $loginCode = $this->loginCode();
+        for ($login = 0; $login < 4; ++$login) {
+            $session = $this->session();
+            $loginCode->start($session, new UserStub(), '/');
+            $wrong = '000000' === $this->codes[$login] ? '111111' : '000000';
+            for ($i = 0; $i < 5; ++$i) {
+                $loginCode->verify($session, $wrong);
+            }
+        }
+
+        $session = $this->session();
+        $this->assertTrue($loginCode->start($session, new UserStub(), '/'));
+        $this->assertTrue($loginCode->isExhausted($session));
+        $this->assertSame(LoginCode::EXHAUSTED, $loginCode->verify($session, $this->codes[3]));
+        $this->assertCount(4, $this->codes);
+    }
+
+    // A login under way is not exhausted by a single wrong code
+    public function testALoginIsNotExhaustedByOneWrongCode(): void
+    {
+        $session = $this->session();
+        $loginCode = $this->loginCode();
+        $loginCode->start($session, new UserStub(), '/');
+        $loginCode->verify($session, '000000' === $this->codes[0] ? '111111' : '000000');
+
+        $this->assertFalse($loginCode->isExhausted($session));
+    }
+
     private function session(): Session
     {
         return new Session(new MockArraySessionStorage());
@@ -127,6 +160,8 @@ class LoginCodeTest extends TestCase
             return $sends;
         });
 
-        return new LoginCode($configService, $accessDecisionManager, $emailService, $renderer, $this->createStub(TranslatorInterface::class), new NullLogger());
+        $limiter = new RateLimiterFactory(['id' => 'login_code', 'policy' => 'fixed_window', 'limit' => 20, 'interval' => '24 hours'], new InMemoryStorage());
+
+        return new LoginCode($configService, $accessDecisionManager, $emailService, $renderer, $this->createStub(TranslatorInterface::class), new NullLogger(), $limiter);
     }
 }

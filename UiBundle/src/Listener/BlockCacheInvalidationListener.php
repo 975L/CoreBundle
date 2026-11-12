@@ -26,10 +26,19 @@ use Symfony\Contracts\Cache\TagAwareCacheInterface;
 #[AsDoctrineListener(event: Events::postPersist)]
 #[AsDoctrineListener(event: Events::postUpdate)]
 #[AsDoctrineListener(event: Events::preRemove)]
+#[AsDoctrineListener(event: Events::postFlush)]
 class BlockCacheInvalidationListener
 {
+    // The tags are gathered on each event, while the change set still says where each entity was, and emptied after the commit
+    use PostFlushTagInvalidationTrait;
+
     public function __construct(private readonly TagAwareCacheInterface $cache)
     {
+    }
+
+    private function tagCache(): TagAwareCacheInterface
+    {
+        return $this->cache;
     }
 
     public function postPersist(PostPersistEventArgs $args): void
@@ -51,7 +60,7 @@ class BlockCacheInvalidationListener
     {
         // A media entering or leaving a role both go stale, and the role it had is gone from it by now - see MediaExtension::preloadSingletonRoles() and getRandomSiteMedia()
         if ($entity instanceof Media) {
-            $this->cache->invalidateTags([MediaExtension::MEDIA_SINGLETONS_CACHE_TAG, MediaExtension::MEDIA_ROLES_CACHE_TAG]);
+            $this->queueTags([MediaExtension::MEDIA_SINGLETONS_CACHE_TAG, MediaExtension::MEDIA_ROLES_CACHE_TAG]);
         }
 
         $block = match (true) {
@@ -66,10 +75,7 @@ class BlockCacheInvalidationListener
             return;
         }
 
-        $tags = $this->tagsUpTheChain($block, $em);
-        if ([] !== $tags) {
-            $this->cache->invalidateTags($tags);
-        }
+        $this->queueTags($this->tagsUpTheChain($block, $em));
     }
 
     // The block this translation dresses, when there is one - the other bundles' translations not going through the blocks cache: a media's translation names the media and the cache entry is the block's, so the block it hangs from goes stale with nothing else to reach it, a language screen changing no mapped property of the block and firing no postUpdate (see BlockExtension::renderHtml)

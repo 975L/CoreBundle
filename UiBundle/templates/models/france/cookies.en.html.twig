@@ -1,6 +1,6 @@
 <div class="legal">
 	<div data-legal-id="intro">
-		This site uses different cookies and similar technologies, in three categories, each treated differently under the General Data Protection Regulation (GDPR):
+		This site uses different cookies and similar technologies, in several categories, each treated differently under the General Data Protection Regulation (GDPR):
 	</div>
 
 	<section data-legal-id="session-cookie">
@@ -10,16 +10,10 @@
 		</div>
 	</section>
 
-	{% set matomoUrl = config('site-matomo-url') %}
-	<section data-legal-id="audience-measurement">
-		<h2>Audience measurement (Matomo)</h2>
-		<div class="text text-justify">
-			This site may use Matomo, a self-hosted audience-measurement tool, to analyze its traffic. Configured according to the French data protection authority's (CNIL) exemption criteria (anonymized IP address, no cross-referencing with other sites, data kept for a maximum of 13 months, "Do Not Track" respected), its use likewise does not require your consent. It is only used for internal statistics, never for advertising purposes or resale to third parties.
-			{% if matomoUrl %}
-				You can still opt out at any time: <a href="{{ matomoUrl }}/index.php?module=CoreAdminHome&amp;action=optOut&amp;language=en" target="_blank" rel="noopener">opt out of Matomo tracking</a>.
-			{% endif %}
-		</div>
-	</section>
+	{% set analyticsProvider = analytics_provider() %}
+	{% if analyticsProvider %}
+	{% include ['@c975LUi/models/france/providers/analytics-' ~ analyticsProvider.slug ~ '.en.html.twig', '@c975LUi/models/france/providers/analytics.en.html.twig'] %}
+	{% endif %}
 
 	<section data-legal-id="embedded-third-party-content">
 		<h2>Embedded third-party content</h2>

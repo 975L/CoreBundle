@@ -17,6 +17,7 @@ use c975L\UiBundle\Form\EmailBlockType;
 use c975L\UiBundle\Form\Util\CollectionReconciler;
 use c975L\UiBundle\Registry\EmailAttachmentRegistry;
 use c975L\UiBundle\Service\EmailTemplateRenderer;
+use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminRoute;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
@@ -57,6 +58,19 @@ class EmailTemplateCrudController extends AbstractCrudController
     public static function getEntityFqcn(): string
     {
         return EmailTemplate::class;
+    }
+
+    // A seeded template is left in place with a warning here and not only hidden by displayIf(): EasyAdmin's delete and batch delete both end in this method, the rest of a batch still deleted
+    #[\Override]
+    public function deleteEntity(EntityManagerInterface $entityManager, mixed $entityInstance): void
+    {
+        if ($entityInstance instanceof EmailTemplate && $entityInstance->isRestricted()) {
+            $this->addFlash('warning', $this->translator->trans('flash.restricted_not_deleted', [], 'ui'));
+
+            return;
+        }
+
+        parent::deleteEntity($entityManager, $entityInstance);
     }
 
     // An absent "blocks" key is normalized to [], an HTML form having no way to submit an empty array

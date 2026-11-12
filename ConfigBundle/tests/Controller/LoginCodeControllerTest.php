@@ -69,6 +69,18 @@ class LoginCodeControllerTest extends TestCase
         $this->assertSame(['flash.login_code_exhausted'], $this->session->getFlashBag()->get('danger'));
     }
 
+    // An account out of codes for the day is logged out as soon as the page opens
+    public function testAnAccountOutOfCodesIsLoggedOutAtOnce(): void
+    {
+        $security = $this->createStub(Security::class);
+        $security->method('logout')->willReturn(new RedirectResponse('/logged-out'));
+
+        $response = $this->controller(LoginCode::VALID, security: $security, exhausted: true)->index($this->submit());
+
+        $this->assertSame('/logged-out', $response->headers->get('Location'));
+        $this->assertSame(['flash.login_code_exhausted'], $this->session->getFlashBag()->get('danger'));
+    }
+
     // Nothing awaited, nothing to type: the home page
     public function testNothingAwaitedSendsHome(): void
     {
@@ -99,10 +111,11 @@ class LoginCodeControllerTest extends TestCase
     }
 
     // Over a LoginCode answering that outcome
-    private function controller(string $result, bool $pending = true, bool $resent = false, ?Security $security = null): LoginCodeController
+    private function controller(string $result, bool $pending = true, bool $resent = false, ?Security $security = null, bool $exhausted = false): LoginCodeController
     {
         $loginCode = $this->createStub(LoginCode::class);
         $loginCode->method('isPending')->willReturn($pending);
+        $loginCode->method('isExhausted')->willReturn($exhausted);
         $loginCode->method('verify')->willReturn($result);
         $loginCode->method('finish')->willReturn('/management');
         $loginCode->method('resend')->willReturn($resent);

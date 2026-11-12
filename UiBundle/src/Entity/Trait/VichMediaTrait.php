@@ -13,6 +13,7 @@ namespace c975L\UiBundle\Entity\Trait;
 use c975L\ConfigBundle\Contract\UserInterface;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\HttpFoundation\File\File;
+use Symfony\Component\Validator\Constraints as Assert;
 
 // Shares the media field mapping without creating any Doctrine relation, hence no dependency, between bundles
 trait VichMediaTrait
@@ -26,6 +27,7 @@ trait VichMediaTrait
     private ?int $position = null;
 
     #[ORM\Column(length: 255, nullable: true, unique: true)]
+    #[Assert\Length(max: 255)]
     private ?string $name = null;
 
     #[ORM\Column(nullable: true)]

@@ -21,13 +21,15 @@ use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Events;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpKernel\KernelInterface;
+use Symfony\Contracts\Service\ResetInterface;
 use Vich\UploaderBundle\Mapping\PropertyMappingFactoryInterface;
 
 // Generic file cleanup for any bundle's media entity - each satellite bundle (Shop, Crowdfunding...) only needs its own Media hierarchy to implement VichMediaNamableInterface, no per-entity listener of its own. Only needed for what Vich cannot see - its own delete_on_remove/delete_on_update already clean up any file still under its original public mapping destination, which a private one is not, and know nothing of the -highres/-thumb siblings a multi-size image carries (see VichImageResizeListener::processMultiSizeDerivatives). Priority 100 on preUpdate runs this before Vich's own "clean" listener (priority 50, see VichUploaderExtension::registerListeners) has a chance to erase the old filename, so the mapping here still reads the file being replaced. The actual deletion is deferred to postFlush so a failed flush never removes a file its row still points at. #[AsDoctrineListener] only reads the class-level attribute (TARGET_CLASS) - Doctrine then calls whichever method matches each tagged event's name, hence one attribute per event here rather than per method.
 #[AsDoctrineListener(event: Events::preUpdate, priority: 100)]
 #[AsDoctrineListener(event: Events::preRemove)]
 #[AsDoctrineListener(event: Events::postFlush)]
-class MediaFileRemoveListener
+#[AsDoctrineListener(event: Events::onClear)]
+class MediaFileRemoveListener implements ResetInterface
 {
     private const string PUBLIC_DIRECTORY = 'public';
 
@@ -49,7 +51,7 @@ class MediaFileRemoveListener
         $entity = $args->getObject();
         $directory = $this->replacedFileDirectory($entity, $args);
         $multiSize = $entity instanceof VichMultiSizeImageInterface;
-        if (null === $directory && !$multiSize) {
+        if (null === $directory && !$multiSize && !$entity instanceof VichMediaNamableInterface) {
             return;
         }
 
@@ -67,6 +69,7 @@ class MediaFileRemoveListener
         if ($multiSize) {
             $this->queueDerivatives($name);
         }
+        $this->queuePdfThumbnail($directory ?? self::PUBLIC_DIRECTORY, $name);
     }
 
     public function preRemove(PreRemoveEventArgs $args): void
@@ -82,6 +85,7 @@ class MediaFileRemoveListener
         if ($entity instanceof VichMultiSizeImageInterface) {
             $this->queueDerivatives($name);
         }
+        $this->queuePdfThumbnail(PrivateDirectory::resolve($entity) ?? self::PUBLIC_DIRECTORY, $name);
     }
 
     // Where the file being replaced sits, which the entity alone may no longer say: a media whose "members only" box changes in the same submit as its upload already carries the new flag, while its old file is still where the old flag put it. The name is still the old file's at this priority, so isPdf() reads the file being replaced
@@ -117,6 +121,14 @@ class MediaFileRemoveListener
         }
     }
 
+    // The first page VichPdfThumbnailListener writes next to a PDF, readable by anyone under public/ once the document itself is gone
+    private function queuePdfThumbnail(string $directory, ?string $name): void
+    {
+        if (null !== $name && 1 === preg_match('/\.pdf$/i', $name)) {
+            $this->queue($directory, VichPdfThumbnailListener::toWebpPath($name));
+        }
+    }
+
     public function postFlush(PostFlushEventArgs $args): void
     {
         foreach ($this->pendingRemovals as $path) {
@@ -125,6 +137,17 @@ class MediaFileRemoveListener
             }
         }
 
+        $this->pendingRemovals = [];
+    }
+
+    // A flush that threw leaves its queue behind: cleared with the entity manager, and between two messages of a worker, so the next flush never removes the file of a row still there
+    public function onClear(): void
+    {
+        $this->reset();
+    }
+
+    public function reset(): void
+    {
         $this->pendingRemovals = [];
     }
 }

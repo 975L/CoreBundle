@@ -108,10 +108,12 @@ class Config
     // Defaulted rather than left uninitialized: the label is read back to be displayed (see ConfigLabelResolver), and a config built in code without one would otherwise fatal on access instead of simply having nothing to show - NotBlank still rejects an empty one on the paths that create configs for real
     #[ORM\Column(length: 100)]
     #[Assert\NotBlank]
+    #[Assert\Length(max: 100)]
     private string $label = '';
 
     #[ORM\Column(name: 'slug', length: 100, unique: true)]
     #[Assert\NotBlank]
+    #[Assert\Length(max: 100)]
     private string $slug;
 
     #[ORM\Column(type: Types::BOOLEAN, nullable: true)]
@@ -128,6 +130,7 @@ class Config
 
     #[ORM\Column(length: 20)]
     #[Assert\Choice(choices: self::TYPES)]
+    #[Assert\Length(max: 20)]
     private string $kind = self::TYPE_TEXT;
 
     // The values a TYPE_CHOICE entry accepts, in the order the select offers them, declared by the bundle owning the entry - null for every other kind
@@ -137,6 +140,7 @@ class Config
     // Column name is backtick-quoted because `group` is a reserved SQL keyword (MySQL/MariaDB): without this, Doctrine emits unquoted `group` in generated SQL and every UPDATE/INSERT fails with a syntax error
     // Deliberately unconstrained: a bundle names its own drawer and ships the label that goes with it (see GROUPS). The Assert\Choice this used to carry made every entry of BookBundle and GalleryBundle unsavable from the back office, the two having named theirs years after the list was written
     #[ORM\Column(name: '`group`', length: 20, nullable: true)]
+    #[Assert\Length(max: 20)]
     private ?string $group = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
@@ -144,6 +148,7 @@ class Config
 
     #[ORM\Column(length: 20, nullable: true)]
     #[Assert\Choice(choices: self::SEVERITIES)]
+    #[Assert\Length(max: 20)]
     private ?string $severity = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]

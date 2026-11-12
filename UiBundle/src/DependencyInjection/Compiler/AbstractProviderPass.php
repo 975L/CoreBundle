@@ -55,8 +55,8 @@ abstract class AbstractProviderPass implements CompilerPassInterface
         }
     }
 
-    // The class the service is written with, read off its parent when it carries none of its own: a service matched by an instanceof conditional - anything implementing ResetInterface, say - stays a child definition until Symfony merges the two, which only happens after this pass has run (ResolveChildDefinitionsPass)
-    private static function resolveClass(ContainerBuilder $container, Definition $definition): ?string
+    // The class the service is written with, read off its parent when it carries none of its own (also used by StylesheetRegistryPass): a service matched by an instanceof conditional - anything implementing ResetInterface, say - stays a child definition until Symfony merges the two, which only happens after this pass has run (ResolveChildDefinitionsPass)
+    public static function resolveClass(ContainerBuilder $container, Definition $definition): ?string
     {
         while (null === $definition->getClass() && $definition instanceof ChildDefinition) {
             $parent = $definition->getParent();

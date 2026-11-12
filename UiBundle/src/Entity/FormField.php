@@ -79,21 +79,26 @@ class FormField implements \Stringable
 
     // Required on the entity and not only on the form: the back office submits without the browser's own check, and an empty row then reached a column refusing it - a 500 where the screen should have named the line
     #[ORM\Column(length: 100)]
+    #[Assert\Length(max: 100)]
     #[Assert\NotBlank]
     private ?string $label = null;
 
     // Derived from "label", scoped unique within the owning Form - see c975L\UiBundle\Service\FormFieldNamer
     #[ORM\Column(length: 100)]
+    #[Assert\Length(max: 100)]
     private ?string $name = null;
 
     #[ORM\Column(length: 20)]
+    #[Assert\Length(max: 20)]
     private string $type = self::TYPE_TEXT;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\Length(max: 255)]
     private ?string $placeholder = null;
 
     // Optional link for the label: its words in brackets become the link (e.g. a checkbox field's "I accept the [terms of use]"), else a "(read)" one follows it - see FormSubmissionType
     #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\Length(max: 255)]
     private ?string $url = null;
 
     #[ORM\Column]
@@ -114,14 +119,17 @@ class FormField implements \Stringable
     private ?float $maxValue = null;
 
     #[ORM\Column(nullable: true)]
+    #[Assert\Positive]
     private ?float $stepValue = null;
 
     // What one unit of this field costs, typed once: shown after its label ("Création du logo (400 €)", see PriceFormatter) and multiplied into the value a formula reads - a ticked box then reads 400, three illustrations at 40 € read 120
     #[ORM\Column(nullable: true)]
+    #[Assert\PositiveOrZero]
     private ?float $price = null;
 
     // Value the field starts with, so a calculator shows a meaningful result before the visitor touches anything - kept as text, a choice field's default being one of its own option values
     #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\Length(max: 255)]
     private ?string $defaultValue = null;
 
     // A choice field's options, as [['label' => 'Véhicule léger', 'value' => '1.15'], ...] - the value is what the expression sees, which is why a choice field counts as numeric (see NUMERIC_TYPES)

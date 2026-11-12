@@ -43,7 +43,7 @@ class IntrusionHealthCheckProviderTest extends TestCase
     /**
      * @param array<string, string> $uploadedFiles path under public/medias => contents
      */
-    private function createProvider(array $uploadedFiles = [], int $admins = 0, ?int $previousAccounts = null, string $adminRole = 'ROLE_ADMIN', ?string $siteRoot = self::SITE_ROOT, bool $canExec = false): IntrusionHealthCheckProvider
+    private function createProvider(array $uploadedFiles = [], int $admins = 0, ?int $previousAccounts = null, string $adminRole = 'ROLE_ADMIN', ?string $siteRoot = self::SITE_ROOT, bool $canExec = false, ?array $previousDetails = null, bool $acknowledged = false): IntrusionHealthCheckProvider
     {
         foreach ($uploadedFiles as $path => $contents) {
             file_put_contents($this->projectDir . '/public/medias/' . $path, $contents);
@@ -57,14 +57,16 @@ class IntrusionHealthCheckProviderTest extends TestCase
         ]);
 
         $previousRow = null;
-        if (null !== $previousAccounts) {
+        $previousDetails ??= null !== $previousAccounts ? ['accounts' => $previousAccounts] : null;
+        if (null !== $previousDetails) {
             $previousRow = new HealthCheckResult()
                 ->setKind(IntrusionHealthCheckProvider::KIND)
                 ->setUrl(self::SITE_ROOT . '#accounts')
                 ->setStatus(HealthCheckResult::STATUS_OK)
                 ->setSummary('previous run')
-                ->setDetails(['accounts' => $previousAccounts])
-                ->setCheckedAt(new \DateTimeImmutable('2026-08-01 03:00:00'));
+                ->setDetails($previousDetails)
+                ->setCheckedAt(new \DateTimeImmutable('2026-08-01 03:00:00'))
+                ->setAcknowledgedAt($acknowledged ? new \DateTimeImmutable('2026-08-02 09:00:00') : null);
         }
 
         $healthCheckResultRepository = $this->createStub(HealthCheckResultRepository::class);
@@ -227,7 +229,45 @@ class IntrusionHealthCheckProviderTest extends TestCase
         $row = $this->rowFor($rows, '#accounts');
 
         $this->assertSame(HealthCheckResult::STATUS_WARNING, $row['status']);
-        $this->assertSame(['accounts' => 2, 'previous' => 1], $row['details']);
+        $this->assertSame(['accounts' => 1, 'current' => 2], $row['details']);
+    }
+
+    // A gain left unacknowledged keeps the count before it as reference, so the next run warns again instead of calling it stable
+    public function testAnUnacknowledgedGainIsReportedAgainNextRun(): void
+    {
+        $rows = $this->createProvider(admins: 2, previousDetails: ['accounts' => 1, 'current' => 2])->runChecks();
+        $row = $this->rowFor($rows, '#accounts');
+
+        $this->assertSame(HealthCheckResult::STATUS_WARNING, $row['status']);
+        $this->assertSame(['accounts' => 1, 'current' => 2], $row['details']);
+    }
+
+    // Once an admin acknowledged the gain, its count becomes the reference
+    public function testAnAcknowledgedGainBecomesTheReference(): void
+    {
+        $rows = $this->createProvider(admins: 2, previousDetails: ['accounts' => 1, 'current' => 2], acknowledged: true)->runChecks();
+        $row = $this->rowFor($rows, '#accounts');
+
+        $this->assertSame(HealthCheckResult::STATUS_OK, $row['status']);
+        $this->assertSame(['accounts' => 2], $row['details']);
+    }
+
+    // A warning written before the reference moved to "accounts" held the gained count there and the reference under "previous": left unacknowledged, it is still reported
+    public function testAnUnacknowledgedGainFromThePreviousVersionIsReportedAgain(): void
+    {
+        $rows = $this->createProvider(admins: 3, previousDetails: ['accounts' => 3, 'previous' => 2])->runChecks();
+        $row = $this->rowFor($rows, '#accounts');
+
+        $this->assertSame(HealthCheckResult::STATUS_WARNING, $row['status']);
+        $this->assertSame(['accounts' => 2, 'current' => 3], $row['details']);
+    }
+
+    // The same warning acknowledged: the gained count it held under "accounts" is the reference
+    public function testAnAcknowledgedGainFromThePreviousVersionBecomesTheReference(): void
+    {
+        $rows = $this->createProvider(admins: 3, previousDetails: ['accounts' => 3, 'previous' => 2], acknowledged: true)->runChecks();
+
+        $this->assertSame(HealthCheckResult::STATUS_OK, $this->rowFor($rows, '#accounts')['status']);
     }
 
     // An account removed is somebody doing their job, not a trace to raise
@@ -250,7 +290,7 @@ class IntrusionHealthCheckProviderTest extends TestCase
     {
         $rows = $this->createProvider(admins: 2, previousAccounts: 1)->runChecks();
 
-        $this->assertSame(['accounts', 'previous'], array_keys($this->rowFor($rows, '#accounts')['details']));
+        $this->assertSame(['accounts', 'current'], array_keys($this->rowFor($rows, '#accounts')['details']));
     }
 
     public function testWithNoSiteUrlThereIsNothingToKeyARowOn(): void

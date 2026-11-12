@@ -11,6 +11,7 @@
 namespace c975L\ConfigBundle\Tests\Management;
 
 use c975L\ConfigBundle\Entity\HealthCheckResult;
+use c975L\ConfigBundle\Management\BackupResultRecorder;
 use c975L\ConfigBundle\Management\StatusProviderInterface;
 use c975L\ConfigBundle\Management\StatusReportBuilder;
 use c975L\ConfigBundle\Repository\HealthCheckResultRepository;
@@ -99,6 +100,41 @@ class StatusReportBuilderTest extends TestCase
         $this->assertStringStartsWith('2026-08-01T04:00:00', $checks['lastRunAt']);
     }
 
+    // The backups write their row every 6 hours, so they never keep lastRunAt fresh over a dead health check cron
+    public function testTheBackupRowsLeaveTheLatestRunDateAlone(): void
+    {
+        $checks = $this->createBuilder([
+            $this->row(HealthCheckResult::STATUS_OK, checkedAt: '2026-08-01 03:00:00'),
+            $this->row(HealthCheckResult::STATUS_OK, BackupResultRecorder::KIND, checkedAt: '2026-08-09 18:00:00'),
+        ])->build()['checks'];
+
+        $this->assertStringStartsWith('2026-08-01T03:00:00', $checks['lastRunAt']);
+    }
+
+    // An acknowledged error still counts, but says so on its issue and in the "acknowledged" counter
+    public function testAnAcknowledgedErrorIsPublishedAsSuch(): void
+    {
+        $checks = $this->createBuilder([
+            $this->row(HealthCheckResult::STATUS_ERROR)->setAcknowledgedAt(new \DateTimeImmutable('2026-08-02 09:00:00')),
+            $this->row(HealthCheckResult::STATUS_ERROR, url: 'https://example.com/other'),
+        ])->build()['checks'];
+
+        $this->assertSame(2, $checks['counts'][HealthCheckResult::STATUS_ERROR]);
+        $this->assertSame(1, $checks['acknowledged']);
+        $this->assertStringStartsWith('2026-08-02T09:00:00', (string) $checks['issues'][0]['acknowledgedAt']);
+        $this->assertNull($checks['issues'][1]['acknowledgedAt']);
+    }
+
+    // A backup's raw tool output names the database, its user and its host: none of it leaves the site
+    public function testABackupIssueCarriesNoRawOutput(): void
+    {
+        $checks = $this->createBuilder([
+            $this->row(HealthCheckResult::STATUS_ERROR, BackupResultRecorder::KIND, details: ['errors' => ['mysqldump: Access denied for user "site_db"']]),
+        ])->build()['checks'];
+
+        $this->assertSame([], $checks['issues'][0]['errors']);
+    }
+
     // A site in warning is a site to improve, and its own dashboard already lists where: only what needs acting on today travels
     public function testIssuesCarryTheErrorRowsOnly(): void
     {
@@ -118,7 +154,7 @@ class StatusReportBuilderTest extends TestCase
     {
         $checks = $this->createBuilder([$this->row(HealthCheckResult::STATUS_ERROR)])->build()['checks'];
 
-        $this->assertSame(['kind', 'url', 'summary', 'errors'], array_keys($checks['issues'][0]));
+        $this->assertSame(['kind', 'url', 'summary', 'errors', 'acknowledgedAt'], array_keys($checks['issues'][0]));
         $this->assertSame([], $checks['issues'][0]['errors']);
     }
 

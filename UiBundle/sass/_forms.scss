@@ -205,6 +205,16 @@ textarea:focus {
     z-index: 2;
     display: flex;
     align-items: center;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+
+    // A button the keyboard reaches shows where it stands
+    &:focus-visible {
+        outline: 2px solid currentColor;
+        outline-offset: 2px;
+    }
 }
 
 // The eye is an <img> no currentColor reaches, so a dark theme inverts it instead

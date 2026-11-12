@@ -13,12 +13,18 @@ namespace c975L\UiBundle\Tests\Controller\Management;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\UiBundle\Controller\Management\FormFieldTemplateCrudController;
 use c975L\UiBundle\Entity\FormFieldTemplate;
+use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Provider\AdminContextProvider;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\DependencyInjection\Container;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class FormFieldTemplateCrudControllerTest extends TestCase
 {
@@ -30,6 +36,7 @@ class FormFieldTemplateCrudControllerTest extends TestCase
         return new FormFieldTemplateCrudController(
             $configService,
             new AdminContextProvider(new RequestStack()),
+            $this->createStub(TranslatorInterface::class),
         );
     }
 
@@ -91,5 +98,40 @@ class FormFieldTemplateCrudControllerTest extends TestCase
 
         $this->assertFalse($displayCallable(new FormFieldTemplate()->setRestricted(true)));
         $this->assertTrue($displayCallable(new FormFieldTemplate()->setRestricted(false)));
+    }
+
+    // A seeded field template is left in place by the server with a warning, EasyAdmin's batch delete calling deleteEntity() without asking displayIf()
+    public function testDeleteEntityLeavesARestrictedFormFieldTemplate(): void
+    {
+        $entityManager = $this->createMock(EntityManagerInterface::class);
+        $entityManager->expects($this->never())->method('remove');
+
+        $session = new Session(new MockArraySessionStorage());
+        $controller = $this->createController();
+        $controller->setContainer($this->flashContainer($session));
+
+        $controller->deleteEntity($entityManager, new FormFieldTemplate()->setRestricted(true));
+
+        $this->assertCount(1, $session->getFlashBag()->get('warning'), 'A seeded field template left in place said nothing, a batch delete ending on it silent.');
+    }
+
+    // What addFlash() reaches: the request stack holding a session
+    private function flashContainer(Session $session): Container
+    {
+        $request = new Request();
+        $request->setSession($session);
+        $container = new Container();
+        $container->set('request_stack', new RequestStack([$request]));
+
+        return $container;
+    }
+
+    // An admin's own field template goes as before
+    public function testDeleteEntityRemovesAnUnrestrictedFormFieldTemplate(): void
+    {
+        $entityManager = $this->createMock(EntityManagerInterface::class);
+        $entityManager->expects($this->once())->method('remove');
+
+        $this->createController()->deleteEntity($entityManager, new FormFieldTemplate()->setRestricted(false));
     }
 }

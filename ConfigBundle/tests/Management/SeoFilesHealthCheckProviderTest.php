@@ -13,6 +13,7 @@ namespace c975L\ConfigBundle\Tests\Management;
 use c975L\ConfigBundle\Entity\HealthCheckResult;
 use c975L\ConfigBundle\Management\HealthCheckExhaustiveInterface;
 use c975L\ConfigBundle\Management\SeoFilesHealthCheckProvider;
+use c975L\ConfigBundle\Management\SitemapProviderInterface;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\ConfigBundle\Service\SeoFilesClient;
 use c975L\ConfigBundle\Service\SiteUrlResolver;
@@ -24,6 +25,7 @@ class SeoFilesHealthCheckProviderTest extends TestCase
     private const string VALID_SITEMAP = '<?xml version="1.0"?><urlset><url><loc>https://example.com/</loc></url></urlset>';
     private const string VALID_SITEMAP_INDEX = '<?xml version="1.0"?><sitemapindex><sitemap><loc>https://example.com/sitemap-page.xml</loc></sitemap><sitemap><loc>https://example.com/sitemap-book.xml</loc></sitemap></sitemapindex>';
     private const string EMPTY_SITEMAP = '<?xml version="1.0"?><urlset></urlset>';
+    private const string SITE_INDEX = '<?xml version="1.0"?><sitemapindex><sitemap><loc>https://example.com/sitemap-site.xml</loc></sitemap></sitemapindex>';
     private const string EMPTY_SITEMAP_INDEX = '<?xml version="1.0"?><sitemapindex></sitemapindex>';
     private const string OPEN_ROBOTS = "User-agent: *\nDisallow:\n";
     private const string BLOCKING_ROBOTS = "User-agent: *\nDisallow: /\n";
@@ -73,14 +75,17 @@ class SeoFilesHealthCheckProviderTest extends TestCase
     }
 
     // Every test builds its provider here, so the "seo-robots-private" config it reads has a single place to be set
-    private function createProvider(SiteUrlResolver $siteUrlResolver, SeoFilesClient $client, bool $isPrivate = false): SeoFilesHealthCheckProvider
+    private function createProvider(SiteUrlResolver $siteUrlResolver, SeoFilesClient $client, bool $isPrivate = false, bool $declaresUrls = true): SeoFilesHealthCheckProvider
     {
+        $sitemapProvider = $this->createStub(SitemapProviderInterface::class);
+        $sitemapProvider->method('getUrls')->willReturn($declaresUrls ? [['loc' => 'https://example.com/']] : []);
+
         $configService = $this->createStub(ConfigServiceInterface::class);
         $configService->method('get')->willReturnCallback(
             static fn (string $key): mixed => 'seo-robots-private' === $key ? $isPrivate : null
         );
 
-        return new SeoFilesHealthCheckProvider($siteUrlResolver, $client, $this->createTranslator(), $configService);
+        return new SeoFilesHealthCheckProvider($siteUrlResolver, $client, $this->createTranslator(), $configService, [$sitemapProvider]);
     }
 
     public function testGetKindReturnsSeoFiles(): void
@@ -109,18 +114,18 @@ class SeoFilesHealthCheckProviderTest extends TestCase
     {
         $client = $this->createClient([
             ['https://example.com/robots.txt', ['statusCode' => 200, 'content' => self::OPEN_ROBOTS]],
+            ['https://example.com/sitemap-index.xml', ['statusCode' => 200, 'content' => self::SITE_INDEX]],
             ['https://example.com/sitemap-site.xml', ['statusCode' => 200, 'content' => self::VALID_SITEMAP]],
-            ['https://example.com/sitemap-index.xml', ['statusCode' => 404, 'content' => '']],
         ]);
 
         $provider = $this->createProvider($this->createSiteUrlResolver('https://example.com'), $client);
         $results = $provider->runChecks();
 
-        $this->assertCount(3, $results);
+        $this->assertCount(4, $results);
         $this->assertSame(HealthCheckResult::STATUS_OK, $results[0]['status']);
         $this->assertSame('https://example.com/robots.txt', $results[0]['url']);
-        $this->assertSame(HealthCheckResult::STATUS_OK, $results[2]['status']);
-        $this->assertSame('https://example.com/sitemap-site.xml', $results[2]['url']);
+        $this->assertSame(HealthCheckResult::STATUS_OK, $results[3]['status']);
+        $this->assertSame('https://example.com/sitemap-site.xml', $results[3]['url']);
     }
 
     // A "site-url" saved with its trailing slash used to produce "https://example.com//robots.txt", which answers 404 and reports a perfectly deployed file as missing
@@ -128,8 +133,8 @@ class SeoFilesHealthCheckProviderTest extends TestCase
     {
         $client = $this->createClient([
             ['https://example.com/robots.txt', ['statusCode' => 200, 'content' => self::OPEN_ROBOTS]],
+            ['https://example.com/sitemap-index.xml', ['statusCode' => 200, 'content' => self::SITE_INDEX]],
             ['https://example.com/sitemap-site.xml', ['statusCode' => 200, 'content' => self::VALID_SITEMAP]],
-            ['https://example.com/sitemap-index.xml', ['statusCode' => 404, 'content' => '']],
         ]);
 
         $provider = $this->createProvider($this->createSiteUrlResolver('https://example.com/'), $client);
@@ -143,8 +148,8 @@ class SeoFilesHealthCheckProviderTest extends TestCase
     {
         $client = $this->createClient([
             ['https://example.com/robots.txt', ['statusCode' => 404, 'content' => '']],
+            ['https://example.com/sitemap-index.xml', ['statusCode' => 200, 'content' => self::SITE_INDEX]],
             ['https://example.com/sitemap-site.xml', ['statusCode' => 200, 'content' => self::VALID_SITEMAP]],
-            ['https://example.com/sitemap-index.xml', ['statusCode' => 404, 'content' => '']],
         ]);
 
         $provider = $this->createProvider($this->createSiteUrlResolver('https://example.com'), $client);
@@ -156,8 +161,8 @@ class SeoFilesHealthCheckProviderTest extends TestCase
     {
         $client = $this->createClient([
             ['https://example.com/robots.txt', ['statusCode' => 200, 'content' => '   ']],
+            ['https://example.com/sitemap-index.xml', ['statusCode' => 200, 'content' => self::SITE_INDEX]],
             ['https://example.com/sitemap-site.xml', ['statusCode' => 200, 'content' => self::VALID_SITEMAP]],
-            ['https://example.com/sitemap-index.xml', ['statusCode' => 404, 'content' => '']],
         ]);
 
         $provider = $this->createProvider($this->createSiteUrlResolver('https://example.com'), $client);
@@ -169,8 +174,8 @@ class SeoFilesHealthCheckProviderTest extends TestCase
     {
         $client = $this->createClient([
             ['https://example.com/robots.txt', ['statusCode' => 200, 'content' => self::BLOCKING_ROBOTS]],
+            ['https://example.com/sitemap-index.xml', ['statusCode' => 200, 'content' => self::SITE_INDEX]],
             ['https://example.com/sitemap-site.xml', ['statusCode' => 200, 'content' => self::VALID_SITEMAP]],
-            ['https://example.com/sitemap-index.xml', ['statusCode' => 404, 'content' => '']],
         ]);
 
         $provider = $this->createProvider($this->createSiteUrlResolver('https://example.com'), $client);
@@ -183,8 +188,8 @@ class SeoFilesHealthCheckProviderTest extends TestCase
     {
         $client = $this->createClient([
             ['https://example.com/robots.txt', ['statusCode' => 200, 'content' => self::BLOCKING_ROBOTS]],
+            ['https://example.com/sitemap-index.xml', ['statusCode' => 200, 'content' => self::SITE_INDEX]],
             ['https://example.com/sitemap-site.xml', ['statusCode' => 200, 'content' => self::VALID_SITEMAP]],
-            ['https://example.com/sitemap-index.xml', ['statusCode' => 404, 'content' => '']],
         ]);
 
         $provider = $this->createProvider($this->createSiteUrlResolver('https://example.com'), $client, true);
@@ -197,8 +202,8 @@ class SeoFilesHealthCheckProviderTest extends TestCase
     {
         $client = $this->createClient([
             ['https://example.com/robots.txt', ['statusCode' => 200, 'content' => self::OPEN_ROBOTS]],
+            ['https://example.com/sitemap-index.xml', ['statusCode' => 200, 'content' => self::SITE_INDEX]],
             ['https://example.com/sitemap-site.xml', ['statusCode' => 200, 'content' => self::VALID_SITEMAP]],
-            ['https://example.com/sitemap-index.xml', ['statusCode' => 404, 'content' => '']],
         ]);
 
         $provider = $this->createProvider($this->createSiteUrlResolver('https://example.com'), $client, true);
@@ -213,8 +218,8 @@ class SeoFilesHealthCheckProviderTest extends TestCase
     {
         $client = $this->createClient([
             ['https://example.com/robots.txt', ['statusCode' => 200, 'content' => self::BLOCKING_ROBOTS]],
+            ['https://example.com/sitemap-index.xml', ['statusCode' => 200, 'content' => self::SITE_INDEX]],
             ['https://example.com/sitemap-site.xml', ['statusCode' => 404, 'content' => '']],
-            ['https://example.com/sitemap-index.xml', ['statusCode' => 404, 'content' => '']],
         ]);
 
         $provider = $this->createProvider($this->createSiteUrlResolver('https://example.com'), $client, true);
@@ -226,8 +231,8 @@ class SeoFilesHealthCheckProviderTest extends TestCase
     {
         $client = $this->createClient([
             ['https://example.com/robots.txt', ['statusCode' => 200, 'content' => self::PARTIAL_DISALLOW_ROBOTS]],
+            ['https://example.com/sitemap-index.xml', ['statusCode' => 200, 'content' => self::SITE_INDEX]],
             ['https://example.com/sitemap-site.xml', ['statusCode' => 200, 'content' => self::VALID_SITEMAP]],
-            ['https://example.com/sitemap-index.xml', ['statusCode' => 404, 'content' => '']],
         ]);
 
         $provider = $this->createProvider($this->createSiteUrlResolver('https://example.com'), $client);
@@ -239,8 +244,8 @@ class SeoFilesHealthCheckProviderTest extends TestCase
     {
         $client = $this->createClient([
             ['https://example.com/robots.txt', ['statusCode' => 200, 'content' => self::SCOPED_DISALLOW_ROBOTS]],
+            ['https://example.com/sitemap-index.xml', ['statusCode' => 200, 'content' => self::SITE_INDEX]],
             ['https://example.com/sitemap-site.xml', ['statusCode' => 200, 'content' => self::VALID_SITEMAP]],
-            ['https://example.com/sitemap-index.xml', ['statusCode' => 404, 'content' => '']],
         ]);
 
         $provider = $this->createProvider($this->createSiteUrlResolver('https://example.com'), $client);
@@ -252,39 +257,39 @@ class SeoFilesHealthCheckProviderTest extends TestCase
     {
         $client = $this->createClient([
             ['https://example.com/robots.txt', ['statusCode' => 200, 'content' => self::OPEN_ROBOTS]],
+            ['https://example.com/sitemap-index.xml', ['statusCode' => 200, 'content' => self::SITE_INDEX]],
             ['https://example.com/sitemap-site.xml', ['statusCode' => 404, 'content' => '']],
-            ['https://example.com/sitemap-index.xml', ['statusCode' => 404, 'content' => '']],
         ]);
 
         $provider = $this->createProvider($this->createSiteUrlResolver('https://example.com'), $client);
 
-        $this->assertSame(HealthCheckResult::STATUS_ERROR, $provider->runChecks()[2]['status']);
+        $this->assertSame(HealthCheckResult::STATUS_ERROR, $provider->runChecks()[3]['status']);
     }
 
     public function testRunChecksStatusIsErrorWhenSitemapIsNotValidXml(): void
     {
         $client = $this->createClient([
             ['https://example.com/robots.txt', ['statusCode' => 200, 'content' => self::OPEN_ROBOTS]],
+            ['https://example.com/sitemap-index.xml', ['statusCode' => 200, 'content' => self::SITE_INDEX]],
             ['https://example.com/sitemap-site.xml', ['statusCode' => 200, 'content' => '<html>Not Found</html>']],
-            ['https://example.com/sitemap-index.xml', ['statusCode' => 404, 'content' => '']],
         ]);
 
         $provider = $this->createProvider($this->createSiteUrlResolver('https://example.com'), $client);
 
-        $this->assertSame(HealthCheckResult::STATUS_ERROR, $provider->runChecks()[2]['status']);
+        $this->assertSame(HealthCheckResult::STATUS_ERROR, $provider->runChecks()[3]['status']);
     }
 
     private function runSitemapCheck(string $content, ?\DateTimeImmutable $lastModified = null): array
     {
         $client = $this->createClient([
             ['https://example.com/robots.txt', ['statusCode' => 200, 'content' => self::OPEN_ROBOTS, 'lastModified' => null]],
+            ['https://example.com/sitemap-index.xml', ['statusCode' => 200, 'content' => self::SITE_INDEX, 'lastModified' => null]],
             ['https://example.com/sitemap-site.xml', ['statusCode' => 200, 'content' => $content, 'lastModified' => $lastModified]],
-            ['https://example.com/sitemap-index.xml', ['statusCode' => 404, 'content' => '', 'lastModified' => null]],
         ]);
 
         $provider = $this->createProvider($this->createSiteUrlResolver('https://example.com'), $client);
 
-        return $provider->runChecks()[2];
+        return $provider->runChecks()[3];
     }
 
     // When the sitemap file itself was last rewritten, the only thing telling the freshness checks apart
@@ -350,7 +355,6 @@ class SeoFilesHealthCheckProviderTest extends TestCase
     {
         $client = $this->createClient([
             ['https://example.com/robots.txt', ['statusCode' => 200, 'content' => self::OPEN_ROBOTS]],
-            ['https://example.com/sitemap-site.xml', ['statusCode' => 200, 'content' => self::VALID_SITEMAP]],
             ['https://example.com/sitemap-index.xml', ['statusCode' => 200, 'content' => self::VALID_SITEMAP_INDEX]],
             ['https://example.com/sitemap-page.xml', ['statusCode' => 200, 'content' => self::VALID_SITEMAP]],
             ['https://example.com/sitemap-book.xml', ['statusCode' => 200, 'content' => self::VALID_SITEMAP]],
@@ -359,65 +363,93 @@ class SeoFilesHealthCheckProviderTest extends TestCase
         $provider = $this->createProvider($this->createSiteUrlResolver('https://example.com'), $client);
         $results = $provider->runChecks();
 
-        $this->assertCount(6, $results);
+        $this->assertCount(5, $results);
+        $this->assertSame(HealthCheckResult::STATUS_OK, $results[2]['status']);
+        $this->assertSame('https://example.com/sitemap-index.xml', $results[2]['url']);
         $this->assertSame(HealthCheckResult::STATUS_OK, $results[3]['status']);
-        $this->assertSame('https://example.com/sitemap-index.xml', $results[3]['url']);
+        $this->assertSame('https://example.com/sitemap-page.xml', $results[3]['url']);
+        $this->assertSame('sitemap-page.xml', $results[3]['label']);
         $this->assertSame(HealthCheckResult::STATUS_OK, $results[4]['status']);
-        $this->assertSame('https://example.com/sitemap-page.xml', $results[4]['url']);
-        $this->assertSame('sitemap-page.xml', $results[4]['label']);
-        $this->assertSame(HealthCheckResult::STATUS_OK, $results[5]['status']);
-        $this->assertSame('https://example.com/sitemap-book.xml', $results[5]['url']);
-        $this->assertSame('sitemap-book.xml', $results[5]['label']);
+        $this->assertSame('https://example.com/sitemap-book.xml', $results[4]['url']);
+        $this->assertSame('sitemap-book.xml', $results[4]['label']);
     }
 
-    public function testRunChecksDoesNotAddAnyRowWhenSitemapIndexIsMissing(): void
+    // No provider declares a url, so SitemapWriter rightly wrote no index
+    public function testRunChecksDoesNotAddAnyRowWhenSitemapIndexIsMissingAndNothingIsDeclared(): void
     {
         $client = $this->createClient([
             ['https://example.com/robots.txt', ['statusCode' => 200, 'content' => self::OPEN_ROBOTS]],
-            ['https://example.com/sitemap-site.xml', ['statusCode' => 200, 'content' => self::VALID_SITEMAP]],
             ['https://example.com/sitemap-index.xml', ['statusCode' => 404, 'content' => '']],
         ]);
 
-        $provider = $this->createProvider($this->createSiteUrlResolver('https://example.com'), $client);
+        $provider = $this->createProvider($this->createSiteUrlResolver('https://example.com'), $client, declaresUrls: false);
 
-        $this->assertCount(3, $provider->runChecks());
+        $this->assertSame(['robots.txt', 'humans.txt'], array_column($provider->runChecks(), 'label'));
+    }
+
+    // Some provider declares urls, so SitemapWriter should have written an index: its absence is an error
+    public function testRunChecksStatusIsErrorWhenSitemapIndexIsMissingWhileUrlsAreDeclared(): void
+    {
+        $client = $this->createClient([
+            ['https://example.com/robots.txt', ['statusCode' => 200, 'content' => self::OPEN_ROBOTS]],
+            ['https://example.com/sitemap-index.xml', ['statusCode' => 404, 'content' => '']],
+        ]);
+
+        $results = $this->createProvider($this->createSiteUrlResolver('https://example.com'), $client)->runChecks();
+
+        $this->assertCount(3, $results);
+        $this->assertSame('sitemap-index.xml', $results[2]['label']);
+        $this->assertSame(HealthCheckResult::STATUS_ERROR, $results[2]['status']);
+    }
+
+    // No sitemap-site.xml is asked for when the index does not declare it: SitemapWriter writes none for a provider with nothing to declare
+    public function testRunChecksAsksForNoSitemapTheIndexDoesNotDeclare(): void
+    {
+        $client = $this->createClient([
+            ['https://example.com/robots.txt', ['statusCode' => 200, 'content' => self::OPEN_ROBOTS]],
+            ['https://example.com/sitemap-index.xml', ['statusCode' => 200, 'content' => self::VALID_SITEMAP_INDEX]],
+            ['https://example.com/sitemap-site.xml', ['statusCode' => 404, 'content' => '']],
+            ['https://example.com/sitemap-page.xml', ['statusCode' => 200, 'content' => self::VALID_SITEMAP]],
+            ['https://example.com/sitemap-book.xml', ['statusCode' => 200, 'content' => self::VALID_SITEMAP]],
+        ]);
+
+        $results = $this->createProvider($this->createSiteUrlResolver('https://example.com'), $client)->runChecks();
+
+        $this->assertNotContains('sitemap-site.xml', array_column($results, 'label'));
     }
 
     public function testRunChecksStatusIsErrorWhenSitemapIndexIsNotValidXml(): void
     {
         $client = $this->createClient([
             ['https://example.com/robots.txt', ['statusCode' => 200, 'content' => self::OPEN_ROBOTS]],
-            ['https://example.com/sitemap-site.xml', ['statusCode' => 200, 'content' => self::VALID_SITEMAP]],
             ['https://example.com/sitemap-index.xml', ['statusCode' => 200, 'content' => '<html>Not Found</html>']],
         ]);
 
         $provider = $this->createProvider($this->createSiteUrlResolver('https://example.com'), $client);
         $results = $provider->runChecks();
 
-        $this->assertCount(4, $results);
-        $this->assertSame(HealthCheckResult::STATUS_ERROR, $results[3]['status']);
+        $this->assertCount(3, $results);
+        $this->assertSame(HealthCheckResult::STATUS_ERROR, $results[2]['status']);
     }
 
     public function testRunChecksStatusIsWarningWhenSitemapIndexHasNoEntries(): void
     {
         $client = $this->createClient([
             ['https://example.com/robots.txt', ['statusCode' => 200, 'content' => self::OPEN_ROBOTS]],
-            ['https://example.com/sitemap-site.xml', ['statusCode' => 200, 'content' => self::VALID_SITEMAP]],
             ['https://example.com/sitemap-index.xml', ['statusCode' => 200, 'content' => self::EMPTY_SITEMAP_INDEX]],
         ]);
 
         $provider = $this->createProvider($this->createSiteUrlResolver('https://example.com'), $client);
         $results = $provider->runChecks();
 
-        $this->assertCount(4, $results);
-        $this->assertSame(HealthCheckResult::STATUS_WARNING, $results[3]['status']);
+        $this->assertCount(3, $results);
+        $this->assertSame(HealthCheckResult::STATUS_WARNING, $results[2]['status']);
     }
 
     public function testRunChecksOnlyFlagsTheOneChildSitemapThatIsUnreachable(): void
     {
         $client = $this->createClient([
             ['https://example.com/robots.txt', ['statusCode' => 200, 'content' => self::OPEN_ROBOTS]],
-            ['https://example.com/sitemap-site.xml', ['statusCode' => 200, 'content' => self::VALID_SITEMAP]],
             ['https://example.com/sitemap-index.xml', ['statusCode' => 200, 'content' => self::VALID_SITEMAP_INDEX]],
             ['https://example.com/sitemap-page.xml', ['statusCode' => 404, 'content' => '']],
             ['https://example.com/sitemap-book.xml', ['statusCode' => 200, 'content' => self::VALID_SITEMAP]],
@@ -426,18 +458,17 @@ class SeoFilesHealthCheckProviderTest extends TestCase
         $provider = $this->createProvider($this->createSiteUrlResolver('https://example.com'), $client);
         $results = $provider->runChecks();
 
-        $this->assertCount(6, $results);
-        $this->assertSame(HealthCheckResult::STATUS_OK, $results[3]['status']);
-        $this->assertSame(HealthCheckResult::STATUS_ERROR, $results[4]['status']);
-        $this->assertSame('https://example.com/sitemap-page.xml', $results[4]['url']);
-        $this->assertSame(HealthCheckResult::STATUS_OK, $results[5]['status']);
+        $this->assertCount(5, $results);
+        $this->assertSame(HealthCheckResult::STATUS_OK, $results[2]['status']);
+        $this->assertSame(HealthCheckResult::STATUS_ERROR, $results[3]['status']);
+        $this->assertSame('https://example.com/sitemap-page.xml', $results[3]['url']);
+        $this->assertSame(HealthCheckResult::STATUS_OK, $results[4]['status']);
     }
 
     public function testRunChecksStatusIsErrorWhenAChildSitemapIsNotValidXml(): void
     {
         $client = $this->createClient([
             ['https://example.com/robots.txt', ['statusCode' => 200, 'content' => self::OPEN_ROBOTS]],
-            ['https://example.com/sitemap-site.xml', ['statusCode' => 200, 'content' => self::VALID_SITEMAP]],
             ['https://example.com/sitemap-index.xml', ['statusCode' => 200, 'content' => self::VALID_SITEMAP_INDEX]],
             ['https://example.com/sitemap-page.xml', ['statusCode' => 200, 'content' => '<html>Not Found</html>']],
             ['https://example.com/sitemap-book.xml', ['statusCode' => 200, 'content' => self::VALID_SITEMAP]],
@@ -446,7 +477,7 @@ class SeoFilesHealthCheckProviderTest extends TestCase
         $provider = $this->createProvider($this->createSiteUrlResolver('https://example.com'), $client);
         $results = $provider->runChecks();
 
-        $this->assertSame(HealthCheckResult::STATUS_ERROR, $results[4]['status']);
+        $this->assertSame(HealthCheckResult::STATUS_ERROR, $results[3]['status']);
     }
 
     private function runHumansCheck(int $statusCode, string $content, ?\DateTimeImmutable $lastModified = null): array
@@ -454,8 +485,8 @@ class SeoFilesHealthCheckProviderTest extends TestCase
         $client = $this->createClient([
             ['https://example.com/robots.txt', ['statusCode' => 200, 'content' => self::OPEN_ROBOTS, 'lastModified' => null]],
             ['https://example.com/humans.txt', ['statusCode' => $statusCode, 'content' => $content, 'lastModified' => $lastModified]],
+            ['https://example.com/sitemap-index.xml', ['statusCode' => 200, 'content' => self::SITE_INDEX, 'lastModified' => null]],
             ['https://example.com/sitemap-site.xml', ['statusCode' => 200, 'content' => self::VALID_SITEMAP, 'lastModified' => null]],
-            ['https://example.com/sitemap-index.xml', ['statusCode' => 404, 'content' => '', 'lastModified' => null]],
         ]);
 
         $provider = $this->createProvider($this->createSiteUrlResolver('https://example.com'), $client);
@@ -505,8 +536,8 @@ class SeoFilesHealthCheckProviderTest extends TestCase
     {
         $client = $this->createClient([
             ['https://example.com/robots.txt', ['statusCode' => 200, 'content' => self::OPEN_ROBOTS]],
+            ['https://example.com/sitemap-index.xml', ['statusCode' => 200, 'content' => self::SITE_INDEX]],
             ['https://example.com/sitemap-site.xml', ['statusCode' => 200, 'content' => self::VALID_SITEMAP]],
-            ['https://example.com/sitemap-index.xml', ['statusCode' => 404, 'content' => '']],
         ]);
 
         $provider = $this->createProvider($this->createSiteUrlResolver('https://example.com'), $client);
@@ -537,8 +568,8 @@ class SeoFilesHealthCheckProviderTest extends TestCase
         $client = $this->createClient([
             ['https://example.com/robots.txt', ['statusCode' => 200, 'content' => self::OPEN_ROBOTS]],
             ['https://example.com/llms.txt', ['statusCode' => 200, 'content' => $content]],
+            ['https://example.com/sitemap-index.xml', ['statusCode' => 200, 'content' => self::SITE_INDEX]],
             ['https://example.com/sitemap-site.xml', ['statusCode' => 200, 'content' => self::VALID_SITEMAP]],
-            ['https://example.com/sitemap-index.xml', ['statusCode' => 404, 'content' => '']],
         ]);
 
         $provider = $this->createProvider($this->createSiteUrlResolver('https://example.com'), $client);

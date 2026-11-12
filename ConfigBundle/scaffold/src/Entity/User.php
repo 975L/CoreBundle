@@ -7,14 +7,16 @@ use c975L\ConfigBundle\Contract\InactivityAwareInterface;
 use c975L\UiBundle\Validator\Constraints\DnsEmail;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Security\Core\User\EquatableInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Security\Core\User\UserInterface as SecurityUserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
 // c975L\ConfigBundle\Contract\UserInterface, not Symfony's own: it extends it and adds getId(), which is what the c975L bundles relate to (Page::$user, Block::$user...). ConfigBundle maps it onto this class through Doctrine's resolve_target_entities, so there is nothing to declare in config/. Implemented through InactivityAwareInterface, which extends it so c975l:config:users-cleanup can warn then anonymize the accounts left unused
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
 #[UniqueEntity(fields: ['email'], message: 'text.email_taken')]
-class User implements InactivityAwareInterface, PasswordAuthenticatedUserInterface, \Stringable
+class User implements InactivityAwareInterface, PasswordAuthenticatedUserInterface, EquatableInterface, \Stringable
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -122,6 +124,20 @@ class User implements InactivityAwareInterface, PasswordAuthenticatedUserInterfa
         $data["\0" . self::class . "\0password"] = hash('crc32c', (string) $this->password);
 
         return $data;
+    }
+
+    // The session's copy against the account just reloaded, as the firewall compares them on each request: identifier, password (its crc32c fingerprint, as __serialize() keeps it), roles and activation, so an account disabled from the back office loses its open sessions at once
+    public function isEqualTo(SecurityUserInterface $user): bool
+    {
+        if (!$user instanceof self) {
+            return false;
+        }
+
+        $password = (string) $this->password;
+        $samePassword = $password === (string) $user->getPassword() || hash('crc32c', (string) $user->getPassword()) === $password;
+        $sameRoles = [] === array_diff($this->getRoles(), $user->getRoles()) && [] === array_diff($user->getRoles(), $this->getRoles());
+
+        return $samePassword && $sameRoles && $this->getUserIdentifier() === $user->getUserIdentifier() && $this->isEnabled() === $user->isEnabled();
     }
 
     public function isVerified(): bool

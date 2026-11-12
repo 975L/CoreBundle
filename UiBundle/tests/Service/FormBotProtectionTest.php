@@ -29,6 +29,15 @@ class FormBotProtectionTest extends TestCase
         return $request;
     }
 
+    // A request carrying the session cookie, as a visitor who already loaded a page sends it
+    private function requestWithOpenSession(): Request
+    {
+        $request = $this->requestWithSession();
+        $request->cookies->set($request->getSession()->getName(), 'session-id');
+
+        return $request;
+    }
+
     // Simulates the raw submitted honeypot value, isSuspicious() reading it off the request directly
     private function setHoneypotValue(Request $request, string $formName, string $fieldName, string $value): void
     {
@@ -194,7 +203,8 @@ class FormBotProtectionTest extends TestCase
         $this->assertTrue($botProtection->isSuspicious($slow, 'test_form', 'test_started_at', 30));
     }
 
-    public function testIsSuspiciousRemovesTimestampAndHoneypotFromSession(): void
+    // The timer is consumed, the honeypot is not: a form re-displayed after a validation error keeps its field, and is timed again from that display
+    public function testIsSuspiciousConsumesTheTimerButKeepsTheHoneypot(): void
     {
         $configService = $this->createStub(ConfigServiceInterface::class);
         $configService->method('get')->willReturnMap([['site-form-delay', 3]]);
@@ -209,7 +219,57 @@ class FormBotProtectionTest extends TestCase
         $botProtection->isSuspicious($request, 'test_form', 'test_started_at');
 
         $this->assertFalse($request->getSession()->has('test_started_at'));
-        $this->assertFalse($request->getSession()->has('ui_honeypot_field'));
-        $this->assertFalse($request->getSession()->has('ui_honeypot_label'));
+        $this->assertSame('website', $request->getSession()->get('ui_honeypot_field'));
+        $this->assertSame('Website', $request->getSession()->get('ui_honeypot_label'));
+    }
+
+    // A POST with no session cookie that no display armed never went through the form: a bot posting straight at the url
+    public function testIsSuspiciousWhenNoTimerWasArmedAndNoSessionWasOpen(): void
+    {
+        $configService = $this->createStub(ConfigServiceInterface::class);
+        $configService->method('get')->willReturnMap([['site-form-delay', null]]);
+        $botProtection = new FormBotProtection($configService);
+        $request = $this->requestWithSession();
+
+        $this->assertTrue($botProtection->isSuspicious($request, 'test_form', 'test_started_at'));
+        $this->assertFalse($botProtection->isUntimed($request, 'test_started_at'), 'A POST with no session was shown back filled instead of dropped.');
+    }
+
+    // The same POST from a visitor holding a session (a second tab, a session expired) is not a bot: a caller not asking isUntimed() lets it through
+    public function testIsNotSuspiciousWhenNoTimerWasArmedInAnOpenSession(): void
+    {
+        $configService = $this->createStub(ConfigServiceInterface::class);
+        $configService->method('get')->willReturnMap([['site-form-delay', null]]);
+        $botProtection = new FormBotProtection($configService);
+
+        $this->assertFalse($botProtection->isSuspicious($this->requestWithOpenSession(), 'test_form', 'test_started_at'));
+    }
+
+    // A POST no display armed in an open session is told apart before it is judged, so the caller can show it back instead of dropping it
+    public function testIsUntimedUntilTheFormIsDisplayed(): void
+    {
+        $botProtection = new FormBotProtection($this->createStub(ConfigServiceInterface::class));
+        $request = $this->requestWithOpenSession();
+
+        $this->assertTrue($botProtection->isUntimed($request, 'test_started_at'));
+        $botProtection->startTimer($request, 'test_started_at');
+        $this->assertFalse($botProtection->isUntimed($request, 'test_started_at'));
+    }
+
+    // A form corrected after an error is timed from its re-display, so a human taking the usual time passes the second time too
+    public function testACorrectedSubmissionIsAcceptedOnceTheFormIsDisplayedAgain(): void
+    {
+        $configService = $this->createStub(ConfigServiceInterface::class);
+        $configService->method('get')->willReturnMap([['site-form-delay', 3]]);
+        $botProtection = new FormBotProtection($configService);
+        $request = $this->requestWithSession();
+        $request->getSession()->set('test_started_at', time() - 60);
+
+        $this->assertFalse($botProtection->isSuspicious($request, 'test_form', 'test_started_at'));
+
+        $botProtection->startTimer($request, 'test_started_at');
+        $request->getSession()->set('test_started_at', time() - 10);
+
+        $this->assertFalse($botProtection->isSuspicious($request, 'test_form', 'test_started_at'));
     }
 }

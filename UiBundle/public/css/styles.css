@@ -176,6 +176,11 @@
   text-align: center;
 }
 
+.age-gate [aria-busy] {
+  cursor: progress;
+  opacity: 0.7;
+}
+
 .age-gate__error {
   color: var(--alert-danger-color, #9c3a44);
 }
@@ -2132,6 +2137,14 @@ textarea:focus {
   z-index: 2;
   display: flex;
   align-items: center;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+}
+.has-toggle .toggle-password:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
 }
 
 .toggle-password img {
@@ -5213,8 +5226,14 @@ a.pullDown.fade-out {
   margin: 1em auto;
 }
 
-.readmore-toggle {
-  display: none;
+.readmore .readmore-toggle {
+  top: auto;
+  left: auto;
+}
+
+.readmore-toggle:focus-visible ~ .readmore-toggle-label {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
 }
 
 .readmore-content {
@@ -5253,7 +5272,8 @@ a.pullDown.fade-out {
   color: color-mix(in srgb, var(--link-color, #007bff) 85%, black);
 }
 
-.readmore--complete .readmore-toggle-label {
+.readmore--complete .readmore-toggle-label,
+.readmore--complete .readmore-toggle {
   display: none;
 }
 

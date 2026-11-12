@@ -27,7 +27,12 @@ class SharedBlockPickerType extends AbstractType
     {
         $choices = [];
         foreach ($this->sharedBlockRepository->findBy([], ['name' => 'ASC']) as $sharedBlock) {
-            $choices[(string) $sharedBlock->getName()] = (string) $sharedBlock->getSlug();
+            // Two shared blocks of the same name stay both selectable, the second told apart by its slug
+            $label = (string) $sharedBlock->getName();
+            if (array_key_exists($label, $choices)) {
+                $label .= ' (' . $sharedBlock->getSlug() . ')';
+            }
+            $choices[$label] = (string) $sharedBlock->getSlug();
         }
 
         $builder->add('slug', ChoiceType::class, [

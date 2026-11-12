@@ -41,6 +41,40 @@ final class CollectionReconciler
         }
     }
 
+    // Puts back, under the key its form child already carries, every existing entry $keep protects that a submission left out: a removal is only a missing row, so the server is the one place that can refuse it
+    public static function restoreKept(FormInterface $collection, array $submittedEntries, callable $keep): array
+    {
+        $submittedIds = self::extractIds($submittedEntries);
+
+        foreach ($collection as $name => $child) {
+            $item = $child->getData();
+            if (!\is_object($item) || null === $item->getId() || !$keep($item)) {
+                continue;
+            }
+
+            if (!in_array((string) $item->getId(), $submittedIds, true)) {
+                $submittedEntries[$name] = self::viewData($child);
+            }
+        }
+
+        return $submittedEntries;
+    }
+
+    // What the browser would have sent for a form, rebuilt from its current view data so that nothing it leaves out is cleared
+    private static function viewData(FormInterface $form): mixed
+    {
+        if (!$form->getConfig()->getCompound()) {
+            return $form->getViewData();
+        }
+
+        $data = [];
+        foreach ($form as $name => $child) {
+            $data[$name] = self::viewData($child);
+        }
+
+        return $data;
+    }
+
     // Drops submitted entries that neither match a surviving item by ID nor look like a genuine new entry (per $isNewEntry) - call after pruneRemoved(), passing the now-pruned collection. Guards against a malformed/partial submission for a just-deleted entry (see BlockType for the concrete case): left in the submitted array, CollectionType's own diffing (allow_add) would treat it as a new item and bind it to null data instead of dropping it.
     public static function dropOrphaned(array $submittedEntries, iterable $survivors, callable $isNewEntry): array
     {

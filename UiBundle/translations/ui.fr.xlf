@@ -32,7 +32,7 @@
             </trans-unit>
             <trans-unit id="Y0TOVwV">
                 <source>description.guided_project_ui_age_verification_setup</source>
-                <target>Brancher go.cam pour qu'un contenu réservé aux majeurs attende derrière une vérification d'âge anonyme.</target>
+                <target>Choisir l'outil de vérification d'âge et le brancher, pour qu'un contenu réservé aux majeurs attende derrière une vérification anonyme.</target>
             </trans-unit>
             <trans-unit id="FczgMxS">
                 <source>description.guided_project_ui_ai_assistant</source>
@@ -46,9 +46,17 @@
                 <source>description.guided_project_ui_ai_search_setup</source>
                 <target>Brancher la recherche du site sur votre propre clé, pour que les visiteurs posent leurs questions à vos pages.</target>
             </trans-unit>
+            <trans-unit id="fMK9pHj">
+                <source>description.guided_project_ui_analytics_setup</source>
+                <target>Choisir l'outil de mesure d'audience et le brancher, pour que les visites du site soient comptées.</target>
+            </trans-unit>
             <trans-unit id="zRr_CZb">
                 <source>description.guided_project_ui_calculator</source>
                 <target>Un formulaire qui calcule : des curseurs, des formules, un chiffre mis en avant, et si vous le voulez, envoyé avec ses résultats.</target>
+            </trans-unit>
+            <trans-unit id="1mFuvGb">
+                <source>description.guided_project_ui_captcha_setup</source>
+                <target>Choisir l'outil anti-robot et le brancher, pour que chaque formulaire public soit noté en plus de son piège et de son délai.</target>
             </trans-unit>
             <trans-unit id="6aGK0_V">
                 <source>description.guided_project_ui_content_export</source>
@@ -77,6 +85,10 @@
             <trans-unit id="_2UHUq_">
                 <source>description.guided_project_ui_legal_model</source>
                 <target>Masquer, retitrer ou réécrire une section d'un document légal fourni par ce bundle, et en ajouter de votre cru, sans perdre les mises à jour qu'il continue de recevoir</target>
+            </trans-unit>
+            <trans-unit id="lCy7jj.">
+                <source>description.guided_project_ui_map_setup</source>
+                <target>Choisir qui dessine les cartes du site, et lui donner sa clé quand il en demande une.</target>
             </trans-unit>
             <trans-unit id="uJW0NPA">
                 <source>description.guided_project_ui_media</source>
@@ -112,19 +124,19 @@
             </trans-unit>
             <trans-unit id="vp.RJ6y">
                 <source>description.guided_step_ui_age_verification_setup_entry</source>
-                <target>Commencez par l'identifiant partenaire.</target>
+                <target>Commencez par l'outil, puis ses identifiants.</target>
             </trans-unit>
             <trans-unit id="4B4B5U5">
                 <source>description.guided_step_ui_age_verification_setup_headers</source>
-                <target>Les en-têtes du site doivent encore ouvrir la porte au cadre de go.cam (frame-src, caméra, micro et clés d'accès), un réglage de nelmio_security.yaml décrit dans le README d'UiBundle. Ensuite, tout contenu déclaré pour 18 ans et plus attend derrière la vérification.</target>
+                <target>Les en-têtes du site doivent encore ouvrir la porte au cadre de l'outil (frame-src, caméra, micro et clés d'accès), un réglage de nelmio_security.yaml décrit dans le README d'UiBundle. Ensuite, tout contenu déclaré pour 18 ans et plus attend derrière la vérification.</target>
             </trans-unit>
             <trans-unit id="3GN0uDS">
                 <source>description.guided_step_ui_age_verification_setup_open</source>
-                <target>Trois entrées « Vérification d'âge go.cam » l'allument : identifiant partenaire, clé de chiffrement et clé de signature, lues sur la page « Standard implementation » de l'espace partenaire go.cam. Tant qu'une manque, aucun contenu n'est fermé.</target>
+                <target>« Vérification d'âge : outil » choisit l'outil, puis ses propres entrées le branchent : pour go.cam, identifiant partenaire, clé de chiffrement et clé de signature, lues sur la page « Standard implementation » de son espace partenaire. Tant qu'il manque quelque chose, aucun contenu n'est fermé.</target>
             </trans-unit>
             <trans-unit id="F1GtmBp">
                 <source>description.guided_step_ui_age_verification_setup_value</source>
-                <target>Collez la valeur telle que go.cam la donne. Les deux clés restent secrètes : ce sont elles qui prouvent que le résultat d'une vérification vient bien de go.cam.</target>
+                <target>Collez la valeur telle que l'outil la donne. Ses clés restent secrètes : ce sont elles qui prouvent que le résultat d'une vérification vient bien de lui.</target>
             </trans-unit>
             <trans-unit id="VoJ0CnM">
                 <source>description.guided_step_ui_ai_assistant_action</source>
@@ -198,6 +210,22 @@
                 <source>description.guided_step_ui_ai_search_setup_value</source>
                 <target>La clé API reste la vôtre : chaque question est facturée sur votre compte chez le fournisseur, dans la limite des plafonds du site.</target>
             </trans-unit>
+            <trans-unit id="6UCohDu">
+                <source>description.guided_step_ui_analytics_setup_entry</source>
+                <target>Commencez par l'outil, puis ses propres entrées.</target>
+            </trans-unit>
+            <trans-unit id="d4Q.zYD">
+                <source>description.guided_step_ui_analytics_setup_open</source>
+                <target>« Mesure d'audience : outil » choisit l'outil, puis ses propres entrées le branchent : pour Matomo, l'url de son instance et l'identifiant qu'y porte ce site. Tant qu'il en manque une, rien n'est mesuré.</target>
+            </trans-unit>
+            <trans-unit id="pGEZSqp">
+                <source>description.guided_step_ui_analytics_setup_policy</source>
+                <target>Le modèle de politique des cookies nomme désormais l'outil en service, avec son lien d'opposition. Matomo est prévu pour une configuration exemptée de consentement, d'où sa place hors du bandeau de cookies, comme le décrit le README d'UiBundle.</target>
+            </trans-unit>
+            <trans-unit id="NdGv5ij">
+                <source>description.guided_step_ui_analytics_setup_value</source>
+                <target>Saisissez la valeur telle que l'outil l'affiche : l'adresse de l'instance, puis l'identifiant que son administration donne à ce site.</target>
+            </trans-unit>
             <trans-unit id="r_pzF_x">
                 <source>description.guided_step_ui_calculator_action</source>
                 <target>Laissez l'action vide pour un simple calcul ; choisissez « envoyer un email » pour que le visiteur demande un devis avec ses résultats.</target>
@@ -241,6 +269,22 @@
             <trans-unit id="uartqWQ">
                 <source>description.guided_step_ui_calculator_save_fields</source>
                 <target>Le nom des variables est dérivé des libellés. Il n'apparaît qu'une fois les champs enregistrés.</target>
+            </trans-unit>
+            <trans-unit id="ad2Sdb6">
+                <source>description.guided_step_ui_captcha_setup_entry</source>
+                <target>Commencez par l'outil, puis ses clés.</target>
+            </trans-unit>
+            <trans-unit id="hYqeucw">
+                <source>description.guided_step_ui_captcha_setup_headers</source>
+                <target>Sous une Content-Security-Policy stricte, reCAPTCHA demande www.google.com et www.gstatic.com dans script-src, et www.google.com dans frame-src, comme le décrit le README d'UiBundle. Ensuite, chaque formulaire public est noté pendant qu'on le remplit.</target>
+            </trans-unit>
+            <trans-unit id="Uc9LC2T">
+                <source>description.guided_step_ui_captcha_setup_open</source>
+                <target>« Captcha : outil » choisit l'outil, puis ses propres entrées le branchent : pour reCAPTCHA v3, la clé de site et la clé secrète de sa console d'administration. Tant qu'une clé manque, les formulaires s'en tiennent à leur piège et à leur délai.</target>
+            </trans-unit>
+            <trans-unit id="vx7ZZog">
+                <source>description.guided_step_ui_captcha_setup_value</source>
+                <target>Collez chaque clé telle que l'outil la donne. La clé secrète le reste : c'est elle qui vérifie la note d'un visiteur auprès de l'outil.</target>
             </trans-unit>
             <trans-unit id="QhLAp.W">
                 <source>description.guided_step_ui_content_export_import</source>
@@ -405,6 +449,22 @@
             <trans-unit id="wqUYhPO">
                 <source>description.guided_step_ui_legal_model_unit</source>
                 <target>Chaque carte est une section : donnez-lui votre propre titre, réécrivez son texte, ou cochez la case qui la masque sur la page publiée</target>
+            </trans-unit>
+            <trans-unit id="0RT4EK.">
+                <source>description.guided_step_ui_map_setup_entry</source>
+                <target>Commencez par le fournisseur, puis sa clé s'il en demande une.</target>
+            </trans-unit>
+            <trans-unit id="A2PhHLp">
+                <source>description.guided_step_ui_map_setup_headers</source>
+                <target>La Content-Security-Policy du site doit nommer les hôtes du fournisseur, que le health check map-csp liste quand l'un est refusé. Ensuite, chaque carte et chaque bloc de contact se dessine avec lui.</target>
+            </trans-unit>
+            <trans-unit id="86POQt3">
+                <source>description.guided_step_ui_map_setup_open</source>
+                <target>« Fournisseur de cartes » choisit qui dessine chaque carte et chaque bloc de contact : OpenStreetMap par Leaflet, servi par le site lui-même et sans clé, ou Google Maps, qui demande sa clé d'API.</target>
+            </trans-unit>
+            <trans-unit id="j4RKEml">
+                <source>description.guided_step_ui_map_setup_value</source>
+                <target>Collez la clé telle que Google la donne, restreinte à l'adresse du site dans sa console : une clé de navigateur est publique par nature.</target>
             </trans-unit>
             <trans-unit id="StO_cmk">
                 <source>description.guided_step_ui_media_add_alt</source>
@@ -653,6 +713,10 @@
             <trans-unit id="qRTOhD8">
                 <source>flash.media_used_not_deleted</source>
                 <target>Ce média est utilisé ailleurs et n'a pas été supprimé. Détachez-le d'abord, la liste « Utilisé dans » de son formulaire indique où.</target>
+            </trans-unit>
+            <trans-unit id="MlP_TC2">
+                <source>flash.restricted_not_deleted</source>
+                <target>Cet élément est fourni avec le site et ne peut pas être supprimé : il a été laissé en place, les autres ont été supprimés.</target>
             </trans-unit>
             <trans-unit id="wFeLs7k">
                 <source>flash.review_published</source>
@@ -2470,6 +2534,10 @@
                 <source>label.force_download</source>
                 <target>Forcer le téléchargement</target>
             </trans-unit>
+            <trans-unit id="nGpa3eY">
+                <source>label.form_acknowledgement_subject</source>
+                <target>Votre message a bien été reçu</target>
+            </trans-unit>
             <trans-unit id="NwThH9S">
                 <source>label.form_disabled</source>
                 <target>Ce formulaire n'est pas disponible pour le moment.</target>
@@ -2612,11 +2680,11 @@
             </trans-unit>
             <trans-unit id="O9EXaKf">
                 <source>label.google_maps_link</source>
-                <target>Construire le lien Google Maps</target>
+                <target>Construire le lien vers la carte</target>
             </trans-unit>
             <trans-unit id="Bv3aYIl">
                 <source>label.google_maps_link_help</source>
-                <target>Construit le bouton "Itinéraire" à partir des coordonnées, ou à défaut de l'adresse postale ci-dessus. Un simple lien, gratuit et sans script chargé — le champ ci-dessus l'emporte si vous le remplissez.</target>
+                <target>Construit le bouton "Itinéraire" à partir des coordonnées, ou à défaut de l'adresse postale ci-dessus, vers le service de cartes du site. Un simple lien, gratuit et sans script chargé — le champ ci-dessus l'emporte si vous le remplissez.</target>
             </trans-unit>
             <trans-unit id="b_WLGhv">
                 <source>label.group_direction</source>
@@ -2670,9 +2738,17 @@
                 <source>label.guided_project_ui_ai_search_setup</source>
                 <target>Mettre en place la recherche IA</target>
             </trans-unit>
+            <trans-unit id="kJSKJ1t">
+                <source>label.guided_project_ui_analytics_setup</source>
+                <target>Mettre en place la mesure d'audience</target>
+            </trans-unit>
             <trans-unit id="EsOjKAx">
                 <source>label.guided_project_ui_calculator</source>
                 <target>Construire un calculateur</target>
+            </trans-unit>
+            <trans-unit id="qKGQo0m">
+                <source>label.guided_project_ui_captcha_setup</source>
+                <target>Mettre en place le captcha des formulaires</target>
             </trans-unit>
             <trans-unit id="9M8UeR6">
                 <source>label.guided_project_ui_content_export</source>
@@ -2701,6 +2777,10 @@
             <trans-unit id="Q.ghvqg">
                 <source>label.guided_project_ui_legal_model</source>
                 <target>Ajuster un document légal</target>
+            </trans-unit>
+            <trans-unit id="TEJUyen">
+                <source>label.guided_project_ui_map_setup</source>
+                <target>Choisir le service de cartes</target>
             </trans-unit>
             <trans-unit id="FtKKNNJ">
                 <source>label.guided_project_ui_media</source>
@@ -2740,7 +2820,7 @@
             </trans-unit>
             <trans-unit id="Gbub5rO">
                 <source>label.guided_step_ui_age_verification_setup_headers</source>
-                <target>Laisser entrer go.cam</target>
+                <target>Laisser entrer l'outil</target>
             </trans-unit>
             <trans-unit id="SWenAZ_">
                 <source>label.guided_step_ui_age_verification_setup_open</source>
@@ -2830,6 +2910,26 @@
                 <source>label.guided_step_ui_ai_search_setup_value</source>
                 <target>Saisir la valeur</target>
             </trans-unit>
+            <trans-unit id="Lg4724N">
+                <source>label.guided_step_ui_analytics_setup_entry</source>
+                <target>Ouvrir une entrée</target>
+            </trans-unit>
+            <trans-unit id="w7.1RrG">
+                <source>label.guided_step_ui_analytics_setup_open</source>
+                <target>Le groupe Analytics des réglages</target>
+            </trans-unit>
+            <trans-unit id="_GDdQQw">
+                <source>label.guided_step_ui_analytics_setup_policy</source>
+                <target>Relire la politique des cookies</target>
+            </trans-unit>
+            <trans-unit id="L_3bWkb">
+                <source>label.guided_step_ui_analytics_setup_save</source>
+                <target>Enregistrer, puis passer à l'entrée suivante</target>
+            </trans-unit>
+            <trans-unit id="sJIOkdn">
+                <source>label.guided_step_ui_analytics_setup_value</source>
+                <target>Saisir la valeur</target>
+            </trans-unit>
             <trans-unit id="zqz.Tph">
                 <source>label.guided_step_ui_calculator_action</source>
                 <target>Choisir s'il est envoyé</target>
@@ -2877,6 +2977,26 @@
             <trans-unit id="CwkgpFm">
                 <source>label.guided_step_ui_calculator_save_fields</source>
                 <target>Enregistrez avant d'écrire une formule</target>
+            </trans-unit>
+            <trans-unit id="YoCaMYc">
+                <source>label.guided_step_ui_captcha_setup_entry</source>
+                <target>Ouvrir une entrée</target>
+            </trans-unit>
+            <trans-unit id="SH76V8T">
+                <source>label.guided_step_ui_captcha_setup_headers</source>
+                <target>Laisser entrer l'outil</target>
+            </trans-unit>
+            <trans-unit id="LY5R_Bn">
+                <source>label.guided_step_ui_captcha_setup_open</source>
+                <target>Le groupe Sécurité des réglages</target>
+            </trans-unit>
+            <trans-unit id="AjiFTcd">
+                <source>label.guided_step_ui_captcha_setup_save</source>
+                <target>Enregistrer, puis passer à l'entrée suivante</target>
+            </trans-unit>
+            <trans-unit id="tY5NmjE">
+                <source>label.guided_step_ui_captcha_setup_value</source>
+                <target>Saisir la valeur</target>
             </trans-unit>
             <trans-unit id="1ssn4bV">
                 <source>label.guided_step_ui_content_export_import</source>
@@ -3065,6 +3185,26 @@
             <trans-unit id="dt2sHcE">
                 <source>label.guided_step_ui_legal_model_unit</source>
                 <target>Ajuster une section</target>
+            </trans-unit>
+            <trans-unit id="LxFSz2W">
+                <source>label.guided_step_ui_map_setup_entry</source>
+                <target>Ouvrir une entrée</target>
+            </trans-unit>
+            <trans-unit id="Jfqe4p_">
+                <source>label.guided_step_ui_map_setup_headers</source>
+                <target>Laisser entrer les cartes</target>
+            </trans-unit>
+            <trans-unit id="PGYLnCB">
+                <source>label.guided_step_ui_map_setup_open</source>
+                <target>Le groupe Interface des réglages</target>
+            </trans-unit>
+            <trans-unit id="MSueM4k">
+                <source>label.guided_step_ui_map_setup_save</source>
+                <target>Enregistrer, puis passer à l'entrée suivante</target>
+            </trans-unit>
+            <trans-unit id="Vksf7pt">
+                <source>label.guided_step_ui_map_setup_value</source>
+                <target>Saisir la valeur</target>
             </trans-unit>
             <trans-unit id="dfYwSHC">
                 <source>label.guided_step_ui_media_add_alt</source>
@@ -4498,6 +4638,10 @@
                 <source>label.slide_navigation</source>
                 <target>Navigation des diapositives</target>
             </trans-unit>
+            <trans-unit id="zJj6XLS">
+                <source>label.slide_position</source>
+                <target>Diapositive %current% sur %total%</target>
+            </trans-unit>
             <trans-unit id="WTG_sdU">
                 <source>label.slides</source>
                 <target>Diapositives</target>
@@ -4525,6 +4669,10 @@
             <trans-unit id="Pv_ZKGY">
                 <source>label.source</source>
                 <target>Source</target>
+            </trans-unit>
+            <trans-unit id="71_aLjk">
+                <source>label.start_animation</source>
+                <target>Démarrer l'animation</target>
             </trans-unit>
             <trans-unit id="3D9cZ_b">
                 <source>label.start_position</source>
@@ -4880,7 +5028,7 @@
             </trans-unit>
             <trans-unit id="2aw0QJh">
                 <source>text.age_gate</source>
-                <target>Ce contenu est réservé aux personnes majeures. La vérification se fait avec go.cam, sur votre appareil : nous apprenons seulement que vous êtes majeur, jamais qui vous êtes.</target>
+                <target>Ce contenu est réservé aux personnes majeures. La vérification se fait avec %provider%, sur votre appareil : %provider% ne nous transmet ni votre image ni votre identité, seulement le fait que vous êtes majeur.</target>
             </trans-unit>
             <trans-unit id="SMjIvie">
                 <source>text.age_gate_failed</source>
@@ -4930,13 +5078,17 @@
                 <source>text.field_url_help</source>
                 <target><![CDATA[Les mots du libellé entre crochets deviennent le lien, par exemple « J'accepte les [conditions générales d'utilisation] » ; sans crochets, un lien « (lire) » suit le libellé.]]></target>
             </trans-unit>
-            <trans-unit id="W4825Gb">
-                <source>text.form_copy_notice</source>
-                <target>Ce message est la copie d'un message envoyé depuis le formulaire de ce site, à la demande d'une personne ayant indiqué cette adresse pour en recevoir une copie. Si ce n'est pas vous, ignorez-le simplement.</target>
+            <trans-unit id="aLi7wWt">
+                <source>text.form_acknowledgement</source>
+                <target>Votre message envoyé depuis le formulaire de ce site a bien été reçu. Si vous n'êtes pas à l'origine de cet envoi, ignorez simplement ce message.</target>
             </trans-unit>
             <trans-unit id="UAH_ycC">
                 <source>text.form_required_note</source>
                 <target>* Champ requis</target>
+            </trans-unit>
+            <trans-unit id="T3iEYg1">
+                <source>text.form_resend</source>
+                <target>Ce formulaire avait déjà été envoyé ou a trop attendu. Vérifiez votre saisie et renvoyez-le.</target>
             </trans-unit>
             <trans-unit id="YkALKHi">
                 <source>text.gdpr_information</source>

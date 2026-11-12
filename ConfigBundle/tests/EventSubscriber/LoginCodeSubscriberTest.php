@@ -16,6 +16,8 @@ use c975L\ConfigBundle\Security\LoginCode;
 use c975L\ConfigBundle\Security\TrustedDevice;
 use c975L\ConfigBundle\Tests\Fixtures\UserStub;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -29,9 +31,12 @@ use Symfony\Component\Security\Http\Authenticator\Passport\Badge\RememberMeBadge
 use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
 use Symfony\Component\Security\Http\Authenticator\Passport\SelfValidatingPassport;
 use Symfony\Component\Security\Http\Event\LoginSuccessEvent;
+use Symfony\Component\Security\Http\EventListener\CheckRememberMeConditionsListener;
 
 class LoginCodeSubscriberTest extends TestCase
 {
+    private ?bool $rememberedAtCookieTime = null;
+
     // An admin's password login from an unknown browser is held on the code page
     public function testHoldsThePasswordLoginOfAnAdmin(): void
     {
@@ -50,6 +55,25 @@ class LoginCodeSubscriberTest extends TestCase
         $this->subscriber(required: true)->onLoginSuccess($event);
 
         $this->assertFalse($badge->isEnabled());
+    }
+
+    // A "_remember_me" posted by hand is enabled by the framework at -32, then disabled here before RememberMeListener sets the cookie at -64
+    public function testAPostedRememberMeNeverOutlivesTheHeldLogin(): void
+    {
+        $event = $this->loginEvent('app_login');
+        $event->getRequest()->request->set('_remember_me', '1');
+        $badge = new RememberMeBadge();
+        $event->getPassport()->addBadge($badge);
+        $subscriber = $this->subscriber(required: true);
+        $priority = new \ReflectionMethod($subscriber, 'onLoginSuccess')->getAttributes(AsEventListener::class)[0]->newInstance()->priority;
+
+        $dispatcher = new EventDispatcher();
+        $dispatcher->addSubscriber(new CheckRememberMeConditionsListener());
+        $dispatcher->addListener(LoginSuccessEvent::class, $subscriber->onLoginSuccess(...), $priority);
+        $dispatcher->addListener(LoginSuccessEvent::class, fn (LoginSuccessEvent $event): bool => $this->rememberedAtCookieTime = $badge->isEnabled(), -64);
+        $dispatcher->dispatch($event);
+
+        $this->assertFalse($this->rememberedAtCookieTime);
     }
 
     // Google's login, remember-me and the rest never go through the password form

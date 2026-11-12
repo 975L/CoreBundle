@@ -116,15 +116,35 @@ class CaptchaBehaviourTest extends JsCase
         $this->assertSame(0, $state['asked'], 'A token was fetched for a submission that had already been refused.');
     }
 
-    private function captcha(string $probe, bool $stub = true, bool $cancelFirst = false): mixed
+    // A provider the controller has no driver for submits all the same, with an empty token the server then refuses, rather than freezing the form
+    public function testAnUnknownProviderStillSubmits(): void
+    {
+        $state = $this->captcha(
+            'const form = root.querySelector("form");
+             let submits = 0;
+             form.addEventListener("submit", (event) => { submits += 1; event.preventDefault(); });
+             form.requestSubmit();
+             await new Promise((r) => setTimeout(r, 300));
+
+             return { token: root.querySelector("[name=captcha]").value, submits, asked: window.__asked.length };',
+            provider: 'unknown'
+        );
+
+        $this->assertSame('', $state['token']);
+        $this->assertSame(2, $state['submits'], 'A form whose captcha provider has no driver was never submitted.');
+        $this->assertSame(0, $state['asked'], 'A script was fetched for a provider the controller does not know.');
+    }
+
+    private function captcha(string $probe, bool $stub = true, bool $cancelFirst = false, string $provider = 'recaptcha'): mixed
     {
         // An inline handler is registered as the form is parsed, so it runs before the controller ever connects - which is the only way to put a refusal in front of it
         $guard = $cancelFirst ? ' onsubmit="event.preventDefault();"' : '';
 
         return $this->observe(
             sprintf(
-                '<form%s><input type="hidden" name="captcha" data-controller="captcha" data-captcha-site-key-value="key" data-captcha-action-value="contact"><input name="x"><button type="submit">Send</button></form>',
-                $guard
+                '<form%s><input type="hidden" name="captcha" data-controller="captcha" data-captcha-provider-value="%s" data-captcha-site-key-value="key" data-captcha-action-value="contact"><input name="x"><button type="submit">Send</button></form>',
+                $guard,
+                $provider
             ),
             ['captcha' => 'captcha'],
             $probe,

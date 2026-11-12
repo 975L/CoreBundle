@@ -11,6 +11,7 @@
 namespace c975L\UiBundle\Tests\Service;
 
 use c975L\ConfigBundle\Contract\UserInterface;
+use c975L\UiBundle\Entity\Favorite;
 use c975L\UiBundle\Model\CollectionItem;
 use c975L\UiBundle\Registry\FavoriteItemRegistry;
 use c975L\UiBundle\Repository\FavoriteRepository;
@@ -19,6 +20,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 // Whose list a row belongs to, and what happens to a list built anonymously once its visitor signs in
 class FavoriteServiceTest extends TestCase
@@ -106,6 +108,26 @@ class FavoriteServiceTest extends TestCase
 
         $this->assertTrue($result['favorited']);
         $this->assertSame(2, $result['count']);
+    }
+
+    // Any url would otherwise file a row for nothing: a thing nobody on this site can show is not put aside
+    public function testAThingTheSiteCannotShowIsNotPutAside(): void
+    {
+        $repository = $this->createStub(FavoriteRepository::class);
+        $repository->method('findOneByHolder')->willReturn(null);
+
+        $this->expectException(NotFoundHttpException::class);
+
+        $this->service(repository: $repository)->toggle('zzz', 999999999, self::TOKEN);
+    }
+
+    // Taking a thing back out stays possible once it is gone, or it would sit in the list for good
+    public function testAFavoriteOfAThingGoneCanStillBeTakenOut(): void
+    {
+        $repository = $this->createStub(FavoriteRepository::class);
+        $repository->method('findOneByHolder')->willReturn(new Favorite());
+
+        $this->assertFalse($this->service(repository: $repository)->toggle('book', 3, self::TOKEN)['favorited']);
     }
 
     private function service(?int $userId = null, FavoriteRepository | MockObject | null $repository = null, ?FavoriteItemRegistry $registry = null): FavoriteService

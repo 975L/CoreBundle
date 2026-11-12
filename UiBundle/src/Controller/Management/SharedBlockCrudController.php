@@ -259,7 +259,7 @@ class SharedBlockCrudController extends AbstractCrudController
         return $this->usages[(string) $sharedBlock->getSlug()] ?? 0;
     }
 
-    // Where the pointers sit, as their owners name it ("Page « Contact »"), read on the top block when a pointer sits inside a container
+    // Where the pointers sit, as their owners name it ("Page « Contact »"), read on the top block when a pointer sits inside a container - escaped, since EasyAdmin renders the flash it lands in raw
     /** @param Block[] $pointers */
     private function locations(array $pointers): string
     {
@@ -279,6 +279,6 @@ class SharedBlockCrudController extends AbstractCrudController
             $labels[] = $resolved[$top->getId()]['label'] ?? $this->translator->trans('label.shared_block_unknown_location', [], 'ui');
         }
 
-        return implode(', ', array_unique($labels));
+        return htmlspecialchars(implode(', ', array_unique($labels)));
     }
 }

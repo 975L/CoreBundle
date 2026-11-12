@@ -109,6 +109,14 @@ async function offlinePage() {
     return new Response(html, { status: page.status, headers });
 }
 
+// The oldest copy goes, never the offline page the install put first
+function evictOldest(cache, keys) {
+    const offline = new URL(OFFLINE_URL, self.location.origin).href;
+    const oldest = keys.find((key) => key.url !== offline);
+
+    return oldest ? cache.delete(oldest) : false;
+}
+
 // A title or a url written into the offline page's html
 function escape(text) {
     return String(text).replace(/[&<>"']/g, (character) => `&#${character.charCodeAt(0)};`);
@@ -119,7 +127,7 @@ function fetchAndKeep(request) {
     return fetch(request).then((response) => {
         if (response.ok) {
             const copy = response.clone();
-            caches.open(CACHE).then((cache) => cache.put(request, copy).then(() => cache.keys()).then((keys) => keys.length > MAX_ENTRIES && cache.delete(keys[0])));
+            caches.open(CACHE).then((cache) => cache.put(request, copy).then(() => cache.keys()).then((keys) => keys.length > MAX_ENTRIES && evictOldest(cache, keys)));
         }
 
         return response;

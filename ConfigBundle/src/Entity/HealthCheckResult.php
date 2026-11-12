@@ -29,6 +29,9 @@ class HealthCheckResult
     // Not ok/warning/error: no verdict could be reached, either because the check never ran (eg. the page doesn't resolve on the checked environment yet) or because the target is up but turns automated probes down (a store answering 403 to a HEAD). Kept visually neutral rather than a warning/error color, and left out of the dashboard table's default view along with the ok rows: neither case is something an editor can act upon, and a red row nobody can act on is what makes a dashboard get ignored
     public const STATUS_SKIPPED = 'skipped';
 
+    // The length of the url, label and edit url columns: a longer value is cut rather than failing the single flush a whole run is written in
+    public const int COLUMN_LENGTH = 255;
+
     public const STATUSES = [
         self::STATUS_OK,
         self::STATUS_WARNING,
@@ -44,21 +47,26 @@ class HealthCheckResult
     // Provider identifier, eg. "pagespeed" (see HealthCheckProviderInterface::getKind())
     #[ORM\Column(length: 50)]
     #[Assert\NotBlank]
+    #[Assert\Length(max: 50)]
     private string $kind;
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank]
+    #[Assert\Length(max: 255)]
     private string $url;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\Length(max: 255)]
     private ?string $label = null;
 
     // Admin CRUD edit URL for the entity behind this row (eg. SiteBundle's Page edit screen), null when the check has no such counterpart (eg. site-wide checks) - kept separate from url, which is the actually-tested public address
     #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\Length(max: 255)]
     private ?string $editUrl = null;
 
     #[ORM\Column(length: 20)]
     #[Assert\Choice(choices: self::STATUSES)]
+    #[Assert\Length(max: 20)]
     private string $status;
 
     // Short human-readable line shown in the dashboard table, eg. "Perf 82 · A11y 91 · Bonnes pratiques 100 · SEO 95 · 2 erreurs console"
@@ -100,7 +108,7 @@ class HealthCheckResult
 
     public function setUrl(string $url): static
     {
-        $this->url = $url;
+        $this->url = mb_substr($url, 0, self::COLUMN_LENGTH);
 
         return $this;
     }
@@ -112,7 +120,7 @@ class HealthCheckResult
 
     public function setLabel(?string $label): static
     {
-        $this->label = $label;
+        $this->label = null !== $label ? mb_substr($label, 0, self::COLUMN_LENGTH) : null;
 
         return $this;
     }
@@ -124,7 +132,7 @@ class HealthCheckResult
 
     public function setEditUrl(?string $editUrl): static
     {
-        $this->editUrl = $editUrl;
+        $this->editUrl = null !== $editUrl ? mb_substr($editUrl, 0, self::COLUMN_LENGTH) : null;
 
         return $this;
     }

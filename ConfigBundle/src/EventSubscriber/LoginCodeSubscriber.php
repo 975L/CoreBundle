@@ -37,8 +37,8 @@ class LoginCodeSubscriber
     ) {
     }
 
-    // Parks the login and sends the code, the page the firewall was heading to kept for afterwards
-    #[AsEventListener(event: LoginSuccessEvent::class)]
+    // Parks the login and sends the code, the page the firewall was heading to kept for afterwards. Priority -48 runs after CheckRememberMeConditionsListener (-32) enables the remember-me badge from a posted "_remember_me" and before RememberMeListener (-64) sets the cookie, so disabling the badge sticks
+    #[AsEventListener(event: LoginSuccessEvent::class, priority: -48)]
     public function onLoginSuccess(LoginSuccessEvent $event): void
     {
         $request = $event->getRequest();

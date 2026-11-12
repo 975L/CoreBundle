@@ -260,37 +260,60 @@
         "description": "description.ui_pwa_share_target"
     },
     {
-        "label": "label.recaptcha3_site_key",
-        "slug": "recaptcha3-site-key",
+        "label": "label.captcha_provider",
+        "slug": "captcha-provider",
+        "sensitive": false,
+        "restricted": true,
+        "value": "recaptcha",
+        "kind": "choice",
+        "group": "security",
+        "severity": null,
+        "description": "description.captcha_provider",
+        "choices": [
+            "recaptcha"
+        ]
+    },
+    {
+        "label": "label.captcha_recaptcha_site_key",
+        "slug": "captcha-recaptcha-site-key",
+        "former_slugs": [
+            "recaptcha3-site-key"
+        ],
         "sensitive": true,
         "restricted": true,
         "value": null,
         "kind": "text",
         "group": "security",
         "severity": "warning",
-        "description": "description.recaptcha3_site_key"
+        "description": "description.captcha_recaptcha_site_key"
     },
     {
-        "label": "label.recaptcha3_secret_key",
-        "slug": "recaptcha3-secret-key",
+        "label": "label.captcha_recaptcha_secret_key",
+        "slug": "captcha-recaptcha-secret-key",
+        "former_slugs": [
+            "recaptcha3-secret-key"
+        ],
         "sensitive": true,
         "restricted": true,
         "value": null,
         "kind": "text",
         "group": "security",
         "severity": "warning",
-        "description": "description.recaptcha3_secret_key"
+        "description": "description.captcha_recaptcha_secret_key"
     },
     {
-        "label": "label.recaptcha3_score_threshold",
-        "slug": "recaptcha3-score-threshold",
+        "label": "label.captcha_recaptcha_score_threshold",
+        "slug": "captcha-recaptcha-score-threshold",
+        "former_slugs": [
+            "recaptcha3-score-threshold"
+        ],
         "sensitive": false,
         "restricted": true,
         "value": "0.05",
         "kind": "text",
         "group": "security",
         "severity": "warning",
-        "description": "description.recaptcha3_score_threshold"
+        "description": "description.captcha_recaptcha_score_threshold"
     },
     {
         "label": "label.site_form_delay",
@@ -430,8 +453,25 @@
         "description": "description.url_cookies_policy"
     },
     {
-        "label": "label.age_verification_partner_id",
-        "slug": "age-verification-partner-id",
+        "label": "label.age_verification_provider",
+        "slug": "age-verification-provider",
+        "sensitive": false,
+        "restricted": true,
+        "value": "gocam",
+        "kind": "choice",
+        "group": "legal",
+        "severity": null,
+        "description": "description.age_verification_provider",
+        "choices": [
+            "gocam"
+        ]
+    },
+    {
+        "label": "label.age_verification_gocam_partner_id",
+        "slug": "age-verification-gocam-partner-id",
+        "former_slugs": [
+            "age-verification-partner-id"
+        ],
         "feature": true,
         "sensitive": true,
         "restricted": true,
@@ -439,29 +479,35 @@
         "kind": "text",
         "group": "legal",
         "severity": null,
-        "description": "description.age_verification_partner_id"
+        "description": "description.age_verification_gocam_partner_id"
     },
     {
-        "label": "label.age_verification_cipher_key",
-        "slug": "age-verification-cipher-key",
+        "label": "label.age_verification_gocam_cipher_key",
+        "slug": "age-verification-gocam-cipher-key",
+        "former_slugs": [
+            "age-verification-cipher-key"
+        ],
         "sensitive": true,
         "restricted": true,
         "value": null,
         "kind": "text",
         "group": "legal",
         "severity": null,
-        "description": "description.age_verification_cipher_key"
+        "description": "description.age_verification_gocam_cipher_key"
     },
     {
-        "label": "label.age_verification_hmac_key",
-        "slug": "age-verification-hmac-key",
+        "label": "label.age_verification_gocam_hmac_key",
+        "slug": "age-verification-gocam-hmac-key",
+        "former_slugs": [
+            "age-verification-hmac-key"
+        ],
         "sensitive": true,
         "restricted": true,
         "value": null,
         "kind": "text",
         "group": "legal",
         "severity": null,
-        "description": "description.age_verification_hmac_key"
+        "description": "description.age_verification_gocam_hmac_key"
     },
     {
         "label": "label.site_enable_cookie_consent",
@@ -475,26 +521,46 @@
         "description": "description.site_enable_cookie_consent"
     },
     {
-        "label": "label.site_matomo_url",
-        "slug": "site-matomo-url",
+        "label": "label.analytics_provider",
+        "slug": "analytics-provider",
         "sensitive": false,
         "restricted": true,
-        "value": null,
-        "kind": "text",
+        "value": "matomo",
+        "kind": "choice",
         "group": "analytics",
-        "severity": "warning",
-        "description": "description.site_matomo_url"
+        "severity": null,
+        "description": "description.analytics_provider",
+        "choices": [
+            "matomo"
+        ]
     },
     {
-        "label": "label.site_matomo_id",
-        "slug": "site-matomo-id",
+        "label": "label.analytics_matomo_url",
+        "slug": "analytics-matomo-url",
+        "former_slugs": [
+            "site-matomo-url"
+        ],
         "sensitive": false,
         "restricted": true,
         "value": null,
         "kind": "text",
         "group": "analytics",
         "severity": "warning",
-        "description": "description.site_matomo_id"
+        "description": "description.analytics_matomo_url"
+    },
+    {
+        "label": "label.analytics_matomo_id",
+        "slug": "analytics-matomo-id",
+        "former_slugs": [
+            "site-matomo-id"
+        ],
+        "sensitive": false,
+        "restricted": true,
+        "value": null,
+        "kind": "text",
+        "group": "analytics",
+        "severity": "warning",
+        "description": "description.analytics_matomo_id"
     },
     {
         "label": "label.ui_domain_verifications",

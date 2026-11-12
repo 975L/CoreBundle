@@ -98,6 +98,18 @@ class SvgTextWarningListenerTest extends TestCase
         $this->assertStringContainsString('(Riffic Free)', $flashes[0]);
     }
 
+    // EasyAdmin renders flashes raw: a third-party SVG's font name reaches the editor's session as text, never as markup
+    public function testTheFontNamesOfAnSvgAreEscaped(): void
+    {
+        $media = $this->write('logo.svg', '<svg xmlns="http://www.w3.org/2000/svg"><text font-family="&lt;img src=x onerror=alert(1)&gt;">975L</text></svg>');
+
+        $this->createListener()->onPostUpload(new Event($media, $this->createMapping()));
+
+        $flashes = $this->flashes();
+        $this->assertStringNotContainsString('<img', $flashes[0]);
+        $this->assertStringContainsString('&lt;img src=x onerror=alert(1)&gt;', $flashes[0]);
+    }
+
     public function testAVectorizedSvgIsNotFlagged(): void
     {
         $media = $this->write('logo.svg', '<svg xmlns="http://www.w3.org/2000/svg"><path d="M0 0 L1 1 Z"/></svg>');

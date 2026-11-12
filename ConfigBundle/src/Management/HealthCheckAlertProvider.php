@@ -30,19 +30,19 @@ class HealthCheckAlertProvider implements AlertProviderInterface
 
     public function getAlerts(): array
     {
-        // Acknowledged rows left out: an admin who declared one dealt with has said there is nothing left to open the Health check page for, and the next run records a fresh unacknowledged row if they were wrong
-        $results = array_filter(
-            $this->healthCheckResultRepository->findLatestPerUrlAndKind(),
-            static fn (HealthCheckResult $result) => !$result->isAcknowledged()
-        );
+        // Acknowledged rows left out: an admin who declared one dealt with has said there is nothing left to open the Health check page for, and the next run records a fresh unacknowledged row if they were wrong. Counted in SQL, the dashboard showing on every visit
+        $counts = $this->healthCheckResultRepository->countLatestUnacknowledgedPerStatus();
 
-        $errors = $this->count($results, HealthCheckResult::STATUS_ERROR);
-        $warnings = $this->count($results, HealthCheckResult::STATUS_WARNING);
+        $errors = $counts[HealthCheckResult::STATUS_ERROR]['count'] ?? 0;
+        $warnings = $counts[HealthCheckResult::STATUS_WARNING]['count'] ?? 0;
 
         // Nothing checked yet, or nothing left to fix: an alert saying "all good" would be permanent noise on a dashboard whose alerts are meant to be acted upon
         if (0 === $errors && 0 === $warnings) {
             return [];
         }
+
+        // The latest run among the rows counted, which is what makes the alert double as the "your queued run is done" signal
+        $lastCheckedAt = max(array_column($counts, 'lastCheckedAt'));
 
         // A single alert rather than one per severity: they lead to the same page, where the table already tells the rows apart. Errors decide the severity when there are any, warnings only being worth a look
         return [[
@@ -51,7 +51,7 @@ class HealthCheckAlertProvider implements AlertProviderInterface
                 : $this->translator->trans('label.health_check_alert_warnings', ['%count%' => $warnings], 'config'),
             'description' => $this->translator->trans(
                 'description.health_check_alert',
-                ['%date%' => $this->latestCheckedAt($results)->format('d/m/Y H:i')],
+                ['%date%' => $lastCheckedAt->format('d/m/Y H:i')],
                 'config',
             ),
             'severity' => $errors > 0 ? Config::SEVERITY_DANGER : Config::SEVERITY_WARNING,
@@ -59,17 +59,5 @@ class HealthCheckAlertProvider implements AlertProviderInterface
             'role' => $this->configService->get('site-role-admin'),
             'url' => $this->urlGenerator->generate('management_health_check_index'),
         ]];
-    }
-
-    // @param HealthCheckResult[] $results
-    private function count(array $results, string $status): int
-    {
-        return \count(array_filter($results, static fn (HealthCheckResult $result) => $status === $result->getStatus()));
-    }
-
-    // @param non-empty-array<HealthCheckResult> $results - which is what having at least one error or warning guarantees
-    private function latestCheckedAt(array $results): \DateTimeInterface
-    {
-        return max(array_map(static fn (HealthCheckResult $result) => $result->getCheckedAt(), $results));
     }
 }

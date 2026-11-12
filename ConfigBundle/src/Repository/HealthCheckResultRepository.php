@@ -41,6 +41,33 @@ class HealthCheckResultRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    // How many of the latest rows of each (url, kind) stand in each status, and the latest date among them, acknowledged rows left out - what the dashboard alert reads, aggregated in SQL rather than hydrating every row and its details on each display, keyed by status
+    /** @return array<string, array{count: int, lastCheckedAt: \DateTimeImmutable}> */
+    public function countLatestUnacknowledgedPerStatus(): array
+    {
+        $latestIds = $this->getEntityManager()->createQueryBuilder()
+            ->select('MAX(l.id)')
+            ->from(HealthCheckResult::class, 'l')
+            ->groupBy('l.url')
+            ->addGroupBy('l.kind')
+            ->getDQL();
+
+        $rows = $this->createQueryBuilder('h')
+            ->select('h.status AS status', 'COUNT(h.id) AS total', 'MAX(h.checkedAt) AS lastCheckedAt')
+            ->andWhere('h.id IN (' . $latestIds . ')')
+            ->andWhere('h.acknowledgedAt IS NULL')
+            ->groupBy('h.status')
+            ->getQuery()
+            ->getArrayResult();
+
+        $counts = [];
+        foreach ($rows as $row) {
+            $counts[(string) $row['status']] = ['count' => (int) $row['total'], 'lastCheckedAt' => new \DateTimeImmutable((string) $row['lastCheckedAt'])];
+        }
+
+        return $counts;
+    }
+
     // One row per kind for a single url, most recent checkedAt only - backs a per-page health check panel (e.g. c975l/site-bundle's Page edit screen), the same dedup rule as findLatestPerUrlAndKind() but scoped to one page instead of every page
     public function findLatestByUrl(string $url): array
     {

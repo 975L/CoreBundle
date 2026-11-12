@@ -25,6 +25,8 @@ class MaintenanceScheduleTest extends TestCase
 
         $this->assertInstanceOf(Schedule::class, $schedule);
         $this->assertSame($cache, $schedule->getState());
+        // Three days of a stopped worker would otherwise replay twelve full backups in a row
+        $this->assertTrue($schedule->shouldProcessOnlyLastMissedRun());
 
         $recurringMessages = array_values($schedule->getRecurringMessages());
         $this->assertCount(1, $recurringMessages);

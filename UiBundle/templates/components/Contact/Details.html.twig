@@ -95,8 +95,8 @@
         </div>
     {% endif %}
 
-    {# Resolved once, so the button and the graph's "hasMap" below never point at two different places. A url typed by hand wins: a business with a Google listing of its own has an address worth more than a search built from its street #}
-    {% set mapUrl = mapUrl|default('') ?: (googleMapsLink|default(false)|to_bool ? google_maps_url({
+    {# Resolved once, so the button and the graph's "hasMap" below never point at two different places. A url typed by hand wins: a business with a listing of its own on a map service has an address worth more than a search built from its street #}
+    {% set mapUrl = mapUrl|default('') ?: (googleMapsLink|default(false)|to_bool ? map_place_url({
         addressStreetAddress: addressStreetAddress|default(''),
         addressPostalCode: addressPostalCode|default(''),
         addressLocality: addressLocality|default(''),

@@ -15,9 +15,9 @@ use c975L\ConfigBundle\Entity\HealthCheckResult;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-// Reports the AI crawlers that appeared in the community list since this site last updated its own (see AiCrawlerListUpdater) - the one thing about robots.txt that goes stale on its own, nothing in the site itself changing meanwhile. Monthly: that list gains a handful of names every few months, and a weekly call to a third party for it would be noise
+// Reports the AI crawlers that appeared in the community list since this site last updated its own (see AiCrawlerListUpdater) - the one thing about robots.txt that goes stale on its own, nothing in the site itself changing meanwhile. Monthly: that list gains a handful of names every few months, and a weekly call to a third party for it would be noise. Exhaustive, so turning "seo-robots-block-ai" off or naming no source drops the last row
 #[AsHealthCheck(frequency: AsHealthCheck::FREQUENCY_MONTHLY)]
-class AiCrawlersHealthCheckProvider implements HealthCheckProviderInterface
+class AiCrawlersHealthCheckProvider implements HealthCheckExhaustiveInterface
 {
     // Kind this provider reports under, shared with HealthCheckController::SITE_WIDE_KINDS - this check reads a third party rather than a page of the site, so its row belongs to the "Site" section
     public const KIND = 'ai-crawlers';
@@ -44,10 +44,13 @@ class AiCrawlersHealthCheckProvider implements HealthCheckProviderInterface
             return [];
         }
 
+        // A third party down is a warning on the source's own url, so the next successful run replaces it
         try {
             $comparison = $this->aiCrawlerListUpdater->compare();
         } catch (\Throwable $e) {
-            return [$this->row(null, HealthCheckResult::STATUS_ERROR, 'label.health_check_ai_crawlers_call_failed', ['%message%' => $e->getMessage()], ['error' => $e->getMessage()])];
+            $source = trim((string) $this->configService->get('seo-robots-ai-crawlers-source'));
+
+            return [HealthCheckErrorRow::build($this->translator, 'config', $source, 'seo-robots-ai-crawlers', 'label.health_check_ai_crawlers_call_failed', $e->getMessage())];
         }
 
         // No source configured is a deliberate opt-out, not something to report every month
@@ -70,11 +73,11 @@ class AiCrawlersHealthCheckProvider implements HealthCheckProviderInterface
         )];
     }
 
-    private function row(?string $url, string $status, string $translationId, array $parameters = [], array $details = []): array
+    private function row(string $url, string $status, string $translationId, array $parameters = [], array $details = []): array
     {
         return [
             // The list's own url, so the row links to what it is about - the site itself is never called here, this check reading a third party rather than a page
-            'url' => $url ?? '',
+            'url' => $url,
             'label' => 'seo-robots-ai-crawlers',
             'status' => $status,
             'summary' => $this->translator->trans($translationId, $parameters, 'config'),

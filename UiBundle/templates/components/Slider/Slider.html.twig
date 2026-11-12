@@ -42,11 +42,11 @@
                 {% endif %}
             {% endset %}
             {% if imageLinksToUrl and slide.url and not isVideo %}
-                <a href="{{ slide.url }}" class="slider-img-link">{{ mediaTag|raw }}</a>
+                <a href="{{ slide.url }}" class="slider-img-link">{{ mediaTag }}</a>
             {% elseif zoom and not isVideo %}
-                {{ zoomedMedia|raw }}
+                {{ zoomedMedia }}
             {% else %}
-                {{ mediaTag|raw }}
+                {{ mediaTag }}
             {% endif %}
             {% if slide.title %}<p class="slider-title">{% if slide.url %}<a href="{{ slide.url }}">{{ slide.title }}</a>{% else %}{{ slide.title }}{% endif %}</p>{% endif %}
             {% if slide.text %}<p class="slider-text">{% if slide.url %}<a href="{{ slide.url }}">{{ slide.text }}</a>{% else %}{{ slide.text }}{% endif %}</p>{% endif %}
@@ -54,7 +54,7 @@
     {% elseif isVideo %}
         <video class="{{ ('img-responsive img-rounded box-shadow ' ~ class ~ ' ' ~ media.cssClasses|join(' '))|trim }}" controls muted loop playsinline preload="metadata" aria-label="{{ mediaAlt }}"><source src="{{ vich_uploader_asset(media) }}" type="{{ media.mimeType }}"></video>
     {% elseif zoom %}
-        {{ zoomedMedia|raw }}
+        {{ zoomedMedia }}
     {% else %}
         <twig:c975LUi:Image:Image imgSrc="{{ vich_uploader_asset(media) }}" alt="{{ mediaAlt }}" label="{{ media.label }}" class="{{ ('img-responsive img-rounded box-shadow ' ~ class ~ ' ' ~ media.cssClasses|join(' '))|trim }}" width="{{ media.width }}" height="{{ media.height }}" above="{{ media.above }}" />
     {% endif %}
@@ -84,7 +84,7 @@
                         <img src="{{ vich_uploader_asset(slideMedia) }}" alt="{{ slideAlt }}" class="slider-img img img-responsive img-rounded box-shadow {{ slideMedia.cssClasses|join(' ') }}" width="{{ slideMedia.width }}" height="{{ slideMedia.height }}" loading="{{ isEager ? "eager" : "lazy" }}">
                     {% endif %}
                 {% endset %}
-                {% if imageLinksToUrl and slide and slide.url and not isVideo %}<a href="{{ slide.url }}" class="slider-img-link">{{ img|raw }}</a>{% elseif zoom and not isVideo %}{% set slideSrc = vich_uploader_asset(slideMedia) %}<twig:c975LUi:Image:Zoom src="{{ slideSrc }}" highres="{{ slideMedia.highresWidth is defined and slideSrc ends with '.webp' ? slideSrc|slice(0, -5) ~ '-highres.webp' : slideSrc }}" alt="{{ slideAlt }}" class="slider-img img-rounded box-shadow {{ slideMedia.cssClasses|join(' ') }}" linkClass="slider-img-link" width="{{ slideMedia.width }}" height="{{ slideMedia.height }}" :priority="isEager" />{% else %}{{ img|raw }}{% endif %}
+                {% if imageLinksToUrl and slide and slide.url and not isVideo %}<a href="{{ slide.url }}" class="slider-img-link">{{ img }}</a>{% elseif zoom and not isVideo %}{% set slideSrc = vich_uploader_asset(slideMedia) %}<twig:c975LUi:Image:Zoom src="{{ slideSrc }}" highres="{{ slideMedia.highresWidth is defined and slideSrc ends with '.webp' ? slideSrc|slice(0, -5) ~ '-highres.webp' : slideSrc }}" alt="{{ slideAlt }}" class="slider-img img-rounded box-shadow {{ slideMedia.cssClasses|join(' ') }}" linkClass="slider-img-link" width="{{ slideMedia.width }}" height="{{ slideMedia.height }}" :priority="isEager" />{% else %}{{ img }}{% endif %}
                 {% if slide and slide.title %}
                     <p class="slider-title">{% if slide.url %}<a href="{{ slide.url }}">{{ slide.title }}</a>{% else %}{{ slide.title }}{% endif %}</p>
                 {% endif %}

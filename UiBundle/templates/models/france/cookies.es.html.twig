@@ -1,6 +1,6 @@
 <div class="legal">
 	<div data-legal-id="intro">
-		Este sitio utiliza diferentes cookies y tecnologías similares, agrupadas en tres categorías, cada una tratada de forma distinta con respecto al Reglamento General de Protección de Datos (RGPD):
+		Este sitio utiliza diferentes cookies y tecnologías similares, agrupadas en varias categorías, cada una tratada de forma distinta con respecto al Reglamento General de Protección de Datos (RGPD):
 	</div>
 
 	<section data-legal-id="session-cookie">
@@ -10,16 +10,10 @@
 		</div>
 	</section>
 
-	{% set matomoUrl = config('site-matomo-url') %}
-	<section data-legal-id="audience-measurement">
-		<h2>Medición de audiencia (Matomo)</h2>
-		<div class="text text-justify">
-			Este sitio puede utilizar Matomo, una herramienta de medición de audiencia autoalojada, para analizar su frecuentación. Configurada conforme a los criterios de exención de la autoridad francesa de protección de datos (CNIL) (dirección IP anonimizada, sin cruce con otros sitios, datos conservados un máximo de 13 meses, respeto de la señal "No rastrear"), su uso tampoco requiere su consentimiento. Solo se utiliza para estadísticas internas, nunca con fines publicitarios ni de reventa a terceros.
-			{% if matomoUrl %}
-				Aún así, puede oponerse en cualquier momento: <a href="{{ matomoUrl }}/index.php?module=CoreAdminHome&amp;action=optOut&amp;language=es" target="_blank" rel="noopener">rechazar el seguimiento de Matomo</a>.
-			{% endif %}
-		</div>
-	</section>
+	{% set analyticsProvider = analytics_provider() %}
+	{% if analyticsProvider %}
+	{% include ['@c975LUi/models/france/providers/analytics-' ~ analyticsProvider.slug ~ '.es.html.twig', '@c975LUi/models/france/providers/analytics.es.html.twig'] %}
+	{% endif %}
 
 	<section data-legal-id="embedded-third-party-content">
 		<h2>Contenidos de terceros incrustados</h2>

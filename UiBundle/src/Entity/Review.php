@@ -14,6 +14,7 @@ use c975L\ConfigBundle\Attribute\ActivityLogUnnamed;
 use c975L\UiBundle\Enum\ReviewStatus;
 use c975L\UiBundle\Repository\ReviewRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 // One written review, whether a visitor left it here or a platform was asked for it (see c975L\SocialBundle\Contract\ReviewsSourceInterface). The two used to be different things in different bundles and shared ten columns out of eleven; what actually separates them is $source, and what a page displays is the same card either way
 // Lives next to Rating rather than with it: a rating is one anonymous click, revocable and never moderated, where a review carries a name, a text and a decision to publish. Same owner vocabulary though (see $ownerType), so a book gathers both without mapping either
@@ -39,14 +40,17 @@ class Review implements \Stringable
 
     // Where the review comes from: self::SOURCE_SITE, or the name the platform declares itself under (see ReviewsSourceInterface::getName())
     #[ORM\Column(length: 50)]
+    #[Assert\Length(max: 50)]
     private string $source = self::SOURCE_SITE;
 
     // The source's own identifier, what makes a re-sync update rather than duplicate. Null for a review written here, which nothing external names - the unique index above tolerates as many of those as the site collects, a null never colliding with a null
     #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\Length(max: 255)]
     private ?string $externalId = null;
 
     // What the review is about, in the vocabulary Rating already uses ("book", "gallery_media"...), so the same word answers for the score and for the text. Null when the review is about the site itself rather than about one of the things it lists, which is what a Google Business Profile review is
     #[ORM\Column(length: 50, nullable: true)]
+    #[Assert\Length(max: 50)]
     private ?string $ownerType = null;
 
     #[ORM\Column(nullable: true)]
@@ -57,13 +61,16 @@ class Review implements \Stringable
 
     // Nullable because a platform can hand back a review with no display name; the card then prints its own "anonymous" label rather than the site inventing one at import time
     #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\Length(max: 255)]
     private ?string $authorName = null;
 
     // Only ever filled for a review written here, and never displayed: it is how the site answers the person who wrote it, and how their score is kept apart from anyone else's (see ReviewService::voterFor())
     #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\Length(max: 255)]
     private ?string $authorEmail = null;
 
     #[ORM\Column(length: 512, nullable: true)]
+    #[Assert\Length(max: 512)]
     private ?string $authorAvatarUrl = null;
 
     // Nullable in both directions: a platform returns plenty of ratings with no text, and a visitor here may want to say something without scoring anything
@@ -86,6 +93,7 @@ class Review implements \Stringable
 
     // Deep link to the review on the source, required by Google's attribution rules and a proof of authenticity for the visitor
     #[ORM\Column(length: 512, nullable: true)]
+    #[Assert\Length(max: 512)]
     private ?string $sourceUrl = null;
 
     // Whether the review is tied to a real transaction or account; displayed as such, L111-7-2 requiring the site to say which reviews are verified. False by default for a review written here, where nothing proves the person ever read the book

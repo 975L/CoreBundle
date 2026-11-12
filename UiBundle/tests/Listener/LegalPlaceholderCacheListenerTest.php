@@ -21,6 +21,7 @@ use Doctrine\ORM\Event\PostFlushEventArgs;
 use Doctrine\ORM\Event\PostPersistEventArgs;
 use Doctrine\ORM\Event\PostRemoveEventArgs;
 use Doctrine\ORM\Event\PostUpdateEventArgs;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
@@ -94,6 +95,30 @@ class LegalPlaceholderCacheListenerTest extends TestCase
         $listener = $this->listener($cache);
         $listener->postUpdate(new PostUpdateEventArgs($this->config('site-has-accounts'), $this->entityManager()));
         $listener->postFlush(new PostFlushEventArgs($this->entityManager()));
+    }
+
+    // The connectors a model names: the privacy and cookies policies describe the captcha, audience, age verification, map and sign-in services in use, and switching one on left the cached paragraph missing
+    #[DataProvider('connectorSlugs')]
+    public function testAConnectorTheModelsNameAlsoInvalidates(string $slug): void
+    {
+        $cache = $this->createMock(TagAwareCacheInterface::class);
+        $cache->expects($this->once())->method('invalidateTags')
+            ->with([LegalModelCacheTagProvider::CACHE_TAG]);
+
+        $listener = $this->listener($cache);
+        $listener->postUpdate(new PostUpdateEventArgs($this->config($slug), $this->entityManager()));
+        $listener->postFlush(new PostFlushEventArgs($this->entityManager()));
+    }
+
+    /** @return iterable<string, array{string}> */
+    public static function connectorSlugs(): iterable
+    {
+        yield 'captcha' => ['captcha-provider'];
+        yield 'captcha key' => ['captcha-recaptcha-site-key'];
+        yield 'analytics' => ['analytics-provider'];
+        yield 'age verification' => ['age-verification-provider'];
+        yield 'map' => ['ui-map-provider'];
+        yield 'sign-in' => ['login-google-oauth-client-id'];
     }
 
     // A config the legal models are not allowed to print, and any other entity, must cost nothing

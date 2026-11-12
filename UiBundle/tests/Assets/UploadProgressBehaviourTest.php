@@ -29,7 +29,7 @@ class UploadProgressBehaviourTest extends JsCase
             send(data) { window.__sent.push(data); }
             transfer(loaded, total, lengthComputable = true) { this.upload.dispatchEvent(Object.assign(new Event("progress"), { loaded, total, lengthComputable })); }
             finish() { this.upload.dispatchEvent(new Event("load")); }
-            answer() { this.listeners.load(); }
+            answer(status = 200, text = "") { this.status = status; this.responseText = text; this.listeners.load(); }
             break() { this.listeners.error(); }
         };';
 
@@ -117,6 +117,23 @@ class UploadProgressBehaviourTest extends JsCase
         $this->assertFalse($state['disabled'], 'A failed transfer left the submit disabled, so the visitor is stuck on a form that cannot be sent.');
         $this->assertSame('Envoi impossible', $state['said'], 'A failure says nothing at all.');
         $this->assertTrue($state['bar'], 'The bar is still there after a failure, showing a progress that stopped.');
+    }
+
+    // A batch the web server refused as too large, or any answer holding no form, is told as a failure: the screen is never reloaded, the selection stays
+    public function testARefusedOrUnreadableAnswerIsAFailureAndNotAReload(): void
+    {
+        foreach ([[413, '<html><body>413 Request Entity Too Large</body></html>'], [200, '<html><body>Nothing here</body></html>']] as [$status, $text]) {
+            $state = $this->upload(
+                \sprintf('root.querySelector("[type=submit]").click();
+                 await tick();
+                 window.__xhr.answer(%d, %s);
+                 await tick();
+
+                 return { form: Boolean(root.querySelector("#batch")), disabled: root.querySelector("[type=submit]").disabled, said: root.querySelector(".upload-progress-status").textContent };', $status, json_encode($text, \JSON_THROW_ON_ERROR))
+            );
+
+            $this->assertSame(['form' => true, 'disabled' => false, 'said' => 'Envoi impossible'], $state, \sprintf('A %d answer is not told as a failure.', $status));
+        }
     }
 
     // A second attempt takes the panel already in the form back rather than piling a fresh bar under the message of the one before

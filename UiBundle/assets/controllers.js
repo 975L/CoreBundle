@@ -13,6 +13,9 @@ app.register('menu', MenuController);
 const LAZY_CONTROLLERS = {
     // Kebab-case identifier, same reason as cookie-consent below: the "data-age-gate-*-value" bindings are derived from it
     'age-gate': () => import('./js/age-gate.js'),
+    analytics: () => import('./js/analytics.js'),
+    // Kebab-case identifier, same reason as cookie-consent below: the "data-analytics-order-*-value" bindings are derived from it
+    'analytics-order': () => import('./js/analytics-order.js'),
     blockEditOverlay: () => import('./js/block-edit-overlay.js'),
     captcha: () => import('./js/captcha.js'),
     // Kebab-case identifier on purpose - Stimulus derives value attribute names from the identifier as registered, so a camelCase one silently breaks every "data-cookie-consent-*-value" binding
@@ -26,7 +29,6 @@ const LAZY_CONTROLLERS = {
     imageZoom: () => import('./js/image-zoom.js'),
     infiniteScroll: () => import('./js/infinite-scroll.js'),
     'legal-model-edit': () => import('./js/legal-model-edit.js'),
-    matomo: () => import('./js/matomo.js'),
     mediaPreload: () => import('./js/media-preload.js'),
     password: () => import('./js/password.js'),
     pwa: () => import('./js/pwa.js'),

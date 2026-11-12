@@ -43,7 +43,9 @@ class AiSiteSearchClientTest extends TestCase
         $this->assertSame('{"answer": "Oui", "sources": [1]}', $reply);
         $this->assertSame('https://api.example/v1/chat/completions', $sent['url']);
         $this->assertSame('site-model', $sent['body']['model']);
-        $this->assertArrayNotHasKey('max_tokens', $sent['body']);
+        $this->assertArrayNotHasKey('max_completion_tokens', $sent['body']);
+        // A public and anonymous question costs at most its own ceiling, Euria taking it as the classic "max_tokens"
+        $this->assertSame(400, $sent['body']['max_tokens']);
         $this->assertSame('system', $sent['body']['messages'][0]['role']);
         $this->assertStringContainsString('"Garage"', $sent['body']['messages'][0]['content']);
         $this->assertStringContainsString("[1] Horaires\nOuvert du lundi au samedi.", $sent['body']['messages'][1]['content']);
@@ -56,6 +58,21 @@ class AiSiteSearchClientTest extends TestCase
         $tracker->expects($this->once())->method('recordFailure')->with($this->anything(), AiUsage::FEATURE_SITE_SEARCH);
 
         $client = new AiSiteSearchClient(new MockHttpClient(new MockResponse('', ['http_code' => 401])), $this->config(), $this->createStub(LoggerInterface::class), $tracker);
+
+        $this->assertNull($client->answer('Question ?', [], 'Garage', 'fr'));
+    }
+
+    // An answer the ceiling cut is billed, then recorded as a failure rather than handed over half written
+    public function testAnAnswerCutByTheCeilingIsRecordedAsAFailure(): void
+    {
+        $tracker = $this->createMock(AiUsageTracker::class);
+        $tracker->expects($this->once())->method('record')->with(900, 400, AiUsage::FEATURE_SITE_SEARCH);
+        $tracker->expects($this->once())->method('recordFailure')->with($this->stringContains('400 tokens'), AiUsage::FEATURE_SITE_SEARCH);
+
+        $client = new AiSiteSearchClient(new MockHttpClient(new MockResponse(json_encode([
+            'choices' => [['message' => ['content' => '{"answer": "Ou'], 'finish_reason' => 'length']],
+            'usage' => ['prompt_tokens' => 900, 'completion_tokens' => 400],
+        ]))), $this->config(), $this->createStub(LoggerInterface::class), $tracker);
 
         $this->assertNull($client->answer('Question ?', [], 'Garage', 'fr'));
     }

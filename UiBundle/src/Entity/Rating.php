@@ -13,6 +13,7 @@ namespace c975L\UiBundle\Entity;
 use c975L\UiBundle\Repository\RatingRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 // One visitor's score on one thing - a book, a photo, an article. The thing is named rather than related (see $ownerType), so a bundle gets ratings without mapping anything on its own entity and without this bundle ever hearing about it
 #[ORM\Entity(repositoryClass: RatingRepository::class)]
@@ -28,6 +29,7 @@ class Rating implements \Stringable
 
     // The short stable string the owning bundle chose for its kind of thing ("book", "gallery_media"...), the same vocabulary BlockOwnerResolverInterface round-trips. A plain column rather than a relation: a rating is accumulated, not composed, and a join table per owner would make every bundle map a collection it never reads
     #[ORM\Column(length: 50)]
+    #[Assert\Length(max: 50)]
     private string $ownerType;
 
     #[ORM\Column]
@@ -35,9 +37,11 @@ class Rating implements \Stringable
 
     // Who voted, as one opaque key: "u42" for an authenticated visitor, a random token held by the browser otherwise (see RatingService::resolveVoter()). One column for both, so the unique constraint below is the only thing that has to enforce "one vote each"
     #[ORM\Column(length: 40)]
+    #[Assert\Length(max: 40)]
     private string $voter;
 
     #[ORM\Column(type: Types::SMALLINT)]
+    #[Assert\Positive]
     private int $value;
 
     #[ORM\Column]

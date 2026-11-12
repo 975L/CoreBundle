@@ -10,10 +10,20 @@
 
 namespace c975L\UiBundle\Tests\Form\Util;
 
+use c975L\UiBundle\Entity\FormField;
+use c975L\UiBundle\Form\FormFieldType;
 use c975L\UiBundle\Form\Util\CollectionReconciler;
+use c975L\UiBundle\Form\Util\FormTranslationBuilder;
+use c975L\UiBundle\Service\FormTranslator;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
+use Symfony\Component\Form\Extension\Core\Type\FormType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+use Symfony\Component\Form\Extension\Validator\ValidatorExtension;
 use Symfony\Component\Form\FormInterface;
+use Symfony\Component\Form\Forms;
+use Symfony\Component\Form\PreloadedExtension;
+use Symfony\Component\Validator\Validation;
 
 class CollectionReconcilerTest extends TestCase
 {
@@ -174,5 +184,58 @@ class CollectionReconcilerTest extends TestCase
         CollectionReconciler::addIdField($form, null);
 
         $this->assertNull($added['id']['options']['data']);
+    }
+
+    // A tampered request leaving out a seeded field gets it back whole, under its own key, so allow_delete has nothing to remove
+    public function testRestoreKeptPutsBackAProtectedEntryTheSubmissionLeftOut(): void
+    {
+        $restored = CollectionReconciler::restoreKept(
+            $this->fieldsForm([$this->field(1, 'Email', true), $this->field(2, 'Comment', false)]),
+            [],
+            static fn (FormField $field): bool => $field->isRestricted()
+        );
+
+        $this->assertSame([0], array_keys($restored), 'The unprotected row stays removed');
+        $this->assertSame('1', $restored[0]['id']);
+        $this->assertSame('Email', $restored[0]['label'], 'An entry rebuilt with its id only would null every value it left out');
+    }
+
+    // An entry the submission carries is left exactly as sent
+    public function testRestoreKeptLeavesASubmittedEntryAlone(): void
+    {
+        $submitted = [0 => ['id' => '1', 'label' => 'Renamed']];
+
+        $restored = CollectionReconciler::restoreKept(
+            $this->fieldsForm([$this->field(1, 'Email', true)]),
+            $submitted,
+            static fn (FormField $field): bool => $field->isRestricted()
+        );
+
+        $this->assertSame($submitted, $restored);
+    }
+
+    // A real "fields" collection, the one FormCrudController protects
+    private function fieldsForm(array $fields): FormInterface
+    {
+        $form = Forms::createFormFactoryBuilder()
+            ->addExtension(new ValidatorExtension(Validation::createValidator()))
+            ->addExtension(new PreloadedExtension([new FormFieldType(new FormTranslationBuilder(new FormTranslator()))], []))
+            ->getFormFactory()
+            ->createBuilder(FormType::class, null, ['data_class' => null])
+            ->add('fields', CollectionType::class, ['entry_type' => FormFieldType::class, 'allow_add' => true, 'allow_delete' => true])
+            ->getForm();
+
+        $form->get('fields')->setData($fields);
+
+        return $form->get('fields');
+    }
+
+    private function field(int $id, string $label, bool $restricted): FormField
+    {
+        $field = new FormField()->setLabel($label)->setType(FormField::TYPE_EMAIL)->setRestricted($restricted);
+
+        new \ReflectionProperty(FormField::class, 'id')->setValue($field, $id);
+
+        return $field;
     }
 }

@@ -220,6 +220,14 @@ class DeploymentHealthCheckProviderTest extends TestCase
         $this->assertSame(HealthCheckResult::STATUS_OK, $results[1]['status']);
     }
 
+    // Twig escapes the name in the page, so "L'Atelier & Co" is read back from "L&#039;Atelier &amp; Co"
+    public function testRunChecksMatchesASiteNameTheTemplateEscaped(): void
+    {
+        $results = $this->createProvider('https://example.com', notFound: ['statusCode' => 404, 'content' => '<html><body>L&#039;Atelier &amp; Co</body></html>'], siteName: "L'Atelier & Co")->runChecks();
+
+        $this->assertSame(HealthCheckResult::STATUS_OK, $results[1]['status']);
+    }
+
     // With no site name to match against, a real 404 is taken at face value rather than warned about on a guess
     public function testRunChecksAcceptsAny404WithoutASiteName(): void
     {

@@ -113,24 +113,24 @@ class MinimalLayoutTest extends TestCase
     }
 
     // Audience measurement is no more tied to having pages than the banner above is - the component carries its own guard too, so the layout only has to render it
-    public function testTheMatomoSnippetIsRendered(): void
+    public function testTheAnalyticsSnippetIsRendered(): void
     {
-        $this->assertStringContainsString('<twig:c975LUi:Analytics:Matomo />', $this->layout());
+        $this->assertStringContainsString('<twig:c975LUi:Analytics:Tracker />', $this->layout());
         // Read once and once only, by the preconnect below: the snippet's own guard belongs to the component, not to whoever renders it
-        $this->assertSame(1, substr_count($this->layout(), 'matomo_enabled()'), 'the guard belongs to the component, not here');
+        $this->assertSame(1, substr_count($this->layout(), 'analytics_provider()'), 'the guard belongs to the component, not here');
     }
 
     // The snippet is fetched from a third-party host, so without this the DNS lookup and the TLS handshake only start once that JS runs. Never for an instance served by this very host, where the connection is already open, and never for a site that turned the tracking off with its instance url left filled - the connection would be opened to a host the page never sends a measure to
-    public function testTheMatomoOriginIsPreconnected(): void
+    public function testTheAnalyticsOriginIsPreconnected(): void
     {
         $layout = $this->layout();
 
         $this->assertStringContainsString('<link rel="preconnect" href="{{ preconnectUrl }}">', $layout);
-        $this->assertStringContainsString('matomoOrigin != app.request.getSchemeAndHttpHost()', $layout);
-        $this->assertStringContainsString("{% set matomoOrigin = matomo_enabled() ? config('site-matomo-url')|trim|split('/')", $layout, 'the preconnect must follow the very switch that decides whether the snippet is rendered, on the url it trims');
+        $this->assertStringContainsString('analyticsOrigin != app.request.getSchemeAndHttpHost()', $layout);
+        $this->assertStringContainsString('{% set analyticsOrigin = analyticsProvider ? analyticsProvider.origin : null %}', $layout, 'the preconnect must follow the very switch that decides whether the snippet is rendered, on the url it trims');
         $this->assertLessThan(
             strpos($layout, 'bundle_stylesheets()'),
-            strpos($layout, 'matomoOrigin'),
+            strpos($layout, 'analyticsOrigin'),
             'a preconnect emitted after the stylesheets has nothing left to save'
         );
     }

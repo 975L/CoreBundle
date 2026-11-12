@@ -16,8 +16,8 @@ use c975L\ConfigBundle\Repository\RedirectRepository;
 use c975L\ConfigBundle\Service\SiteUrlResolver;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-// Walks every Redirect's own chain (a redirect whose target is itself another redirect's source) purely from the database - no HTTP calls needed, RedirectSubscriber already applies each hop literally as its own Location header, so a chain/loop is fully determined by the stored fromPath/toUrl pairs alone. Only same-site, relative-path chaining is followed (see toRedirectPath()) - an absolute toUrl on another host always terminates the chain here, even if that host happens to be this site's own
-class RedirectChainHealthCheckProvider implements HealthCheckProviderInterface
+// Walks every Redirect's own chain (a redirect whose target is itself another redirect's source) purely from the database - no HTTP calls needed, RedirectSubscriber already applies each hop literally as its own Location header, so a chain/loop is fully determined by the stored fromPath/toUrl pairs alone. Only same-site, relative-path chaining is followed (see toRedirectPath()) - an absolute toUrl on another host always terminates the chain here, even if that host happens to be this site's own. Exhaustive, every Redirect being read: a deleted one has its last row dropped
+class RedirectChainHealthCheckProvider implements HealthCheckExhaustiveInterface
 {
     public function __construct(
         private readonly RedirectRepository $redirectRepository,
@@ -33,9 +33,10 @@ class RedirectChainHealthCheckProvider implements HealthCheckProviderInterface
 
     public function runChecks(): array
     {
+        // Thrown rather than an empty run, which would have the runner clear every row this kind wrote
         $siteUrl = $this->siteUrlResolver->siteUrl();
         if (null === $siteUrl) {
-            return [];
+            throw new \RuntimeException('Site url is not configured: no redirect url can be resolved.');
         }
 
         $redirects = $this->redirectRepository->findAll();

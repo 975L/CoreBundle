@@ -10,10 +10,11 @@
 
 namespace c975L\UiBundle\Twig;
 
+use c975L\UiBundle\Contract\AgeVerificationProviderInterface;
 use c975L\UiBundle\Service\AgeVerifier;
 use Twig\Attribute\AsTwigFunction;
 
-// What the AgeGate component asks: whether an item has to wait behind the gate, and the go.cam url the gate opens
+// What the AgeGate component asks: whether an item has to wait behind the gate, which provider verifies, and the url its frame opens
 class AgeVerificationExtension
 {
     public function __construct(
@@ -21,11 +22,18 @@ class AgeVerificationExtension
     ) {
     }
 
-    // True for an item of age, on a site that configured go.cam, shown to a visitor not verified yet
+    // True for an item of age, on a site with an age verification provider in use, shown to a visitor not verified yet
     #[AsTwigFunction('age_gate_closed')]
     public function isGateClosed(mixed $age): bool
     {
         return $this->ageVerifier->isGateClosed($age);
+    }
+
+    // The provider in use, for its name told to the visitor and its slug picking its script
+    #[AsTwigFunction('age_verification_provider')]
+    public function getProvider(): ?AgeVerificationProviderInterface
+    {
+        return $this->ageVerifier->getProvider();
     }
 
     // One url per request, drawing its nonce into the session: never inside a cached fragment

@@ -166,10 +166,10 @@ class AiRephraseClientTest extends TestCase
         );
 
         $this->assertSame('Rephrased text.', $client->rephrase('Some text.'));
-        $this->assertSame(2048, $body['max_tokens']);
+        $this->assertSame(8192, $body['max_tokens']);
     }
 
-    // No token ceiling on the OpenAI-compatible side: OpenAI's reasoning models refuse "max_tokens"
+    // The ceiling reaches the OpenAI-compatible side as "max_completion_tokens", which OpenAI's reasoning models take where they refuse "max_tokens", and a rephrase asks for a wide one
     public function testRephraseCallsOpenAiCompatibleApiAndRecordsUsage(): void
     {
         $body = null;
@@ -202,14 +202,17 @@ class AiRephraseClientTest extends TestCase
 
         $this->assertSame('Rephrased text.', $client->rephrase('Some text.'));
         $this->assertArrayNotHasKey('max_tokens', $body);
+        $this->assertSame(8192, $body['max_completion_tokens']);
     }
 
     public function testRephraseCallsEuriaViaConfiguredBaseUri(): void
     {
         $requestedUrl = null;
+        $body = null;
         $httpClient = new MockHttpClient(
-            function (string $method, string $url, array $options) use (&$requestedUrl) {
+            function (string $method, string $url, array $options) use (&$requestedUrl, &$body) {
                 $requestedUrl = $url;
+                $body = json_decode($options['body'], true);
 
                 return new MockResponse(
                     json_encode([
@@ -235,6 +238,8 @@ class AiRephraseClientTest extends TestCase
 
         $this->assertSame('Texte reformulé.', $client->rephrase('Un texte.'));
         $this->assertSame('https://api.infomaniak.com/ai/1/chat/completions', $requestedUrl);
+        $this->assertSame(8192, $body['max_tokens'], 'Euria was sent a ceiling under a name it may not know.');
+        $this->assertArrayNotHasKey('max_completion_tokens', $body);
     }
 
     public function testRephraseReturnsNullForUnknownProvider(): void

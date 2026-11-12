@@ -32,7 +32,7 @@
             </trans-unit>
             <trans-unit id="Y0TOVwV">
                 <source>description.guided_project_ui_age_verification_setup</source>
-                <target>Connect go.cam so that content for adults only waits behind an anonymous age verification.</target>
+                <target>Choose the age verification service and plug it in, so content for adults only waits behind an anonymous verification.</target>
             </trans-unit>
             <trans-unit id="FczgMxS">
                 <source>description.guided_project_ui_ai_assistant</source>
@@ -46,9 +46,17 @@
                 <source>description.guided_project_ui_ai_search_setup</source>
                 <target>Plug the site search into your own key, so visitors can put their questions to your pages.</target>
             </trans-unit>
+            <trans-unit id="fMK9pHj">
+                <source>description.guided_project_ui_analytics_setup</source>
+                <target>Choose the audience measurement service and plug it in, so the site's visits are counted.</target>
+            </trans-unit>
             <trans-unit id="zRr_CZb">
                 <source>description.guided_project_ui_calculator</source>
                 <target>A form that computes: sliders, formulas, one figure held up - and, if you wish, sent along with its results.</target>
+            </trans-unit>
+            <trans-unit id="1mFuvGb">
+                <source>description.guided_project_ui_captcha_setup</source>
+                <target>Choose the anti-bot service and plug it in, so every public form is scored on top of its honeypot and timing.</target>
             </trans-unit>
             <trans-unit id="6aGK0_V">
                 <source>description.guided_project_ui_content_export</source>
@@ -77,6 +85,10 @@
             <trans-unit id="_2UHUq_">
                 <source>description.guided_project_ui_legal_model</source>
                 <target>Hide, retitle or rewrite a section of a legal document this bundle ships, and add sections of your own, without losing the updates it keeps receiving</target>
+            </trans-unit>
+            <trans-unit id="lCy7jj.">
+                <source>description.guided_project_ui_map_setup</source>
+                <target>Choose who draws the site's maps, and give it its key when it asks for one.</target>
             </trans-unit>
             <trans-unit id="uJW0NPA">
                 <source>description.guided_project_ui_media</source>
@@ -112,19 +124,19 @@
             </trans-unit>
             <trans-unit id="vp.RJ6y">
                 <source>description.guided_step_ui_age_verification_setup_entry</source>
-                <target>Start with the partner id.</target>
+                <target>Start with the service, then its credentials.</target>
             </trans-unit>
             <trans-unit id="4B4B5U5">
                 <source>description.guided_step_ui_age_verification_setup_headers</source>
-                <target>The site's headers still have to let go.cam's frame in (frame-src, camera, microphone and passkeys), a setting of nelmio_security.yaml described in UiBundle's README. From then on, any content declared 18+ waits behind the verification.</target>
+                <target>The site's headers still have to let the service's frame in (frame-src, camera, microphone and passkeys), a nelmio_security.yaml setting the UiBundle README describes. Then any content declared 18+ waits behind the verification.</target>
             </trans-unit>
             <trans-unit id="3GN0uDS">
                 <source>description.guided_step_ui_age_verification_setup_open</source>
-                <target>Three "go.cam age verification" entries switch it on: partner id, cipher key and signing key, read on the "Standard implementation" page of the go.cam partner area. While one is missing, no content is held back.</target>
+                <target>"Age verification: service" picks the service, then its own entries plug it in: for go.cam, partner id, cipher key and signing key, read on the "Standard implementation" page of its partner area. As long as something is missing, no content is closed.</target>
             </trans-unit>
             <trans-unit id="F1GtmBp">
                 <source>description.guided_step_ui_age_verification_setup_value</source>
-                <target>Paste the value as go.cam gives it. Both keys stay secret: they are what proves a verification's result really comes from go.cam.</target>
+                <target>Paste the value as the service gives it. Its keys stay secret: they are what proves a verification result really comes from it.</target>
             </trans-unit>
             <trans-unit id="VoJ0CnM">
                 <source>description.guided_step_ui_ai_assistant_action</source>
@@ -198,6 +210,22 @@
                 <source>description.guided_step_ui_ai_search_setup_value</source>
                 <target>The API key stays yours: each question is billed to your account with the provider, within the site's ceilings.</target>
             </trans-unit>
+            <trans-unit id="6UCohDu">
+                <source>description.guided_step_ui_analytics_setup_entry</source>
+                <target>Start with the service, then its own entries.</target>
+            </trans-unit>
+            <trans-unit id="d4Q.zYD">
+                <source>description.guided_step_ui_analytics_setup_open</source>
+                <target>"Audience measurement: service" picks the service, then its own entries plug it in: for Matomo, the url of its instance and the id of this site there. As long as one is missing, nothing is measured.</target>
+            </trans-unit>
+            <trans-unit id="pGEZSqp">
+                <source>description.guided_step_ui_analytics_setup_policy</source>
+                <target>The cookies policy model now names the service in use, with its opt-out link. Matomo is meant for a setup exempt from consent, which is why it stays outside the cookie banner, as the UiBundle README describes.</target>
+            </trans-unit>
+            <trans-unit id="NdGv5ij">
+                <source>description.guided_step_ui_analytics_setup_value</source>
+                <target>Enter the value as the service shows it: the instance's address, then the id its administration gives this site.</target>
+            </trans-unit>
             <trans-unit id="r_pzF_x">
                 <source>description.guided_step_ui_calculator_action</source>
                 <target>Leave the action empty for a plain calculation; pick "send email" for the visitor to ask for a quote with their results.</target>
@@ -241,6 +269,22 @@
             <trans-unit id="uartqWQ">
                 <source>description.guided_step_ui_calculator_save_fields</source>
                 <target>Variable names are derived from the labels. They only appear once the fields are saved.</target>
+            </trans-unit>
+            <trans-unit id="ad2Sdb6">
+                <source>description.guided_step_ui_captcha_setup_entry</source>
+                <target>Start with the service, then its keys.</target>
+            </trans-unit>
+            <trans-unit id="hYqeucw">
+                <source>description.guided_step_ui_captcha_setup_headers</source>
+                <target>Under a strict Content-Security-Policy, reCAPTCHA needs www.google.com and www.gstatic.com in script-src and www.google.com in frame-src, as the UiBundle README describes. Then every public form is scored as it is filled in.</target>
+            </trans-unit>
+            <trans-unit id="Uc9LC2T">
+                <source>description.guided_step_ui_captcha_setup_open</source>
+                <target>"Captcha: service" picks the service, then its own entries plug it in: for reCAPTCHA v3, the site key and the secret key from its admin console. As long as a key is missing, the forms rely on their honeypot and timing alone.</target>
+            </trans-unit>
+            <trans-unit id="vx7ZZog">
+                <source>description.guided_step_ui_captcha_setup_value</source>
+                <target>Paste each key as the service gives it. The secret key stays secret: it is what checks a visitor's score with the service.</target>
             </trans-unit>
             <trans-unit id="QhLAp.W">
                 <source>description.guided_step_ui_content_export_import</source>
@@ -405,6 +449,22 @@
             <trans-unit id="wqUYhPO">
                 <source>description.guided_step_ui_legal_model_unit</source>
                 <target>Each card is one section: give it a title of your own, rewrite its text, or tick the box that hides it from the published page</target>
+            </trans-unit>
+            <trans-unit id="0RT4EK.">
+                <source>description.guided_step_ui_map_setup_entry</source>
+                <target>Start with the provider, then its key if it asks for one.</target>
+            </trans-unit>
+            <trans-unit id="A2PhHLp">
+                <source>description.guided_step_ui_map_setup_headers</source>
+                <target>The site's Content-Security-Policy has to name the provider's hosts, which the map-csp health check lists when one is refused. Then every map and contact block draws with it.</target>
+            </trans-unit>
+            <trans-unit id="86POQt3">
+                <source>description.guided_step_ui_map_setup_open</source>
+                <target>"Map provider" picks who draws every map and contact block: OpenStreetMap through Leaflet, served by the site itself and needing no key, or Google Maps, which needs its API key.</target>
+            </trans-unit>
+            <trans-unit id="j4RKEml">
+                <source>description.guided_step_ui_map_setup_value</source>
+                <target>Paste the key as Google gives it, restricted to the site's address in its console: a browser key is public by nature.</target>
             </trans-unit>
             <trans-unit id="StO_cmk">
                 <source>description.guided_step_ui_media_add_alt</source>
@@ -653,6 +713,10 @@
             <trans-unit id="qRTOhD8">
                 <source>flash.media_used_not_deleted</source>
                 <target>This media is used elsewhere and has not been deleted. Detach it first, the "Used in" list on its edit form shows where.</target>
+            </trans-unit>
+            <trans-unit id="MlP_TC2">
+                <source>flash.restricted_not_deleted</source>
+                <target>This item ships with the site and can't be deleted: it was left in place, the others went.</target>
             </trans-unit>
             <trans-unit id="wFeLs7k">
                 <source>flash.review_published</source>
@@ -2470,6 +2534,10 @@
                 <source>label.force_download</source>
                 <target>Force Download</target>
             </trans-unit>
+            <trans-unit id="nGpa3eY">
+                <source>label.form_acknowledgement_subject</source>
+                <target>Your message has been received</target>
+            </trans-unit>
             <trans-unit id="NwThH9S">
                 <source>label.form_disabled</source>
                 <target>This form is not currently available.</target>
@@ -2612,11 +2680,11 @@
             </trans-unit>
             <trans-unit id="O9EXaKf">
                 <source>label.google_maps_link</source>
-                <target>Build the Google Maps link</target>
+                <target>Build the link to the map</target>
             </trans-unit>
             <trans-unit id="Bv3aYIl">
                 <source>label.google_maps_link_help</source>
-                <target>Builds the "Directions" button from the coordinates, or failing that from the postal address above. A plain link, free and loading no script - the field above wins when you fill it in.</target>
+                <target>Builds the "Directions" button from the coordinates, or failing that from the postal address above, towards the site's map service. A plain link, free and loading no script - the field above wins when you fill it in.</target>
             </trans-unit>
             <trans-unit id="b_WLGhv">
                 <source>label.group_direction</source>
@@ -2670,9 +2738,17 @@
                 <source>label.guided_project_ui_ai_search_setup</source>
                 <target>Set up the AI search</target>
             </trans-unit>
+            <trans-unit id="kJSKJ1t">
+                <source>label.guided_project_ui_analytics_setup</source>
+                <target>Set up the audience measurement</target>
+            </trans-unit>
             <trans-unit id="EsOjKAx">
                 <source>label.guided_project_ui_calculator</source>
                 <target>Build a calculator</target>
+            </trans-unit>
+            <trans-unit id="qKGQo0m">
+                <source>label.guided_project_ui_captcha_setup</source>
+                <target>Set up the forms' captcha</target>
             </trans-unit>
             <trans-unit id="9M8UeR6">
                 <source>label.guided_project_ui_content_export</source>
@@ -2701,6 +2777,10 @@
             <trans-unit id="Q.ghvqg">
                 <source>label.guided_project_ui_legal_model</source>
                 <target>Adjust a legal document</target>
+            </trans-unit>
+            <trans-unit id="TEJUyen">
+                <source>label.guided_project_ui_map_setup</source>
+                <target>Choose the map service</target>
             </trans-unit>
             <trans-unit id="FtKKNNJ">
                 <source>label.guided_project_ui_media</source>
@@ -2740,7 +2820,7 @@
             </trans-unit>
             <trans-unit id="Gbub5rO">
                 <source>label.guided_step_ui_age_verification_setup_headers</source>
-                <target>Let go.cam in</target>
+                <target>Let the service in</target>
             </trans-unit>
             <trans-unit id="SWenAZ_">
                 <source>label.guided_step_ui_age_verification_setup_open</source>
@@ -2830,6 +2910,26 @@
                 <source>label.guided_step_ui_ai_search_setup_value</source>
                 <target>Enter the value</target>
             </trans-unit>
+            <trans-unit id="Lg4724N">
+                <source>label.guided_step_ui_analytics_setup_entry</source>
+                <target>Open an entry</target>
+            </trans-unit>
+            <trans-unit id="w7.1RrG">
+                <source>label.guided_step_ui_analytics_setup_open</source>
+                <target>The Analytics group of the settings</target>
+            </trans-unit>
+            <trans-unit id="_GDdQQw">
+                <source>label.guided_step_ui_analytics_setup_policy</source>
+                <target>Check the cookies policy</target>
+            </trans-unit>
+            <trans-unit id="L_3bWkb">
+                <source>label.guided_step_ui_analytics_setup_save</source>
+                <target>Save, then move on to the next entry</target>
+            </trans-unit>
+            <trans-unit id="sJIOkdn">
+                <source>label.guided_step_ui_analytics_setup_value</source>
+                <target>Enter the value</target>
+            </trans-unit>
             <trans-unit id="zqz.Tph">
                 <source>label.guided_step_ui_calculator_action</source>
                 <target>Choose whether it is sent</target>
@@ -2877,6 +2977,26 @@
             <trans-unit id="CwkgpFm">
                 <source>label.guided_step_ui_calculator_save_fields</source>
                 <target>Save before writing a formula</target>
+            </trans-unit>
+            <trans-unit id="YoCaMYc">
+                <source>label.guided_step_ui_captcha_setup_entry</source>
+                <target>Open an entry</target>
+            </trans-unit>
+            <trans-unit id="SH76V8T">
+                <source>label.guided_step_ui_captcha_setup_headers</source>
+                <target>Let the service in</target>
+            </trans-unit>
+            <trans-unit id="LY5R_Bn">
+                <source>label.guided_step_ui_captcha_setup_open</source>
+                <target>The Security group of the settings</target>
+            </trans-unit>
+            <trans-unit id="AjiFTcd">
+                <source>label.guided_step_ui_captcha_setup_save</source>
+                <target>Save, then move on to the next entry</target>
+            </trans-unit>
+            <trans-unit id="tY5NmjE">
+                <source>label.guided_step_ui_captcha_setup_value</source>
+                <target>Enter the value</target>
             </trans-unit>
             <trans-unit id="1ssn4bV">
                 <source>label.guided_step_ui_content_export_import</source>
@@ -3065,6 +3185,26 @@
             <trans-unit id="dt2sHcE">
                 <source>label.guided_step_ui_legal_model_unit</source>
                 <target>Adjust a section</target>
+            </trans-unit>
+            <trans-unit id="LxFSz2W">
+                <source>label.guided_step_ui_map_setup_entry</source>
+                <target>Open an entry</target>
+            </trans-unit>
+            <trans-unit id="Jfqe4p_">
+                <source>label.guided_step_ui_map_setup_headers</source>
+                <target>Let the maps in</target>
+            </trans-unit>
+            <trans-unit id="PGYLnCB">
+                <source>label.guided_step_ui_map_setup_open</source>
+                <target>The Interface group of the settings</target>
+            </trans-unit>
+            <trans-unit id="MSueM4k">
+                <source>label.guided_step_ui_map_setup_save</source>
+                <target>Save, then move on to the next entry</target>
+            </trans-unit>
+            <trans-unit id="Vksf7pt">
+                <source>label.guided_step_ui_map_setup_value</source>
+                <target>Enter the value</target>
             </trans-unit>
             <trans-unit id="dfYwSHC">
                 <source>label.guided_step_ui_media_add_alt</source>
@@ -4498,6 +4638,10 @@
                 <source>label.slide_navigation</source>
                 <target>Slide navigation</target>
             </trans-unit>
+            <trans-unit id="zJj6XLS">
+                <source>label.slide_position</source>
+                <target>Slide %current% of %total%</target>
+            </trans-unit>
             <trans-unit id="WTG_sdU">
                 <source>label.slides</source>
                 <target>Slides</target>
@@ -4525,6 +4669,10 @@
             <trans-unit id="Pv_ZKGY">
                 <source>label.source</source>
                 <target>Source</target>
+            </trans-unit>
+            <trans-unit id="71_aLjk">
+                <source>label.start_animation</source>
+                <target>Start animation</target>
             </trans-unit>
             <trans-unit id="3D9cZ_b">
                 <source>label.start_position</source>
@@ -4880,7 +5028,7 @@
             </trans-unit>
             <trans-unit id="2aw0QJh">
                 <source>text.age_gate</source>
-                <target>This content is for adults only. Verification is done with go.cam, on your device: we only learn that you are of age, never who you are.</target>
+                <target>This content is for adults only. Verification is done with %provider%, on your device: %provider% passes on neither your picture nor your identity, only the fact that you are of age.</target>
             </trans-unit>
             <trans-unit id="SMjIvie">
                 <source>text.age_gate_failed</source>
@@ -4930,13 +5078,17 @@
                 <source>text.field_url_help</source>
                 <target><![CDATA[The label's words in brackets become the link, for example "I accept the [terms of use]"; without brackets, a "(read)" link follows the label.]]></target>
             </trans-unit>
-            <trans-unit id="W4825Gb">
-                <source>text.form_copy_notice</source>
-                <target>This message is a copy of a message sent from this site's form, at the request of someone who gave this address to receive a copy. If that was not you, simply ignore it.</target>
+            <trans-unit id="aLi7wWt">
+                <source>text.form_acknowledgement</source>
+                <target>Your message sent from this site's form has been received. If you did not send it, simply ignore this email.</target>
             </trans-unit>
             <trans-unit id="UAH_ycC">
                 <source>text.form_required_note</source>
                 <target>* Required field</target>
+            </trans-unit>
+            <trans-unit id="T3iEYg1">
+                <source>text.form_resend</source>
+                <target>This form had already been sent or waited too long. Check what you wrote and send it again.</target>
             </trans-unit>
             <trans-unit id="YkALKHi">
                 <source>text.gdpr_information</source>

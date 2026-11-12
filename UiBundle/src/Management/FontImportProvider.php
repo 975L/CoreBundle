@@ -10,6 +10,7 @@
 
 namespace c975L\UiBundle\Management;
 
+use c975L\ConfigBundle\Management\ArchivePath;
 use c975L\ConfigBundle\Management\ImportProviderInterface;
 use c975L\UiBundle\Entity\Font;
 use c975L\UiBundle\Repository\FontRepository;
@@ -51,8 +52,9 @@ class FontImportProvider implements ImportProviderInterface
                 ->setWeight($item['weight'])
                 ->setStyle($item['style']);
 
-            if (null !== $filesDir && isset($item['file'])) {
-                $font->setFile(new ReplacingFile($filesDir . '/' . $item['file'], true, true, true));
+            $file = $this->archiveFile($filesDir, $item['file'] ?? null);
+            if (null !== $file) {
+                $font->setFile($file);
             }
 
             $this->em->persist($font);
@@ -62,5 +64,16 @@ class FontImportProvider implements ImportProviderInterface
         $this->em->flush();
 
         return ['created' => $created, 'updated' => $updated];
+    }
+
+    // The manifest is untrusted: a path leaving the extracted folder, or a file that is not a font, is ignored, the row keeping its current file. The archive's copy is left where it is, Vich removing nothing on success or on error
+    private function archiveFile(?string $filesDir, mixed $relative): ?ReplacingFile
+    {
+        $path = null !== $filesDir ? ArchivePath::resolve($filesDir, $relative) : null;
+        if (null === $path || !\in_array(strtolower(pathinfo($path, \PATHINFO_EXTENSION)), Font::FILE_EXTENSIONS, true)) {
+            return null;
+        }
+
+        return new ReplacingFile($path, true, false, false);
     }
 }

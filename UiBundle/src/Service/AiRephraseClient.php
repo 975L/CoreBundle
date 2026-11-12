@@ -15,6 +15,9 @@ use c975L\UiBundle\Entity\AiUsage;
 // Rephrases - or translates - free text using the client's own key ("ui-ai-assistant-writer-*" config, distinct from the dashboard assistant's key) - stateless, nothing is ever persisted or logged beyond the request itself. The provider call itself is AbstractAiProviderClient's, shared with the site search. No interface here (unlike AiAssistantClient): there's nothing to override, a consuming app not wanting this feature simply leaves the api-key config empty. Token counts from each response are handed to AiUsageTracker - a numeric count alone reveals nothing about the rephrased content, so this doesn't compromise the "nothing is persisted" promise above
 class AiRephraseClient extends AbstractAiProviderClient
 {
+    // Wide enough for a long text rephrased, expanded or translated whole, now that every provider enforces the ceiling
+    private const int MAX_TOKENS = 8192;
+
     // Closed list: $style indexes this map, so a request parameter can never inject its own instructions
     private const array STYLES = [
         'neutral' => '',
@@ -68,7 +71,9 @@ class AiRephraseClient extends AbstractAiProviderClient
             'Rephrase the following text, keeping its original language and meaning.'
             . $lengthInstruction
             . $styleInstruction
-            . " Return only the rephrased text, nothing else:\n\n" . $text
+            . " Return only the rephrased text, nothing else:\n\n" . $text,
+            null,
+            self::MAX_TOKENS,
         );
     }
 
@@ -83,7 +88,9 @@ class AiRephraseClient extends AbstractAiProviderClient
         return $this->send(
             sprintf('Translate the following text into the language whose IETF code is "%s".', $locale)
             . ' Keep its meaning, its tone and its formatting.'
-            . " Return only the translated text, nothing else:\n\n" . $text
+            . " Return only the translated text, nothing else:\n\n" . $text,
+            null,
+            self::MAX_TOKENS,
         );
     }
 }

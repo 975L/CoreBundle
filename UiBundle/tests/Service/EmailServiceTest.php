@@ -601,4 +601,43 @@ class EmailServiceTest extends TestCase
         $this->assertSame('archive@example.test', $mailer->sent[0]->getBcc()[0]->getAddress());
         $this->assertSame([], $mailer->sent[1]->getBcc());
     }
+
+    // A reminder's one-click unsubscribe (RFC 8058) rides on the message, the copy sent elsewhere being another recipient's
+    public function testTheRequestsHeadersAreSetOnTheMessageAndNotOnTheCopy(): void
+    {
+        $mailer = $this->createRecordingMailer();
+        $this->createService($mailer)->send(new EmailSendRequest(
+            subject: 'Reminder',
+            context: [],
+            html: '<p>body</p>',
+            from: 'shop@example.test',
+            to: 'buyer@example.test',
+            copyToEmail: 'buyer-copy@example.test',
+            headers: ['List-Unsubscribe' => '<https://example.test/unsubscribe/abc>', 'List-Unsubscribe-Post' => 'List-Unsubscribe=One-Click'],
+        ));
+
+        $headers = $mailer->sent[0]->getHeaders();
+        $this->assertSame('<https://example.test/unsubscribe/abc>', $headers->get('List-Unsubscribe')->getBodyAsString());
+        $this->assertSame('List-Unsubscribe=One-Click', $headers->get('List-Unsubscribe-Post')->getBodyAsString());
+        $this->assertFalse($mailer->sent[1]->getHeaders()->has('List-Unsubscribe'));
+    }
+
+    // A name that is no plain header name, one the message builds itself, or a value broken over lines (a header injection) is dropped
+    public function testAHeaderThatCouldRewriteTheMessageIsDropped(): void
+    {
+        $mailer = $this->createRecordingMailer();
+        $this->createService($mailer)->send(new EmailSendRequest(
+            subject: 'Reminder',
+            context: [],
+            html: '<p>body</p>',
+            from: 'shop@example.test',
+            to: 'buyer@example.test',
+            headers: ['Bcc' => 'spy@example.test', 'X-Bad: y' => 'z', 'X-Injected' => "a\r\nBcc: spy@example.test", 'X-Kept' => 'ok'],
+        ));
+
+        $headers = $mailer->sent[0]->getHeaders();
+        $this->assertSame([], $mailer->sent[0]->getBcc());
+        $this->assertFalse($headers->has('X-Injected'));
+        $this->assertSame('ok', $headers->get('X-Kept')->getBodyAsString());
+    }
 }

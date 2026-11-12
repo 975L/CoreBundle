@@ -340,11 +340,13 @@ class ConfigCrudController extends AbstractCrudController
 
         // Edit form renders field help as plain text below the widget (unlike detail/index, which use a tooltip/popover). The json kind keeps its own dedicated help instead, since it needs to explain the expected format
         if ($isEdit) {
-            $field = $field->setHelp(Config::TYPE_JSON === $kind
-                ? t('help.value_json', [], 'config')
-                : t('help.value', [], 'config'))
-                // Marks the whole row for the guided project's highlight: a choice kind's TomSelect or an html kind's Trix hides the #Config_value input itself
-                ->setFormTypeOption('row_attr', ['data-guided-config-value' => '']);
+            // Marks the whole row for the guided project's highlight: a choice kind's TomSelect or an html kind's Trix hides the #Config_value input itself
+            $field = $field->setFormTypeOption('row_attr', ['data-guided-config-value' => '']);
+
+            // A help the field already carries (an unreadable secret's) is kept
+            if (null === $field->getAsDto()->getHelp()) {
+                $field = $field->setHelp(Config::TYPE_JSON === $kind ? t('help.value_json', [], 'config') : t('help.value', [], 'config'));
+            }
         }
 
         return $field;
@@ -356,7 +358,7 @@ class ConfigCrudController extends AbstractCrudController
         return TextareaField::new('value')
             ->setLabel(t('label.value', [], 'config'))
             // Only an actual secret is masked: an empty sensitive config must read as empty, otherwise the list shows "••••••••" for a setting nobody has filled in yet - and contradicts the dashboard alert telling you to fill it
-            ->formatValue(fn (?string $value, Config $config): string => $config->getIsSensitive() && null !== $value && '' !== $value ? '••••••••' : ($value ?? ''));
+            ->formatValue(fn (?string $value, Config $config): string => $config->getIsSensitive() && null !== $value && '' !== $value ? '••••••••' : htmlspecialchars($value ?? '', \ENT_NOQUOTES));
     }
 
     // Sensitive fields are pre-filled with the decrypted raw string value in edit (must stay the raw string, not configService->get()'s kind-cast value, otherwise a sensitive bool/int/date config like site-maintenance renders as "1"/"" instead of "true"/"false") (no need to mask with a password widget, edit is the only page besides the masked index that ever shows this field). A sensitive json config (e.g. an authorized-tokens map) still needs a multi-line widget - the single-line TextField is fine for a sensitive string/key but unusable for json
@@ -364,15 +366,23 @@ class ConfigCrudController extends AbstractCrudController
     {
         $isJson = Config::TYPE_JSON === $kind;
 
+        // A secret the vault key no longer reads opens empty, asking for it again, rather than failing the very screen ConfigAlertProvider points to
         $decryptedValue = null;
+        $unreadable = false;
         if (null !== $rawValue && '' !== $rawValue) {
-            $decryptedValue = $this->vaultEncryptor->decrypt($rawValue);
+            try {
+                $decryptedValue = $this->vaultEncryptor->decrypt($rawValue);
+            } catch (\RuntimeException) {
+                $unreadable = true;
+            }
         }
 
-        return ($isJson ? TextareaField::new('value') : TextField::new('value'))
+        $field = ($isJson ? TextareaField::new('value') : TextField::new('value'))
             ->setLabel(t('label.value_sensitive', [], 'config'))
             ->setFormTypeOptions(['data' => $isJson ? $this->prettyJson($decryptedValue) : $decryptedValue])
             ->setRequired(false);
+
+        return $unreadable ? $field->setHelp(t('help.value_sensitive_unreadable', [], 'config')) : $field;
     }
 
     // Non-sensitive fields use a widget matching the config kind

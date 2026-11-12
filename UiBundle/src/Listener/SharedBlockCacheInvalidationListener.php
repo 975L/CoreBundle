@@ -18,10 +18,19 @@ use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
 // A shared block created after a pointer naming its slug was cached - an import, a slug typed before the content - reaches that pointer through the slug's own tag (see BlockCacheTagResolver). Its later edits need nothing here: OwnedBlocksCacheListener and BlockCacheInvalidationListener already empty its owner tag and its blocks' tags
 #[AsDoctrineListener(event: Events::postPersist)]
+#[AsDoctrineListener(event: Events::postFlush)]
 class SharedBlockCacheInvalidationListener
 {
+    // Emptied after the commit, or a concurrent request would cache the pointer's empty render again
+    use PostFlushTagInvalidationTrait;
+
     public function __construct(private readonly TagAwareCacheInterface $cache)
     {
+    }
+
+    private function tagCache(): TagAwareCacheInterface
+    {
+        return $this->cache;
     }
 
     public function postPersist(PostPersistEventArgs $args): void
@@ -29,7 +38,7 @@ class SharedBlockCacheInvalidationListener
         $entity = $args->getObject();
 
         if ($entity instanceof SharedBlock && null !== $entity->getSlug()) {
-            $this->cache->invalidateTags(['shared_block_' . $entity->getSlug()]);
+            $this->queueTags(['shared_block_' . $entity->getSlug()]);
         }
     }
 }

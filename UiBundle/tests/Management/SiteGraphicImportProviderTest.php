@@ -19,6 +19,7 @@ use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Validator\ConstraintViolation;
 use Symfony\Component\Validator\ConstraintViolationList;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Vich\UploaderBundle\FileAbstraction\ReplacingFile;
 
 class SiteGraphicImportProviderTest extends TestCase
 {
@@ -52,6 +53,30 @@ class SiteGraphicImportProviderTest extends TestCase
         $this->assertSame(['created' => 0, 'updated' => 0], $result);
         $this->assertNull($existing->getFile());
 
+        new Filesystem()->remove($filesDir);
+    }
+
+    // A path leaving the extracted folder is ignored, and the archive's copy is never removed by Vich
+    public function testImportIgnoresAPathOutsideTheArchiveAndKeepsTheArchivesCopy(): void
+    {
+        $filesDir = $this->createFilesDir('files/logo.png', 'png');
+        $outside = $filesDir . '-secret.env';
+        file_put_contents($outside, 'APP_SECRET=x');
+        $existing = new Media()->setRole(Media::ROLE_OG_IMAGE);
+        $mediaRepository = $this->createStub(MediaRepository::class);
+        $mediaRepository->method('findOneByRole')->willReturn($existing);
+        $provider = new SiteGraphicImportProvider($this->createStub(EntityManagerInterface::class), $mediaRepository, $this->validator());
+
+        $provider->import([['role' => Media::ROLE_OG_IMAGE, 'file' => '../' . basename($outside)]], $filesDir);
+        $this->assertNull($existing->getFile());
+
+        $provider->import([['role' => Media::ROLE_OG_IMAGE, 'file' => 'files/logo.png']], $filesDir);
+        $file = $existing->getFile();
+        $this->assertInstanceOf(ReplacingFile::class, $file);
+        $this->assertFalse($file->isRemoveReplacedFile());
+        $this->assertFalse($file->isRemoveReplacedFileOnError());
+
+        unlink($outside);
         new Filesystem()->remove($filesDir);
     }
 

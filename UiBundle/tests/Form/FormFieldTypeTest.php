@@ -67,6 +67,14 @@ class FormFieldTypeTest extends TestCase
         return $added;
     }
 
+    // An emptied label is submitted as '' so the entity's NotBlank refuses it, never handed to setLabel() as null
+    public function testAnEmptiedLabelIsSubmittedAsAnEmptyString(): void
+    {
+        $added = $this->buildStaticFields();
+
+        $this->assertSame('', $added['label']['options']['empty_data']);
+    }
+
     public function testRestrictedMarkerIsAlwaysDisabled(): void
     {
         $added = $this->buildStaticFields();

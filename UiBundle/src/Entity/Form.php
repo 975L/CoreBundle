@@ -32,10 +32,12 @@ class Form implements \Stringable
     private ?int $id = null;
 
     #[ORM\Column(length: 50, unique: true)]
+    #[Assert\Length(max: 50)]
     private ?string $name = null;
 
     // Key resolved via c975L\UiBundle\Registry\FormActionRegistry to process a submission (e.g. "send_email") - nullable, a Form with no action set simply can't be submitted yet
     #[ORM\Column(length: 50, nullable: true)]
+    #[Assert\Length(max: 50)]
     private ?string $action = null;
 
     // Free-shape config consumed by whichever FormActionInterface "action" points to (e.g. send_email reads "to"/"from"/"subject"/"template"...) - same principle as Block::$data, interpreted differently per action, not by Form itself

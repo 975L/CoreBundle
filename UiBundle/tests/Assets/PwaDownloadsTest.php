@@ -78,6 +78,16 @@ class PwaDownloadsTest extends TestCase
         $this->assertStringContainsString('await dropUnshared(cache, kept, registry);', $store);
     }
 
+    // Past MAX_ENTRIES the oldest copy goes, and the offline page the install put first is never the one
+    public function testTheOfflinePageIsNeverEvicted(): void
+    {
+        $worker = $this->read(self::WORKER);
+
+        $this->assertStringNotContainsString('cache.delete(keys[0])', $worker);
+        $this->assertStringContainsString('keys.length > MAX_ENTRIES && evictOldest(cache, keys)', $worker);
+        $this->assertStringContainsString('const oldest = keys.find((key) => key.url !== offline);', $worker);
+    }
+
     public function testBothControllersAreRegistered(): void
     {
         $controllers = $this->read('assets/controllers.js');

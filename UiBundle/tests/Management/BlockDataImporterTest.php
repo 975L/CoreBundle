@@ -18,9 +18,11 @@ use c975L\UiBundle\Service\TranslationCopier;
 use c975L\UiBundle\Validator\FixedIconFormat;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Validator\ConstraintViolation;
 use Symfony\Component\Validator\ConstraintViolationList;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Vich\UploaderBundle\FileAbstraction\ReplacingFile;
 
 class BlockDataImporterTest extends TestCase
 {
@@ -291,5 +293,45 @@ class BlockDataImporterTest extends TestCase
         rmdir($root . '/archive/files');
         rmdir($root . '/archive');
         rmdir($root);
+    }
+
+    // The manifest is untrusted: a file, a thumbnail or another language's file named outside the extracted folder is never picked up, and the archive's own copy is never removed by Vich
+    public function testBuildMediaIgnoresEveryPathLeavingTheArchive(): void
+    {
+        $root = sys_get_temp_dir() . '/block_data_importer_test_' . bin2hex(random_bytes(4));
+        mkdir($root . '/archive/files', 0777, true);
+        file_put_contents($root . '/.env.local', 'APP_SECRET=x');
+        file_put_contents($root . '/archive/files/photo.pdf', 'pdf');
+        $importer = new BlockDataImporter($this->createStub(EntityManagerInterface::class), $this->createStub(FormBlockDependencyRegistry::class), $this->createStub(ValidatorInterface::class), null, $root);
+
+        $media = $importer->buildMedia([
+            'originalFilename' => 'hero.webp',
+            'file' => '../.env.local',
+            'thumbnail' => $root . '/.env.local',
+            'translations' => ['en' => ['filename' => 'public-medias/hero-en-1a2b3c4d.webp']],
+            'translatedFiles' => ['en' => '../.env.local'],
+        ], $root . '/archive');
+        $kept = $importer->buildMedia(['file' => 'files/photo.pdf'], $root . '/archive')->getFile();
+
+        $this->assertNull($media->getFile());
+        $this->assertNull($media->getImportedThumbnailPath());
+        $this->assertFileDoesNotExist($root . '/public/public-medias/hero-en-1a2b3c4d.webp');
+        $this->assertInstanceOf(ReplacingFile::class, $kept);
+        $this->assertFalse($kept->isRemoveReplacedFile());
+        $this->assertFalse($kept->isRemoveReplacedFileOnError());
+
+        new Filesystem()->remove($root);
+    }
+
+    // A members-only document comes back members-only, an archive written before the flag was exported landing public
+    public function testBuildMediaRestoresTheMembersOnlyFlag(): void
+    {
+        $importer = new BlockDataImporter($this->createStub(EntityManagerInterface::class), $this->createStub(FormBlockDependencyRegistry::class), $this->createStub(ValidatorInterface::class));
+
+        $membersOnly = $importer->buildMedia(['membersOnly' => true], null)->setFilename('report.pdf');
+        $legacy = $importer->buildMedia([], null)->setFilename('report.pdf');
+
+        $this->assertTrue($membersOnly->isMembersOnly());
+        $this->assertFalse($legacy->isMembersOnly());
     }
 }

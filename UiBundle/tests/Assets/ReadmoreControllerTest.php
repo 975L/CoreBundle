@@ -41,6 +41,15 @@ class ReadmoreControllerTest extends TestCase
         $this->assertStringNotContainsString('readmore--complete', $this->read(self::COMPONENT));
     }
 
+    // The checkbox is visually hidden but stays in the tab order, so the keyboard opens the text
+    public function testTheCheckboxIsReachedByTheKeyboard(): void
+    {
+        $component = $this->read(self::COMPONENT);
+
+        $this->assertStringContainsString('class="readmore-toggle sr-only"', $component);
+        $this->assertDoesNotMatchRegularExpression('/<input[^>]*readmore-toggle[^>]*\shidden[\s>]/', $component);
+    }
+
     private function read(string $relativePath): string
     {
         $path = \dirname(__DIR__, 2) . '/' . $relativePath;

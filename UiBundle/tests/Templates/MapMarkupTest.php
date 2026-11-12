@@ -11,6 +11,7 @@
 namespace c975L\UiBundle\Tests\Templates;
 
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
+use c975L\UiBundle\Tests\Map\MapResolverFactory;
 use c975L\UiBundle\Twig\MapExtension;
 use PHPUnit\Framework\TestCase;
 use Symfony\Bridge\Twig\Extension\AssetExtension;
@@ -64,12 +65,15 @@ class MapMarkupTest extends TestCase
         $this->assertStringNotContainsString('ui-map', $html);
     }
 
-    // A Google map with no key draws nothing at all: the list stays, and the controller is never even mounted
-    public function testAGoogleMapWithNoKeyIsNeverMounted(): void
+    // A Google map with no key draws nothing at all: the list stays, and the controller is handed nothing to draw with
+    public function testAGoogleMapWithNoKeyIsHandedNothingToDraw(): void
     {
         $html = $this->render(['points' => self::PLACES], 'google', '');
 
-        $this->assertStringNotContainsString('data-controller="ui-map"', $html);
+        // Mounted only to tell whoever may act on it why: nothing the provider draws with reaches the page
+        $this->assertStringContainsString('data-ui-map-usable-value="false"', $html);
+        $this->assertStringNotContainsString('data-ui-map-provider-value', $html);
+        $this->assertStringNotContainsString('data-ui-map-points-value', $html);
         $this->assertStringContainsString('Annecy', $html);
     }
 
@@ -77,7 +81,7 @@ class MapMarkupTest extends TestCase
     {
         $html = $this->render(['points' => self::PLACES], 'google', 'AIza-secret');
 
-        $this->assertStringContainsString('data-ui-map-api-key-value="AIza-secret"', $html);
+        $this->assertStringContainsString('data-ui-map-settings-value="{&quot;apiKey&quot;:&quot;AIza-secret&quot;}"', $html);
         $this->assertStringContainsString('data-ui-map-needs-consent-value="true"', $html);
     }
 
@@ -114,7 +118,7 @@ class MapMarkupTest extends TestCase
         $twig->addExtension(new AssetExtension(new Packages(new Package(new EmptyVersionStrategy()))));
         $twig->addExtension(new AttributeExtension(MapExtension::class));
         $twig->addRuntimeLoader(new FactoryRuntimeLoader([
-            MapExtension::class => static fn (): MapExtension => new MapExtension($configService),
+            MapExtension::class => static fn (): MapExtension => new MapExtension(MapResolverFactory::create($configService)),
         ]));
 
         return $twig->render('components/Map/Map.html.twig', $context);

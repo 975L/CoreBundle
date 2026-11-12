@@ -27,6 +27,7 @@ use c975L\UiBundle\Repository\FormRepository;
 use c975L\UiBundle\Service\ExpressionEvaluator;
 use c975L\UiBundle\Service\FormFieldNamer;
 use c975L\UiBundle\Service\FormTranslator;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
@@ -45,11 +46,14 @@ use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 use Symfony\Component\Translation\TranslatableMessage;
+use Symfony\Component\Validator\Validation;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class FormCrudControllerTest extends TestCase
@@ -319,6 +323,21 @@ class FormCrudControllerTest extends TestCase
         $this->assertGreaterThan(array_search('actionConfigJson', $properties, true), array_search('links', $properties, true));
     }
 
+    // A typo in the raw JSON is refused rather than saved as an action config reduced to its links
+    public function testTheRawActionConfigMustBeValidJson(): void
+    {
+        $constraints = [];
+        foreach ($this->createController()->configureFields(Crud::PAGE_EDIT) as $field) {
+            if ('actionConfigJson' === $field->getAsDto()->getProperty()) {
+                $constraints = $field->getAsDto()->getFormTypeOption('constraints');
+            }
+        }
+
+        $violations = Validation::createValidator()->validate('{"to": "a@example.com",}', $constraints);
+
+        $this->assertCount(1, $violations);
+    }
+
     // An expression reads the variables the fields above it declare, so the collection editing it is declared after them - the help text below is what spells those variables out
     public function testConfigureFieldsEditsTheOutputsAsACollectionDeclaredAfterTheFields(): void
     {
@@ -422,5 +441,40 @@ class FormCrudControllerTest extends TestCase
         }
 
         $this->fail('No "outputs" collection field was configured.');
+    }
+
+    // A seeded form is left in place by the server with a warning, EasyAdmin's batch delete calling deleteEntity() without asking displayIf()
+    public function testDeleteEntityLeavesARestrictedForm(): void
+    {
+        $entityManager = $this->createMock(EntityManagerInterface::class);
+        $entityManager->expects($this->never())->method('remove');
+
+        $session = new Session(new MockArraySessionStorage());
+        $controller = $this->createController();
+        $controller->setContainer($this->flashContainer($session));
+
+        $controller->deleteEntity($entityManager, new Form()->setName('contact')->setRestricted(true));
+
+        $this->assertCount(1, $session->getFlashBag()->get('warning'), 'A seeded form left in place said nothing, a batch delete ending on it silent.');
+    }
+
+    // What addFlash() reaches: the request stack holding a session
+    private function flashContainer(Session $session): Container
+    {
+        $request = new Request();
+        $request->setSession($session);
+        $container = new Container();
+        $container->set('request_stack', new RequestStack([$request]));
+
+        return $container;
+    }
+
+    // An admin's own form goes as before
+    public function testDeleteEntityRemovesAnUnrestrictedForm(): void
+    {
+        $entityManager = $this->createMock(EntityManagerInterface::class);
+        $entityManager->expects($this->once())->method('remove');
+
+        $this->createController()->deleteEntity($entityManager, new Form()->setName('contact')->setRestricted(false));
     }
 }

@@ -738,6 +738,10 @@
                 <source>help.value_json</source>
                 <target>Saisissez un tableau JSON valide, ex. ["ROLE_ADMIN","ROLE_EDITOR"]</target>
             </trans-unit>
+            <trans-unit id="OU4bMIT">
+                <source>help.value_sensitive_unreadable</source>
+                <target>Valeur illisible avec la clé du coffre actuelle : saisissez-la à nouveau.</target>
+            </trans-unit>
             <trans-unit id="2R4Y3Vo">
                 <source>help.value_theme_color</source>
                 <target>Hexadécimal (#b30000), rgb()/rgba(), hsl()/hsla(), ou un nom CSS (ex. tomato)</target>

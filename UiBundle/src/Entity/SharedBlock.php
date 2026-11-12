@@ -42,6 +42,7 @@ class SharedBlock implements HasBlocksInterface, \Stringable
 
     // What a pointer stores, built once from the name and never changed after (see SharedBlockCrudController::persistEntity()): a renamed shared block keeps every page pointing at it
     #[ORM\Column(length: 100, unique: true)]
+    #[Assert\Length(max: 100)]
     private ?string $slug = null;
 
     #[ORM\ManyToMany(targetEntity: Block::class, cascade: ['persist', 'remove'])]

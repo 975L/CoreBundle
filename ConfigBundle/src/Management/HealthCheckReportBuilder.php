@@ -12,6 +12,7 @@ namespace c975L\ConfigBundle\Management;
 
 use c975L\ConfigBundle\Entity\HealthCheckResult;
 use c975L\ConfigBundle\Repository\HealthCheckResultRepository;
+use Symfony\Bundle\SecurityBundle\Security;
 
 // Builds the diagnostic report an admin downloads off the "Health check" page to hand over to whoever fixes the site - a developer, a support desk, an AI assistant. The dashboard says what is wrong on the site; this says it in a form something else can read, which is what a screenshot of a table never is.
 //
@@ -29,6 +30,7 @@ class HealthCheckReportBuilder
     public function __construct(
         private readonly StatusReportBuilder $statusReportBuilder,
         private readonly HealthCheckResultRepository $healthCheckResultRepository,
+        private readonly Security $security,
     ) {
     }
 
@@ -63,10 +65,27 @@ class HealthCheckReportBuilder
                 'checkedAt' => $row->getCheckedAt()->format(\DateTimeInterface::ATOM),
                 // Carried rather than filtered out: a row an admin declared dealt with is still a row, and whoever reads this has to know it was seen rather than wonder why it is not there
                 'acknowledgedAt' => $row->getAcknowledgedAt()?->format(\DateTimeInterface::ATOM),
-                'details' => $row->getDetails(),
+                'details' => $this->getDetails($row),
             ];
         }
 
         return $results;
+    }
+
+    // A backup's errors and warnings are mysqldump's, tar's and rclone's raw output, naming the database, its user and its host: below ROLE_SUPER_ADMIN they become their count, as BackupAlertProvider shows them
+    private function getDetails(HealthCheckResult $row): ?array
+    {
+        $details = $row->getDetails();
+        if (null === $details || BackupResultRecorder::KIND !== $row->getKind() || $this->security->isGranted('ROLE_SUPER_ADMIN')) {
+            return $details;
+        }
+
+        foreach (['errors', 'warnings'] as $key) {
+            if (isset($details[$key])) {
+                $details[$key] = \count((array) $details[$key]);
+            }
+        }
+
+        return $details;
     }
 }

@@ -49,6 +49,16 @@ class PlayRepositoryTest extends TestCase
         $this->assertSame(['from' => '0123456789abcdef0123456789abcdef', 'to' => 'u42'], $parameters);
     }
 
+    // An account erased loses its plays in one query
+    public function testAHoldersPlaysAreErasedWhole(): void
+    {
+        $parameters = [];
+        $repository = $this->repository($parameters, moved: 4);
+
+        $this->assertSame(4, $repository->deleteByHolder('u42'));
+        $this->assertSame(['holder' => 'u42'], $parameters);
+    }
+
     /** @param list<array<string, mixed>> $result */
     private function repository(array &$parameters, array $result = [], int $moved = 0): PlayRepository
     {
@@ -57,7 +67,7 @@ class PlayRepositoryTest extends TestCase
         $query->method('execute')->willReturn($moved);
 
         $queryBuilder = $this->createMock(QueryBuilder::class);
-        foreach (['select', 'andWhere', 'groupBy', 'update', 'set'] as $method) {
+        foreach (['select', 'andWhere', 'groupBy', 'update', 'set', 'delete'] as $method) {
             $queryBuilder->method($method)->willReturnSelf();
         }
         $queryBuilder->method('setParameter')->willReturnCallback(function (string $name, mixed $value) use ($queryBuilder, &$parameters): QueryBuilder {

@@ -10,11 +10,13 @@
 
 namespace c975L\UiBundle\Tests\Repository;
 
+use c975L\UiBundle\Listener\RatingCacheListener;
 use c975L\UiBundle\Repository\RatingRepository;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\QueryBuilder;
 use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\TestCase;
+use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
 // The tally is counted by the database and never by hydrating the rows: a book everyone rated holds thousands of them, and a catalog page asks for thirty tallies at once
 #[AllowMockObjectsWithoutExpectations]
@@ -77,6 +79,30 @@ class RatingRepositoryTest extends TestCase
         $this->assertSame([7], $parameters['ownerIds']);
     }
 
+    // A bulk DELETE passes by RatingCacheListener, so the method empties the averages of every owner it touched, and of their type's grids
+    public function testDeletingASetEmptiesTheRatingsCache(): void
+    {
+        $parameters = [];
+        $cache = $this->createMock(TagAwareCacheInterface::class);
+        $cache->expects($this->once())->method('invalidateTags')->with([
+            RatingCacheListener::typeCacheTag('gallery_media'),
+            RatingCacheListener::cacheTag('gallery_media', 7),
+            RatingCacheListener::cacheTag('gallery_media', 9),
+        ]);
+
+        $this->deletingRepository(2, $parameters, $calls, $cache)->deleteForOwners('gallery_media', [7, 9]);
+    }
+
+    // No row went, nothing cached to empty
+    public function testDeletingNothingLeavesTheCacheAlone(): void
+    {
+        $parameters = [];
+        $cache = $this->createMock(TagAwareCacheInterface::class);
+        $cache->expects($this->never())->method('invalidateTags');
+
+        $this->assertSame(0, $this->deletingRepository(0, $parameters, $calls, $cache)->deleteForOwners('gallery_media', [7]));
+    }
+
     // An empty set deletes nothing rather than everything - "IN ()" is not something to hand a database
     public function testAnEmptySetDeletesNothing(): void
     {
@@ -91,10 +117,12 @@ class RatingRepositoryTest extends TestCase
         return $this->repository($rows)->getAggregates('book', $ownerIds);
     }
 
-    private function deletingRepository(int $deleted, array &$parameters, ?int &$calls = null): RatingRepository
+    private function deletingRepository(int $deleted, array &$parameters, ?int &$calls = null, ?TagAwareCacheInterface $cache = null): RatingRepository
     {
         $calls = 0;
         $repository = $this->createPartialMock(RatingRepository::class, ['createQueryBuilder']);
+        // The partial mock skips the constructor, the cache it takes is set by hand
+        new \ReflectionProperty(RatingRepository::class, 'cache')->setValue($repository, $cache ?? $this->createStub(TagAwareCacheInterface::class));
         $repository->method('createQueryBuilder')->willReturnCallback(function () use ($deleted, &$parameters, &$calls): QueryBuilder {
             ++$calls;
             $query = $this->createMock(Query::class);

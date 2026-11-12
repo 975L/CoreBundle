@@ -25,6 +25,8 @@ class UiBackupPathProvider implements BackupPathProviderInterface
         $paths = [
             // Media's role and block uploads (Media::getVichMediaPath), shared with SiteBundle's own CollectionItem
             new BackupPath('public/medias/site', BackupPath::MODE_MIRROR),
+            // The same uploads reserved to members, moved out of public/ by MediaMembersOnlyListener
+            new BackupPath(Media::MEMBERS_ONLY_DIRECTORY . '/medias/site', BackupPath::MODE_MIRROR),
             // Font's uploaded files (Font::getVichMediaPath)
             new BackupPath('public/medias/fonts', BackupPath::MODE_MIRROR),
         ];

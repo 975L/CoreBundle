@@ -2,11 +2,12 @@
 {% block c975l_ui_captcha_widget %}
 {# Set here because overriding at this prefix bypasses "hidden_widget", leaving a visible text input #}
     {%- set type = type|default('hidden') -%}
-{# Nothing but a plain hidden input when no keys are configured: no controller, no request to Google #}
+{# Nothing but a plain hidden input when no provider is in use: no controller, no request to any service #}
     {% if enabled %}
-{# No <script>: captcha.js fetches Google's api.js only once the visitor interacts with the form #}
+{# No <script>: captcha.js fetches the provider's script only once the visitor interacts with the form #}
         {% set attr = attr|merge({
             'data-controller': 'captcha',
+            'data-captcha-provider-value': provider,
             'data-captcha-site-key-value': site_key,
             'data-captcha-action-value': action_name,
         }) %}

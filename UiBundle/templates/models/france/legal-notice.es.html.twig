@@ -68,7 +68,8 @@
 
 	<section data-legal-id="annexes">
 		<h2>Anexos</h2>
-		{% set legalPages = site_legal_pages(['france/privacy-policy', 'france/terms-of-use', 'france/terms-of-sales', 'france/cookies', 'france/copyright']) %}
+		{# The public list whoever renders it: this block is cached, and a member seeing it first would list pages kept for members to every anonymous visitor #}
+		{% set legalPages = site_legal_pages(['france/privacy-policy', 'france/terms-of-use', 'france/terms-of-sales', 'france/cookies', 'france/copyright'])|filter(legalPage => not legalPage.membersOnly) %}
 		{% if legalPages %}
 			<ul class="text text-justify">
 				{% for legalPage in legalPages %}

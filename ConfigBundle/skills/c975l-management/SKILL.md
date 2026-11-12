@@ -1,6 +1,6 @@
 ---
 name: c975l-management
-description: "Use this skill when a bundle or an application has to add anything to the /management dashboard of a c975L site — a menu entry, an alert, a shortcut, a widget, a page overlay, a guided project, a what's new note, an importmap entry, an admin procedure, an export or an import, a linkable route. Lists every contribution interface, the one wiring rule that makes them work, and the test that proves their targets still exist. Triggers on: ActivityLog, site_activity_log, ActivityLogListener, ActivityLogCrudController, ActivityLogIgnored, ActivityLogUnnamed, c975l:config:activity-log-cleanup, c975l:config:activity-log-record, site-activity-log-retention-days, config-activity-log, activity log, audit trail, who did what, twig:ea:Button, twig:ea:Alert, twig:ea:Badge, MenuProviderInterface, FeedProviderInterface, getMenuSection, section icon, internal link, leavesTheAdmin, AlertProviderInterface, ShortcutProviderInterface, DashboardWidgetProviderInterface, PageOverlayProviderInterface, page overlay, GuidedProjectProviderInterface, WhatsNewProviderInterface, ImportmapProviderInterface, ProcedureProviderInterface, ExportProviderInterface, ImportProviderInterface, LinkableRouteProviderInterface, LinkableRouteCacheTagsInterface, getLinkableRouteCacheTags, LinkableRouteRegistry, cacheTags, EssentialActionProviderInterface, narration, highlight selector, creatable, UnusedFeatureBuilder, guided-project parameter, EcosystemUrls, guided project film, TutorialFilmUrlProviderInterface, getFilmUrl, management_guided_projects_index, guided projects page, BackOfficeAccessVoter, TaggedInterfacePass, TableExporter, ManagementTargetsTestCase, EasyAdmin dashboard, AbstractDashboardController, configureMenuItems, DashboardController, EasyAdminActionHelper, cancel action, toIconOnly, iconOnlyDefaults, trashBatchDelete, TrashBatchDeleteTrait, recycle bin batch action, whatsnew.json."
+description: "Use this skill when a bundle or an application has to add anything to the /management dashboard of a c975L site — a menu entry, an alert, a shortcut, a widget, a page overlay, a guided project, a what's new note, an importmap entry, an admin procedure, an export or an import, a linkable route. Lists every contribution interface, the one wiring rule that makes them work, and the test that proves their targets still exist. Triggers on: ActivityLog, site_activity_log, ActivityLogListener, ActivityLogCrudController, ActivityLogIgnored, ActivityLogUnnamed, c975l:config:activity-log-cleanup, c975l:config:activity-log-record, site-activity-log-retention-days, config-activity-log, activity log, audit trail, who did what, twig:ea:Button, twig:ea:Alert, twig:ea:Badge, MenuProviderInterface, FeedProviderInterface, getMenuSection, section icon, internal link, leavesTheAdmin, AlertProviderInterface, ShortcutProviderInterface, DashboardWidgetProviderInterface, PageOverlayProviderInterface, page overlay, GuidedProjectProviderInterface, WhatsNewProviderInterface, ImportmapProviderInterface, ProcedureProviderInterface, ExportProviderInterface, ImportProviderInterface, LinkableRouteProviderInterface, LinkableRouteCacheTagsInterface, getLinkableRouteCacheTags, LinkableRouteRegistry, cacheTags, EssentialActionProviderInterface, narration, highlight selector, creatable, UnusedFeatureBuilder, guided-project parameter, EcosystemUrls, guided project film, TutorialFilmUrlProviderInterface, getFilmUrl, management_guided_projects_index, guided projects page, BackOfficeAccessVoter, TaggedInterfacePass, TableExporter, ManagementTargetsTestCase, CodeRulesTestCase, code rules test, allowed exceptions, EasyAdmin dashboard, AbstractDashboardController, configureMenuItems, DashboardController, EasyAdminActionHelper, cancel action, toIconOnly, iconOnlyDefaults, trashBatchDelete, TrashBatchDeleteTrait, recycle bin batch action, whatsnew.json."
 ---
 
 # c975L ConfigBundle — contributing to /management
@@ -17,7 +17,7 @@ never in `Admin/`.
 **Package:** `c975l/core-bundle` · **Bundle:** `c975L\ConfigBundle\` · **Twig namespace:** `@c975LConfig`
 
 **Key source paths** (relative to this bundle's directory inside the package):
-`src/Management/`, `src/Controller/Management/Trait/TrashBatchDeleteTrait.php`, `src/Scheduler/MaintenanceTaskProviderInterface.php`, `src/Test/ManagementTargetsTestCase.php`, `src/Service/Export/TableExporter.php`, `src/Service/Export/ContentExporter.php`, `src/DependencyInjection/`, `config/whatsnew.json`
+`src/Management/`, `src/Controller/Management/Trait/TrashBatchDeleteTrait.php`, `src/Scheduler/MaintenanceTaskProviderInterface.php`, `src/Test/ManagementTargetsTestCase.php`, `src/Test/CodeRulesTestCase.php`, `src/Service/Export/TableExporter.php`, `src/Service/Export/ContentExporter.php`, `src/DependencyInjection/`, `config/whatsnew.json`
 
 **Related skills:** `c975l-config`, `c975l-users`, `c975l-operations` in this same bundle.
 
@@ -167,7 +167,9 @@ Its optional 4th argument is a context read by the SQL encoder alone: `primary_k
 For content that does not fit a flat dump — nested structures, real files — `ContentExporter` produces
 a zip (`manifest.json` plus the files). On the way back in, `ImportProviderInterface::import()`
 receives the raw items and the directory the zip was extracted into. **Match on a natural key (slug,
-name), never on a raw id**: dev and prod ids never need to match.
+name), never on a raw id**: dev and prod ids never need to match. Every file path an item names goes
+through `ArchivePath::resolve($filesDir, $path)`, `null` (outside the folder, absent, not a string) meaning
+the file is skipped.
 
 ## Proving the targets still exist
 
@@ -198,6 +200,20 @@ It lives in `src/` because a bundle cannot autoload another bundle's test files.
 `services.yaml` scans `src/`, exclude any class extending `TestCase`** — PHPUnit is a dev dependency,
 and the container compilation of every production site breaks otherwise.
 
+## The audit's rules: CodeRulesTestCase
+
+Every bundle also extends `CodeRulesTestCase` once in its `tests/`, giving its `src/` directory and
+namespace (two methods). It fails on the defects the 11/11/2026 audit found everywhere: a string column
+without a Length no longer than the column, an amount without a lower bound, a preFlush listener, a
+"data" or attr "value" on a mapped form field, a text field whose setter refuses null without
+"empty_data", a CRUD controller guarding delete() but not its batch delete, a basket provider
+delivering in test mode or without its refund hook, a raw output not right after sanitize_html,
+json_encode or trans of a key, a bulk UPDATE/DELETE that invalidates no cache.
+
+**A legitimate case goes in allowed(), rule => [identifier => reason]**: the reason is mandatory,
+and an exception matching nothing fails as stale. Never widen a rule to make a finding pass; fix the
+code first. The README of ConfigBundle lists each rule's identifier.
+
 ## Do not
 
 - **Do not add a Composer dependency on another satellite bundle** to contribute to its screens.
@@ -209,6 +225,8 @@ and the container compilation of every production site breaks otherwise.
   old title until the next `cache:clear`.
 - **Do not write your own export.** Reuse `TableExporter` or `ContentExporter`.
 - **Do not match on ids when importing.** Use the natural key.
+- **Do not concatenate `$filesDir . '/' . $item['file']`.** A manifest naming `../../.env.local` copies the
+  server's secret under `public/`: resolve it with `ArchivePath::resolve()`.
 - **Do not put a technical changelog entry in `whatsnew.json`** — it is read by the site's owner.
 - **Do not declare a GET admin route under `/config/...`** — `/config/{entityId}` of the Config CRUD
   swallows it. Pages sit at the root; only POST actions may live under `/config/`.

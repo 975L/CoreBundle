@@ -234,6 +234,33 @@ class FormController extends AbstractController
         return null !== $referer && parse_url($referer, PHP_URL_HOST) === $request->getHost() ? $referer : null;
     }
 
+    // Compute-only calculator on its own page, nothing to submit
+    private function renderCalculatorPage(Form $uiForm): Response
+    {
+        return $this->render('@c975LUi/form/page.html.twig', [
+            'innerTemplate' => '@c975LUi/components/Form/Calculator.html.twig',
+            'uiForm' => $uiForm,
+            'robots' => 'noindex, follow',
+            'form' => $this->buildSymfonyForm($uiForm)->createView(),
+            'results' => $this->expressionEvaluator->compute($uiForm, []),
+        ]);
+    }
+
+    // Whether a POST comes with no timed display (shown back filled) or looks like a bot (dropped), as [untimed, suspicious]
+    /** @return array{bool, bool} */
+    private function classifySubmission(Request $request, Form $uiForm, FormInterface $symfonyForm): array
+    {
+        if (!$request->isMethod('POST')) {
+            return [false, false];
+        }
+        $sessionKey = $this->sessionKeyFor($uiForm);
+        if ($this->botProtection->isUntimed($request, $sessionKey)) {
+            return [true, false];
+        }
+
+        return [false, $this->botProtection->isSuspicious($request, $symfonyForm->getName(), $sessionKey, $this->minDelay($uiForm))];
+    }
+
     #[Route('/form/{name}', name: 'ui_form_submit', methods: ['GET', 'POST'])]
     public function submit(string $name, Request $request): Response
     {
@@ -247,28 +274,23 @@ class FormController extends AbstractController
 
         // Same page as the Block would embed, just wrapped in a layout - a compute-only calculator has no action to run, so there is nothing here to submit, rate-limit or flash
         if ($this->isComputeOnly($uiForm)) {
-            return $this->render('@c975LUi/form/page.html.twig', [
-                'innerTemplate' => '@c975LUi/components/Form/Calculator.html.twig',
-                'uiForm' => $uiForm,
-                'robots' => 'noindex, follow',
-                'form' => $this->buildSymfonyForm($uiForm)->createView(),
-                'results' => $this->expressionEvaluator->compute($uiForm, []),
-            ]);
+            return $this->renderCalculatorPage($uiForm);
         }
-
-        $this->botProtection->startTimer($request, $this->sessionKeyFor($uiForm));
 
         $symfonyForm = $this->buildSymfonyForm($uiForm, $this->prefillHelper->consume($request, $uiForm->getName()));
 
-        // Checked before handleRequest(), which is then skipped entirely so the bot gets the same redirect and no hint
-        $suspicious = $request->isMethod('POST')
-            && $this->botProtection->isSuspicious($request, $symfonyForm->getName(), $this->sessionKeyFor($uiForm), $this->minDelay($uiForm));
+        // Checked before handleRequest(), which is then skipped entirely so the bot gets the same redirect and no hint; a submission with no timed display is shown back filled, never run
+        [$untimed, $suspicious] = $this->classifySubmission($request, $uiForm, $symfonyForm);
 
         if (!$suspicious) {
             $symfonyForm->handleRequest($request);
         }
 
-        $accepted = $symfonyForm->isSubmitted() && $symfonyForm->isValid();
+        if ($untimed) {
+            $this->addFlashTo($request, 'warning', $this->translator->trans('text.form_resend', [], 'ui'));
+        }
+
+        $accepted = !$untimed && $symfonyForm->isSubmitted() && $symfonyForm->isValid();
 
         if (!$suspicious && $accepted) {
             $successUrl = $this->runAction($uiForm, $symfonyForm->getData(), $request);
@@ -284,6 +306,8 @@ class FormController extends AbstractController
             }
         }
 
+        // Armed at display, once the submission is handled: a form corrected after a validation error is timed from the page that showed the error
+        $this->botProtection->startTimer($request, $this->sessionKeyFor($uiForm));
         [$template, $parameters] = $this->submittableView($uiForm, $symfonyForm);
 
         return $this->renderPage($uiForm, $template, $parameters);

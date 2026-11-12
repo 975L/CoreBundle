@@ -1313,6 +1313,7 @@ class ConfigCrudControllerTest extends TestCase
         $this->assertSame('', $formatValue(null, $sensitive));
         $this->assertSame('', $formatValue('', $sensitive));
         $this->assertSame('My Site', $formatValue('My Site', $plain));
+        $this->assertSame('&lt;img src=x onerror=alert(1)&gt;', $formatValue('<img src=x onerror=alert(1)>', $plain));
     }
 
     // The bool/int/date kinds must override the raw string value with a real typed value via setValue(), since EasyAdmin's boolean/date templates and formatters read it directly
@@ -1345,6 +1346,24 @@ class ConfigCrudControllerTest extends TestCase
         $this->assertSame('secret-api-key', $valueField->getAsDto()->getFormTypeOptions()['data']);
     }
 
+    // A secret the vault key no longer reads opens empty with a help asking for it again, instead of a 500 on the screen the alert points to
+    public function testConfigureFieldsOpensAnUnreadableSecretEmptyOnEditPage(): void
+    {
+        $config = new Config()
+            ->setSlug('api-key')
+            ->setIsSensitive(true)
+            ->setValue(new VaultEncryptor('another-vault-key')->encrypt('secret-api-key'));
+
+        $controller = $this->createController(vaultEncryptor: new VaultEncryptor('a-test-vault-key'));
+        $this->setContextEntity($controller, $config);
+
+        $valueField = $this->findField($controller->configureFields('edit'), 'value');
+
+        $this->assertNull($valueField->getAsDto()->getFormTypeOptions()['data']);
+        $this->assertSame('help.value_sensitive_unreadable', (string) $valueField->getAsDto()->getHelp()?->getMessage());
+        $this->assertSame(['data-guided-config-value' => ''], $valueField->getAsDto()->getFormTypeOptions()['row_attr']);
+    }
+
     // Non-sensitive json kind is pre-filled with a re-indented value on edit
     public function testConfigureFieldsPrettyPrintsNonSensitiveJsonValueOnEditPage(): void
     {
@@ -1356,6 +1375,7 @@ class ConfigCrudControllerTest extends TestCase
         $editField = $this->findField($controller->configureFields('edit'), 'value');
         $this->assertInstanceOf(TextareaField::class, $editField);
         $this->assertSame($expected, $editField->getAsDto()->getFormTypeOptions()['data']);
+        $this->assertSame(['data-guided-config-value' => ''], $editField->getAsDto()->getFormTypeOptions()['row_attr']);
     }
 
     // Textarea kind is multi-line plain text: what it holds ends up verbatim in a .txt file (see SeoFilesWriter), where the tags the html kind's rich editor adds would be read as content

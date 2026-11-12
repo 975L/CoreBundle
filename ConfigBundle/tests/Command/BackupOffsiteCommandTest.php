@@ -125,13 +125,13 @@ class BackupOffsiteCommandTest extends TestCase
         $this->assertSame('pulled', $state['what']);
     }
 
-    // An install that deliberately pushes nothing must not have its scheduler report a failed task every night: the staleness alert is what speaks for it, and it speaks once rather than nightly
-    public function testAnUnconfiguredTargetWarnsRatherThanFails(): void
+    // A site meant to send its backups offsite that cannot is a failure, as c975l:config:backup reports it; a site whose backups are pulled drops the task from its schedule
+    public function testAnUnconfiguredTargetIsAFailure(): void
     {
         $tester = new CommandTester($this->createCommand());
         $tester->execute([]);
 
-        $this->assertSame(Command::SUCCESS, $tester->getStatusCode());
+        $this->assertSame(Command::FAILURE, $tester->getStatusCode());
         $this->assertStringContainsString('not configured', $tester->getDisplay());
     }
 
@@ -152,8 +152,8 @@ class BackupOffsiteCommandTest extends TestCase
         $tester = new CommandTester($this->createCommand('remote:path; rm -rf /', [new BackupPath('public/medias', BackupPath::MODE_MIRROR)]));
         $tester->execute([]);
 
-        $this->assertSame(Command::SUCCESS, $tester->getStatusCode());
-        // The console wraps its warning block, so only the head of the message is matched here
+        $this->assertSame(Command::FAILURE, $tester->getStatusCode());
+        // The console wraps its error block, so only the head of the message is matched here
         $this->assertStringContainsString('is not a valid', $tester->getDisplay());
         $this->assertNull(new OffsiteState()->read($this->projectDir));
     }

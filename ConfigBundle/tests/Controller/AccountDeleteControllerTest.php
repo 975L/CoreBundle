@@ -63,15 +63,16 @@ class AccountDeleteControllerTest extends TestCase
         $this->controller($this->createStub(UserInterface::class))->delete(Request::create('/account/delete'));
     }
 
-    // The site's owner cannot erase the one account able to hand ROLE_SUPER_ADMIN back
+    // The site's owner cannot erase the one account able to hand ROLE_SUPER_ADMIN back, even previewing a lower role that makes isGranted() answer no
     public function testDeniesASuperAdmin(): void
     {
         $user = $this->createMock(InactivityAwareInterface::class);
         $user->method('getEmail')->willReturn(self::EMAIL);
+        $user->method('getRoles')->willReturn(['ROLE_SUPER_ADMIN', 'ROLE_USER']);
         $user->expects($this->never())->method('anonymize');
 
         $security = $this->createStub(Security::class);
-        $security->method('isGranted')->willReturnCallback(static fn (mixed $attribute) => 'ROLE_SUPER_ADMIN' === $attribute);
+        $security->method('isGranted')->willReturn(false);
 
         $this->expectException(AccessDeniedException::class);
 

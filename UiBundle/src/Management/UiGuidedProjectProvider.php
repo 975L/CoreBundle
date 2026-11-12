@@ -32,7 +32,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-// This bundle's guided projects, running the 3000 block GuidedProjectProviderInterface reserves them - the same docblock stating every other bundle's, so a range is read there rather than recopied here. They open on the media library first, the one screen of this bundle the sidebar keeps essential, then the three a site puts in place as it opens (its graphics, its legal documents, the key its rephrasing runs on), the occasional ones after, the site search's setup, the installable app and its Play Store twin, then the theme colours last. Each carries the role its own screen is gated by, so a parcours is never offered to someone its very first step turns away. Only the opening step of each carries an url: from there the parcours walks the screen the user has been sent to, highlighting the button or the field they are meant to use next - one they click themselves, which brings the panel back on that very step (see ConfigBundle's assets/js/guided-project.js)
+// This bundle's guided projects, running the 3000 block GuidedProjectProviderInterface reserves them - the same docblock stating every other bundle's, so a range is read there rather than recopied here. They open on the media library first, the one screen of this bundle the sidebar keeps essential, then the three a site puts in place as it opens (its graphics, its legal documents, the key its rephrasing runs on), the occasional ones after, the site search's setup, the installable app and its Play Store twin, the theme colours, then the third-party services each plugged in (age verification, captcha, audience, map). Each carries the role its own screen is gated by, so a parcours is never offered to someone its very first step turns away. Only the opening step of each carries an url: from there the parcours walks the screen the user has been sent to, highlighting the button or the field they are meant to use next - one they click themselves, which brings the panel back on that very step (see ConfigBundle's assets/js/guided-project.js)
 // No parcours teaches a block kind, however much one asks for beforehand (the "map" one wants its provider picked in Configuration first): a block is composed inside a page, and a page belongs to SiteBundle, which is where that parcours goes. What is walked here is this bundle's own screens.
 class UiGuidedProjectProvider implements GuidedProjectProviderInterface
 {
@@ -83,6 +83,9 @@ class UiGuidedProjectProvider implements GuidedProjectProviderInterface
         $projects[] = $this->pwaPlayStoreProject();
         $projects[] = $this->themeColorsProject();
         $projects[] = $this->ageVerificationSetupProject();
+        $projects[] = $this->captchaSetupProject();
+        $projects[] = $this->analyticsSetupProject();
+        $projects[] = $this->mapSetupProject();
 
         return $projects;
     }
@@ -1179,7 +1182,7 @@ class UiGuidedProjectProvider implements GuidedProjectProviderInterface
         ];
     }
 
-    // Three keys from the go.cam partner area put every content declared 18+ behind the age verification, but the site's own headers have to let go.cam's frame in first - the closing step only names them, the app owning its policy
+    // "age-verification-provider" picks the service and its own entries plug it in (go.cam's three keys, for the one shipped), putting every content declared 18+ behind the age verification - but the site's own headers have to let the service's frame in first: the closing step only names them, the app owning its policy
     private function ageVerificationSetupProject(): array
     {
         return [
@@ -1188,14 +1191,14 @@ class UiGuidedProjectProvider implements GuidedProjectProviderInterface
             'description' => 'description.guided_project_ui_age_verification_setup',
             'translation_domain' => 'ui',
             'order' => 3200,
-            // The three "age-verification-*" keys are restricted: ConfigCrudController keeps them out of the list below this role
+            // The "age-verification-*" entries are restricted: ConfigCrudController keeps them out of the list below this role
             'role' => 'ROLE_SUPER_ADMIN',
             'steps' => [
                 [
                     'label' => 'label.guided_step_ui_age_verification_setup_open',
                     'description' => 'description.guided_step_ui_age_verification_setup_open',
                     'narration' => 'narration.guided_step_ui_age_verification_setup_open',
-                    // Straight onto the "legal" group, sensitive entries shown: all three keys are, and hidden otherwise
+                    // Straight onto the "legal" group, sensitive entries shown: a provider's keys are, and hidden otherwise
                     'url' => $this->adminUrlGenerator
                         ->unsetAll()
                         ->setController(ConfigCrudController::class)
@@ -1225,6 +1228,158 @@ class UiGuidedProjectProvider implements GuidedProjectProviderInterface
                     'label' => 'label.guided_step_ui_age_verification_setup_headers',
                     'description' => 'description.guided_step_ui_age_verification_setup_headers',
                     'narration' => 'narration.guided_step_ui_age_verification_setup_headers',
+                ],
+            ],
+        ];
+    }
+
+    // "captcha-provider" picks the anti-bot service every public form is scored by and its own entries plug it in (reCAPTCHA's two keys, for the one shipped) - a strict policy having to let its script and frame in, which the closing step only names
+    private function captchaSetupProject(): array
+    {
+        return [
+            'slug' => 'ui-captcha-setup',
+            'label' => 'label.guided_project_ui_captcha_setup',
+            'description' => 'description.guided_project_ui_captcha_setup',
+            'translation_domain' => 'ui',
+            'order' => 3210,
+            // The "captcha-*" entries are restricted: ConfigCrudController keeps them out of the list below this role
+            'role' => 'ROLE_SUPER_ADMIN',
+            'steps' => [
+                [
+                    'label' => 'label.guided_step_ui_captcha_setup_open',
+                    'description' => 'description.guided_step_ui_captcha_setup_open',
+                    'narration' => 'narration.guided_step_ui_captcha_setup_open',
+                    // Straight onto the "security" group, sensitive entries shown: a provider's keys are, and hidden otherwise
+                    'url' => $this->adminUrlGenerator
+                        ->unsetAll()
+                        ->setController(ConfigCrudController::class)
+                        ->setAction(Action::INDEX)
+                        ->set('group', 'security')
+                        ->set('showSensitive', 1)
+                        ->generateUrl(),
+                ],
+                [
+                    'label' => 'label.guided_step_ui_captcha_setup_entry',
+                    'description' => 'description.guided_step_ui_captcha_setup_entry',
+                    'narration' => 'narration.guided_step_ui_captcha_setup_entry',
+                    'highlight' => '.action-edit',
+                ],
+                [
+                    'label' => 'label.guided_step_ui_captcha_setup_value',
+                    'description' => 'description.guided_step_ui_captcha_setup_value',
+                    'narration' => 'narration.guided_step_ui_captcha_setup_value',
+                    'highlight' => '[data-guided-config-value]',
+                ],
+                [
+                    'label' => 'label.guided_step_ui_captcha_setup_save',
+                    'narration' => 'narration.guided_step_ui_captcha_setup_save',
+                    'highlight' => '.action-saveAndReturn',
+                ],
+                [
+                    'label' => 'label.guided_step_ui_captcha_setup_headers',
+                    'description' => 'description.guided_step_ui_captcha_setup_headers',
+                    'narration' => 'narration.guided_step_ui_captcha_setup_headers',
+                ],
+            ],
+        ];
+    }
+
+    // "analytics-provider" picks the audience measurement and its own entries plug it in (Matomo's address and site id, for the one shipped), the cookies policy model then naming it, which the closing step says
+    private function analyticsSetupProject(): array
+    {
+        return [
+            'slug' => 'ui-analytics-setup',
+            'label' => 'label.guided_project_ui_analytics_setup',
+            'description' => 'description.guided_project_ui_analytics_setup',
+            'translation_domain' => 'ui',
+            'order' => 3220,
+            // The "analytics-*" entries are restricted: ConfigCrudController keeps them out of the list below this role
+            'role' => 'ROLE_SUPER_ADMIN',
+            'steps' => [
+                [
+                    'label' => 'label.guided_step_ui_analytics_setup_open',
+                    'description' => 'description.guided_step_ui_analytics_setup_open',
+                    'narration' => 'narration.guided_step_ui_analytics_setup_open',
+                    // Straight onto the "analytics" group, none of its entries being sensitive
+                    'url' => $this->adminUrlGenerator
+                        ->unsetAll()
+                        ->setController(ConfigCrudController::class)
+                        ->setAction(Action::INDEX)
+                        ->set('group', 'analytics')
+                        ->generateUrl(),
+                ],
+                [
+                    'label' => 'label.guided_step_ui_analytics_setup_entry',
+                    'description' => 'description.guided_step_ui_analytics_setup_entry',
+                    'narration' => 'narration.guided_step_ui_analytics_setup_entry',
+                    'highlight' => '.action-edit',
+                ],
+                [
+                    'label' => 'label.guided_step_ui_analytics_setup_value',
+                    'description' => 'description.guided_step_ui_analytics_setup_value',
+                    'narration' => 'narration.guided_step_ui_analytics_setup_value',
+                    'highlight' => '[data-guided-config-value]',
+                ],
+                [
+                    'label' => 'label.guided_step_ui_analytics_setup_save',
+                    'narration' => 'narration.guided_step_ui_analytics_setup_save',
+                    'highlight' => '.action-saveAndReturn',
+                ],
+                [
+                    'label' => 'label.guided_step_ui_analytics_setup_policy',
+                    'description' => 'description.guided_step_ui_analytics_setup_policy',
+                    'narration' => 'narration.guided_step_ui_analytics_setup_policy',
+                ],
+            ],
+        ];
+    }
+
+    // "ui-map-provider" picks who draws every map and contact block, Leaflet needing nothing more and Google its key - the site's policy having to name the provider's hosts, which the closing step only names
+    private function mapSetupProject(): array
+    {
+        return [
+            'slug' => 'ui-map-setup',
+            'label' => 'label.guided_project_ui_map_setup',
+            'description' => 'description.guided_project_ui_map_setup',
+            'translation_domain' => 'ui',
+            'order' => 3230,
+            // The bar ConfigCrudController sets on its own index and edit, the "ui-map-*" entries being unrestricted
+            'role' => $this->configService->get('site-role-admin'),
+            'steps' => [
+                [
+                    'label' => 'label.guided_step_ui_map_setup_open',
+                    'description' => 'description.guided_step_ui_map_setup_open',
+                    'narration' => 'narration.guided_step_ui_map_setup_open',
+                    // Straight onto the "ui" group, sensitive entries shown: Google's key is, and hidden otherwise
+                    'url' => $this->adminUrlGenerator
+                        ->unsetAll()
+                        ->setController(ConfigCrudController::class)
+                        ->setAction(Action::INDEX)
+                        ->set('group', 'ui')
+                        ->set('showSensitive', 1)
+                        ->generateUrl(),
+                ],
+                [
+                    'label' => 'label.guided_step_ui_map_setup_entry',
+                    'description' => 'description.guided_step_ui_map_setup_entry',
+                    'narration' => 'narration.guided_step_ui_map_setup_entry',
+                    'highlight' => '.action-edit',
+                ],
+                [
+                    'label' => 'label.guided_step_ui_map_setup_value',
+                    'description' => 'description.guided_step_ui_map_setup_value',
+                    'narration' => 'narration.guided_step_ui_map_setup_value',
+                    'highlight' => '[data-guided-config-value]',
+                ],
+                [
+                    'label' => 'label.guided_step_ui_map_setup_save',
+                    'narration' => 'narration.guided_step_ui_map_setup_save',
+                    'highlight' => '.action-saveAndReturn',
+                ],
+                [
+                    'label' => 'label.guided_step_ui_map_setup_headers',
+                    'description' => 'description.guided_step_ui_map_setup_headers',
+                    'narration' => 'narration.guided_step_ui_map_setup_headers',
                 ],
             ],
         ];

@@ -1,0 +1,9 @@
+{# One expression per case of the raw rule, read by CodeRulesTestCaseTest - a text|raw in a comment is ignored #}
+{{ text|raw }}
+{{ html|sanitize_html('c975l.rich')|raw }}
+{{ 'label.catalog'|trans({'%link%': url|e}, 'ui')|raw }}
+{{ data|json_encode|raw }}
+{{ title|trans|raw }}
+{{ 'label.catalog'|upper|raw }}
+{% set captured %}<p>{{ text }}</p>{% endset %}
+{{ captured }}

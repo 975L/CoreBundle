@@ -172,8 +172,9 @@ class DeploymentHealthCheckProvider implements HealthCheckProviderInterface
             return $this->row($url, $label, HealthCheckResult::STATUS_ERROR, 'label.health_check_not_found_wrong_status', ['%status%' => $file['statusCode']], ['issue' => 'not-404', 'statusCode' => $file['statusCode']]);
         }
 
+        // Compared on the decoded page, Twig writing "L'Atelier" as "L&#039;Atelier"
         $siteName = trim((string) $this->configService->get('site-name'));
-        if ('' !== $siteName && !str_contains(mb_strtolower($file['content']), mb_strtolower($siteName))) {
+        if ('' !== $siteName && !str_contains(mb_strtolower(html_entity_decode($file['content'], \ENT_QUOTES | \ENT_HTML5)), mb_strtolower($siteName))) {
             return $this->row($url, $label, HealthCheckResult::STATUS_WARNING, 'label.health_check_not_found_default_page', [], ['issue' => 'default-404']);
         }
 

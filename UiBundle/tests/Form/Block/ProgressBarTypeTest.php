@@ -12,8 +12,12 @@ namespace c975L\UiBundle\Tests\Form\Block;
 
 use c975L\UiBundle\Form\Block\ProgressBarType;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Form\Extension\Validator\ValidatorExtension;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormFactoryInterface;
+use Symfony\Component\Form\Forms;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Validation;
 
 class ProgressBarTypeTest extends TestCase
 {
@@ -47,6 +51,38 @@ class ProgressBarTypeTest extends TestCase
         $added = $this->buildAddedFields();
 
         $this->assertFalse($added['label']['required']);
+    }
+
+    private function createFactory(): FormFactoryInterface
+    {
+        return Forms::createFormFactoryBuilder()
+            ->addExtension(new ValidatorExtension(Validation::createValidator()))
+            ->getFormFactory();
+    }
+
+    // A bar whose percentage was switched off stays off when its page is saved again
+    public function testASavedBarKeepsItsPercentageSwitchedOff(): void
+    {
+        $form = $this->createFactory()->create(ProgressBarType::class, ['label' => 'Goal', 'progressPercent' => 40, 'text' => false]);
+
+        $this->assertFalse($form->get('text')->getData());
+    }
+
+    // A brand new bar shows its percentage by default
+    public function testANewBarShowsItsPercentage(): void
+    {
+        $form = $this->createFactory()->create(ProgressBarType::class);
+
+        $this->assertTrue($form->get('text')->getData());
+    }
+
+    // The 0-100 bounds shown in the input are enforced on submit too
+    public function testAPercentageOutOfBoundsIsRefused(): void
+    {
+        $form = $this->createFactory()->create(ProgressBarType::class);
+        $form->submit(['label' => 'Goal', 'progressPercent' => '150', 'text' => '1']);
+
+        $this->assertFalse($form->isValid());
     }
 
     public function testConfigureOptionsDefaultsToNullDataClassAndUiTranslationDomain(): void

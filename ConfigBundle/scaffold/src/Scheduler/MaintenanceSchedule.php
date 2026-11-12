@@ -19,9 +19,9 @@ class MaintenanceSchedule implements ScheduleProviderInterface
 
     public function getSchedule(): Schedule
     {
-        // Every installed c975L bundle declares its own commands (ConfigBundle's MaintenanceTaskProviderInterface) and this file lists none of them, so installing or removing a bundle needs no edit here and an upgraded scaffold can be propagated rather than merged. To drop one you don't want run at all, pass its command line: addTasks($schedule, ['c975l:health-check:run --frequency=monthly'])
+        // Every installed c975L bundle declares its own commands (ConfigBundle's MaintenanceTaskProviderInterface) and this file lists none of them, so installing or removing a bundle needs no edit here and an upgraded scaffold can be propagated rather than merged. To drop one you don't want run at all, pass its command line: addTasks($schedule, ['c975l:health-check:run --frequency=monthly']). After a worker outage, only the last missed run of each task is replayed rather than every one of them
         $schedule = $this->builder->addTasks(
-            new Schedule()->stateful($this->cache)
+            new Schedule()->stateful($this->cache)->processOnlyLastMissedRun(true)
         );
 
         // This site's own commands go here, spread like the others with ConfigBundle's ScheduleSpreader, or on a fixed time with a plain RecurringMessage::cron()

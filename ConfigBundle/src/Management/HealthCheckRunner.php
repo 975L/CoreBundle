@@ -44,9 +44,12 @@ class HealthCheckRunner
 
             $kind = $provider->getKind();
 
-            // Collected per kind rather than purged here, because one class can be registered several times over under the same kind, one instance per source (see DeclaredUrlsHealthCheckProvider) - purging inside the loop would have each instance delete what the ones before it just produced
+            // Collected per kind rather than purged here, because one class can be registered several times over under the same kind, one instance per source (see DeclaredUrlsHealthCheckProvider) - purging inside the loop would have each instance delete what the ones before it just produced. Cut as HealthCheckResult::setUrl() stores them, or a long url would never match its own row
             if ($provider instanceof HealthCheckExhaustiveInterface) {
-                $exhaustiveUrls[$kind] = array_merge($exhaustiveUrls[$kind] ?? [], array_column($rows, 'url'));
+                $exhaustiveUrls[$kind] = array_merge($exhaustiveUrls[$kind] ?? [], array_map(
+                    static fn (string $url): string => mb_substr($url, 0, HealthCheckResult::COLUMN_LENGTH),
+                    array_column($rows, 'url')
+                ));
             }
 
             $counts[$kind] = \count($rows);

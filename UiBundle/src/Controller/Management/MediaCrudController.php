@@ -120,6 +120,17 @@ class MediaCrudController extends AbstractCrudController
         return parent::delete($context);
     }
 
+    // The same guard, server side: delete() above only explains it, and whatever ends here (a tampered request, another caller) is refused
+    #[\Override]
+    public function deleteEntity(EntityManagerInterface $entityManager, mixed $entityInstance): void
+    {
+        if ($entityInstance instanceof Media && $this->isUsed($entityInstance)) {
+            throw $this->createAccessDeniedException();
+        }
+
+        parent::deleteEntity($entityManager, $entityInstance);
+    }
+
     #[\Override]
     public function persistEntity(EntityManagerInterface $entityManager, mixed $entityInstance): void
     {
@@ -206,6 +217,8 @@ class MediaCrudController extends AbstractCrudController
             ->setPermission(Action::NEW, $this->roleNeeded())
             // Same reason as in SiteGraphicCrudController: detail adds no information beyond what edit already shows, and it doesn't even display the file itself (only forms do). Every gallery thumbnail now opens a form - Edit here, or SiteGraphicCrudController's own for a role-carrying row (see index())
             ->disable(Action::DETAIL)
+            // EasyAdmin's batch delete calls deleteEntity() straight away, which would refuse the whole batch on the first media still in use: one media at a time, with delete()'s explanation
+            ->disable(Action::BATCH_DELETE)
         ;
     }
 

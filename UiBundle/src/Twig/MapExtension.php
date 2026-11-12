@@ -11,8 +11,7 @@
 namespace c975L\UiBundle\Twig;
 
 use c975L\ConfigBundle\Security\Voter\BackOfficeAccessVoter;
-use c975L\ConfigBundle\Service\ConfigServiceInterface;
-use c975L\UiBundle\Map\MapProvider;
+use c975L\UiBundle\Service\MapProviderResolver;
 use Symfony\Bundle\SecurityBundle\Security;
 use Twig\Attribute\AsTwigFunction;
 
@@ -22,7 +21,7 @@ class MapExtension
     private const array DRAWN_KEYS = ['label', 'latitude', 'longitude', 'text', 'url', 'icon'];
 
     public function __construct(
-        private readonly ConfigServiceInterface $configService,
+        private readonly MapProviderResolver $mapProviderResolver,
         private readonly ?Security $security = null,
     ) {
     }
@@ -45,24 +44,32 @@ class MapExtension
         ));
     }
 
-    // Everything the map component has to write into its element, read off the site's own settings and off the provider enum rather than restated in Twig - so adding a provider stays a case in MapProvider plus a branch in assets/js/map.js
-    // The Google key is deliberately handed to the page: a browser API key is loaded by the visitor's browser and can only ever be public, which is why the setting's own description says the protection is Google's HTTP-referrer restriction and not the "sensitive" flag hiding it in the back-office
+    // Everything the map component has to write into its element, read off the provider in use (see MapProviderInterface) rather than restated in Twig - so adding a provider stays a class plus a driver in assets/js/map.js. Nothing in it depends on the visitor: the block is cached under MapCacheTagProvider::CACHE_TAG
     #[AsTwigFunction('ui_map_settings')]
     public function settings(): array
     {
-        $provider = MapProvider::fromSetting((string) $this->configService->get('ui-map-provider'));
-        $apiKey = (string) $this->configService->get('ui-map-google-api-key');
+        $provider = $this->mapProviderResolver->getProvider();
 
         return [
-            'provider' => $provider->value,
-            'apiKey' => $provider->needsApiKey() ? $apiKey : '',
-            'tileUrl' => $provider->tileUrl() ?? '',
-            'attribution' => $provider->attribution() ?? '',
-            'needsConsent' => $provider->needsConsent(),
-            // A Google map with no key draws nothing at all, so the component keeps the list of places on screen instead of a grey box the visitor cannot read
-            'usable' => !$provider->needsApiKey() || '' !== trim($apiKey),
-            // Whether the page may say why a map is missing. A visitor is shown the list of places and nothing else - being told about a key or a security policy they cannot change is noise on the site's own content; whoever placed the block sees the reason where the map should be, rather than only in a health check they have no reason to open
-            'diagnostic' => $this->security?->isGranted(BackOfficeAccessVoter::ACCESS) ?? false,
+            'provider' => $provider?->getSlug() ?? '',
+            'settings' => $provider?->getSettings() ?? [],
+            'needsConsent' => $provider?->needsConsent() ?? false,
+            // A provider missing its key draws nothing at all, so the component keeps the list of places on screen instead of a grey box the visitor cannot read
+            'usable' => $provider?->isUsable() ?? false,
         ];
+    }
+
+    // Whether the page may say why a map is missing, asked by the layout and never by the cached map itself (see components/Map/_diagnostic.html.twig). A visitor is shown the list of places and nothing else - being told about a key or a security policy they cannot change is noise on the site's own content; whoever placed the block sees the reason where the map should be, rather than only in a health check they have no reason to open
+    #[AsTwigFunction('ui_map_diagnostic')]
+    public function diagnostic(): bool
+    {
+        return $this->security?->isGranted(BackOfficeAccessVoter::ACCESS) ?? false;
+    }
+
+    // The place on the provider's own map, the link that works whether or not the page ever drew a map of its own
+    #[AsTwigFunction('ui_map_place_url')]
+    public function placeUrl(array $point): string
+    {
+        return $this->mapProviderResolver->getProvider()?->getPlaceUrl((string) $point['latitude'], (string) $point['longitude']) ?? '';
     }
 }

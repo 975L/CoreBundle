@@ -104,6 +104,19 @@ class MediaMembersOnlyListenerTest extends TestCase
         $this->assertFileExists($this->projectDir . '/public/medias/site/tree.pdf');
     }
 
+    // A flush that threw is followed by a clear (or a worker's reset): the next flush must not move the file of a row that kept its old flag
+    public function testAClearDropsTheMovesOfAFlushThatFailed(): void
+    {
+        $this->put('public/medias/site/tree.pdf');
+
+        $listener = new MediaMembersOnlyListener($this->projectDir);
+        $listener->preUpdate($this->createUpdateEventArgs($this->createMedia('medias/site/tree.pdf', true)));
+        $listener->onClear();
+        $listener->postFlush();
+
+        $this->assertFileExists($this->projectDir . '/public/medias/site/tree.pdf');
+    }
+
     // The new file lands where the flag says through the upload listeners, and the one it replaces is MediaFileRemoveListener's
     public function testAnUploadInTheSameSubmitIsLeftToTheUploadListeners(): void
     {

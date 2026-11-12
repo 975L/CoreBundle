@@ -16,6 +16,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints as Assert;
 
 // A named, admin-composed email body: a sortable collection of EmailBlock rows rendered email-safe (table layout, inline CSS, no JS) by EmailTemplateRenderer - deliberately its own small system, not a reuse of c975L\UiBundle\Entity\Block (whose kinds are open-ended/DI-registered, unfit for a closed email-safe vocabulary) - see EmailBlock::TYPES and UiBundle Readme
 #[ORM\Entity(repositoryClass: EmailTemplateRepository::class)]
@@ -31,10 +32,12 @@ class EmailTemplate implements \Stringable
 
     // Looked up by callers (e.g. SendEmailFormAction's "emailTemplate" actionConfig key) - unlike Form::$name, purely an internal lookup key, never shown to a visitor. Unique with the locale and not on its own: one name is one email, written once per language the site answers in
     #[ORM\Column(length: 50)]
+    #[Assert\Length(max: 50)]
     private ?string $name = null;
 
     // The language this version is written in. A transactional e-mail is read by whoever the site was speaking to, not by whoever set the site up, so the name alone names an e-mail and the pair names the version of it to send (see EmailTemplateRepository::findForRendering, which falls back on the site's own language and then on any)
     #[ORM\Column(length: 5)]
+    #[Assert\Length(max: 5)]
     private ?string $locale = null;
 
     // A template seeded by its owning bundle/app (e.g. a future "form_submission" default) - see EmailTemplateCrudController, which locks "name" and deletion for such rows, same spirit as Form::$restricted

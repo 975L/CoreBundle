@@ -6,10 +6,9 @@
  * with this source code in the file LICENSE.
  */
 import { Controller } from "@hotwired/stimulus";
-import { createNoncedStyleElement } from "./nonced-style-element.js";
+import * as consent from "./consent.js";
 
-// c975l/site-bundle registers its own banner as "cookie-consent", but the Stimulus identifier is a free choice for whoever provides the banner - both the dasherized and the camelCase spelling are matched here so the contract can't silently break on a casing difference. A missed match is not a harmless no-op: connect() would conclude the page has no banner at all and render the iframe straight away, pulling ~1 MB of YouTube before any consent has been given.
-const CONSENT_BANNER_SELECTOR = '[data-controller~="cookie-consent"], [data-controller~="cookieConsent"]';
+import { createNoncedStyleElement } from "./nonced-style-element.js";
 
 // What a platform's player needs to work once it is framed. Not autoplay on purpose: a returning visitor who already accepted gets the iframe injected on scroll, and a src carrying the platform's own autoplay parameter would then start playing at them unasked
 const ALLOW = "accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
@@ -20,7 +19,7 @@ const REFERRER_POLICY = "strict-origin-when-cross-origin";
 // Only injects the iframe once the figure is about to enter the viewport - the player is ~1 MB of third-party JavaScript, which otherwise dominates the whole page's transfer weight for a visitor who never scrolls down to it. `iframe.loading = "lazy"` is not enough on its own: the browser only honours it for an iframe far enough down the page, and the element still belongs to the initial load when it is inserted on connect(). 200px of margin so the player is ready by the time it is actually scrolled into view.
 const ROOT_MARGIN = "200px";
 
-// Deliberately not coupled to any particular consent-banner implementation or bundle - reacts to an optional external contract instead: a banner element matching CONSENT_BANNER_SELECTOR present in the page, a `window.CookieConsent` global exposing vanilla-cookieconsent v3's API (https://cookieconsent.orestbida.com/), and its `cc:onConsent`/`cc:onChange` DOM events. c975l/site-bundle's `<twig:c975LSite:General:CookieConsent/>` is one such provider, but any consuming app's own banner satisfying the same contract works just as well - no composer dependency on it either way.
+// Deliberately not coupled to any particular consent banner: it asks consent.js, whose adapter speaks vanilla-cookieconsent v3 (this bundle's <twig:c975LUi:Cookie:Consent/>) unless the site's own banner registers another, and which keeps the visitor's accord itself on a page with no banner.
 export default class extends Controller {
     static targets = ["placeholder", "consent", "play"];
     static values = { src: String, title: String, width: String, height: String };
@@ -36,13 +35,8 @@ export default class extends Controller {
         // Applied on connect rather than when the player is injected: the consent cover stands in for the player, so it has to hold its width - a 320px thumbnail was otherwise announced by a grey box as wide as the page
         this.applySizing();
 
-        // No consent banner on this page - never block content on a site that doesn't use one
-        if (!document.querySelector(CONSENT_BANNER_SELECTOR)) {
-            this.onConsentSettled();
-            return;
-        }
-
-        if (window.CookieConsent?.acceptedCategory("content")) {
+        // Asked whether or not the page carries a banner: without one, consent.js keeps the accord given in place for the visit
+        if (consent.isAccepted("content")) {
             this.onConsentSettled();
             return;
         }
@@ -51,10 +45,9 @@ export default class extends Controller {
         this.listen();
     }
 
-    // "cc:onConsent" fires on every page load once the user's choice is known (not just the first time), so returning visitors who already accepted still get the iframe without needing to click again
+    // The banner announces the choice on every page load once it is known (not just the first time), so returning visitors who already accepted still get the iframe without needing to click again. Listened once however often asked
     listen() {
-        window.addEventListener("cc:onConsent", this.onConsent);
-        window.addEventListener("cc:onChange", this.onConsent);
+        this.unlisten ??= consent.onChange(this.onConsent);
     }
 
     // Turbo caches the page as it stands, so the revealed play button is put back behind its prompt here rather than left frozen in a snapshot restored before consent is checked again (same reason as flip-card.js)
@@ -72,17 +65,16 @@ export default class extends Controller {
     }
 
     stopListening() {
-        window.removeEventListener("cc:onConsent", this.onConsent);
-        window.removeEventListener("cc:onChange", this.onConsent);
+        this.unlisten?.();
+        this.unlisten = null;
     }
 
     accept() {
-        // The banner element can render before its own script (which sets this global) finishes loading - a click in that window must be a no-op, not a thrown error
-        window.CookieConsent?.acceptCategory("content");
+        consent.accept("content");
     }
 
     onConsent() {
-        if (window.CookieConsent?.acceptedCategory("content")) {
+        if (consent.isAccepted("content")) {
             this.onConsentSettled();
 
             return;
@@ -115,7 +107,7 @@ export default class extends Controller {
 
     // A withdrawal the banner never announced - its script loaded after the button was revealed, an event missed - leaves this button on screen with no consent behind it, so the click is checked against the current answer rather than against the one that revealed it, and puts the prompt back on screen instead of framing the player
     play() {
-        if (window.CookieConsent && !window.CookieConsent.acceptedCategory("content")) {
+        if (consent.isReady() && !consent.isAccepted("content")) {
             this.playTarget.hidden = true;
             if (this.hasConsentTarget) {
                 this.consentTarget.hidden = false;

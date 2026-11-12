@@ -13,6 +13,7 @@ namespace c975L\ConfigBundle\Entity;
 use c975L\ConfigBundle\Contract\UserInterface;
 use c975L\ConfigBundle\Repository\AppTokenRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 // What lets a mobile app act as a member without ever holding their password: a one-time code first, handed to the app through the browser the member signed in with, then the token the app trades it for (see AppTokenManager). Neither is stored, only their sha256: a copy of the table opens no account
 #[ORM\Entity(repositoryClass: AppTokenRepository::class)]
@@ -31,14 +32,17 @@ class AppToken
 
     // Null until the code is traded
     #[ORM\Column(length: 64, unique: true, nullable: true)]
+    #[Assert\Length(max: 64)]
     private ?string $tokenHash = null;
 
     // Null once traded: a code works once
     #[ORM\Column(length: 64, unique: true, nullable: true)]
+    #[Assert\Length(max: 64)]
     private ?string $codeHash = null;
 
     // What the app proves it knows the secret of when trading the code (PKCE, RFC 7636): the base64url sha256 of a verifier that never left the phone
     #[ORM\Column(length: 43, nullable: true)]
+    #[Assert\Length(max: 43)]
     private ?string $challenge = null;
 
     #[ORM\Column(nullable: true)]
@@ -46,6 +50,7 @@ class AppToken
 
     // The device as the app names it, so a member can tell their tokens apart
     #[ORM\Column(length: 100, nullable: true)]
+    #[Assert\Length(max: 100)]
     private ?string $label = null;
 
     #[ORM\Column]

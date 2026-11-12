@@ -11,6 +11,9 @@ import { createNoncedStyleElement } from "./nonced-style-element.js";
 // --slider-freeflow-vw is a page-wide value (drives every freeflow slider's full-bleed breakout width, not just this instance's own), so it's kept in one shared <style> element for the whole page's lifetime instead of a per-controller one - unlike the per-slider height rule below, which is created and torn down with its own instance's connect()/disconnect().
 let sharedFreeflowStyleEl = null;
 
+// What the controls say when they were drawn without the translated labels of Slider/_controls.html.twig
+const DEFAULT_LABELS = { announce: "Item %current% of %total%", current: "current", start: "Start animation", stop: "Stop animation" };
+
 export default class extends Controller {
     connect() {
         const sliderId = this.element.dataset.sliderId;
@@ -52,12 +55,31 @@ export default class extends Controller {
         }
     }
 
-    // Announce slide change to screen readers
+    // Announce slide change to screen readers, in the page's language (see the data attributes of Slider/_controls.html.twig)
     announceSlide(sliderId, current, total) {
         const liveRegion = document.querySelector(`#${sliderId} .slider-liveregion`);
         if (liveRegion) {
-            liveRegion.textContent = `Item ${current} of ${total}`;
+            liveRegion.textContent = this.label(sliderId, "announce").replace("%current%", current).replace("%total%", total);
         }
+    }
+
+    // A label the controls were rendered with, English only for controls drawn without them
+    label(sliderId, name) {
+        const controls = document.querySelector(`#${sliderId} .slider-controls`);
+        const key = `slider${name.charAt(0).toUpperCase()}${name.slice(1)}Label`;
+
+        return controls?.dataset[key] ?? DEFAULT_LABELS[name];
+    }
+
+    // The dot of the shown slide carries the "current" mark, the others none
+    markDots(sliderId, dots, index) {
+        const current = this.label(sliderId, "current");
+        dots.forEach((dot, idx) => {
+            const base = dot.getAttribute("aria-label").replace(/\s*\(.*?\)/, "");
+            dot.classList.toggle("current", idx === index - 1);
+            dot.classList.toggle("active", idx === index - 1);
+            dot.setAttribute("aria-label", idx === index - 1 ? `${base} (${current})` : base);
+        });
     }
 
     // preloadSliderImages
@@ -352,7 +374,7 @@ export default class extends Controller {
             this.isPlaying = false;
             this.pauseSlideVideo(activeSlide);
             button.setAttribute("data-action", "start");
-            button.setAttribute("aria-label", button.getAttribute("aria-label").replace("Stop", "Start").replace("Arrêter", "Démarrer").replace("Detener", "Iniciar"));
+            button.setAttribute("aria-label", this.label(sliderId, "start"));
             button.innerHTML = '<span aria-hidden="true">▶</span>';
         } else {
             this.isPlaying = true;
@@ -360,7 +382,7 @@ export default class extends Controller {
             // Explicit user action: play the active slide's video even under prefers-reduced-motion
             this.playSlideVideo(activeSlide, true);
             button.setAttribute("data-action", "stop");
-            button.setAttribute("aria-label", button.getAttribute("aria-label").replace("Start", "Stop").replace("Démarrer", "Arrêter").replace("Iniciar", "Detener"));
+            button.setAttribute("aria-label", this.label(sliderId, "stop"));
             button.innerHTML = '<span aria-hidden="true">⏸</span>';
         }
     }
@@ -550,15 +572,7 @@ export default class extends Controller {
         }
 
         // Update dots
-        dots.forEach((dot, idx) => {
-            if (idx === index - 1) {
-                dot.classList.add("current", "active");
-                dot.setAttribute("aria-label", `${dot.getAttribute("aria-label").replace(/\(.*?\)/, "")} (current)`);
-            } else {
-                dot.classList.remove("current", "active");
-                dot.setAttribute("aria-label", dot.getAttribute("aria-label").replace(/\s*\(.*?\)/, ""));
-            }
-        });
+        this.markDots(sliderId, dots, index);
 
         // Display new slide
         newSlide.classList.add("slider-item-active");
@@ -612,15 +626,7 @@ export default class extends Controller {
         const currentSlide = slides[this.slideIndex - 1];
         const newSlide = slides[index - 1];
 
-        dots.forEach((dot, idx) => {
-            if (idx === index - 1) {
-                dot.classList.add("current", "active");
-                dot.setAttribute("aria-label", `${dot.getAttribute("aria-label").replace(/\(.*?\)/, "")} (current)`);
-            } else {
-                dot.classList.remove("current", "active");
-                dot.setAttribute("aria-label", dot.getAttribute("aria-label").replace(/\s*\(.*?\)/, ""));
-            }
-        });
+        this.markDots(sliderId, dots, index);
 
         if (currentSlide !== newSlide) {
             this.pauseSlideVideo(currentSlide);
@@ -659,7 +665,8 @@ export default class extends Controller {
             }
 
             this.slideIndex++;
-            this.displaySlide(sliderId, this.slideIndex, "next", true);
+            // Not announced: a live region speaking every few seconds would talk over whatever the reader is reading
+            this.displaySlide(sliderId, this.slideIndex, "next", false);
         }, duration);
     }
 }

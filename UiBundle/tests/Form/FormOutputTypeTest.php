@@ -20,6 +20,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Length;
+use Symfony\Component\Validator\Constraints\NotBlank;
 
 class FormOutputTypeTest extends TestCase
 {
@@ -76,6 +77,15 @@ class FormOutputTypeTest extends TestCase
         $this->assertSame(100, $this->maxLengthOf($added['label']['options']['constraints']));
         $this->assertSame(500, $this->maxLengthOf($added['expression']['options']['constraints']));
         $this->assertSame(20, $this->maxLengthOf($added['unit']['options']['constraints']));
+    }
+
+    // An emptied label is submitted as '' and refused by NotBlank, never handed to setLabel() as null
+    public function testAnEmptiedLabelIsRefusedRatherThanSetToNull(): void
+    {
+        $added = $this->buildStaticFields();
+
+        $this->assertSame('', $added['label']['options']['empty_data']);
+        $this->assertNotEmpty(array_filter($added['label']['options']['constraints'], static fn ($constraint): bool => $constraint instanceof NotBlank));
     }
 
     private function maxLengthOf(array $constraints): ?int

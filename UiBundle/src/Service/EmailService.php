@@ -26,6 +26,9 @@ class EmailService
     // Where the previews wait for the page that shows them - a session attribute and not a flash, the layout rendering every flash it finds as an alert and an email being a whole html document
     public const string DEBUG_PREVIEWS_KEY = 'ui_email_debug_previews';
 
+    // What the message builds itself, or what Mime computes, left out of a request's own headers
+    private const array RESERVED_HEADERS = ['from', 'to', 'cc', 'bcc', 'reply-to', 'sender', 'subject', 'date', 'message-id', 'return-path', 'mime-version', 'content-type', 'content-transfer-encoding', 'content-disposition'];
+
     private ?string $lastError = null;
 
     public function __construct(
@@ -159,7 +162,30 @@ class EmailService
             $emails[] = $copy;
         }
 
+        // Set after the copy is cloned: an unsubscribe link belongs to the recipient it was written for
+        $this->applyHeaders($email, $request->headers);
+
         return $emails;
+    }
+
+    // The caller's own headers, those EmailService builds or Mime computes refused, and a value broken over lines (a header injection) dropped
+    private function applyHeaders(TemplatedEmail $email, array $headers): void
+    {
+        foreach ($headers as $name => $value) {
+            if (self::isAllowedHeader($name, $value)) {
+                $email->getHeaders()->addTextHeader($name, $value);
+            }
+        }
+    }
+
+    // A plain header name the caller may set, with a value on a single line
+    private static function isAllowedHeader(mixed $name, mixed $value): bool
+    {
+        if (!\is_string($name) || !\is_string($value) || 1 !== preg_match('/^[A-Za-z0-9-]{1,76}$/', $name)) {
+            return false;
+        }
+
+        return !\in_array(strtolower($name), self::RESERVED_HEADERS, true) && 1 !== preg_match('/[\r\n\0]/', $value);
     }
 
     // Sends the email(s), or stashes a rendered preview instead if the current user is ROLE_SUPER_ADMIN and "email-debug" is on - never both. Returns false and stashes the exception message (see getLastError()) on failure

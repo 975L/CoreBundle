@@ -12,6 +12,7 @@ namespace c975L\ConfigBundle\Management;
 
 use c975L\ConfigBundle\Entity\Config;
 use c975L\ConfigBundle\Repository\ConfigRepository;
+use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use Doctrine\ORM\EntityManagerInterface;
 
 // Imports a "site_config" content export (see ConfigCrudController::exportContent/ContentExporter) - matches by slug, same rule as ConfigSqlExporter: a non-sensitive row is fully upserted (label/value/kind/choices/group/description/severity synced), a sensitive row already holding a value is left untouched (its production value is never overwritten by a dev export), an empty or missing one taking the export's
@@ -22,6 +23,7 @@ class ConfigImportProvider implements ImportProviderInterface
     public function __construct(
         private readonly EntityManagerInterface $em,
         private readonly ConfigRepository $configRepository,
+        private readonly ConfigServiceInterface $configService,
     ) {
     }
 
@@ -46,7 +48,9 @@ class ConfigImportProvider implements ImportProviderInterface
             $isNew ? $created++ : $updated++;
         }
 
+        // The cached config never expires on its own: the site reads the imported values only once it is dropped
         $this->em->flush();
+        $this->configService->invalidateCache();
 
         return ['created' => $created, 'updated' => $updated];
     }

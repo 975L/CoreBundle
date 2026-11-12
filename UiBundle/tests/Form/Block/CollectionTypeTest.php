@@ -19,6 +19,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\String\Slugger\AsciiSlugger;
+use Symfony\Component\Validator\Constraints\Range;
 
 class CollectionTypeTest extends TestCase
 {
@@ -174,6 +175,16 @@ class CollectionTypeTest extends TestCase
 
         $added = $this->buildAddedFields(new CollectionSourceRegistry());
         $this->assertSame('label.collection_limit_help', $added['limit']['help']);
+    }
+
+    // A zero or negative limit is refused on the screen, never reaching setMaxResults() or array_slice() on the public page
+    public function testTheLimitIsAtLeastOne(): void
+    {
+        $constraints = $this->buildAddedFields(new CollectionSourceRegistry())['limit']['constraints'];
+
+        $this->assertCount(1, $constraints);
+        $this->assertInstanceOf(Range::class, $constraints[0]);
+        $this->assertSame(1, $constraints[0]->min);
     }
 
     public function testConfigureOptionsDefaultsToNullDataClassAndUiTranslationDomain(): void

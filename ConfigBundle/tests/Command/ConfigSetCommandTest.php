@@ -19,6 +19,11 @@ use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
+use Symfony\Component\Validator\Constraint;
+use Symfony\Component\Validator\ConstraintValidator;
+use Symfony\Component\Validator\ConstraintValidatorFactory;
+use Symfony\Component\Validator\Validation;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class ConfigSetCommandTest extends TestCase
 {
@@ -64,7 +69,24 @@ class ConfigSetCommandTest extends TestCase
             $configService ?? $this->createStub(ConfigServiceInterface::class),
             new VaultEncryptor($vaultKey),
             $manager ?? $this->createStub(EntityManagerInterface::class),
+            $this->createValidator(),
         ));
+    }
+
+    // The validator the framework builds, the entity's attributes read; UniqueEntity always failing as it does on a copy of a stored entry, which is what the command must see past
+    private function createValidator(): ValidatorInterface
+    {
+        $unique = new class extends ConstraintValidator {
+            public function validate(mixed $value, Constraint $constraint): void
+            {
+                $this->context->buildViolation('label.slug_exists')->atPath('slug')->addViolation();
+            }
+        };
+
+        return Validation::createValidatorBuilder()
+            ->enableAttributeMapping()
+            ->setConstraintValidatorFactory(new ConstraintValidatorFactory(['doctrine.orm.validator.unique' => $unique]))
+            ->getValidator();
     }
 
     private function createJsonFile(array $values): string
@@ -316,6 +338,31 @@ class ConfigSetCommandTest extends TestCase
 
         $this->assertSame(Command::SUCCESS, $tester->getStatusCode());
         $this->assertSame('dark', $config->getValue());
+    }
+
+    // The entity's own rules run too, as the back-office form applies them: a url entry refuses a javascript: address
+    public function testExecuteFailsOnAValueTheEntityRefuses(): void
+    {
+        $manager = $this->createMock(EntityManagerInterface::class);
+        $manager->expects($this->never())->method('flush');
+        $tester = $this->createTester([$this->createConfig('url-privacy-policy')], $manager);
+
+        $tester->execute(['slug' => 'url-privacy-policy', 'value' => 'javascript:alert(1)']);
+
+        $this->assertSame(Command::FAILURE, $tester->getStatusCode());
+        $this->assertStringContainsString('INVALID: url-privacy-policy', $tester->getDisplay());
+    }
+
+    // A theme color the entity refuses is refused here too, and an acceptable one goes through despite the slug's UniqueEntity
+    public function testExecuteAppliesTheEntityRulesToThemeColors(): void
+    {
+        $refused = $this->createTester([$this->createConfig('theme-color-primary')]);
+        $refused->execute(['slug' => 'theme-color-primary', 'value' => 'red; }']);
+        $accepted = $this->createTester([$this->createConfig('theme-color-primary')]);
+        $accepted->execute(['slug' => 'theme-color-primary', 'value' => '#336699']);
+
+        $this->assertSame(Command::FAILURE, $refused->getStatusCode());
+        $this->assertSame(Command::SUCCESS, $accepted->getStatusCode());
     }
 
     public function testExecuteSetsSeveralEntriesFromFile(): void

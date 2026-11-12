@@ -1,0 +1,7 @@
+{# Why a map is missing, handed by the layout - never cached - to whoever may act on it, and read by assets/js/map.js: the map block itself is cached for everyone, so it never carries these sentences #}
+{% if ui_map_diagnostic() %}
+    <div id="ui-map-diagnostic" hidden
+         data-refused="{{ 'label.map_diagnostic_refused'|trans({}, 'ui') }}"
+         data-csp="{{ 'label.map_diagnostic_csp'|trans({}, 'ui') }}"
+         data-no-key="{{ 'label.map_diagnostic_no_key'|trans({}, 'ui') }}"></div>
+{% endif %}

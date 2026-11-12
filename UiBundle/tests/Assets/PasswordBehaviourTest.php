@@ -66,6 +66,20 @@ class PasswordBehaviourTest extends JsCase
         $this->assertSame('new-password', $states[1]['autocomplete'], 'Hiding the password again did not put back what the form had declared.');
     }
 
+    // The eye is a button the keyboard reaches, named in the page's language, its pressed state following what it shows
+    public function testTheToggleIsANamedButtonTellingItsState(): void
+    {
+        $state = $this->form(
+            'const toggle = root.querySelector(".toggle-password");
+             const before = toggle.getAttribute("aria-pressed");
+             toggle.click();
+
+             return { tag: toggle.tagName, type: toggle.type, label: toggle.getAttribute("aria-label"), before, after: toggle.getAttribute("aria-pressed") };'
+        );
+
+        $this->assertSame(['tag' => 'BUTTON', 'type' => 'button', 'label' => 'Show password', 'before' => 'false', 'after' => 'true'], $state);
+    }
+
     // A form declaring no autocomplete on a field must get none back, and never a value the controller picked for it
     public function testAFieldTheFormDeclaredNoAutocompleteOnGetsNoneBack(): void
     {

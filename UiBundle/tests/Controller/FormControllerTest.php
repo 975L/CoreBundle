@@ -535,6 +535,54 @@ class FormControllerTest extends TestCase
         $this->assertSame('http://localhost/page', $response->headers->get('location'));
     }
 
+    // A second tab or an expired session: the form comes back filled and says why, its action never run
+    public function testAnUntimedSubmissionIsShownBackWithoutRunningTheAction(): void
+    {
+        $actionRegistry = $this->createMock(FormActionRegistry::class);
+        $actionRegistry->expects($this->never())->method('get');
+        $botProtection = $this->createStub(FormBotProtection::class);
+        $botProtection->method('isUntimed')->willReturn(true);
+        $request = $this->createRequest('POST', 'http://localhost/page');
+
+        $response = $this->createController($this->createSubmittedForm(true, true), actionRegistry: $actionRegistry, botProtection: $botProtection)
+            ->submit('contact', $request);
+
+        $this->assertSame(200, $response->getStatusCode(), 'An untimed submission was dropped with a redirect, what the visitor typed lost.');
+        $this->assertSame(['text.form_resend'], $request->getSession()->getFlashBag()->get('warning'));
+    }
+
+    // The timer is armed once the POST is checked, never before: a form corrected after a validation error would otherwise be timed from its own submission, at 0 s
+    public function testSubmitArmsTheBotTimerAfterTheCheckAndBeforeTheRender(): void
+    {
+        $calls = [];
+        $botProtection = $this->createStub(FormBotProtection::class);
+        $botProtection->method('isSuspicious')->willReturnCallback(static function () use (&$calls): bool {
+            $calls[] = 'check';
+
+            return false;
+        });
+        $botProtection->method('startTimer')->willReturnCallback(static function () use (&$calls): void {
+            $calls[] = 'timer';
+        });
+
+        $response = $this->createController($this->createSubmittedForm(true, false), botProtection: $botProtection)
+            ->submit('contact', $this->createRequest('POST'));
+
+        $this->assertSame(200, $response->getStatusCode());
+        $this->assertSame(['check', 'timer'], $calls);
+    }
+
+    // A redirect shows no form, so it arms nothing: the page it leads to does
+    public function testASuspiciousSubmissionArmsNoTimer(): void
+    {
+        $botProtection = $this->createMock(FormBotProtection::class);
+        $botProtection->method('isSuspicious')->willReturn(true);
+        $botProtection->expects($this->never())->method('startTimer');
+
+        $this->createController($this->createSubmittedForm(true, true), botProtection: $botProtection)
+            ->submit('contact', $this->createRequest('POST', 'http://localhost/page'));
+    }
+
     public function testSubmitFlashesWarningWhenRateLimited(): void
     {
         $rateLimiterGuard = $this->createStub(RateLimiterGuard::class);

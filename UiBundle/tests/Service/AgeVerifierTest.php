@@ -11,6 +11,7 @@
 namespace c975L\UiBundle\Tests\Service;
 
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
+use c975L\UiBundle\AgeVerification\GoCamProvider;
 use c975L\UiBundle\Service\AgeVerifier;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Clock\MockClock;
@@ -19,7 +20,7 @@ use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
 
-// go.cam's protocol both ways, with keys drawn for the test: what the site sends has to open with the partner's keys, and what comes back is only believed when signed, carrying the nonce, recent and a success
+// The gate with the provider this bundle ships, go.cam, and keys drawn for the test: the provider named in config is the one used, what the site sends has to open with the partner's keys, and what comes back is only believed when signed, carrying the session's nonce, recent and a success
 class AgeVerifierTest extends TestCase
 {
     private string $cipherKey;
@@ -46,15 +47,16 @@ class AgeVerifierTest extends TestCase
     private function createVerifier(?array $configValues = null): AgeVerifier
     {
         $configValues ??= [
-            'age-verification-partner-id' => '1234',
-            'age-verification-cipher-key' => $this->cipherKey,
-            'age-verification-hmac-key' => $this->hmacKey,
+            'age-verification-provider' => 'gocam',
+            'age-verification-gocam-partner-id' => '1234',
+            'age-verification-gocam-cipher-key' => $this->cipherKey,
+            'age-verification-gocam-hmac-key' => $this->hmacKey,
         ];
         $configService = $this->createStub(ConfigServiceInterface::class);
         $configService->method('hasParameter')->willReturnCallback(static fn (string $key) => \array_key_exists($key, $configValues));
         $configService->method('get')->willReturnCallback(static fn (string $key) => $configValues[$key] ?? null);
 
-        return new AgeVerifier($configService, new RequestStack([$this->request]), $this->clock, 'kernel-secret');
+        return new AgeVerifier($configService, new RequestStack([$this->request]), $this->clock, 'kernel-secret', [new GoCamProvider($configService, $this->clock)]);
     }
 
     // What go.cam's server does: encrypts with the cipher key, then signs with the hmac key
@@ -94,12 +96,17 @@ class AgeVerifierTest extends TestCase
         return json_decode($this->open($query['d'])['2'], true)['nonce'];
     }
 
-    public function testDisabledUntilAllThreeKeysAreSetAndWellFormed(): void
+    public function testDisabledUntilTheProviderIsChosenAndHoldsWellFormedKeys(): void
     {
+        $keys = ['age-verification-provider' => 'gocam', 'age-verification-gocam-partner-id' => '1234', 'age-verification-gocam-cipher-key' => $this->cipherKey, 'age-verification-gocam-hmac-key' => $this->hmacKey];
+
         $this->assertTrue($this->createVerifier()->isEnabled());
+        $this->assertSame('go.cam', $this->createVerifier()->getProvider()?->getName());
         $this->assertFalse($this->createVerifier([])->isEnabled());
-        $this->assertFalse($this->createVerifier(['age-verification-partner-id' => '1234', 'age-verification-cipher-key' => $this->cipherKey])->isEnabled());
-        $this->assertFalse($this->createVerifier(['age-verification-partner-id' => '1234', 'age-verification-cipher-key' => 'not-hex', 'age-verification-hmac-key' => $this->hmacKey])->isEnabled());
+        $this->assertFalse($this->createVerifier(['age-verification-provider' => ''] + $keys)->isEnabled());
+        $this->assertFalse($this->createVerifier(['age-verification-provider' => 'unknown'] + $keys)->isEnabled());
+        $this->assertFalse($this->createVerifier(['age-verification-gocam-hmac-key' => null] + $keys)->isEnabled());
+        $this->assertFalse($this->createVerifier(['age-verification-gocam-cipher-key' => 'not-hex'] + $keys)->isEnabled());
     }
 
     // Only an item of age waits, and only on a site that configured go.cam

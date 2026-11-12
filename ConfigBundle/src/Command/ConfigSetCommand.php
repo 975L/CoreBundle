@@ -22,6 +22,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 #[AsCommand(name: 'c975l:config:set', description: 'Sets the value of one or more config entries, from the command line or a JSON file', help: <<<'TXT'
 Sets a single entry:
@@ -47,6 +48,7 @@ class ConfigSetCommand extends Command
         private readonly ConfigServiceInterface $configService,
         private readonly VaultEncryptor $vaultEncryptor,
         private readonly EntityManagerInterface $manager,
+        private readonly ValidatorInterface $validator,
     ) {
         parent::__construct();
     }
@@ -122,7 +124,7 @@ class ConfigSetCommand extends Command
             return 'skipped';
         }
 
-        $error = $this->validate($config, $value);
+        $error = $this->validate($config, $value) ?? $this->validateEntity($config, $value);
         if (null !== $error) {
             $io->warning('INVALID: ' . $slug . ' - ' . $error);
 
@@ -260,6 +262,18 @@ class ConfigSetCommand extends Command
                 : 'expected one of ' . implode(', ', $config->getChoices()) . ', got "' . $value . '"',
             default => null,
         };
+    }
+
+    // The entity's own rules (a safe url on the url-* entries, a theme color, valid JSON), the ones the back-office form applies, run on a copy holding the value. The value's violations only: UniqueEntity on the slug always fails on a copy, the original holding it
+    private function validateEntity(Config $config, string $value): ?string
+    {
+        foreach ($this->validator->validate((clone $config)->setValue($value)) as $violation) {
+            if ('value' === $violation->getPropertyPath()) {
+                return (string) $violation->getMessage();
+            }
+        }
+
+        return null;
     }
 
     // Masks sensitive values so a secret never shows up in the console output or a CI log

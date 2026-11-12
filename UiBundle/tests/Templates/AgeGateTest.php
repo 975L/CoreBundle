@@ -29,6 +29,8 @@ class AgeGateTest extends TestCase
 
         $this->assertStringContainsString('data-controller="age-gate"', $html);
         $this->assertStringContainsString('https://go.cam/fr/token/iframeCheck', $html);
+        $this->assertStringContainsString('data-age-gate-provider-value="gocam"', $html);
+        $this->assertStringContainsString('text.age_gatego.cam', $html, 'The visitor is not told which service verifies them.');
         $this->assertStringNotContainsString('adult-only-content', $html);
     }
 
@@ -55,8 +57,9 @@ class AgeGateTest extends TestCase
 
             return 'https://go.cam/fr/token/iframeCheck?p=1&d=x';
         }));
+        $twig->addFunction(new TwigFunction('age_verification_provider', static fn (): array => ['slug' => 'gocam', 'name' => 'go.cam']));
         $twig->addFunction(new TwigFunction('path', static fn (string $route): string => '/age-verification'));
-        $twig->addFilter(new TwigFilter('trans', static fn (string $key): string => $key));
+        $twig->addFilter(new TwigFilter('trans', static fn (string $key, array $parameters = []): string => $key . implode('', $parameters)));
 
         return $twig->render('page.html.twig', ['age' => '18']);
     }

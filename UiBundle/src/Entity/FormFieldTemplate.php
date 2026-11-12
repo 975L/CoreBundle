@@ -13,6 +13,7 @@ namespace c975L\UiBundle\Entity;
 use c975L\UiBundle\Repository\FormFieldTemplateRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints as Assert;
 
 // A reusable "already complete" FormField blueprint (e.g. "Email", "Consentement RGPD") picked from a select on a Form's own field collection (see FormCrudController/assets/js/form-field-template.js) instead of composing every property by hand each time - copied client-side into a fresh FormField row, never referenced afterward, so editing/deleting a template never touches Forms that already used it
 #[ORM\Entity(repositoryClass: FormFieldTemplateRepository::class)]
@@ -27,16 +28,20 @@ class FormFieldTemplate implements \Stringable
 
     // Shown as the select's own option label - purely an internal lookup key, never shown to a visitor, same spirit as Form::$name/EmailTemplate::$name
     #[ORM\Column(length: 100, unique: true)]
+    #[Assert\Length(max: 100)]
     private ?string $name = null;
 
     // Copied into the new FormField's own "label"
     #[ORM\Column(length: 100)]
+    #[Assert\Length(max: 100)]
     private ?string $fieldLabel = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\Length(max: 255)]
     private ?string $placeholder = null;
 
     #[ORM\Column(length: 20)]
+    #[Assert\Length(max: 20)]
     private string $type = FormField::TYPE_TEXT;
 
     #[ORM\Column]

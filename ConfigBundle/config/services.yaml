@@ -52,6 +52,10 @@ services:
         arguments:
             $sitemapProviders: !tagged_iterator c975l.sitemap_provider
 
+    c975L\ConfigBundle\Management\SeoFilesHealthCheckProvider:
+        arguments:
+            $sitemapProviders: !tagged_iterator c975l.sitemap_provider
+
     # Every url the site declares, whichever bundle declares it - a sitemap is what a page has to be reachable by anyway, so an accessibility check reading the same list needs nothing else of a bundle
     c975L\ConfigBundle\Management\AccessibilityHealthCheckProvider:
         arguments:
@@ -158,6 +162,11 @@ services:
     c975L\ConfigBundle\Listener\RateLimitListener:
         arguments:
             $frontRequestLimiter: '@limiter.c975l_front_request'
+
+    # The per-account ceiling on wrong login codes, declared by c975LConfigBundle::prependExtension() too
+    c975L\ConfigBundle\Security\LoginCode:
+        arguments:
+            $loginCodeLimiter: '@limiter.c975l_login_code'
 
 
 # Wiring for c975l:dev-profile:run, kept under when@dev on purpose: its classes are all marked #[When('dev')], and an entry in the block above would put them back in every environment, prod included, where the "profiler" service doesn't exist. _defaults has to be repeated, a when@ block being parsed as its own root

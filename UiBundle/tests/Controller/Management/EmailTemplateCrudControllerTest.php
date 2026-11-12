@@ -18,18 +18,23 @@ use c975L\UiBundle\Entity\EmailTemplate;
 use c975L\UiBundle\Form\EmailBlockType;
 use c975L\UiBundle\Registry\EmailAttachmentRegistry;
 use c975L\UiBundle\Service\EmailTemplateRenderer;
+use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Provider\AdminContextProvider;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\FormType;
 use Symfony\Component\Form\Extension\Validator\ValidatorExtension;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\Forms;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
 use Symfony\Component\Validator\Validation;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -203,5 +208,40 @@ class EmailTemplateCrudControllerTest extends TestCase
 
         $this->assertNotNull($action);
         $this->assertSame('/management/form-field-template', $action->getUrl());
+    }
+
+    // A seeded template is left in place by the server with a warning, EasyAdmin's batch delete calling deleteEntity() without asking displayIf()
+    public function testDeleteEntityLeavesARestrictedEmailTemplate(): void
+    {
+        $entityManager = $this->createMock(EntityManagerInterface::class);
+        $entityManager->expects($this->never())->method('remove');
+
+        $session = new Session(new MockArraySessionStorage());
+        $controller = $this->createController();
+        $controller->setContainer($this->flashContainer($session));
+
+        $controller->deleteEntity($entityManager, new EmailTemplate()->setName('my_own')->setLocale('fr')->setRestricted(true));
+
+        $this->assertCount(1, $session->getFlashBag()->get('warning'), 'A seeded template left in place said nothing, a batch delete ending on it silent.');
+    }
+
+    // What addFlash() reaches: the request stack holding a session
+    private function flashContainer(Session $session): Container
+    {
+        $request = new Request();
+        $request->setSession($session);
+        $container = new Container();
+        $container->set('request_stack', new RequestStack([$request]));
+
+        return $container;
+    }
+
+    // An admin's own template goes as before
+    public function testDeleteEntityRemovesAnUnrestrictedEmailTemplate(): void
+    {
+        $entityManager = $this->createMock(EntityManagerInterface::class);
+        $entityManager->expects($this->once())->method('remove');
+
+        $this->createController()->deleteEntity($entityManager, new EmailTemplate()->setName('my_own')->setLocale('fr')->setRestricted(false));
     }
 }

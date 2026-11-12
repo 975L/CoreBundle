@@ -19,6 +19,7 @@ use c975L\UiBundle\Validator\FixedIconFormat;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\HttpFoundation\File\File;
+use Symfony\Component\Validator\Constraints as Assert;
 use Vich\UploaderBundle\Mapping\Attribute as Vich;
 
 #[ORM\Entity(repositoryClass: MediaRepository::class)]
@@ -95,6 +96,7 @@ class Media implements DrawableMediaInterface, VichImageResizableInterface, Vich
 
     // Block medias all share role=null. Singleton roles (favicon, logo...) are kept to one row each, enforced at the application level (see SiteGraphicCrudController) since repeatable roles (error-image) need several rows sharing the same role - no DB-level unique constraint here
     #[ORM\Column(length: 20, nullable: true)]
+    #[Assert\Length(max: 20)]
     private ?string $role = null;
 
     #[Vich\UploadableField(
@@ -106,12 +108,14 @@ class Media implements DrawableMediaInterface, VichImageResizableInterface, Vich
     private ?File $file = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\Length(max: 255)]
     private ?string $filename = null;
 
     #[ORM\Column(nullable: true)]
     private ?int $size = null;
 
     #[ORM\Column(length: 100, nullable: true)]
+    #[Assert\Length(max: 100)]
     private ?string $mimeType = null;
 
     #[ORM\Column(nullable: true)]
@@ -121,19 +125,24 @@ class Media implements DrawableMediaInterface, VichImageResizableInterface, Vich
     private int $position = 0;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\Length(max: 255)]
     private ?string $alt = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\Length(max: 255)]
     private ?string $label = null;
 
     // Admin-typed short name (e.g. "Rapport annuel"), slugified by UiMediaNamer into the stored/physical filename (e.g. "rapport-annuel-xxx.pdf") instead of the default "block-{kind}-{id}" - distinct from $label, which is display/caption text and isn't filesystem-safe (accents, punctuation, could contain markup)
     #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\Length(max: 255)]
     private ?string $name = null;
 
     #[ORM\Column(length: 20, nullable: true)]
+    #[Assert\Length(max: 20)]
     private ?string $width = null;
 
     #[ORM\Column(length: 20, nullable: true)]
+    #[Assert\Length(max: 20)]
     private ?string $height = null;
 
     #[ORM\Column(type: Types::JSON, nullable: true)]
@@ -143,6 +152,7 @@ class Media implements DrawableMediaInterface, VichImageResizableInterface, Vich
     private bool $above = false;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\Length(max: 255)]
     private ?string $credits = null;
 
     #[ORM\Column(options: ['default' => false])]
@@ -154,6 +164,7 @@ class Media implements DrawableMediaInterface, VichImageResizableInterface, Vich
 
     // Per-media outbound link/caption pair, exposed by MediaUploadType's "portfolio_grid" context (see PortfolioGridType) - a project card's title reuses the existing $label field instead
     #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\Length(max: 255)]
     private ?string $url = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]

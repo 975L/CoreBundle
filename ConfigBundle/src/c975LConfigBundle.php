@@ -78,6 +78,13 @@ class c975LConfigBundle extends AbstractBundle
                     'interval' => '10 seconds',
                     'cache_pool' => 'c975l.rate_limiter',
                 ],
+                // 20 wrong login codes per account and per day, whatever the number of password logins they were spread over (see LoginCode)
+                'c975l_login_code' => [
+                    'policy' => 'fixed_window',
+                    'limit' => 20,
+                    'interval' => '24 hours',
+                    'cache_pool' => 'c975l.rate_limiter',
+                ],
             ],
         ]);
 

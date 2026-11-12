@@ -10,8 +10,10 @@
 
 namespace c975L\UiBundle\Tests\Service;
 
+use c975L\UiBundle\Contract\BlockLocationProviderInterface;
 use c975L\UiBundle\Contract\PdfGeneratorInterface;
 use c975L\UiBundle\Entity\Block;
+use c975L\UiBundle\Registry\BlockLocationRegistry;
 use c975L\UiBundle\Repository\BlockRepository;
 use c975L\UiBundle\Service\LegalDocument;
 use c975L\UiBundle\Service\LegalModelPlaceholders;
@@ -91,8 +93,88 @@ class LegalDocumentTest extends TestCase
         return $this->document($renderer, []);
     }
 
-    /** @param list<Block> $blocks */
-    private function document(LegalModelRenderer $renderer, array $blocks): LegalDocument
+    // A hidden block is set aside on its page: the text a customer reads is the next one
+    public function testAHiddenBlockIsNotTheDocument(): void
+    {
+        $hidden = $this->block(1, '2026-01-01')->setHidden(true);
+        $shown = $this->block(2, '2026-02-01');
+
+        $this->assertSame('2026-02-01', $this->documentDating([$hidden, $shown])->html('france/terms-of-sales', 'fr'));
+    }
+
+    // The terms duplicated then the old copy put in the trash: the confirmations attach the page still published, not the oldest block
+    public function testTheBlockOfAPublishedPageWinsOverAnOlderOneInTheTrash(): void
+    {
+        $trashed = $this->block(1, '2026-01-01');
+        $published = $this->block(2, '2026-02-01');
+        $locations = [1 => ['label' => 'Old', 'url' => null, 'published' => false], 2 => ['label' => 'New', 'url' => '/cgv', 'published' => true]];
+
+        $this->assertSame('2026-02-01', $this->documentDating([$trashed, $published], $locations)->html('france/terms-of-sales', 'fr'));
+    }
+
+    // Every copy unpublished: the site publishes none of them, the model as shipped is what stands
+    public function testNoPublishedBlockFallsBackOnTheModelAsShipped(): void
+    {
+        $locations = [1 => ['label' => 'Old', 'url' => null, 'published' => false]];
+
+        $this->assertSame('<p>shipped %substituted%</p>', $this->documentDating([$this->block(1, '2026-01-01')], $locations)->html('france/terms-of-sales', 'fr'));
+    }
+
+    // A legal model nested in a container is located through the block its page holds, so a published page's copy wins over a draft's
+    public function testANestedBlockIsLocatedThroughItsContainer(): void
+    {
+        $draft = $this->block(1, '2026-01-01');
+        $container = new Block()->setKind('container');
+        new \ReflectionProperty(Block::class, 'id')->setValue($container, 3);
+        $nested = $this->block(2, '2026-02-01')->setParentBlock($container);
+        $locations = [1 => ['label' => 'Draft', 'url' => null, 'published' => false], 3 => ['label' => 'Terms', 'url' => '/cgv', 'published' => true]];
+
+        $this->assertSame('2026-02-01', $this->documentDating([$draft, $nested], $locations)->html('france/terms-of-sales', 'fr'));
+    }
+
+    // Written aside then renamed: nothing but the finished PDF is ever left under its name
+    public function testThePdfIsWrittenWholeWithNoTemporaryFileLeft(): void
+    {
+        $cacheDir = sys_get_temp_dir() . '/legal-document-' . bin2hex(random_bytes(4));
+        $pdfGenerator = $this->createStub(PdfGeneratorInterface::class);
+        $pdfGenerator->method('renderHtml')->willReturn('%PDF-1.7 whole');
+        $renderer = $this->createStub(LegalModelRenderer::class);
+        $renderer->method('render')->willReturn('<p>un</p>');
+        $document = $this->document($renderer, [], pdfGenerator: $pdfGenerator, cacheDir: $cacheDir);
+
+        $this->assertSame('%PDF-1.7 whole', $document->pdf('france/terms-of-sales', 'fr'));
+        $files = glob($cacheDir . '/pdf/*') ?: [];
+        $this->assertSame([$document->cacheFile('france/terms-of-sales', 'fr')], $files);
+        $this->assertSame('%PDF-1.7 whole', file_get_contents($files[0]));
+
+        array_map(unlink(...), $files);
+        rmdir($cacheDir . '/pdf');
+        rmdir($cacheDir);
+    }
+
+    // A terms-of-sales block with an id, dated so the test reads which one was rendered
+    private function block(int $id, string $latestUpdate): Block
+    {
+        $block = new Block()->setKind('legal_model')->setData(['model' => 'france/terms-of-sales', 'latestUpdate' => $latestUpdate]);
+        new \ReflectionProperty(Block::class, 'id')->setValue($block, $id);
+
+        return $block;
+    }
+
+    // Renders the date of the block it is given, and "shipped" for the model without one
+    private function documentDating(array $blocks, array $locations = []): LegalDocument
+    {
+        $renderer = $this->createStub(LegalModelRenderer::class);
+        $renderer->method('render')->willReturnCallback(static fn (string $model, ?string $latestUpdate): string => $latestUpdate ?? '<p>shipped</p>');
+
+        return $this->document($renderer, $blocks, $locations);
+    }
+
+    /**
+     * @param list<Block>                                                     $blocks
+     * @param array<int, array{label: string, url: ?string, published: bool}> $locations
+     */
+    private function document(LegalModelRenderer $renderer, array $blocks, array $locations = [], ?PdfGeneratorInterface $pdfGenerator = null, string $cacheDir = '/srv/site/var/cache/prod'): LegalDocument
     {
         $blockRepository = $this->createStub(BlockRepository::class);
         $blockRepository->method('findByKind')->willReturn($blocks);
@@ -100,13 +182,19 @@ class LegalDocumentTest extends TestCase
         $placeholders = $this->createStub(LegalModelPlaceholders::class);
         $placeholders->method('substitute')->willReturnCallback(static fn (string $html): string => str_replace('</p>', ' %substituted%</p>', $html));
 
+        $locationProvider = $this->createStub(BlockLocationProviderInterface::class);
+        $locationProvider->method('getLocations')->willReturn($locations);
+        $blockLocationRegistry = new BlockLocationRegistry();
+        $blockLocationRegistry->addProvider($locationProvider);
+
         return new LegalDocument(
             $renderer,
             $placeholders,
             $blockRepository,
-            $this->createStub(PdfGeneratorInterface::class),
+            $pdfGenerator ?? $this->createStub(PdfGeneratorInterface::class),
             $this->createStub(Environment::class),
-            '/srv/site/var/cache/prod',
+            $blockLocationRegistry,
+            $cacheDir,
         );
     }
 }

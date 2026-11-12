@@ -11,101 +11,63 @@
 namespace c975L\UiBundle\Service;
 
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
+use c975L\UiBundle\Contract\CaptchaProviderInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Component\DependencyInjection\Attribute\AutowireIterator;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Contracts\HttpClient\Exception\ExceptionInterface;
-use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-// reCAPTCHA v3, verified against Google's siteverify endpoint - replaces karser/karser-recaptcha3-bundle, whose only part this ecosystem ever used was this one call (the rest was a vendored copy of google/recaptcha with six interchangeable transports) while three compiler passes/type extensions existed solely to feed it ConfigBundle's values. See CaptchaType/Validator\Constraints\Captcha
+// The public forms' anti-bot check whatever service performs it (see CaptchaProviderInterface, "captcha-provider" naming the one in use): what CaptchaType, its constraint and the privacy policy ask, never the service's own business. See CaptchaType/Validator\Constraints\Captcha
 class CaptchaVerifier
 {
-    private const string VERIFY_URL = 'https://www.google.com/recaptcha/api/siteverify';
+    use ConfigChosenProviderTrait;
 
-    // The very value config/configs.json seeds "recaptcha3-score-threshold" with, restated here for the two cases that never read a row: an app whose configs were never loaded, and a field emptied at the back office
-    // It was Google's own 0.5 and karser's before it, which no site running this bundle has ever been scored on - a loaded config has always answered 0.05 instead - so the constant only ever named a threshold nobody used, and named it ten times stricter than the one they did
-    private const float DEFAULT_SCORE_THRESHOLD = 0.05;
-
+    /**
+     * @param iterable<CaptchaProviderInterface> $providers
+     */
     public function __construct(
-        private readonly HttpClientInterface $httpClient,
         private readonly ConfigServiceInterface $configService,
         private readonly RequestStack $requestStack,
+        #[AutowireIterator('c975l.captcha_provider')]
+        iterable $providers = [],
         #[Autowire(param: 'kernel.environment')]
         private readonly string $environment = 'prod',
     ) {
+        $this->indexProviders($providers);
     }
 
-    // True only when both keys are set: a site key alone would render a widget no one can verify, a secret key alone a check with no token to check. Never in "dev", whose database is a copy of production's: its keys only accept the site's own domain, not localhost
+    // The provider "captcha-provider" names, when it is registered and holds its keys: null leaves the forms unprotected by any captcha, the honeypot and timing checks still on
+    public function getProvider(): ?CaptchaProviderInterface
+    {
+        $provider = $this->namedProvider('captcha-provider');
+
+        return $provider instanceof CaptchaProviderInterface && $provider->isConfigured() ? $provider : null;
+    }
+
+    // A provider in use, never in "dev", whose database is a copy of production's: its keys only accept the site's own domain, not localhost
     public function isEnabled(): bool
     {
         return 'dev' !== $this->environment && $this->isConfigured();
     }
 
-    // Both keys set, whatever the environment: what the privacy policy reads, the production site's own text not depending on where it is previewed
+    // A provider in use, whatever the environment: what the privacy policy reads, the production site's own text not depending on where it is previewed
     public function isConfigured(): bool
     {
-        return null !== $this->getSiteKey() && null !== $this->getSecretKey();
+        return null !== $this->getProvider();
     }
 
     public function getSiteKey(): ?string
     {
-        return $this->readConfig('recaptcha3-site-key');
+        return $this->getProvider()?->getSiteKey();
     }
 
-    // Below this, Google considers the submission likely automated. 0 is a deliberate, valid value (accept everything), hence the null/'' check rather than a truthy one
-    public function getScoreThreshold(): float
-    {
-        $threshold = $this->readConfig('recaptcha3-score-threshold');
-
-        return null === $threshold ? self::DEFAULT_SCORE_THRESHOLD : (float) $threshold;
-    }
-
-    // Fails closed, as karser did: an unverifiable token (Google unreachable, malformed answer, score too low) is rejected rather than waved through
+    // Fails closed: no provider or no token rejects the submission, the constraint skipping the check altogether when none is enabled
     public function verify(?string $token): bool
     {
-        $secretKey = $this->getSecretKey();
-        if (null === $secretKey || null === $token || '' === $token) {
+        $provider = $this->getProvider();
+        if (null === $provider || null === $token || '' === $token) {
             return false;
         }
 
-        try {
-            $response = $this->httpClient->request('POST', self::VERIFY_URL, [
-                'body' => array_filter([
-                    'secret' => $secretKey,
-                    'response' => $token,
-                    'remoteip' => $this->requestStack->getCurrentRequest()?->getClientIp(),
-                ]),
-            ]);
-            $result = $response->toArray(false);
-        } catch (ExceptionInterface | \JsonException) {
-            return false;
-        }
-
-        if (true !== ($result['success'] ?? false)) {
-            return false;
-        }
-
-        // No score at all means this token came from a v2 key, not v3 - the threshold can't be applied, so the success flag alone decides
-        if (!isset($result['score'])) {
-            return true;
-        }
-
-        return (float) $result['score'] >= $this->getScoreThreshold();
-    }
-
-    private function getSecretKey(): ?string
-    {
-        return $this->readConfig('recaptcha3-secret-key');
-    }
-
-    // An unseeded config key reads as null, an emptied one as '' - neither is a value
-    private function readConfig(string $key): ?string
-    {
-        if (!$this->configService->hasParameter($key)) {
-            return null;
-        }
-
-        $value = $this->configService->get($key);
-
-        return null === $value || '' === $value ? null : (string) $value;
+        return $provider->verify($token, $this->requestStack->getCurrentRequest()?->getClientIp());
     }
 }

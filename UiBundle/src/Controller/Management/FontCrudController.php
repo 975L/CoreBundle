@@ -40,7 +40,7 @@ use function Symfony\Component\Translation\t;
 // Lets an admin upload their own font files, no deploy needed; FontCssListener compiles every row into one stylesheet
 class FontCrudController extends AbstractCrudController
 {
-    private const array ALLOWED_EXTENSIONS = ['ttf', 'woff', 'woff2'];
+    private const array ALLOWED_EXTENSIONS = Font::FILE_EXTENSIONS;
 
     private const array STYLE_CHOICES = [
         'label.font_style_normal' => 'normal',

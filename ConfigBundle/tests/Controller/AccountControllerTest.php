@@ -187,6 +187,14 @@ class AccountControllerTest extends TestCase
         $this->assertNotNull($this->rendered['deleteForm']);
     }
 
+    // The site's owner is offered no deletion, read off its own roles so a role preview cannot bring the button back
+    public function testOffersNoDeletionToTheSiteOwner(): void
+    {
+        $this->controller(user: new User()->setEmail('owner@example.test')->setPassword(self::CURRENT_PASSWORD)->setRoles(['ROLE_SUPER_ADMIN']))->index($this->request());
+
+        $this->assertNull($this->rendered['deleteForm']);
+    }
+
     // The address is changed from the page as the password is, and not by a session opened through a provider, which finds its account by that address
     public function testOffersTheEmailChangeExceptToAnOAuthSession(): void
     {

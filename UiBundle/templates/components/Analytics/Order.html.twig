@@ -1,0 +1,6 @@
+{# <twig:c975LUi:Analytics:Order order="{{ order }}"/> #}
+{# A paid order handed to the provider in use, rendered on a confirmed order only: {id, grandTotal, subTotal, tax, shipping, discount, items: [{sku, name, category, price, quantity}]}, amounts in units. Guarded by the same check as the tracker snippet, so a site not measuring its audience gets nothing pushed #}
+{% set provider = analytics_provider() %}
+{% if provider %}
+    <div data-controller="analytics-order" data-analytics-order-provider-value="{{ provider.slug }}" data-analytics-order-order-value="{{ order|json_encode }}" hidden></div>
+{% endif %}

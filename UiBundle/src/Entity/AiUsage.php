@@ -13,6 +13,7 @@ namespace c975L\UiBundle\Entity;
 use c975L\ConfigBundle\Attribute\ActivityLogIgnored;
 use c975L\UiBundle\Repository\AiUsageRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 // Tracks the token spend of each AI feature paid for by the site's own key (FEATURE_*), one row per feature and calendar month - AiRephraseClient calls the provider directly (no intermediary), so this is the only place that spend is ever visible. Aggregated at month granularity on purpose, not one row per request: a per-request log would tie a token count to a timestamp close enough to correlate with a specific edit, undermining the "nothing is persisted" promise for the rephrased content itself, even though the count alone reveals nothing about it
 #[ORM\Entity(repositoryClass: AiUsageRepository::class)]
@@ -31,10 +32,12 @@ class AiUsage
 
     // "YYYY-MM"; backtick-quoted because "year_month" is a reserved MariaDB keyword the ORM's INSERT wouldn't quote
     #[ORM\Column(name: '`year_month`', length: 7)]
+    #[Assert\Length(max: 7)]
     private string $yearMonth;
 
     // Each feature has its own row, so a failing site search never raises the rephrase alert nor mixes into its spend. Defaulted so the rows written before this column existed stay the rephrase's
     #[ORM\Column(length: 20, options: ['default' => self::FEATURE_REPHRASE])]
+    #[Assert\Length(max: 20)]
     private string $feature = self::FEATURE_REPHRASE;
 
     #[ORM\Column]

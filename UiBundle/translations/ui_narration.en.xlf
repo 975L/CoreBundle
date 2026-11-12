@@ -24,15 +24,15 @@
             </trans-unit>
             <trans-unit id="Tqyp_I4">
                 <source>narration.guided_step_ui_age_verification_setup_entry</source>
-                <target>Click the pencil of the partner id.</target>
+                <target>Click the pencil of the service.</target>
             </trans-unit>
             <trans-unit id="4_cNrVr">
                 <source>narration.guided_step_ui_age_verification_setup_headers</source>
-                <target>Last step: the site's headers have to let go.cam's frame in, a setting the README describes. From then on, any content declared 18+ waits behind the verification.</target>
+                <target>Last step: the site's headers have to let the service's frame in, a setting the README describes. Then any content declared 18+ waits behind the verification.</target>
             </trans-unit>
             <trans-unit id="SR.cMx8">
                 <source>narration.guided_step_ui_age_verification_setup_open</source>
-                <target>Here are the settings, opened on the Legal group: the three "go.cam age verification" entries switch the verification on, with the values of the go.cam partner area.</target>
+                <target>Here are the settings, opened on the Legal group: "Age verification: service" picks the service, go.cam for instance, and the entries bearing its name take the values from its partner area.</target>
             </trans-unit>
             <trans-unit id="WhEywpU">
                 <source>narration.guided_step_ui_age_verification_setup_save</source>
@@ -40,7 +40,7 @@
             </trans-unit>
             <trans-unit id="0EwSH1a">
                 <source>narration.guided_step_ui_age_verification_setup_value</source>
-                <target>Paste the value go.cam gives, then do the same for both keys.</target>
+                <target>Pick the service, save, then paste one by one the values it gives you.</target>
             </trans-unit>
             <trans-unit id="WPAsuLp">
                 <source>narration.guided_step_ui_ai_assistant_action</source>
@@ -118,6 +118,26 @@
                 <source>narration.guided_step_ui_ai_search_setup_value</source>
                 <target>Type its value into this field. The API key stays yours: each question is billed to your account with the provider.</target>
             </trans-unit>
+            <trans-unit id="JaHxgAC">
+                <source>narration.guided_step_ui_analytics_setup_entry</source>
+                <target>Click the pencil of the service.</target>
+            </trans-unit>
+            <trans-unit id="LpQgtO0">
+                <source>narration.guided_step_ui_analytics_setup_open</source>
+                <target>Here are the settings, opened on the Analytics group: "Audience measurement: service" picks the service, Matomo for instance, and the entries bearing its name take its address and its site id.</target>
+            </trans-unit>
+            <trans-unit id="OcwG1qH">
+                <source>narration.guided_step_ui_analytics_setup_policy</source>
+                <target>Last step: reread the cookies policy, which now names the service in use.</target>
+            </trans-unit>
+            <trans-unit id="FvHLfdD">
+                <source>narration.guided_step_ui_analytics_setup_save</source>
+                <target>Save.</target>
+            </trans-unit>
+            <trans-unit id="6sIWQmC">
+                <source>narration.guided_step_ui_analytics_setup_value</source>
+                <target>Pick the service, save, then enter one by one the values it shows you.</target>
+            </trans-unit>
             <trans-unit id="9klQ1Xs">
                 <source>narration.guided_step_ui_calculator_action</source>
                 <target>Then choose whether it is sent: leave the action empty for a plain calculation, or pick send email for the visitor to ask for a quote with their results.</target>
@@ -165,6 +185,26 @@
             <trans-unit id="gGlIQUe">
                 <source>narration.guided_step_ui_calculator_save_fields</source>
                 <target>Save before writing a single formula: variable names are derived from the labels, and they only appear once the fields are saved.</target>
+            </trans-unit>
+            <trans-unit id="YvIXnF8">
+                <source>narration.guided_step_ui_captcha_setup_entry</source>
+                <target>Click the pencil of the service.</target>
+            </trans-unit>
+            <trans-unit id="zRYeGKU">
+                <source>narration.guided_step_ui_captcha_setup_headers</source>
+                <target>Last step: the site's headers have to let the service in, a setting the README describes. Then every public form is scored as it is filled in.</target>
+            </trans-unit>
+            <trans-unit id="bFehqVa">
+                <source>narration.guided_step_ui_captcha_setup_open</source>
+                <target>Here are the settings, opened on the Security group: "Captcha: service" picks the service, reCAPTCHA for instance, and the entries bearing its name take its keys.</target>
+            </trans-unit>
+            <trans-unit id="rkVBjnI">
+                <source>narration.guided_step_ui_captcha_setup_save</source>
+                <target>Save.</target>
+            </trans-unit>
+            <trans-unit id="8.x1IjK">
+                <source>narration.guided_step_ui_captcha_setup_value</source>
+                <target>Pick the service, save, then paste one by one the keys it gives you.</target>
             </trans-unit>
             <trans-unit id="upqcYyp">
                 <source>narration.guided_step_ui_content_export_import</source>
@@ -353,6 +393,26 @@
             <trans-unit id="4MRnqsr">
                 <source>narration.guided_step_ui_legal_model_unit</source>
                 <target>Each card is one section. Give it a title of your own, rewrite its text, or tick the box hiding it from the published page.</target>
+            </trans-unit>
+            <trans-unit id="Gs0AtcH">
+                <source>narration.guided_step_ui_map_setup_entry</source>
+                <target>Click the pencil of the provider.</target>
+            </trans-unit>
+            <trans-unit id="HRNVOrB">
+                <source>narration.guided_step_ui_map_setup_headers</source>
+                <target>Last step: the site's headers have to name the provider's hosts, which the health check lists. Then every map draws with it.</target>
+            </trans-unit>
+            <trans-unit id="hYrdJ9r">
+                <source>narration.guided_step_ui_map_setup_open</source>
+                <target>Here are the settings, opened on the Interface group: "Map provider" picks who draws the maps, OpenStreetMap needing no key and Google its own.</target>
+            </trans-unit>
+            <trans-unit id="gwhoRPL">
+                <source>narration.guided_step_ui_map_setup_save</source>
+                <target>Save.</target>
+            </trans-unit>
+            <trans-unit id="AsI6qJG">
+                <source>narration.guided_step_ui_map_setup_value</source>
+                <target>Pick the provider, save, then paste its key if it asks for one.</target>
             </trans-unit>
             <trans-unit id="9AgZZLS">
                 <source>narration.guided_step_ui_media_add_alt</source>

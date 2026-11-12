@@ -41,9 +41,12 @@ export default class extends Controller {
             passwordInput.parentNode.insertBefore(wrapper, passwordInput);
             wrapper.appendChild(passwordInput);
 
-            // Defines toggle
-            const toggle = document.createElement("span");
+            // A real button, so it is reached by the keyboard and named for a screen reader, its pressed state telling whether the password shows
+            const toggle = document.createElement("button");
+            toggle.type = "button";
             toggle.classList.add("toggle-password");
+            toggle.setAttribute("aria-label", Handlers.translate("form.password.show"));
+            toggle.setAttribute("aria-pressed", "false");
 
             // Adds image
             const image = document.createElement("img");
@@ -62,6 +65,7 @@ export default class extends Controller {
                     passwordInput.type = "text";
                     passwordInput.setAttribute("autocomplete", "off");
                     image.src = `${ICON_PATH}eye-slash.svg`;
+                    toggle.setAttribute("aria-pressed", "true");
                 } else {
                     passwordInput.type = "password";
 
@@ -72,6 +76,7 @@ export default class extends Controller {
                     }
 
                     image.src = `${ICON_PATH}eye.svg`;
+                    toggle.setAttribute("aria-pressed", "false");
                 }
             });
         });

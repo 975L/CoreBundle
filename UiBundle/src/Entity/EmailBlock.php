@@ -12,6 +12,7 @@ namespace c975L\UiBundle\Entity;
 
 use c975L\UiBundle\Repository\EmailBlockRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 // One row of an EmailTemplate's body: a closed vocabulary sharing one flat set of columns, each meaningful only for the kinds noted below
 #[ORM\Entity(repositoryClass: EmailBlockRepository::class)]
@@ -63,6 +64,7 @@ class EmailBlock
     private ?EmailTemplate $emailTemplate = null;
 
     #[ORM\Column(length: 20)]
+    #[Assert\Length(max: 20)]
     private string $type = self::TYPE_TEXT;
 
     #[ORM\Column(nullable: true)]
@@ -70,10 +72,12 @@ class EmailBlock
 
     // TYPE_HEADING's text
     #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\Length(max: 255)]
     private ?string $heading = null;
 
     // TYPE_HEADING's size - self::LEVEL_H1/LEVEL_H2
     #[ORM\Column(length: 2, nullable: true)]
+    #[Assert\Length(max: 2)]
     private ?string $level = null;
 
     // TYPE_TEXT: plain text, not rich, so the email-safe HTML stays fully controlled server-side
@@ -82,14 +86,17 @@ class EmailBlock
 
     // TYPE_BUTTON's label
     #[ORM\Column(length: 100, nullable: true)]
+    #[Assert\Length(max: 100)]
     private ?string $label = null;
 
     // TextType, not UrlType: may hold a "{{ variable }}" placeholder resolved at render time
     #[ORM\Column(length: 500, nullable: true)]
+    #[Assert\Length(max: 500)]
     private ?string $url = null;
 
     // TYPE_IMAGE's alt text
     #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\Length(max: 255)]
     private ?string $alt = null;
 
     // TYPE_SPACER's height, in pixels

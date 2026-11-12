@@ -46,8 +46,8 @@ use c975L\UiBundle\DependencyInjection\Compiler\StylesheetManagementRegistryPass
 use c975L\UiBundle\DependencyInjection\Compiler\StylesheetRegistryPass;
 use c975L\UiBundle\DependencyInjection\Compiler\TwigCachePoolPass;
 use c975L\UiBundle\DependencyInjection\Compiler\WhatsNewProviderPass;
-use c975L\UiBundle\Map\MapProvider;
 use c975L\UiBundle\Namer\UiMediaNamer;
+use c975L\UiBundle\Service\MapProviderResolver;
 use c975L\UiBundle\Storage\NestedFileSystemStorage;
 use c975L\UiBundle\Video\VideoPlatform;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -233,9 +233,10 @@ class c975LUiBundle extends AbstractBundle
 
         // Same reading for the map providers, on the directives a drawn map needs instead. One parameter per directive and not one blob for the three: a list holding a tile server and a script host at once would authorise scripts from that tile server the day a site named it in its "script-src", which is the opposite of what naming origins is for
         // The script list holds Google's host alone, this bundle serving Leaflet itself (public/js/leaflet.js) - an OpenStreetMap site opens its policy to nobody
-        $containerBuilder->setParameter('c975l_ui.map.img_origins', implode(' ', MapProvider::allImgOrigins()));
-        $containerBuilder->setParameter('c975l_ui.map.script_origins', implode(' ', MapProvider::allScriptOrigins()));
-        $containerBuilder->setParameter('c975l_ui.map.connect_origins', implode(' ', MapProvider::allConnectOrigins()));
+        $mapOrigins = MapProviderResolver::shippedOrigins();
+        $containerBuilder->setParameter('c975l_ui.map.img_origins', implode(' ', $mapOrigins['img']));
+        $containerBuilder->setParameter('c975l_ui.map.script_origins', implode(' ', $mapOrigins['script']));
+        $containerBuilder->setParameter('c975l_ui.map.connect_origins', implode(' ', $mapOrigins['connect']));
 
         // Where the generated stylesheets go, relative to public/ - an app running a second context against its own database (a demo) sets its own, or each context's flush overwrites the other's theme and fonts. An app parameter wins over this one
         $containerBuilder->setParameter('c975l_ui.build_dir', 'bundles/build');

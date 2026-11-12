@@ -1,5 +1,10 @@
 {# The slider controller's previous/next, play/pause and one dot per item, shared by the Slider component and carousels drawing their own items: include('@c975LUi/components/Slider/_controls.html.twig', {count: items|length, duration: duration}, with_context = false) #}
-<div class="slider-controls">
+{# The words slider.js writes itself - the live region, the dot of the shown slide, the play/pause button turned over - handed in the page's language #}
+<div class="slider-controls"
+     data-slider-announce-label="{{ "label.slide_position"|trans({}, "ui") }}"
+     data-slider-current-label="{{ "label.current"|trans({}, "ui") }}"
+     data-slider-start-label="{{ "label.start_animation"|trans({}, "ui") }}"
+     data-slider-stop-label="{{ "label.stop_animation"|trans({}, "ui") }}">
     <button type="button" class="slider-button slider-prev" aria-label="{{ "label.previous_slide"|trans({}, "ui") }}">
         <img src="{{ asset("bundles/c975lsite/icons/angle-left.svg") }}" alt="" aria-hidden="true" class="angle" width="40">
     </button>

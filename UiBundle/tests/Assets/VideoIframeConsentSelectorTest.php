@@ -12,19 +12,22 @@ namespace c975L\UiBundle\Tests\Assets;
 
 use PHPUnit\Framework\TestCase;
 
-// The two structural constraints this controller rests on and that no scenario can put to the test: that the consent check is the only question it ever asks the document, and that the player is scheduled from the one branch where there is nothing to look at
+// The two structural constraints this controller rests on and that no scenario can put to the test: that the banner is only ever asked through the consent adapter, and that the player is scheduled from the one branch where there is nothing to look at
 // Everything else it used to assert as lines of source - the selector matching both spellings, the empty src, the player's own attributes, the prompt, the click re-read against the current answer - is VideoIframeBehaviourTest's, run in a browser
 class VideoIframeConsentSelectorTest extends TestCase
 {
     private const string CONTROLLER_JS = 'assets/js/video-iframe.js';
 
-    // A hardcoded querySelector() argument bypasses the constant the test above checks, putting the mismatch straight back
-    public function testConnectQueriesTheSharedSelectorConstant(): void
+    // The banner is asked through consent.js alone, the adapter a site running another banner registers its own with: a query of the document or a banner's global here puts the coupling straight back
+    public function testTheBannerIsAskedThroughTheSharedAdapterOnly(): void
     {
         $script = $this->read(self::CONTROLLER_JS);
 
-        $this->assertStringContainsString('document.querySelector(CONSENT_BANNER_SELECTOR)', $script);
-        $this->assertSame(1, substr_count($script, 'document.querySelector('), sprintf('"%s" queries the document more than once, the consent check must stay the only one.', self::CONTROLLER_JS));
+        $this->assertStringContainsString('import * as consent from "./consent.js";', $script);
+        $this->assertStringContainsString('consent.isAccepted("content")', $script);
+        $this->assertStringNotContainsString('consent.hasBanner()', $script, 'A page with no banner frames its player unasked, where consent.js asks in place.');
+        $this->assertStringNotContainsString('document.querySelector(', $script, sprintf('"%s" queries the document itself, where the consent adapter is the only one to.', self::CONTROLLER_JS));
+        $this->assertStringNotContainsString('CookieConsent', $script);
     }
 
     // A poster is what the click-to-play gate is made of, and the scheduling has to stay in the one branch where there is none: a second call anywhere else puts a grid of six players back on the initial scroll, and a scenario watching one component would see nothing wrong with it

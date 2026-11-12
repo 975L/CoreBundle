@@ -13,6 +13,7 @@ namespace c975L\UiBundle\Entity;
 use c975L\UiBundle\Repository\FormOutputRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints as Assert;
 
 // One computed result of a Form, turning it into a calculator: an arithmetic expression over the Form's own numeric fields and over the outputs declared before it, evaluated at each keystroke without anything being submitted or stored - see ExpressionEvaluator for the grammar, CalculatorController for the evaluation. A Form owning at least one of these is a calculator, submitted only when it is also given an action (see Form::isCalculator())
 #[ORM\Entity(repositoryClass: FormOutputRepository::class)]
@@ -41,17 +42,21 @@ class FormOutput implements \Stringable
     private ?Form $form = null;
 
     #[ORM\Column(length: 100)]
+    #[Assert\Length(max: 100)]
     private ?string $label = null;
 
     // Derived from "label" and unique among the owning Form's fields AND outputs alike, both living in one single variable namespace - see c975L\UiBundle\Service\FormFieldNamer
     #[ORM\Column(length: 100)]
+    #[Assert\Length(max: 100)]
     private ?string $name = null;
 
     // Arithmetic over the Form's variables, e.g. "km_an / 100 * conso * prix_e85" - validated at save time (see ValidExpressionsValidator), never evaluated by this entity itself
     #[ORM\Column(length: 500)]
+    #[Assert\Length(max: 500)]
     private ?string $expression = null;
 
     #[ORM\Column(length: 20)]
+    #[Assert\Length(max: 20)]
     private string $format = self::FORMAT_NUMBER;
 
     #[ORM\Column(options: ['default' => 0])]
@@ -59,6 +64,7 @@ class FormOutput implements \Stringable
 
     // Appended after the formatted number, separated from it by a non-breaking space, e.g. "L" or "t de CO₂" - a currency output needs none, the format carries it
     #[ORM\Column(length: 20, nullable: true)]
+    #[Assert\Length(max: 20)]
     private ?string $unit = null;
 
     // A hidden output is an intermediate step other expressions read, e.g. "litres consommés par an" feeding both budgets - it is computed like any other, just never shown

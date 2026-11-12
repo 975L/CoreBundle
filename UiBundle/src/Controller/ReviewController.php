@@ -19,6 +19,7 @@ use c975L\UiBundle\Service\RateLimiterGuard;
 use c975L\UiBundle\Service\ReviewService;
 use c975L\UiBundle\Service\ReviewTokenSigner;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\Cache;
@@ -100,8 +101,6 @@ class ReviewController extends AbstractController
     {
         ['ownerType' => $ownerType, 'ownerId' => $ownerId, 'resolved' => $resolved] = $this->subjectOf($token);
 
-        $this->botProtection->startTimer($request, self::SESSION_KEY);
-
         $review = new Review()
             ->setOwnerType($ownerType)
             ->setOwnerId($ownerId)
@@ -114,14 +113,20 @@ class ReviewController extends AbstractController
         ]);
 
         // Checked before handleRequest(), which is then skipped entirely so the bot gets the same answer and no hint - same reading as FormController's
-        $suspicious = $request->isMethod('POST')
+        $untimed = $request->isMethod('POST') && $this->botProtection->isUntimed($request, self::SESSION_KEY);
+        $suspicious = $request->isMethod('POST') && !$untimed
             && $this->botProtection->isSuspicious($request, $form->getName(), self::SESSION_KEY);
 
         if (!$suspicious) {
             $form->handleRequest($request);
         }
 
-        if (!$suspicious && $form->isSubmitted() && $form->isValid() && $this->acceptReview($review, $request)) {
+        // A review with no timed display is shown back filled, saying why, and never stored
+        if ($untimed) {
+            $form->addError(new FormError($this->translator->trans('text.form_resend', [], 'ui')));
+        }
+
+        if (!$suspicious && !$untimed && $form->isSubmitted() && $form->isValid() && $this->acceptReview($review, $request)) {
             return $this->redirect($resolved['item']->url ?? $this->generateUrl('ui_review_new', ['token' => $token]));
         }
 
@@ -132,8 +137,10 @@ class ReviewController extends AbstractController
             'ownerId' => $ownerId,
         ];
 
-        // The fold asks for the form alone, having a page around it already - the whole page is what a visitor reaching the url directly gets
-        // A suspicious submission is answered exactly like a first display, and stored nowhere
+        // Armed at display, once the submission is handled: a review corrected after a validation error is timed from the page that showed the error
+        $this->botProtection->startTimer($request, self::SESSION_KEY);
+
+        // The fold asks for the form alone, having a page around it already - the whole page is what a visitor reaching the url directly gets; a suspicious submission is answered exactly like a first display, and stored nowhere
         return $this->render(
             $request->isXmlHttpRequest() ? '@c975LUi/review/_form.html.twig' : '@c975LUi/review/new.html.twig',
             $parameters,

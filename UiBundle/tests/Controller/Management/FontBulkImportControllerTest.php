@@ -57,12 +57,15 @@ class FontBulkImportControllerTest extends TestCase
     private function createController(
         ?EntityManagerInterface $entityManager = null,
         ?AdminUrlGenerator $adminUrlGenerator = null,
+        ?TranslatorInterface $translator = null,
     ): FontBulkImportController {
         $configService = $this->createStub(ConfigServiceInterface::class);
         $configService->method('get')->willReturn('site-role-editor');
 
-        $translator = $this->createStub(TranslatorInterface::class);
-        $translator->method('trans')->willReturnArgument(0);
+        if (null === $translator) {
+            $translator = $this->createStub(TranslatorInterface::class);
+            $translator->method('trans')->willReturnArgument(0);
+        }
 
         return new FontBulkImportController(
             $configService,
@@ -200,6 +203,33 @@ class FontBulkImportControllerTest extends TestCase
         foreach ([$bold, $italic, $invalid] as $file) {
             @unlink($file->getPathname());
         }
+    }
+
+    // EasyAdmin renders flashes raw: the name a client gave its file is shown as text, never as markup
+    public function testTheSkippedFileNamesAreEscaped(): void
+    {
+        [$requestStack, $session] = $this->createRequestStackWithSession();
+        $invalid = $this->createFontFile('<img src=x onerror=alert(1)>.txt');
+
+        $translator = $this->createStub(TranslatorInterface::class);
+        $translator->method('trans')->willReturnCallback(static fn (string $id, array $params = []): string => implode('', $params));
+
+        $controller = $this->createController(translator: $translator);
+        $controller->setContainer($this->createContainer([
+            'security.authorization_checker' => $this->createAuthorizationChecker(true),
+            'security.csrf.token_manager' => $this->createCsrfTokenManager(true),
+            'router' => $this->createRouter('/management/site/font-bulk-import'),
+            'request_stack' => $requestStack,
+        ]));
+
+        $request = Request::create('/font-bulk-import', 'POST', ['_token' => 'valid']);
+        $request->files->set('files', [$invalid]);
+
+        $controller->index($request);
+
+        $this->assertSame(['&lt;img src=x onerror=alert(1)&gt;.txt'], $session->getFlashBag()->get('warning'));
+
+        @unlink($invalid->getPathname());
     }
 
     // Nothing to persist/flush and nowhere new to redirect - the admin stays on the import form to fix their selection

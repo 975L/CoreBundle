@@ -12,6 +12,7 @@ namespace c975L\UiBundle\Entity;
 
 use c975L\UiBundle\Repository\TranslationRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 // One field of one thing, said in one other language: a page keeps its structure once and gains a language without gaining a row of its own
 // The default language never enters this table, staying where it is (Block::$data, Page::$title) and playing the part of the msgid
@@ -45,13 +46,16 @@ class Translation implements \Stringable
     public function __construct(
         // The same vocabulary Favorite and Rating store, so a bundle naming its pages "site_page" once is named that everywhere
         #[ORM\Column(length: 50)]
+        #[Assert\Length(max: 50)]
         private string $ownerType,
         #[ORM\Column]
         private int $ownerId,
         // Which of the owner's fields this says: a key of a block's own data ("title", "content"), or a property of an entity ("title", "summarySocialNetwork")
         #[ORM\Column(length: 100)]
+        #[Assert\Length(max: 100)]
         private string $field,
         #[ORM\Column(length: 10)]
+        #[Assert\Length(max: 10)]
         private string $locale,
     ) {
     }

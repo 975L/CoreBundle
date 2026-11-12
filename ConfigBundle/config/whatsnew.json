@@ -1,5 +1,35 @@
 [
     {
+        "date": "2026-11-11",
+        "description": [
+            {
+                "en": "The email code asked of administrators now counts wrong codes per account over 24 hours: logging in again with the password no longer starts afresh.",
+                "fr": "Le code envoyé par e-mail aux administrateurs compte désormais les codes erronés par compte sur 24 heures : se reconnecter avec le mot de passe ne repart plus de zéro.",
+                "es": "El código enviado por correo a los administradores cuenta ahora los códigos erróneos por cuenta durante 24 horas: volver a conectarse con la contraseña ya no empieza de cero."
+            },
+            {
+                "en": "A protected setting the vault key can no longer read now opens empty, asking you to type it again, instead of an error page.",
+                "fr": "Un réglage protégé que la clé du coffre ne sait plus lire s'ouvre désormais vide, en vous demandant de le saisir à nouveau, au lieu d'une page d'erreur.",
+                "es": "Un ajuste protegido que la clave de la bóveda ya no puede leer se abre ahora vacío, pidiéndole que lo introduzca de nuevo, en lugar de una página de error."
+            },
+            {
+                "en": "Disabling an account in the back office now also ends the sessions it already had open.",
+                "fr": "Désactiver un compte au back-office ferme désormais aussi les sessions qu'il avait déjà ouvertes.",
+                "es": "Desactivar una cuenta en el back-office cierra ahora también las sesiones que ya tenía abiertas."
+            },
+            {
+                "en": "Health check: an administrator account added keeps its warning until you acknowledge it, and a deleted redirect no longer leaves its row behind.",
+                "fr": "Bilan de santé : un compte administrateur ajouté garde son avertissement jusqu'à ce que vous l'acquittiez, et une redirection supprimée ne laisse plus sa ligne derrière elle.",
+                "es": "Chequeo de salud: una cuenta de administrador añadida mantiene su aviso hasta que lo confirme, y una redirección eliminada ya no deja su fila atrás."
+            },
+            {
+                "en": "The backup digest and the offsite copy now report a failure when the backup is not configured, as the backup itself does.",
+                "fr": "Le récapitulatif des sauvegardes et la copie externe signalent désormais un échec quand la sauvegarde n'est pas configurée, comme la sauvegarde elle-même.",
+                "es": "El resumen de copias de seguridad y la copia externa señalan ahora un fallo cuando la copia de seguridad no está configurada, como la propia copia."
+            }
+        ]
+    },
+    {
         "date": "2026-11-05",
         "description": [
             {

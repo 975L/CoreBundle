@@ -14,6 +14,7 @@ use c975L\ConfigBundle\Attribute\AsHealthCheck;
 use c975L\ConfigBundle\Entity\HealthCheckResult;
 use c975L\ConfigBundle\Management\AiCrawlerListUpdater;
 use c975L\ConfigBundle\Management\AiCrawlersHealthCheckProvider;
+use c975L\ConfigBundle\Management\HealthCheckExhaustiveInterface;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use PHPUnit\Framework\TestCase;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -25,7 +26,11 @@ class AiCrawlersHealthCheckProviderTest extends TestCase
     private function createConfigService(bool $blocksAi): ConfigServiceInterface
     {
         $service = $this->createStub(ConfigServiceInterface::class);
-        $service->method('get')->willReturnCallback(static fn (string $key): mixed => 'seo-robots-block-ai' === $key ? $blocksAi : null);
+        $service->method('get')->willReturnCallback(static fn (string $key): mixed => match ($key) {
+            'seo-robots-block-ai' => $blocksAi,
+            'seo-robots-ai-crawlers-source' => self::SOURCE,
+            default => null,
+        });
 
         return $service;
     }
@@ -104,12 +109,19 @@ class AiCrawlersHealthCheckProviderTest extends TestCase
         $this->assertSame(['Claude-User'], $results[0]['details']['answerEngines']);
     }
 
-    // A third party is called here: an unreachable list must be a row saying so, never an exception taking the whole health check run down
-    public function testRunChecksReturnsAnErrorRowWhenTheListCannotBeRead(): void
+    // A third party is called here: an unreachable list is a warning on the source's own url, which the next successful run replaces, never an exception taking the whole health check run down
+    public function testRunChecksReturnsAWarningRowWhenTheListCannotBeRead(): void
     {
         $results = $this->createProvider(true, failure: new \RuntimeException('Connection refused'))->runChecks();
 
-        $this->assertSame(HealthCheckResult::STATUS_ERROR, $results[0]['status']);
+        $this->assertSame(HealthCheckResult::STATUS_WARNING, $results[0]['status']);
+        $this->assertSame(self::SOURCE, $results[0]['url']);
         $this->assertSame('Connection refused', $results[0]['details']['error']);
+    }
+
+    // Exhaustive, so turning the blocking off drops the last row rather than leaving it forever
+    public function testItIsExhaustive(): void
+    {
+        $this->assertInstanceOf(HealthCheckExhaustiveInterface::class, $this->createProvider(false));
     }
 }

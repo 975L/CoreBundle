@@ -54,10 +54,20 @@ class ReadmoreStyleTest extends TestCase
     public function testTheToggleIsHiddenOnlyWhenNothingIsFolded(string $file): void
     {
         $this->assertStringContainsString(
-            '.readmore--complete.readmore-toggle-label{display:none',
+            '.readmore--complete.readmore-toggle-label,.readmore--complete.readmore-toggle{display:none',
             $this->normalize($file),
             sprintf('"%s" no longer takes the toggle away when the text ends inside the folded measure.', $file)
         );
+    }
+
+    // The checkbox stays in the tab order, never display:none, and its focus shows on the link
+    #[\PHPUnit\Framework\Attributes\DataProvider('stylesheetProvider')]
+    public function testTheToggleIsReachedByTheKeyboard(string $file): void
+    {
+        $css = $this->normalize($file);
+
+        $this->assertDoesNotMatchRegularExpression('/(^|[{}])\.readmore-toggle\{display:none/', $css);
+        $this->assertStringContainsString('.readmore-toggle:focus-visible~.readmore-toggle-label{outline:2pxsolidcurrentColor', $css);
     }
 
     // Strips comments and collapses whitespace, so the same assertions hold on the minified sheet

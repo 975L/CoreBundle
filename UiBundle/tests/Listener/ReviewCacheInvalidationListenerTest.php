@@ -10,6 +10,7 @@
 
 namespace c975L\UiBundle\Tests\Listener;
 
+use c975L\ConfigBundle\Entity\Config;
 use c975L\UiBundle\Entity\Review;
 use c975L\UiBundle\Listener\ReviewCacheInvalidationListener;
 use c975L\UiBundle\Service\ReviewCollectionSourceProvider;
@@ -95,6 +96,28 @@ class ReviewCacheInvalidationListenerTest extends TestCase
 
         $listener = new ReviewCacheInvalidationListener($cache);
         $listener->postUpdate(new PostUpdateEventArgs(new \stdClass(), $this->createEntityManager()));
+        $listener->postFlush(new PostFlushEventArgs($this->createEntityManager()));
+    }
+
+    // Turning the reviews off empties the wall a collection block cached, which no review event would ever do
+    public function testSwitchingTheReviewsSettingInvalidatesTheReviewsTag(): void
+    {
+        $cache = $this->createMock(TagAwareCacheInterface::class);
+        $cache->expects($this->once())->method('invalidateTags')->with([ReviewCollectionSourceProvider::CACHE_TAG]);
+
+        $listener = new ReviewCacheInvalidationListener($cache);
+        $listener->postUpdate(new PostUpdateEventArgs(new Config()->setSlug('ui-enable-reviews')->setValue('0'), $this->createEntityManager()));
+        $listener->postFlush(new PostFlushEventArgs($this->createEntityManager()));
+    }
+
+    // Any other setting costs nothing
+    public function testAnotherSettingLeavesTheReviewsTagAlone(): void
+    {
+        $cache = $this->createMock(TagAwareCacheInterface::class);
+        $cache->expects($this->never())->method('invalidateTags');
+
+        $listener = new ReviewCacheInvalidationListener($cache);
+        $listener->postUpdate(new PostUpdateEventArgs(new Config()->setSlug('site-name')->setValue('x'), $this->createEntityManager()));
         $listener->postFlush(new PostFlushEventArgs($this->createEntityManager()));
     }
 }

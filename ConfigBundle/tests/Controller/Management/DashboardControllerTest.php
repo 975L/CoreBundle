@@ -224,6 +224,14 @@ class DashboardControllerTest extends TestCase
         $this->assertFalse(DashboardController::isManagementPath('/'));
     }
 
+    // EasyAdmin prints the title raw on every page, so the site's name is escaped there
+    public function testTheSiteNameIsEscapedInTheTitle(): void
+    {
+        $controller = $this->createController(false, [], ['site-name' => "L'Atelier <script>"]);
+
+        $this->assertSame('<img src="/favicon.ico">L\'Atelier &lt;script&gt;', $controller->configureDashboard()->getAsDto()->getTitle());
+    }
+
     // The no-regression contract: a site that has not declared several languages keeps the back office it always had
     public function testASiteWithOneLocaleShowsNoLanguageMenu(): void
     {

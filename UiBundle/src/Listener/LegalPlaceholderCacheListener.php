@@ -38,6 +38,15 @@ class LegalPlaceholderCacheListener
         'ui-ai-assistant-site-model',
     ];
 
+    // The connectors a model names, each one chosen and keyed by its own family of entries: captcha_provider(), analytics_provider(), age_verification_provider(), ui_map_settings() and oauth_login_providers() answer from them, a provider added later bringing its keys under the same prefix
+    private const array CONDITION_PREFIXES = [
+        'captcha-',
+        'analytics-',
+        'age-verification-',
+        'ui-map-',
+        'login-',
+    ];
+
     // The per-entity events only raise this flag: the back-office saves the whole config group at once, which would otherwise invalidate the same tag once per row, inside the transaction
     private bool $stale = false;
 
@@ -79,8 +88,18 @@ class LegalPlaceholderCacheListener
             return;
         }
 
-        if (in_array($entity->getSlug(), [...$this->placeholders->slugs(), ...self::CONDITION_SLUGS], true)) {
+        if ($this->isConditionSlug((string) $entity->getSlug())) {
             $this->stale = true;
         }
+    }
+
+    // A placeholder or a setting a model branches on, by name or by its connector's prefix
+    private function isConditionSlug(string $slug): bool
+    {
+        if (in_array($slug, [...$this->placeholders->slugs(), ...self::CONDITION_SLUGS], true)) {
+            return true;
+        }
+
+        return array_any(self::CONDITION_PREFIXES, fn ($prefix) => str_starts_with($slug, $prefix));
     }
 }

@@ -16,6 +16,7 @@ use c975L\UiBundle\Service\EmailService;
 use c975L\UiBundle\Service\EmailTemplateRenderer;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Component\RateLimiter\RateLimiterFactoryInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\AccessDecisionManagerInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -51,6 +52,7 @@ class LoginCode
         private readonly EmailTemplateRenderer $emailTemplateRenderer,
         private readonly TranslatorInterface $translator,
         private readonly LoggerInterface $logger,
+        private readonly RateLimiterFactoryInterface $loginCodeLimiter,
     ) {
     }
 
@@ -61,15 +63,31 @@ class LoginCode
             && $this->accessDecisionManager->decide($token, [(string) $this->configService->get('site-role-admin')]);
     }
 
-    // Sends a code and parks the login until it is typed. False when nothing could be sent: the login then goes through, a mailer down never locking out the admin who would fix it
+    // Sends a code and parks the login until it is typed. False when nothing could be sent: the login then goes through, a mailer down never locking out the admin who would fix it. An account out of failures for the day is parked exhausted, without any email, a new login never resetting what the last ones spent
     public function start(SessionInterface $session, UserInterface $user, string $target): bool
     {
-        return $this->issue($session, $user, ['attempts' => 0, 'target' => $target]);
+        $pending = ['attempts' => 0, 'target' => $target, 'user' => $user->getUserIdentifier()];
+        if ($this->isLocked($user->getUserIdentifier())) {
+            $session->set(self::SESSION, [...$pending, 'attempts' => self::ATTEMPTS]);
+
+            return true;
+        }
+
+        return $this->issue($session, $user, $pending);
     }
 
+    // Whether a login is waiting for its code
     public function isPending(SessionInterface $session): bool
     {
         return $session->has(self::SESSION);
+    }
+
+    // Whether the login waiting can no longer be confirmed, too many codes having been wrong
+    public function isExhausted(SessionInterface $session): bool
+    {
+        $pending = $session->get(self::SESSION);
+
+        return \is_array($pending) && ($pending['attempts'] >= self::ATTEMPTS || $this->isLocked((string) ($pending['user'] ?? '')));
     }
 
     // Another code for the same login once the cooldown is over, the failed attempts still counting
@@ -77,14 +95,14 @@ class LoginCode
     {
         $pending = $session->get(self::SESSION);
 
-        return \is_array($pending) && time() - $pending['sent'] >= self::RESEND_COOLDOWN && $this->issue($session, $user, $pending);
+        return \is_array($pending) && isset($pending['sent']) && time() - $pending['sent'] >= self::RESEND_COOLDOWN && $this->issue($session, $user, $pending);
     }
 
-    // One of VALID, INVALID, EXPIRED or EXHAUSTED once ATTEMPTS codes were wrong
+    // One of VALID, INVALID, EXPIRED or EXHAUSTED once ATTEMPTS codes were wrong in this login, or the account's daily failures spent across logins
     public function verify(SessionInterface $session, string $code): string
     {
         $pending = $session->get(self::SESSION);
-        if (!\is_array($pending) || $pending['attempts'] >= self::ATTEMPTS) {
+        if (!\is_array($pending) || $this->isExhausted($session)) {
             return self::EXHAUSTED;
         }
 
@@ -97,8 +115,9 @@ class LoginCode
         }
 
         $session->set(self::SESSION, [...$pending, 'attempts' => $pending['attempts'] + 1]);
+        $counted = $this->loginCodeLimiter->create((string) ($pending['user'] ?? ''))->consume()->isAccepted();
 
-        return $pending['attempts'] + 1 >= self::ATTEMPTS ? self::EXHAUSTED : self::INVALID;
+        return !$counted || $pending['attempts'] + 1 >= self::ATTEMPTS ? self::EXHAUSTED : self::INVALID;
     }
 
     // Ends the wait, answering where the login was going
@@ -107,6 +126,12 @@ class LoginCode
         $pending = $session->remove(self::SESSION);
 
         return \is_array($pending) ? $pending['target'] : '/';
+    }
+
+    // Whether the account has spent its daily failures, counted per account so that logging in again with the password never starts afresh
+    private function isLocked(string $identifier): bool
+    {
+        return 0 === $this->loginCodeLimiter->create($identifier)->consume(0)->getRemainingTokens();
     }
 
     // A fresh code sent, then kept hashed with its expiry

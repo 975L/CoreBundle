@@ -14,6 +14,7 @@ use c975L\UiBundle\Contract\BundleStylesheetProviderInterface;
 use c975L\UiBundle\DependencyInjection\Compiler\StylesheetRegistryPass;
 use c975L\UiBundle\Registry\StylesheetRegistry;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\DependencyInjection\Compiler\ResolveInstanceofConditionalsPass;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
 
@@ -82,6 +83,22 @@ class StylesheetRegistryPassTest extends TestCase
         $calls = $container->getDefinition(StylesheetRegistry::class)->getMethodCalls();
         $this->assertEquals(new Reference('bundle.provider'), $calls[0][1][0]);
         $this->assertEquals(new Reference('app.theme'), $calls[1][1][0]);
+    }
+
+    // A provider also matched by an instanceof conditional holds its class on an abstract ".abstract.instanceof." parent: tagging that parent is what stopped the container building
+    public function testProcessTagsAProviderMatchedByAnInstanceofConditional(): void
+    {
+        $container = new ContainerBuilder();
+        $container->register(StylesheetRegistry::class);
+        $container->registerForAutoconfiguration(BundleStylesheetProviderInterface::class)->addTag('fake.reset');
+        $container->register('app.theme', AppThemeProvider::class)->setAutoconfigured(true);
+        new ResolveInstanceofConditionalsPass()->process($container);
+
+        new StylesheetRegistryPass()->process($container);
+
+        $calls = $container->getDefinition(StylesheetRegistry::class)->getMethodCalls();
+        $this->assertCount(1, $calls);
+        $this->assertEquals(new Reference('app.theme'), $calls[0][1][0]);
     }
 
     public function testProcessDoesNotTagAnAlreadyTaggedProviderTwice(): void

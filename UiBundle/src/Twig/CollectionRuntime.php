@@ -13,6 +13,7 @@ namespace c975L\UiBundle\Twig;
 use c975L\UiBundle\Entity\Block;
 use c975L\UiBundle\Model\CollectionItem;
 use c975L\UiBundle\Registry\CollectionSourceRegistry;
+use c975L\UiBundle\Service\BlockCacheInvalidator;
 use c975L\UiBundle\Service\BlockRenderContext;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -66,7 +67,8 @@ class CollectionRuntime implements RuntimeExtensionInterface
                 (string) $request->attributes->get('_route'), (string) $request->attributes->get('page'),
             ]));
             $rendered = $this->cache->get($key, function (ItemInterface $item) use ($cacheTags, $render): array {
-                $item->tag($cacheTags);
+                // The source's own tags, plus the one the "empty the blocks cache" tile and a deployment clear
+                $item->tag([...$cacheTags, BlockCacheInvalidator::CACHE_TAG_ALL]);
 
                 return $render();
             });

@@ -52,6 +52,7 @@ use Symfony\Component\Form\FormEvents;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Contracts\Translation\TranslatableInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -113,6 +114,19 @@ class FormCrudController extends AbstractCrudController
         parent::updateEntity($entityManager, $entityInstance);
     }
 
+    // A seeded form is left in place with a warning here and not only hidden by displayIf(): EasyAdmin's delete and batch delete both end in this method, the rest of a batch still deleted
+    #[\Override]
+    public function deleteEntity(EntityManagerInterface $entityManager, mixed $entityInstance): void
+    {
+        if ($entityInstance instanceof Form && $entityInstance->isRestricted()) {
+            $this->addFlash('warning', $this->translator->trans('flash.restricted_not_deleted', [], 'ui'));
+
+            return;
+        }
+
+        parent::deleteEntity($entityManager, $entityInstance);
+    }
+
     // Nothing to reconcile on a brand new Form, but its names still have to be derived before validation runs - see addNamingListener()
     #[\Override]
     public function createNewFormBuilder(EntityDto $entityDto, KeyValueStore $formOptions, AdminContext $context): FormBuilderInterface
@@ -149,11 +163,18 @@ class FormCrudController extends AbstractCrudController
             }
 
             $form = $event->getForm()->getData();
-            if ($form instanceof Form) {
-                // A restricted field (see FormField::isRestricted()) is never removed, even from a tampered request
+            if ($form instanceof Form && $event->getForm()->has('fields')) {
+                // A restricted field (see FormField::isRestricted()) is never removed, even from a tampered request: put back before ResizeFormListener (allow_delete) drops its row
+                $data['fields'] = CollectionReconciler::restoreKept(
+                    $event->getForm()->get('fields'),
+                    $data['fields'] ?? [],
+                    static fn (FormField $field): bool => $field->isRestricted()
+                );
+                $event->setData($data);
+
                 CollectionReconciler::pruneRemoved(
                     $form->getFields(),
-                    $data['fields'] ?? [],
+                    $data['fields'],
                     static function (FormField $field) use ($form): void {
                         if (!$field->isRestricted()) {
                             $form->removeField($field);
@@ -260,6 +281,8 @@ class FormCrudController extends AbstractCrudController
                 ->setLabel(t('label.action_config', [], 'ui'))
                 ->setFormTypeOption('required', false)
                 ->setHelp(t('label.action_config_help', [], 'ui'))
+                // A typo in the JSON would otherwise save the form with its action settings reduced to the links
+                ->setFormTypeOption('constraints', [new Assert\Json()])
                 ->hideOnIndex(),
             BooleanField::new('enabled')
                 ->setLabel(t('label.form_enabled', [], 'ui'))

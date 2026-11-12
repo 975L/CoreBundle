@@ -378,7 +378,7 @@ php bin/console c975l:config:set --file=values.json
 }
 ```
 
-Booleans, numbers and arrays are converted to the string stored in database, and each value is checked against its entry `kind` (`bool` only accepts `true`/`false`, `int` an integer, `json` valid JSON, `date` a parsable date, `choice` one of the values the entry declares).
+Booleans, numbers and arrays are converted to the string stored in database, and each value is checked against its entry `kind` (`bool` only accepts `true`/`false`, `int` an integer, `json` valid JSON, `date` a parsable date, `choice` one of the values the entry declares), then against the entity's own rules, as the back-office form applies them (a safe address on the `url-*`/`*-url` entries, a CSS color on `theme-color-*`): a value either refuses is reported `INVALID` and the command exits non-zero.
 
 | Option | Effect |
 | --- | --- |
@@ -674,9 +674,9 @@ The essential-actions checklist is the exception that is not gated but simply no
 
 ### Email code for admins on a new device
 
-Off by default, the `login-admin-code` setting (group *security*, editable by an admin, and flipped by a tile in the dashboard's toggles, `LoginCodeShortcutController`) asks any account holding `site-role-admin` for a 6-digit code emailed at login, when it logs in **with its password** from a browser it never confirmed a code on. `LoginCodeSubscriber` holds the login on `/login/code` (route `config_login_code`, `LoginCodeController`), every other page redirecting there until the code is typed; the logout stays open. The code lasts 10 minutes, a new one can be asked once a minute (`config_login_code_resend`), and 5 wrong ones log out. Once typed, `TrustedDevice` sets a cookie signed with `kernel.secret` over the account, its expiry and its password hash: the browser is recognized for 30 days, and a password change forgets every browser at once. No table, no dependency.
+Off by default, the `login-admin-code` setting (group *security*, editable by an admin, and flipped by a tile in the dashboard's toggles, `LoginCodeShortcutController`) asks any account holding `site-role-admin` for a 6-digit code emailed at login, when it logs in **with its password** from a browser it never confirmed a code on. `LoginCodeSubscriber` holds the login on `/login/code` (route `config_login_code`, `LoginCodeController`), every other page redirecting there until the code is typed; the logout stays open. The code lasts 10 minutes, a new one can be asked once a minute (`config_login_code_resend`), and 5 wrong ones log out. Failures are also counted per account by the `c975l_login_code` rate limiter (20 per 24 hours, prepended by the bundle): logging in again with the password does not start afresh, and once they are spent the next login is logged out at once, without any email. Once typed, `TrustedDevice` sets a cookie signed with `kernel.secret` over the account, its expiry and its password hash: the browser is recognized for 30 days, and a password change forgets every browser at once. No table, no dependency.
 
-Only the password form (`app_login`) is concerned: Google's login, remember-me and programmatic logins go straight in. An email that cannot be sent (no template, mailer down) lets the login through with a warning in the log, so an outage never locks out the admin who would fix it. The email is the admin-editable `login_code` template, its `{{ code }}` placeholder resolved at send time.
+Only the password form (`app_login`) is concerned: Google's login, remember-me and programmatic logins go straight in. A held login never sets the remember-me cookie, even with `_remember_me` posted: `LoginCodeSubscriber` listens at priority -48, after the framework enables the badge (-32) and before the cookie is written (-64). An email that cannot be sent (no template, mailer down) lets the login through with a warning in the log, so an outage never locks out the admin who would fix it. The email is the admin-editable `login_code` template, its `{{ code }}` placeholder resolved at send time.
 
 ### Account activation (`isEnabled`)
 
@@ -692,6 +692,8 @@ security:
 ```
 
 This lets you disable a user from the backoffice (`isEnabled` isn't readonly, unlike `isVerified`) to lock them out without deleting their account — a verified user with `isEnabled = false` still can't log in.
+
+The scaffolded `User` implements `EquatableInterface`: `isEqualTo()` compares the session's copy with the account reloaded on each request (identifier, the crc32c of the password `__serialize()` keeps, roles and `isEnabled`), so an account disabled from the back office loses the sessions it already had open at their next request, rather than only being refused at its next login.
 
 ### Signing in with Google (OAuth)
 
@@ -995,6 +997,8 @@ class MyImportProvider implements ImportProviderInterface
 ```
 
 Make sure your bundle's `services.yaml` includes the `Management/` folder in its `src/` resource so the class is registered.
+
+**A path the manifest names goes through `ArchivePath::resolve($filesDir, $item['file'])`** before it reaches Vich, a copy or a rename: the manifest is content whoever uploads the zip wrote, and `"file": "../../.env.local"` would otherwise have the server's own secret copied under `public/`. It answers the file's real path, or `null` for anything that is not a string, is absolute, holds a `..` segment or a NUL byte, names no file, or leaves `$filesDir` through a symlink — skip the file then, never the whole item.
 
 Uploaded zips are accepted at the **Import content** dashboard link (`ROLE_SUPER_ADMIN` — it writes arbitrary content straight into the database, unlike the export side which stays at `site-role-admin`), which extracts the zip, reads `manifest.json`'s `kind`, and dispatches to whichever registered provider's `supportsImport()` matches it.
 
@@ -1786,6 +1790,59 @@ That's the whole file — the case then checks your menu entries, links, shortcu
 
 It lives in `src/` rather than `tests/` because a bundle can't autoload another bundle's test files. If your bundle's `services.yaml` scans `src/` as a resource, exclude your `Tests` helpers the same way ConfigBundle excludes its `Test` folder — the scan reflects on every class it finds, and PHPUnit isn't installed in production.
 
+## Checking the audit's rules on your code: `CodeRulesTestCase`
+
+The audit of 11/11/2026 found the same defects in bundle after bundle. `CodeRulesTestCase` turns each one into a failing test, with no kernel and no database: the code is read by reflection and by its tokens, the templates as text. Extend it once in your bundle's `tests/`:
+
+```php
+namespace c975L\MyBundle\Tests;
+
+use c975L\ConfigBundle\Test\CodeRulesTestCase;
+
+class CodeRulesTest extends CodeRulesTestCase
+{
+    protected function sourceDirectory(): string
+    {
+        return __DIR__ . '/../src';
+    }
+
+    protected function sourceNamespace(): string
+    {
+        return 'c975L\MyBundle';
+    }
+}
+```
+
+| Rule (`allowed()` key) | What fails | Identifier |
+|---|---|---|
+| `string_length` | A `string` column of an entity, mapped superclass or trait without `Assert\Length(max)`, or with a max longer than the column (255 when it names none); an enum column is left out | `Class::property` |
+| `bounded_number` | An `int` or `float` column named like an amount (`boundedPropertyNames()`: price, amount, vat, quantity, stock, weight, rate, value, cost, fee, total, discount, credits, matched on the end of the name) without `Positive`, `PositiveOrZero`, `GreaterThan`, `GreaterThanOrEqual` or `Range` | `Class::property` |
+| `pre_flush` | A class listening to `preFlush` (`Events::preFlush`, `'preFlush'`, `ORM\PreFlush`) | `Class` |
+| `form_value` | `'data' =>` or `'attr' => ['value' => …]` on a mapped field of a type in `src/Form/` (a type declaring `'data_class' => null` builds fresh data and is left out) | `FormType::field` |
+| `empty_data` | A text field (`TextType`, `TextareaType`, `EmailType`, `UrlType`, `TelType`, `SearchType`) whose `data_class` setter refuses null, without `empty_data` | `FormType::field` |
+| `batch_delete` | A `*CrudController` overriding `delete()` without disabling (or removing) `Action::BATCH_DELETE` nor overriding `deleteEntity()` | `Class` |
+| `test_mode` | A `*BasketItemProvider` whose non-empty `onBasketPaid()` never calls `isTestMode()` | `Class` |
+| `refundable` | The same provider not implementing `RefundableBasketItemProviderInterface` (`refundableInterface()`); skipped where PaymentBundle is not installed | `Class` |
+| `raw` | A `\|raw` in `templates/**` not coming right after `sanitize_html`, `json_encode` or `trans` of a quoted key (`RAW_SAFE_FILTERS`); a `{% set %}…{% endset %}` capture is already safe and needs no `\|raw` | `path: expression` |
+| `bulk_query` | A method running a DQL `->delete()`/`->update()` or an SQL `UPDATE`/`DELETE FROM` without invalidating the cache (`invalidateTags()`, `invalidate…()`, a cache `delete()`) | `Class::method` |
+
+A rule with nothing to inspect passes. A legitimate case is named and justified in `allowed()`, never silenced:
+
+```php
+protected function allowed(): array
+{
+    return [
+        self::BULK_QUERY => [
+            'c975L\MyBundle\Repository\LogRepository::purgeOlderThan' => 'The log is read live by its back-office list, never cached',
+        ],
+    ];
+}
+```
+
+An exception without a reason fails, and so does one that no longer matches anything, so the list stays truthful. `templatesDirectory()` and `boundedPropertyNames()` can be overridden too.
+
+What the rules do not see: the parameters of a `'key'|trans({…})|raw` are printed as they are, so the caller escapes them (`|e`); a `|raw` outside `{{ }}` and `{% %}` (a component attribute) is not read; a DBAL `$connection->delete()` or `update()` is not taken for a bulk query.
+
 ## Maintenance mode
 
 Setting the `site-maintenance` config to `true` — from the config list, or from the dashboard's own toggle tile — closes the site to its visitors: `MaintenanceListener` answers every public request with the `@c975LConfig/maintenance/index.html.twig` page. `/management` and `/login` stay reachable so an admin can always get back in and lift it, as does anyone already authenticated with the `site-role-admin` role, or holding the `site-maintenance-hash` token (`?t=…`, which opens a 6-hour session).
@@ -1961,15 +2018,15 @@ This bundle's own providers:
 | `SslCertificateHealthCheckProvider` | `ssl-certificate` | TLS certificate expiry (warns at 30 days left, errors at 7) — one check for the whole site, the certificate being issued for the host. Recorded under the site root as `SiteUrlResolver::siteRoot()` spells it, so it shares a dashboard row with anything else checking that url. Skipped if `site-url` isn't `https://` |
 | `SecurityHeadersHealthCheckProvider` | `security-headers` | HSTS, CSP (or its `frame-ancestors` in place of X-Frame-Options), X-Content-Type-Options, Referrer-Policy, Permissions-Policy, wildcard CORS — reimplemented directly (securityheaders.com has no public API for automated use). Set once for the whole site, so only the site root is fetched |
 | `SecurityMisconfigurationHealthCheckProvider` | `security-misconfig` | What a deployed site hands to an anonymous visitor: `/_profiler` and `/_wdt` reachable, the profiler's `X-Debug-Token` left on the response, `/.env`, `/composer.json`, `/composer.lock` and `/.git/config` actually served, directory listings on `/vendor/` and `/var/`, a session cookie missing `Secure`/`HttpOnly`/`SameSite`, and the `X-Powered-By`/`Server` banners |
-| `SeoFilesHealthCheckProvider` | `seo-files` | `robots.txt`, `humans.txt` and `sitemap-site.xml` reachable, well-formed, not empty, not stale, `robots.txt` not accidentally blocking every crawler, and `llms.txt` listing something when it is deployed at all |
-| `AiCrawlersHealthCheckProvider` | `ai-crawlers` | Monthly, and only on a site blocking them: the AI crawlers that appeared in the community list since `seo-robots-ai-crawlers` was last updated |
-| `RedirectChainHealthCheckProvider` | `redirect-chains` | Chains and loops among your own `Redirect` rows, walked from the database alone (no HTTP call) |
+| `SeoFilesHealthCheckProvider` | `seo-files` | `robots.txt`, `humans.txt` and every sitemap `sitemap-index.xml` declares reachable, well-formed, not empty, not stale, `robots.txt` not accidentally blocking every crawler, and `llms.txt` listing something when it is deployed at all. A missing index is an error only when a `SitemapProviderInterface` declares urls, `SitemapWriter` writing none otherwise |
+| `AiCrawlersHealthCheckProvider` | `ai-crawlers` | Monthly, and only on a site blocking them: the AI crawlers that appeared in the community list since `seo-robots-ai-crawlers` was last updated. An unreachable list is a warning on the source's url, and turning the blocking off drops the row (exhaustive) |
+| `RedirectChainHealthCheckProvider` | `redirect-chains` | Chains and loops among your own `Redirect` rows, walked from the database alone (no HTTP call). Exhaustive: a deleted redirect has its row dropped |
 | `SitemapRobotsHealthCheckProvider` | `sitemap-robots` | Every url the sitemap providers declare, tested against the `robots.txt` actually deployed — the contradiction of declaring an url to search engines and forbidding it to them in the same breath |
 | `DeploymentHealthCheckProvider` | `deployment` | http→https redirect, that an unknown url actually answers 404, and that the other spelling of the host (`www` vs apex) either serves nothing or redirects here — including the case where it resolves and refuses the connection, its certificate not covering it |
 | `DeclaredUrlsHealthCheckProvider` | `urls-<bundle>` | The content-quality checks over the urls each bundle declares for its sitemap — one kind per bundle, each schedulable at its own cadence |
 | `AccessibilityHealthCheckProvider` | `accessibility` | Monthly: the RGAA 4.1 criteria a page's markup can settle on its own, over every url the sitemap providers declare, dropping the rows of urls they no longer declare — see [below](#the-accessibility-check-and-what-it-does-not-claim) for the eight criteria and the honest limits |
 | `DatabaseLoadHealthCheckProvider` | `database-load` | Table sizes and row counts against the host's own limits |
-| `IntrusionHealthCheckProvider` | `intrusion` | Weekly, three rows: an executable file (`.php`, `.phtml`, `.sh`, `.htaccess`… in the name, not only at its end) under any directory a bundle declared for the backup, the working tree against the repository it was deployed from (minus the files the framework itself rewrites, `config/reference.php` being dumped on every debug-mode container compile), and the number of accounts holding `site-role-admin` against the count the previous run recorded |
+| `IntrusionHealthCheckProvider` | `intrusion` | Weekly, three rows: an executable file (`.php`, `.phtml`, `.sh`, `.htaccess`… in the name, not only at its end) under any directory a bundle declared for the backup, the working tree against the repository it was deployed from (minus the files the framework itself rewrites, `config/reference.php` being dumped on every debug-mode container compile), and the number of accounts holding `site-role-admin` against the reference count, which a gain only replaces once its warning is acknowledged (until then every run warns again) |
 | `BackupHealthCheckAdviceProvider` | — | Advice lines for the backup alerts |
 
 **Where the OWASP checks stop**: `security-headers` and `security-misconfig` cover what only the deployed site can answer for — misconfiguration, exposed debug tooling, missing cookie flags. A vulnerable dependency (OWASP A06) is *not* among them, on purpose: it is written in `composer.lock`, which the CI reads long before a deployment. Add it to your site's workflow rather than waiting for a health check run to say a site already in production ships a known CVE:
@@ -2071,7 +2128,7 @@ If it isn't routed, Messenger handles the message synchronously — the button t
 
 **History, not just a snapshot**: every run appends new `HealthCheckResult` rows rather than overwriting — the page itself only shows the latest one per (url, kind), but the full history feeds a trend chart (ok/warning/error counts over time, via `symfony/ux-chartjs` — a regular Composer dependency, Flex wires it up automatically) and an **Export (CSV)** button producing a dated snapshot, useful as an audit-trail artefact (e.g. accessibility declarations).
 
-**Handing the run over** — the **Rapport de diagnostic (JSON)** button beside the CSV downloads what the CSV cannot carry: every row needing action (error and warning, acknowledged ones included) with the checkers' own `details` payload — the W3C validator's message list, the JSON-LD blocks that failed to parse, the headers a probe read back — under the site's identity, its environment and the version of every bundle and dependency it runs (`HealthCheckReportBuilder`, which is `StatusReportBuilder`'s report plus those details). It is the file to attach to a ticket or hand to an assistant: a screenshot of the table says *what* is wrong, this says enough to fix it without asking for anything else. `ok` and `skipped` rows are left out — they would bury the rest under a site's whole page count — but `checks.counts` still says how many there were, so the list never reads as the whole run. Nothing is capped, unlike `/status/report`'s own issue list: that one travels over the network, this one is a file an admin downloaded.
+**Handing the run over** — the **Rapport de diagnostic (JSON)** button beside the CSV downloads what the CSV cannot carry: every row needing action (error and warning, acknowledged ones included) with the checkers' own `details` payload — the W3C validator's message list, the JSON-LD blocks that failed to parse, the headers a probe read back — under the site's identity, its environment and the version of every bundle and dependency it runs (`HealthCheckReportBuilder`, which is `StatusReportBuilder`'s report plus those details). It is the file to attach to a ticket or hand to an assistant: a screenshot of the table says *what* is wrong, this says enough to fix it without asking for anything else. `ok` and `skipped` rows are left out — they would bury the rest under a site's whole page count — but `checks.counts` still says how many there were, so the list never reads as the whole run. Nothing is capped, unlike `/status/report`'s own issue list: that one travels over the network, this one is a file an admin downloaded. Below `ROLE_SUPER_ADMIN`, a backup row's `errors` and `warnings` become their count, the raw tool output naming the database, its user and its host.
 
 Both buttons read the same run — the latest row per (url, kind). The CSV is the dated audit trace, the JSON the diagnosis.
 
@@ -2188,7 +2245,7 @@ A backup that never leaves the machine it protects is not a backup. Until now no
 
 **Push** — the site sends, through [rclone](https://rclone.org). Set `site-backup-offsite-target` to a remote as rclone spells it, `storagebox:example.com`. Archives go to `<target>/backup` on every run; the mirrored folders go to `<target>/files/<path>` on the nightly `c975l:config:backup:offsite`.
 
-**Pull** — an outside machine fetches the backups over SSH/SFTP and calls `c975l:config:backup:offsite --ack` afterwards. Leave `site-backup-offsite-target` empty: nothing is sent, no task fails, and the dashboard still knows the files left. This is the safer of the two — a server holding no credentials to its own backup is a server that can't destroy it — at the cost of a machine to keep. What that machine runs, nothing of it living on the site:
+**Pull** — an outside machine fetches the backups over SSH/SFTP and calls `c975l:config:backup:offsite --ack` afterwards. Leave `site-backup-offsite-target` empty and drop the nightly push from the schedule (`addTasks($schedule, ['c975l:config:backup:offsite'])` in `MaintenanceSchedule`): left in, it fails every night, an offsite copy that cannot be sent being a failure as an unconfigured backup is. Nothing is sent, and the dashboard still knows the files left. This is the safer of the two — a server holding no credentials to its own backup is a server that can't destroy it — at the cost of a machine to keep. What that machine runs, nothing of it living on the site:
 
 ```bash
 #!/bin/sh
@@ -2309,7 +2366,7 @@ SQL archive over the period: 17.9 MB -> 18.4 MB
 Retention (15 days): 15 run(s) kept on the server, oldest 2026-07-14
 ```
 
-It **runs no backup of its own** — it reads the rows back — and that's the whole point of it being a separate command rather than a bigger `--report`: `--report` rides on a backup run and only exists if that run reaches its last line, so a dead consumer, a lost crontab or a fatal mid-dump send nothing at all. The digest goes out either way, and when nothing ran it says exactly that (`[ALERT] No backup over the last 7 days`) and exits non-zero, so the scheduler's own logs carry the verdict too. On an install where `site-backup-database` is empty nothing is sent: a site that deliberately doesn't back up from here shouldn't get a weekly false alarm.
+It **runs no backup of its own** — it reads the rows back — and that's the whole point of it being a separate command rather than a bigger `--report`: `--report` rides on a backup run and only exists if that run reaches its last line, so a dead consumer, a lost crontab or a fatal mid-dump send nothing at all. The digest goes out either way, and when nothing ran it says exactly that (`[ALERT] No backup over the last 7 days`) and exits non-zero, so the scheduler's own logs carry the verdict too. On an install where `site-backup-database` is empty nothing is sent and the command fails, as `c975l:config:backup` does: a site meant to be backed up is told so, and one that deliberately doesn't back up from here drops `c975l:config:backup`, `c975l:config:backup:offsite` and `c975l:config:backup:digest` from its schedule (`addTasks($schedule, [...])` in `MaintenanceSchedule`).
 
 Beyond the counts, it reports what a single run can't see:
 
@@ -2345,9 +2402,9 @@ The whole stack lives here rather than in SiteBundle, where it started: any bund
 
 Everything above reads and purges the `messenger_messages` table through Doctrine, so it works with no Messenger configuration at all. Only **replaying** a failed message goes through the transport itself: without a `framework.messenger.failure_transport: failed` (the Symfony recipe default), the "Retry" button reports the message as no longer there — nothing else changes, and the container still compiles.
 
-**Exporting a set of tables.** `c975l:config:export-tables` dumps the data (no `CREATE TABLE`) of every table matching a prefix into one SQL file, meant to be replayed one-shot into an environment where the schema already exists — building content in dev then pushing it to prod after the migrations ran there. The file truncates each table and disables FK checks around the inserts, so it can be replayed as-is over existing data; `site_config` is always excluded, this bundle having its own non-destructive export. It uses the same DB credentials as `c975l:config:backup` (the `site-backup-db-*` keys), so it works even when the DB user your GUI tool uses lacks export privileges. The same dump is one click away as the **Export tables** dashboard shortcut, streamed back rather than written to `var/export`.
+**Exporting a set of tables.** `c975l:config:export-tables` dumps the data (no `CREATE TABLE`) of every table matching a prefix into one SQL file. The file truncates each table and disables FK checks around the inserts; `site_config` is always excluded, this bundle having its own non-destructive export. **A whole prefix is a snapshot, kept as a backup, never a dev export to replay on prod**: `site_` covers what visitors write (`site_form_output`, `site_review`, `site_rating`, `site_favorite`, `site_play*`, `site_activity_log`, `site_not_found`…) and `site_app_token`, so the replay would empty the former and hand dev's app tokens to prod's accounts of the same ids. Carrying content from one environment to another is done case by case and by hand: export the tables one by one, with the table's own name as prefix, read the `TRUNCATE` list at the top of the file (a longer name sharing that prefix is listed too), and replay only what has to move. It uses the same DB credentials as `c975l:config:backup` (the `site-backup-db-*` keys), so it works even when the DB user your GUI tool uses lacks export privileges. The same dump is one click away as the **Export tables** dashboard shortcut, streamed back rather than written to `var/export`.
 
-`--prefix` (default `site_`) and `site-backup-database` must both be plain identifiers — letters, digits and underscores only. Neither can be bound as a query parameter, and a `%` or `_` in the prefix would silently widen the list of tables the dump truncates on replay.
+`--prefix` (default `site_`) and `site-backup-database` must both be plain identifiers — letters, digits and underscores only. Neither can be bound as a query parameter, so a `%` is refused, and the `_` a prefix holds is escaped in the `LIKE`: `site_` never lists `sitemap_cache` nor `sites`. The credentials go to `mysql` and `mysqldump` through an options file each value is quoted in (`Service\MySqlOptionsFile`, shared with `c975l:config:backup`), so a password holding `#` or `\` reads back unchanged.
 
 ---
 
@@ -2441,8 +2498,10 @@ class ShopMaintenanceTaskProvider implements MaintenanceTaskProviderInterface
 
 ```php
 // src/Scheduler/MaintenanceSchedule.php, scaffolded by c975l/site-bundle
-return $this->builder->addTasks((new Schedule())->stateful($this->cache));
+return $this->builder->addTasks((new Schedule())->stateful($this->cache)->processOnlyLastMissedRun(true));
 ```
+
+`processOnlyLastMissedRun(true)` replays only the last missed run of each task after a worker outage: without it, three days of a stopped worker give twelve full backups in a row.
 
 **What this buys is a scaffolded schedule that lists no command at all**, and therefore stays the same file on every site: installing a bundle schedules its tasks, removing it stops them, and an upgraded scaffold can be propagated to a dozen sites rather than merged into each. Declare the task where the command lives — `c975l:shop:baskets:delete` belongs to PaymentBundle's provider, not ShopBundle's, baskets being PaymentBundle's own.
 
@@ -2666,8 +2725,9 @@ What the report holds:
     "dependencies": {"doctrine/orm": "3.6.1", "dompdf/dompdf": "3.1.0", "twig/twig": "3.21.1"},
     "checks": {
         "counts": {"ok": 42, "warning": 3, "error": 1, "skipped": 0},
+        "acknowledged": 0,
         "lastRunAt": "2026-08-01T03:00:00+02:00",
-        "issues": [{"kind": "w3c-html", "url": "https://example.com/", "summary": "1 erreur(s), 0 avertissement(s)", "errors": ["line 267: Attribute “aria-expanded” not allowed on element “input” at this point."]}],
+        "issues": [{"kind": "w3c-html", "url": "https://example.com/", "summary": "1 erreur(s), 0 avertissement(s)", "errors": ["line 267: Attribute “aria-expanded” not allowed on element “input” at this point."], "acknowledgedAt": null}],
         "issuesTruncated": false
     },
     "extra": {
@@ -2682,7 +2742,7 @@ What the report holds:
 }
 ```
 
-The report's deliberate limits. `packages` lists the installed **bundles** rather than the whole dependency tree, Symfony's own excluded since the `symfony` field already carries their version — whether a bundle is a direct requirement or came along with another one doesn't change what runs. `issues` carries the rows **in error** only, without their `HealthCheckResult::$details`: the payload stays small and holds nothing revealing — a site merely in warning is a site to improve, and its `counts` still say so. The one part of the details that does travel is the checker's own `errors` list, when it keeps one (the W3C checks do): five messages at most, 200 characters each, never the warnings nor the raw payload. Those sentences about a public page are what lets a receiver say *why* it hurts, in words that can be pasted to whoever fixes it; a row whose checker keeps no such list sends `"errors": []`, and a site not updated yet sends no key at all. And it is capped at 20 rows, `issuesTruncated` saying so — the counts stay exact either way, so a short list is never mistaken for a complete one.
+The report's deliberate limits. `packages` lists the installed **bundles** rather than the whole dependency tree, Symfony's own excluded since the `symfony` field already carries their version — whether a bundle is a direct requirement or came along with another one doesn't change what runs. `issues` carries the rows **in error** only, without their `HealthCheckResult::$details`: the payload stays small and holds nothing revealing — a site merely in warning is a site to improve, and its `counts` still say so. The one part of the details that does travel is the checker's own `errors` list, when it keeps one (the W3C checks do): five messages at most, 200 characters each, never the warnings nor the raw payload. Those sentences about a public page are what lets a receiver say *why* it hurts, in words that can be pasted to whoever fixes it; a row whose checker keeps no such list sends `"errors": []`, and a site not updated yet sends no key at all. And it is capped at 20 rows, `issuesTruncated` saying so — the counts stay exact either way, so a short list is never mistaken for a complete one. A backup row sends `"errors": []` whatever it holds: its messages are mysqldump's, tar's and rclone's raw output, naming the database, its user and its host. An error an admin acknowledged still counts in `counts.error`, but carries its `acknowledgedAt` and is counted in `acknowledged`, so a console tells an error still to act on from a false positive already seen. `lastRunAt` leaves the backup rows out: written every 6 hours, they would keep it fresh over a dead health check cron.
 
 **The two package lists answer two different questions**, which is why the second one is not the first one made longer. `packages` is the human list — which bundles run where, compared across sites by whoever maintains them. `dependencies` is the machine list: **everything** installed with a version, platform entries aside, so a receiver can look the site up against a vulnerability database — a CVE lands on Doctrine, Dompdf or Twig as readily as on a bundle, and none of those is a `symfony-bundle`. That lookup stays the receiver's to make: a console holding thirty sites' lists resolves them all in a single call to the advisory API, where thirty sites checking themselves would each call out on a schedule to learn what one lookup already knows — and `composer audit` in the CI, which answers the same question from the code, only answers it on the days someone pushes.
 

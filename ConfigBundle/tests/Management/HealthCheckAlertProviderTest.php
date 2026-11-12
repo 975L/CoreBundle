@@ -21,20 +21,17 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class HealthCheckAlertProviderTest extends TestCase
 {
-    private function createResult(string $status, string $checkedAt = '2026-07-27 04:00:00'): HealthCheckResult
+    // The aggregate the repository answers for one status
+    private function counted(int $count, string $lastCheckedAt = '2026-07-27 04:00:00'): array
     {
-        return new HealthCheckResult()
-            ->setKind('content-quality')
-            ->setUrl('https://example.com/')
-            ->setStatus($status)
-            ->setSummary('summary')
-            ->setCheckedAt(new \DateTime($checkedAt));
+        return ['count' => $count, 'lastCheckedAt' => new \DateTimeImmutable($lastCheckedAt)];
     }
 
-    private function createProvider(array $results): HealthCheckAlertProvider
+    // Over a repository answering those counts per status, acknowledged rows already left out in SQL (see HealthCheckResultRepositoryTest)
+    private function createProvider(array $counts): HealthCheckAlertProvider
     {
         $repository = $this->createStub(HealthCheckResultRepository::class);
-        $repository->method('findLatestPerUrlAndKind')->willReturn($results);
+        $repository->method('countLatestUnacknowledgedPerStatus')->willReturn($counts);
 
         $urlGenerator = $this->createStub(UrlGeneratorInterface::class);
         $urlGenerator->method('generate')->willReturn('/management/health-check');
@@ -59,42 +56,20 @@ class HealthCheckAlertProviderTest extends TestCase
     // An alert saying "all good" would be permanent noise on a dashboard whose alerts are meant to be acted upon
     public function testNoAlertWhenEverythingIsOk(): void
     {
-        $results = [$this->createResult(HealthCheckResult::STATUS_OK), $this->createResult(HealthCheckResult::STATUS_SKIPPED)];
+        $counts = [HealthCheckResult::STATUS_OK => $this->counted(3), HealthCheckResult::STATUS_SKIPPED => $this->counted(1)];
 
-        $this->assertSame([], $this->createProvider($results)->getAlerts());
-    }
-
-    // An admin who declared a row dealt with has said there is nothing left to open the Health check page for - and the next run records a fresh unacknowledged row if they were wrong
-    public function testAcknowledgedRowsRaiseNoAlert(): void
-    {
-        $acknowledged = $this->createResult(HealthCheckResult::STATUS_ERROR)->setAcknowledgedAt(new \DateTime('2026-07-27 09:00:00'));
-
-        $this->assertSame([], $this->createProvider([$acknowledged])->getAlerts());
-    }
-
-    public function testAcknowledgedRowsAreLeftOutOfTheCount(): void
-    {
-        $results = [
-            $this->createResult(HealthCheckResult::STATUS_ERROR),
-            $this->createResult(HealthCheckResult::STATUS_ERROR)->setAcknowledgedAt(new \DateTime('2026-07-27 09:00:00')),
-        ];
-
-        $alerts = $this->createProvider($results)->getAlerts();
-
-        $this->assertCount(1, $alerts);
-        $this->assertSame('label.health_check_alert_errors', strtr($alerts[0]['label'], ['1' => '%count%']));
+        $this->assertSame([], $this->createProvider($counts)->getAlerts());
     }
 
     public function testAnErrorRaisesADangerAlertCountingTheErrorsOnly(): void
     {
-        $results = [
-            $this->createResult(HealthCheckResult::STATUS_ERROR),
-            $this->createResult(HealthCheckResult::STATUS_ERROR),
-            $this->createResult(HealthCheckResult::STATUS_WARNING),
-            $this->createResult(HealthCheckResult::STATUS_OK),
+        $counts = [
+            HealthCheckResult::STATUS_ERROR => $this->counted(2),
+            HealthCheckResult::STATUS_WARNING => $this->counted(1),
+            HealthCheckResult::STATUS_OK => $this->counted(1),
         ];
 
-        $alerts = $this->createProvider($results)->getAlerts();
+        $alerts = $this->createProvider($counts)->getAlerts();
 
         $this->assertCount(1, $alerts);
         $this->assertSame('label.health_check_alert_errors', strtr($alerts[0]['label'], ['2' => '%count%']));
@@ -104,9 +79,9 @@ class HealthCheckAlertProviderTest extends TestCase
 
     public function testWarningsAloneRaiseAWarningAlert(): void
     {
-        $results = [$this->createResult(HealthCheckResult::STATUS_WARNING), $this->createResult(HealthCheckResult::STATUS_OK)];
+        $counts = [HealthCheckResult::STATUS_WARNING => $this->counted(1), HealthCheckResult::STATUS_OK => $this->counted(1)];
 
-        $alerts = $this->createProvider($results)->getAlerts();
+        $alerts = $this->createProvider($counts)->getAlerts();
 
         $this->assertCount(1, $alerts);
         $this->assertSame('label.health_check_alert_warnings', strtr($alerts[0]['label'], ['1' => '%count%']));
@@ -116,12 +91,12 @@ class HealthCheckAlertProviderTest extends TestCase
     // The date is what makes the alert double as the "your queued run is done" signal
     public function testTheDescriptionCarriesTheMostRecentRunDate(): void
     {
-        $results = [
-            $this->createResult(HealthCheckResult::STATUS_ERROR, '2026-07-20 04:00:00'),
-            $this->createResult(HealthCheckResult::STATUS_OK, '2026-07-27 06:30:00'),
+        $counts = [
+            HealthCheckResult::STATUS_ERROR => $this->counted(1, '2026-07-20 04:00:00'),
+            HealthCheckResult::STATUS_OK => $this->counted(1, '2026-07-27 06:30:00'),
         ];
 
-        $alerts = $this->createProvider($results)->getAlerts();
+        $alerts = $this->createProvider($counts)->getAlerts();
 
         $this->assertSame('description.health_check_alert', strtr($alerts[0]['description'], ['27/07/2026 06:30' => '%date%']));
     }

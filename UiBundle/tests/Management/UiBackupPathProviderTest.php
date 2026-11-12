@@ -51,6 +51,7 @@ class UiBackupPathProviderTest extends TestCase
 
         $this->assertSame(BackupPath::MODE_MIRROR, $modes['public/medias/site']);
         $this->assertSame(BackupPath::MODE_MIRROR, $modes['public/medias/fonts']);
+        $this->assertSame(BackupPath::MODE_MIRROR, $modes[Media::MEMBERS_ONLY_DIRECTORY . '/medias/site']);
         $this->assertSame(BackupPath::MODE_ARCHIVE, $modes['public/favicon.ico']);
     }
 }

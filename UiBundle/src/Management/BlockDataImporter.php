@@ -10,6 +10,7 @@
 
 namespace c975L\UiBundle\Management;
 
+use c975L\ConfigBundle\Management\ArchivePath;
 use c975L\UiBundle\Entity\Block;
 use c975L\UiBundle\Entity\Media;
 use c975L\UiBundle\Entity\Translation;
@@ -37,6 +38,8 @@ class BlockDataImporter
         'above' => false,
         'credits' => null,
         'rightsReserved' => false,
+        // Absent from every archive written before the flag was exported, whose members-only documents were left out anyway
+        'membersOnly' => false,
         'position' => 0,
         'url' => null,
         'description' => null,
@@ -119,24 +122,37 @@ class BlockDataImporter
             ->setAbove($values['above'])
             ->setCredits($values['credits'])
             ->setRightsReserved($values['rightsReserved'])
+            ->setMembersOnly((bool) $values['membersOnly'])
             ->setPosition($values['position'])
             ->setUrl($values['url'])
             ->setDescription($values['description']);
 
-        if (null !== $filesDir && isset($mediaData['file'])) {
-            $media->setFile(new ReplacingFile($filesDir . '/' . $mediaData['file'], true, true, true));
-        }
-
-        // Read by VichPdfThumbnailListener on flush, so it reuses this thumbnail instead of Ghostscript
-        if (null !== $filesDir && isset($mediaData['thumbnail'])) {
-            $media->setImportedThumbnailPath($filesDir . '/' . $mediaData['thumbnail']);
-        }
+        $this->attachFiles($media, $mediaData, $filesDir);
 
         $mediaData = $this->withoutForeignTranslatedFiles($mediaData);
         $this->importTranslations(Translation::OWNER_MEDIA, $media, $mediaData);
         $this->importTranslatedFiles($mediaData, $filesDir);
 
         return $media;
+    }
+
+    // The manifest is untrusted, so each path it names goes through ArchivePath: anything outside the extracted folder is ignored, and the stored name comes from UiMediaNamer, which keeps to AllowedUploadExtension. The archive's copy is left where it is, Vich removing nothing on success or on error
+    private function attachFiles(Media $media, array $mediaData, ?string $filesDir): void
+    {
+        if (null === $filesDir) {
+            return;
+        }
+
+        $file = ArchivePath::resolve($filesDir, $mediaData['file'] ?? null);
+        if (null !== $file) {
+            $media->setFile(new ReplacingFile($file, true, false, false));
+        }
+
+        // Read by VichPdfThumbnailListener on flush, so it reuses this thumbnail instead of Ghostscript
+        $thumbnail = ArchivePath::resolve($filesDir, $mediaData['thumbnail'] ?? null);
+        if (null !== $thumbnail) {
+            $media->setImportedThumbnailPath($thumbnail);
+        }
     }
 
     // Drops a language's file not named after the media's own the way MediaTranslator::stageFile names it, before its translation reaches a row MediaTranslationFileListener would one day remove it by: an archive is never trusted to name index.php
@@ -165,10 +181,10 @@ class BlockDataImporter
 
         foreach ($mediaData['translatedFiles'] as $locale => $archivePath) {
             $path = $mediaData['translations'][$locale][MediaTranslator::FILE] ?? null;
-            $source = $filesDir . '/' . $archivePath;
+            $source = ArchivePath::resolve($filesDir, $archivePath);
 
-            // The path was vetted by withoutForeignTranslatedFiles, the archive's own name is not
-            if (null === $path || !MediaTranslator::isPublicPath($archivePath) || !is_file($source)) {
+            // The path was vetted by withoutForeignTranslatedFiles, the archive's own name by ArchivePath
+            if (null === $path || null === $source) {
                 continue;
             }
 

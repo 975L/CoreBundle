@@ -104,7 +104,7 @@
                         <a href="{{ logout_path() }}" rel="nofollow" class="btn btn-secondary">{{ 'label.signout'|trans }}</a>
                         {% if deleteForm %}
                             <button type="button" class="btn btn-danger" commandfor="account-delete-dialog" command="show-modal" aria-describedby="account-delete-note">{{ 'label.account_delete'|trans }}</button>
-                        {% elseif is_granted('ROLE_SUPER_ADMIN') %}
+                        {% elseif 'ROLE_SUPER_ADMIN' in app.user.roles %}
                             <button type="button" class="btn btn-danger" disabled aria-describedby="account-delete-note">{{ 'label.account_delete'|trans }}</button>
                         {% endif %}
                     </div>
@@ -113,7 +113,7 @@
                         <twig:c975LUi:Dialog:Dialog id="account-delete-dialog" title="{{ 'label.account_delete'|trans }}">
                             {{ include('@c975LConfig/account/_delete_form.html.twig', {form: deleteForm}) }}
                         </twig:c975LUi:Dialog:Dialog>
-                    {% elseif is_granted('ROLE_SUPER_ADMIN') %}
+                    {% elseif 'ROLE_SUPER_ADMIN' in app.user.roles %}
                         <p class="text text-center" id="account-delete-note">{{ 'text.account_delete_owner'|trans }}</p>
                     {% endif %}
                 </div>

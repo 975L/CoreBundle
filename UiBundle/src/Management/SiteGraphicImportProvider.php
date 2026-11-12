@@ -10,6 +10,7 @@
 
 namespace c975L\UiBundle\Management;
 
+use c975L\ConfigBundle\Management\ArchivePath;
 use c975L\ConfigBundle\Management\ImportProviderInterface;
 use c975L\UiBundle\Entity\Media;
 use c975L\UiBundle\Repository\MediaRepository;
@@ -42,7 +43,9 @@ class SiteGraphicImportProvider implements ImportProviderInterface
         $clearedRepeatableRoles = [];
 
         foreach ($items as $item) {
-            $file = null !== $filesDir && isset($item['file']) ? new ReplacingFile($filesDir . '/' . $item['file'], true, true, true) : null;
+            // The manifest is untrusted: a path leaving the extracted folder is ignored, the stored name coming from UiMediaNamer, which keeps to AllowedUploadExtension. The archive's copy is left where it is, Vich removing nothing on success or on error
+            $path = null !== $filesDir ? ArchivePath::resolve($filesDir, $item['file'] ?? null) : null;
+            $file = null !== $path ? new ReplacingFile($path, true, false, false) : null;
 
             // The upload form's own FixedIconFormat check, run on a throwaway row: a file the conversion can't handle would otherwise be stored as markup under an .ico/.png/.webp name, and the row it would replace keeps its current file
             if (null !== $file && !$this->isConvertible($item['role'], $file)) {

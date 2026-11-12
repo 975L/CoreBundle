@@ -2,17 +2,21 @@
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
     <file source-language="en" target-language="en" datatype="plaintext" original="site_config.en.xlf">
         <body>
-            <trans-unit id="ez6O9sd">
-                <source>description.age_verification_cipher_key</source>
+            <trans-unit id="Xe0yny.">
+                <source>description.age_verification_gocam_cipher_key</source>
                 <target>Cipher key of the go.cam partner account</target>
             </trans-unit>
-            <trans-unit id="e92qaxk">
-                <source>description.age_verification_hmac_key</source>
+            <trans-unit id="eFx8YUF">
+                <source>description.age_verification_gocam_hmac_key</source>
                 <target>Signing key ("Hmac key") of the go.cam partner account, which proves a result really comes from go.cam</target>
             </trans-unit>
-            <trans-unit id="_kdWuPL">
-                <source>description.age_verification_partner_id</source>
+            <trans-unit id="ydzlahE">
+                <source>description.age_verification_gocam_partner_id</source>
                 <target>go.cam partner account id (the "Standard implementation" page of the partner area). With both keys, it puts any content declared 18+ behind an age verification</target>
+            </trans-unit>
+            <trans-unit id="BBAzAdC">
+                <source>description.age_verification_provider</source>
+                <target>The service verifying visitors' age (go.cam ships with the site). Empty, no content is closed. Its credentials go in the entries bearing its name</target>
             </trans-unit>
             <trans-unit id="f2Stp0E">
                 <source>description.ai_assistant_dashboard_endpoint</source>
@@ -78,21 +82,37 @@
                 <source>description.ai_site_search_failure_alert</source>
                 <target>The last call to the provider failed (revoked key, credit exhausted, outage): visitors see "search unavailable"</target>
             </trans-unit>
+            <trans-unit id="4H.9khD">
+                <source>description.analytics_matomo_id</source>
+                <target>Matomo site ID (integer)</target>
+            </trans-unit>
+            <trans-unit id="gXofG1F">
+                <source>description.analytics_matomo_url</source>
+                <target>URL of the Matomo instance i.e. https://matomo.example.com. Filled along with the ID, it enables Matomo, deliberately outside the cookie banner - only for a CNIL-exempt setup (anonymized IP, no cross-site tracking, cookie ≤13 months, DNT respected)</target>
+            </trans-unit>
+            <trans-unit id="cUJ4P.N">
+                <source>description.analytics_provider</source>
+                <target>The service measuring the site's traffic (Matomo ships with the site). Empty, nothing is measured. Its settings go in the entries bearing its name</target>
+            </trans-unit>
+            <trans-unit id="7kpBjZ_">
+                <source>description.captcha_provider</source>
+                <target>The anti-bot service of the public forms (Google reCAPTCHA ships with the site). Empty, the forms keep the honeypot and the delay. Its keys go in the entries bearing its name</target>
+            </trans-unit>
+            <trans-unit id="VmulbYC">
+                <source>description.captcha_recaptcha_score_threshold</source>
+                <target>Score threshold (between 0 and 1) below which ReCaptcha v3 considers the submission suspicious</target>
+            </trans-unit>
+            <trans-unit id="PinaeId">
+                <source>description.captcha_recaptcha_secret_key</source>
+                <target>Secret key for ReCaptcha v3</target>
+            </trans-unit>
+            <trans-unit id="OuS_mIG">
+                <source>description.captcha_recaptcha_site_key</source>
+                <target>Site key for ReCaptcha v3</target>
+            </trans-unit>
             <trans-unit id="o3sVBy1">
                 <source>description.email_debug</source>
                 <target>When enabled, a ROLE_SUPER_ADMIN sees a preview instead of a real send</target>
-            </trans-unit>
-            <trans-unit id="re7MGHJ">
-                <source>description.recaptcha3_score_threshold</source>
-                <target>Score threshold (between 0 and 1) below which ReCaptcha v3 considers the submission suspicious</target>
-            </trans-unit>
-            <trans-unit id="n0vSdf_">
-                <source>description.recaptcha3_secret_key</source>
-                <target>Secret key for ReCaptcha v3</target>
-            </trans-unit>
-            <trans-unit id="mGj2Whf">
-                <source>description.recaptcha3_site_key</source>
-                <target>Site key for ReCaptcha v3</target>
             </trans-unit>
             <trans-unit id="_IvRuw9">
                 <source>description.site_enable_cookie_consent</source>
@@ -101,14 +121,6 @@
             <trans-unit id="nZli24w">
                 <source>description.site_form_delay</source>
                 <target>Minimum delay, in seconds, between showing and submitting a public form before treating it as a bot</target>
-            </trans-unit>
-            <trans-unit id="QbsOHOo">
-                <source>description.site_matomo_id</source>
-                <target>Matomo site ID (integer)</target>
-            </trans-unit>
-            <trans-unit id="X8T2_9z">
-                <source>description.site_matomo_url</source>
-                <target>URL of the Matomo instance i.e. https://matomo.example.com. Filled along with the ID, it enables Matomo, deliberately outside the cookie banner - only for a CNIL-exempt setup (anonymized IP, no cross-site tracking, cookie ≤13 months, DNT respected)</target>
             </trans-unit>
             <trans-unit id="ooJKbLK">
                 <source>description.theme_color_background</source>
@@ -234,17 +246,21 @@
                 <source>description.watermark_width</source>
                 <target>Watermark width, as a percentage of the image width (13.75 reproduces a 330px signature on a 2400px image).</target>
             </trans-unit>
-            <trans-unit id="vgaDDW_">
-                <source>label.age_verification_cipher_key</source>
+            <trans-unit id="Ei2360r">
+                <source>label.age_verification_gocam_cipher_key</source>
                 <target>go.cam age verification: cipher key</target>
             </trans-unit>
-            <trans-unit id="MkD9r0J">
-                <source>label.age_verification_hmac_key</source>
+            <trans-unit id="ndBrft9">
+                <source>label.age_verification_gocam_hmac_key</source>
                 <target>go.cam age verification: signing key</target>
             </trans-unit>
-            <trans-unit id="5XCRL17">
-                <source>label.age_verification_partner_id</source>
+            <trans-unit id="eBfnV2V">
+                <source>label.age_verification_gocam_partner_id</source>
                 <target>go.cam age verification: partner id</target>
+            </trans-unit>
+            <trans-unit id=".uvaT80">
+                <source>label.age_verification_provider</source>
+                <target>Age verification: service</target>
             </trans-unit>
             <trans-unit id="Fd2PHDs">
                 <source>label.ai_assistant_dashboard_not_enabled</source>
@@ -262,21 +278,37 @@
                 <source>label.ai_site_search_failure_alert</source>
                 <target>The site AI search failed</target>
             </trans-unit>
+            <trans-unit id="14nHH92">
+                <source>label.analytics_matomo_id</source>
+                <target>Audience measurement Matomo: site ID</target>
+            </trans-unit>
+            <trans-unit id="be8jtzx">
+                <source>label.analytics_matomo_url</source>
+                <target>Audience measurement Matomo: URL</target>
+            </trans-unit>
+            <trans-unit id="LrzTcLT">
+                <source>label.analytics_provider</source>
+                <target>Audience measurement: service</target>
+            </trans-unit>
+            <trans-unit id="CMJC.1i">
+                <source>label.captcha_provider</source>
+                <target>Captcha: service</target>
+            </trans-unit>
+            <trans-unit id="rzCBT0B">
+                <source>label.captcha_recaptcha_score_threshold</source>
+                <target>Captcha reCAPTCHA: score threshold</target>
+            </trans-unit>
+            <trans-unit id="Bl92s0s">
+                <source>label.captcha_recaptcha_secret_key</source>
+                <target>Captcha reCAPTCHA: secret key</target>
+            </trans-unit>
+            <trans-unit id="O441_NQ">
+                <source>label.captcha_recaptcha_site_key</source>
+                <target>Captcha reCAPTCHA: site key</target>
+            </trans-unit>
             <trans-unit id=".HY9J1w">
                 <source>label.email_debug</source>
                 <target>Email - Debug mode</target>
-            </trans-unit>
-            <trans-unit id="DRvJXiP">
-                <source>label.recaptcha3_score_threshold</source>
-                <target>ReCaptcha - Score threshold</target>
-            </trans-unit>
-            <trans-unit id=".Pi.fDj">
-                <source>label.recaptcha3_secret_key</source>
-                <target>ReCaptcha - Secret key</target>
-            </trans-unit>
-            <trans-unit id="Ps.ODsR">
-                <source>label.recaptcha3_site_key</source>
-                <target>ReCaptcha - Site key</target>
             </trans-unit>
             <trans-unit id="VkhtV_A">
                 <source>label.site_enable_cookie_consent</source>
@@ -285,14 +317,6 @@
             <trans-unit id="UdYcxIh">
                 <source>label.site_form_delay</source>
                 <target>Public forms anti-bot delay</target>
-            </trans-unit>
-            <trans-unit id="EDDAHIQ">
-                <source>label.site_matomo_id</source>
-                <target>Matomo Site ID</target>
-            </trans-unit>
-            <trans-unit id="HoL37ro">
-                <source>label.site_matomo_url</source>
-                <target>Matomo URL</target>
             </trans-unit>
             <trans-unit id="copCVwP">
                 <source>label.theme_color_background</source>

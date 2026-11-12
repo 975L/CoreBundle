@@ -24,15 +24,15 @@
             </trans-unit>
             <trans-unit id="Tqyp_I4">
                 <source>narration.guided_step_ui_age_verification_setup_entry</source>
-                <target>Cliquez sur le crayon de l'identifiant partenaire.</target>
+                <target>Cliquez sur le crayon de l'outil.</target>
             </trans-unit>
             <trans-unit id="4_cNrVr">
                 <source>narration.guided_step_ui_age_verification_setup_headers</source>
-                <target>Dernière étape : les en-têtes du site doivent laisser entrer le cadre de go.cam, un réglage que décrit le README. Ensuite, tout contenu déclaré pour 18 ans et plus attend derrière la vérification.</target>
+                <target>Dernière étape : les en-têtes du site doivent laisser entrer le cadre de l'outil, un réglage que décrit le README. Ensuite, tout contenu déclaré pour 18 ans et plus attend derrière la vérification.</target>
             </trans-unit>
             <trans-unit id="SR.cMx8">
                 <source>narration.guided_step_ui_age_verification_setup_open</source>
-                <target>Voici les réglages, ouverts sur le groupe Légal : les trois entrées « Vérification d'âge go.cam » allument la vérification, avec les valeurs de l'espace partenaire go.cam.</target>
+                <target>Voici les réglages, ouverts sur le groupe Légal : « Vérification d'âge : outil » choisit l'outil, go.cam par exemple, et les entrées à son nom reçoivent les valeurs de son espace partenaire.</target>
             </trans-unit>
             <trans-unit id="WhEywpU">
                 <source>narration.guided_step_ui_age_verification_setup_save</source>
@@ -40,7 +40,7 @@
             </trans-unit>
             <trans-unit id="0EwSH1a">
                 <source>narration.guided_step_ui_age_verification_setup_value</source>
-                <target>Collez la valeur donnée par go.cam, puis faites de même pour les deux clés.</target>
+                <target>Choisissez l'outil, enregistrez, puis collez une à une les valeurs qu'il vous donne.</target>
             </trans-unit>
             <trans-unit id="WPAsuLp">
                 <source>narration.guided_step_ui_ai_assistant_action</source>
@@ -118,6 +118,26 @@
                 <source>narration.guided_step_ui_ai_search_setup_value</source>
                 <target>Saisissez sa valeur dans ce champ. La clé API reste la vôtre : chaque question est facturée sur votre compte chez le fournisseur.</target>
             </trans-unit>
+            <trans-unit id="JaHxgAC">
+                <source>narration.guided_step_ui_analytics_setup_entry</source>
+                <target>Cliquez sur le crayon de l'outil.</target>
+            </trans-unit>
+            <trans-unit id="LpQgtO0">
+                <source>narration.guided_step_ui_analytics_setup_open</source>
+                <target>Voici les réglages, ouverts sur le groupe Analytics : « Mesure d'audience : outil » choisit l'outil, Matomo par exemple, et les entrées à son nom reçoivent son adresse et l'identifiant du site.</target>
+            </trans-unit>
+            <trans-unit id="OcwG1qH">
+                <source>narration.guided_step_ui_analytics_setup_policy</source>
+                <target>Dernière étape : relisez la politique des cookies, qui nomme désormais l'outil en service.</target>
+            </trans-unit>
+            <trans-unit id="FvHLfdD">
+                <source>narration.guided_step_ui_analytics_setup_save</source>
+                <target>Enregistrez.</target>
+            </trans-unit>
+            <trans-unit id="6sIWQmC">
+                <source>narration.guided_step_ui_analytics_setup_value</source>
+                <target>Choisissez l'outil, enregistrez, puis saisissez une à une les valeurs qu'il vous affiche.</target>
+            </trans-unit>
             <trans-unit id="9klQ1Xs">
                 <source>narration.guided_step_ui_calculator_action</source>
                 <target>Choisissez ensuite s'il est envoyé : laissez l'action vide pour un simple calcul, ou choisissez « envoyer un email » pour que le visiteur demande un devis avec ses résultats.</target>
@@ -165,6 +185,26 @@
             <trans-unit id="gGlIQUe">
                 <source>narration.guided_step_ui_calculator_save_fields</source>
                 <target>Enregistrez avant d'écrire la moindre formule : le nom des variables est dérivé des libellés, et il n'apparaît qu'une fois les champs enregistrés.</target>
+            </trans-unit>
+            <trans-unit id="YvIXnF8">
+                <source>narration.guided_step_ui_captcha_setup_entry</source>
+                <target>Cliquez sur le crayon de l'outil.</target>
+            </trans-unit>
+            <trans-unit id="zRYeGKU">
+                <source>narration.guided_step_ui_captcha_setup_headers</source>
+                <target>Dernière étape : les en-têtes du site doivent laisser entrer l'outil, un réglage que décrit le README. Ensuite, chaque formulaire public est noté pendant qu'on le remplit.</target>
+            </trans-unit>
+            <trans-unit id="bFehqVa">
+                <source>narration.guided_step_ui_captcha_setup_open</source>
+                <target>Voici les réglages, ouverts sur le groupe Sécurité : « Captcha : outil » choisit l'outil, reCAPTCHA par exemple, et les entrées à son nom reçoivent ses clés.</target>
+            </trans-unit>
+            <trans-unit id="rkVBjnI">
+                <source>narration.guided_step_ui_captcha_setup_save</source>
+                <target>Enregistrez.</target>
+            </trans-unit>
+            <trans-unit id="8.x1IjK">
+                <source>narration.guided_step_ui_captcha_setup_value</source>
+                <target>Choisissez l'outil, enregistrez, puis collez une à une les clés qu'il vous donne.</target>
             </trans-unit>
             <trans-unit id="upqcYyp">
                 <source>narration.guided_step_ui_content_export_import</source>
@@ -353,6 +393,26 @@
             <trans-unit id="4MRnqsr">
                 <source>narration.guided_step_ui_legal_model_unit</source>
                 <target>Chaque carte est une section. Donnez-lui votre propre titre, réécrivez son texte, ou cochez la case qui la masque sur la page publiée.</target>
+            </trans-unit>
+            <trans-unit id="Gs0AtcH">
+                <source>narration.guided_step_ui_map_setup_entry</source>
+                <target>Cliquez sur le crayon du fournisseur.</target>
+            </trans-unit>
+            <trans-unit id="HRNVOrB">
+                <source>narration.guided_step_ui_map_setup_headers</source>
+                <target>Dernière étape : les en-têtes du site doivent nommer les hôtes du fournisseur, que le health check liste. Ensuite, chaque carte se dessine avec lui.</target>
+            </trans-unit>
+            <trans-unit id="hYrdJ9r">
+                <source>narration.guided_step_ui_map_setup_open</source>
+                <target>Voici les réglages, ouverts sur le groupe Interface : « Fournisseur de cartes » choisit qui dessine les cartes, OpenStreetMap sans clé et Google avec la sienne.</target>
+            </trans-unit>
+            <trans-unit id="gwhoRPL">
+                <source>narration.guided_step_ui_map_setup_save</source>
+                <target>Enregistrez.</target>
+            </trans-unit>
+            <trans-unit id="AsI6qJG">
+                <source>narration.guided_step_ui_map_setup_value</source>
+                <target>Choisissez le fournisseur, enregistrez, puis collez sa clé s'il en demande une.</target>
             </trans-unit>
             <trans-unit id="9AgZZLS">
                 <source>narration.guided_step_ui_media_add_alt</source>

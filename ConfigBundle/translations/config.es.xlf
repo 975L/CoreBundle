@@ -738,6 +738,10 @@
                 <source>help.value_json</source>
                 <target>Introduzca un array JSON válido, p. ej. ["ROLE_ADMIN","ROLE_EDITOR"]</target>
             </trans-unit>
+            <trans-unit id="OU4bMIT">
+                <source>help.value_sensitive_unreadable</source>
+                <target>Ilegible con la clave actual de la bóveda: vuelva a introducir el valor.</target>
+            </trans-unit>
             <trans-unit id="2R4Y3Vo">
                 <source>help.value_theme_color</source>
                 <target>Hexadecimal (#b30000), rgb()/rgba(), hsl()/hsla(), o un nombre CSS (ej. tomato)</target>

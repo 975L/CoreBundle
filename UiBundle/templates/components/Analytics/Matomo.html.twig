@@ -1,5 +1,0 @@
-{# <twig:c975LUi:Analytics:Matomo/> #}
-{# Self-sufficient fragment carrying its own "is it enabled" guard, so the minimal shell measures audience without SiteBundle (see @c975LUi/layout.html.twig). Deliberately outside the cookie banner: meant for the CNIL-exempt setup description.site_matomo_url states, an instance configured otherwise being gated by the caller before its url and id are filled #}
-{% if matomo_enabled() %}
-    <div data-controller="matomo" data-matomo-url="{{ config('site-matomo-url')|trim }}" data-matomo-id="{{ config('site-matomo-id') }}"></div>
-{% endif %}

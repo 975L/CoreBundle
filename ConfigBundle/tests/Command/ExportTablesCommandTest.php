@@ -79,7 +79,18 @@ class ExportTablesCommandTest extends TestCase
         $this->assertSame('site-backup-database must only contain letters, digits and underscores.', $result['error']);
     }
 
-    // A "%" or "_" in the prefix is a silent LIKE wildcard, and every table this command lists is TRUNCATEd on replay
+    // The "_" a prefix may hold is escaped, so "site_" never lists "sitemap_cache" nor "sites"
+    public function testTheTableListEscapesTheUnderscoreOfThePrefix(): void
+    {
+        $command = new ExportTablesCommand($this->createParameterBag(), $this->createConfigService());
+
+        $query = new \ReflectionMethod($command, 'tableListQuery')->invoke($command, 'site_db', 'site_');
+
+        $this->assertStringContainsString("TABLE_NAME LIKE 'site\\_%'", $query);
+        $this->assertStringContainsString("TABLE_SCHEMA = 'site_db'", $query);
+    }
+
+    // A "%" in the prefix is a silent LIKE wildcard, and every table this command lists is TRUNCATEd on replay
     public function testExportTablesRefusesAPrefixHoldingALikeWildcard(): void
     {
         $command = new ExportTablesCommand($this->createParameterBag(), $this->createConfigService());

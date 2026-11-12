@@ -15,6 +15,7 @@ use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\ConfigBundle\Service\SecurityHeadersClient;
 use c975L\ConfigBundle\Service\SiteUrlResolver;
 use c975L\UiBundle\Management\MapCspHealthCheckProvider;
+use c975L\UiBundle\Tests\Map\MapResolverFactory;
 use PHPUnit\Framework\TestCase;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -30,11 +31,21 @@ class MapCspHealthCheckProviderTest extends TestCase
         $this->assertSame(MapCspHealthCheckProvider::KIND, $this->provider('google', self::ALLOWED)->getKind());
     }
 
-    // A site on OpenStreetMap has nothing to name and nothing to be told
-    public function testASiteDrawingOverOpenStreetMapIsNotAskedForAnything(): void
+    // A site on OpenStreetMap is only asked for its tiles, never for Google's hosts
+    public function testASiteDrawingOverOpenStreetMapIsOnlyAskedForItsTiles(): void
     {
-        $this->assertSame([], $this->provider('leaflet', "default-src 'self'")->runChecks());
-        $this->assertSame([], $this->provider(null, "default-src 'self'")->runChecks(), 'A site that never answered the setting is told to widen its policy.');
+        $check = $this->provider('leaflet', "default-src 'self'")->runChecks()[0];
+
+        $this->assertSame(HealthCheckResult::STATUS_ERROR, $check['status'], 'A policy refusing the tiles leaves a grey grid nothing reports.');
+        $this->assertSame(['img-src' => ['https://tile.openstreetmap.org']], $check['details']['missing']);
+        $this->assertSame(['img-src' => ['https://tile.openstreetmap.org']], $this->provider(null, "default-src 'self'")->runChecks()[0]['details']['missing'], 'A site that never answered the setting is asked for another provider\'s hosts.');
+    }
+
+    public function testASiteDrawingOverOpenStreetMapWithItsTilesAllowedIsReportedWithoutAlarm(): void
+    {
+        $check = $this->provider('leaflet', "default-src 'self'; img-src 'self' https://tile.openstreetmap.org")->runChecks()[0];
+
+        $this->assertSame(HealthCheckResult::STATUS_OK, $check['status']);
     }
 
     public function testAPolicyNamingEveryHostIsReportedWithoutAlarm(): void
@@ -87,6 +98,22 @@ class MapCspHealthCheckProviderTest extends TestCase
         $check = $this->provider('google', "default-src 'self'; script-src https://*.googleapis.com; img-src https://*.googleapis.com https://*.gstatic.com; connect-src https://*.googleapis.com")->runChecks()[0];
 
         $this->assertSame(HealthCheckResult::STATUS_OK, $check['status'], 'A policy naming "https://*.googleapis.com" was read as refusing "https://maps.googleapis.com".');
+    }
+
+    // A policy declaring neither the directive nor "default-src" restricts nothing of that kind, the way a browser reads it
+    public function testADirectiveWithNoDefaultToFallBackOnRefusesNothing(): void
+    {
+        $check = $this->provider('google', "frame-ancestors 'self'; script-src https://maps.googleapis.com")->runChecks()[0];
+
+        $this->assertSame(HealthCheckResult::STATUS_OK, $check['status'], 'A policy saying nothing of images was read as refusing every image.');
+    }
+
+    // A scheme source ("https:") covers every host served over that scheme, rather than naming a host called "https"
+    public function testASchemeSourceCoversEveryHostOverThatScheme(): void
+    {
+        $check = $this->provider('google', "default-src 'self'; script-src 'self' https:; img-src data: https:; connect-src 'self' https:")->runChecks()[0];
+
+        $this->assertSame(HealthCheckResult::STATUS_OK, $check['status'], 'A policy allowing "https:" was read as refusing the map hosts.');
     }
 
     // "strict-dynamic" hands the allowlist over to the nonce, which the loader carries (see assets/js/map.js)
@@ -154,6 +181,6 @@ class MapCspHealthCheckProviderTest extends TestCase
                 : $id . '[' . implode(',', array_map(fn ($k, $v): string => $k . '=' . $v, array_keys($parameters), $parameters)) . ']'
         );
 
-        return new MapCspHealthCheckProvider($configService, $client, $resolver, $translator);
+        return new MapCspHealthCheckProvider(MapResolverFactory::create($configService), $client, $resolver, $translator);
     }
 }

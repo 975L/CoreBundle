@@ -12,7 +12,7 @@ namespace c975L\UiBundle\Tests;
 
 use c975L\UiBundle\c975LUiBundle;
 use c975L\UiBundle\DependencyInjection\Compiler\PlaceholderMediaProviderPass;
-use c975L\UiBundle\Map\MapProvider;
+use c975L\UiBundle\Service\MapProviderResolver;
 use c975L\UiBundle\Video\VideoPlatform;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -276,7 +276,7 @@ class c975LUiBundleTest extends TestCase
 
         new c975LUiBundle()->loadExtension([], $this->containerConfigurator($container), $container);
 
-        $this->assertSame(implode(' ', MapProvider::allImgOrigins()), $container->getParameter('c975l_ui.map.img_origins'));
+        $this->assertSame(implode(' ', MapProviderResolver::shippedOrigins()['img']), $container->getParameter('c975l_ui.map.img_origins'));
         $this->assertStringContainsString('https://tile.openstreetmap.org', (string) $container->getParameter('c975l_ui.map.img_origins'));
 
         // The tile server never reaches the script list: this bundle serves Leaflet itself, and a policy naming that host for scripts is the hole these three parameters exist to avoid

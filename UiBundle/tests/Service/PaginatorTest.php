@@ -37,6 +37,15 @@ class PaginatorTest extends TestCase
         $this->assertCount(0, $this->paginator()->paginate(range(1, 25), 9, 10));
     }
 
+    // A huge "?p=" overflowed the offset into a float, which array_slice() refused with a TypeError: the page is held to the one after the last
+    public function testAHugePageNumberIsAnEmptyPageRatherThanAnError(): void
+    {
+        $pagination = $this->paginator()->paginate(range(1, 25), PHP_INT_MAX, 10);
+
+        $this->assertCount(0, $pagination);
+        $this->assertSame(4, $pagination->getCurrentPageNumber());
+    }
+
     // An empty listing is still one page: "1 / 0" is not a page number a listing can print
     public function testAnEmptyListingCountsOnePage(): void
     {

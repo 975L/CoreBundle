@@ -15,6 +15,9 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 // Reads the community list of AI crawlers AiCrawlerListUpdater compares the site's own to - its own class like SeoFilesClient and DeploymentClient, so what talks to a third party is one stubable seam rather than an http client threaded through a service that has other work to do
 class AiCrawlerListClient
 {
+    // A crawler name as ai.robots.txt writes it, segments joined by a single space or slash ("Kangaroo Bot", "iaskspider/2.0"): a key holding a line break would write its own lines into robots.txt
+    public const string USER_AGENT_PATTERN = '/^[A-Za-z0-9._-]+(?:[ \/][A-Za-z0-9._-]+)*$/D';
+
     public function __construct(
         private readonly HttpClientInterface $httpClient,
     ) {
@@ -38,9 +41,9 @@ class AiCrawlerListClient
         $userAgents = array_values(array_filter(array_map(
             static fn (mixed $agent): string => is_string($agent) ? trim($agent) : '',
             array_keys($agents)
-        )));
+        ), static fn (string $agent): bool => 1 === preg_match(self::USER_AGENT_PATTERN, $agent)));
 
-        // A json list rather than the expected object, or an object whose keys are numbers, decodes fine but leaves nothing to compare - reported like any other unreadable answer, never taken for a site that has every crawler already
+        // A json list rather than the expected object, an object whose keys are numbers, or keys that are no user agent at all, decodes fine but leaves nothing to compare - reported like any other unreadable answer, never taken for a site that has every crawler already
         if ([] === $userAgents) {
             throw new \RuntimeException(sprintf('The AI crawler list at "%s" declares no user agent.', $url));
         }

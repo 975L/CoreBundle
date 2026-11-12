@@ -11,6 +11,7 @@
 namespace c975L\ConfigBundle\Command;
 
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
+use c975L\ConfigBundle\Service\MySqlOptionsFile;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -20,31 +21,25 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Process\Process;
 
-/**
- * Console command to export the data (no CREATE TABLE) of all tables matching a prefix to a
- * single SQL file, meant to be reloaded one-shot into an environment where the schema already
- * exists (e.g. building data in dev then exporting it to prod after migrations already ran there).
- * The file truncates each table and disables FK checks around the inserts, so it can be replayed
- * as-is even if the target tables already contain data. site_config is always excluded, since
- * ConfigBundle has its own dedicated non-destructive export (see ConfigCrudController::exportSql).
- * Uses the same DB credentials as ConfigBundle's c975l:config:backup (site-backup-db-* config keys), so it works
- * even when the DB user used by external GUI tools (DBeaver...) lacks export privileges.
- *
- * Usage:
- *   php bin/console c975l:config:export-tables                  # dumps data of every "site_*" table
- *   php bin/console c975l:config:export-tables --prefix=shop_    # dumps data of every "shop_*" table
- *   php bin/console c975l:config:export-tables --output=my.sql   # custom output path
- *
- * @author Laurent Marquet <laurent.marquet@laposte.net>
- * @copyright 2026 975L <contact@975l.com>
- */
+// Exports the data (no CREATE TABLE) of the tables matching a prefix to one SQL file that truncates each of them before its inserts, site_config always excluded (ConfigCrudController::exportSql has its own non-destructive export) - a snapshot of a whole prefix, never a dev export to replay on prod, where it would empty what visitors wrote and import dev's app tokens. Uses the site-backup-db-* credentials of c975l:config:backup, so it works even when a GUI tool's DB user lacks export privileges
 #[AsCommand(
     name: 'c975l:config:export-tables',
-    description: 'Exports the data of all tables matching a prefix to a single SQL file'
+    description: 'Exports the data of all tables matching a prefix to a single SQL file',
+    help: <<<'HELP'
+    Dumps the data of every table matching <info>--prefix</info> (default <info>site_</info>, <info>site_config</info> excluded) into one SQL file that TRUNCATEs each table before its inserts.
+
+    A whole prefix is a snapshot, kept as a backup: never replay it from dev on prod, where it would empty what visitors wrote (form outputs, reviews, favorites, plays, the activity log...) and import dev's app tokens.
+
+    Carrying content from one environment to another is done case by case and by hand: export the tables one by one with the table's own name as prefix, read the TRUNCATE list at the top of the file (a longer name sharing it is listed too), then replay only what has to move.
+
+      <info>php %command.full_name%</info>                    every "site_*" table
+      <info>php %command.full_name% --prefix=shop_</info>     every "shop_*" table
+      <info>php %command.full_name% --output=my.sql</info>    custom output path
+    HELP
 )]
 class ExportTablesCommand extends Command
 {
-    // The table list goes through "mysql --execute", where neither the database name nor the prefix can be bound as a parameter - so both are refused outside the character set of a MySQL identifier rather than escaped. That also rules out the LIKE wildcards: a prefix holding a "%" or a "_" would quietly match tables it was never meant to, and every table this command lists is TRUNCATEd on replay
+    // The table list goes through "mysql --execute", where neither the database name nor the prefix can be bound as a parameter - so both are refused outside the character set of a MySQL identifier rather than escaped. That rules out "%", and the "_" an identifier may hold is escaped in the LIKE (see tableListQuery()): either would quietly match tables it was never meant to, and every table this command lists is TRUNCATEd on replay
     private const string IDENTIFIER_PATTERN = '/^[A-Za-z0-9_]+$/';
 
     public function __construct(
@@ -104,7 +99,7 @@ class ExportTablesCommand extends Command
             return ['error' => 'The table prefix must only contain letters, digits and underscores.', 'tables' => [], 'path' => null, 'content' => null, 'message' => null];
         }
 
-        $credentialsFile = $this->createTempCredentialsFile();
+        $credentialsFile = MySqlOptionsFile::write($this->configService, 'site_export_');
 
         try {
             [$tables, $listError] = $this->getTableList($database, $prefix, $credentialsFile);
@@ -141,26 +136,10 @@ class ExportTablesCommand extends Command
         ];
     }
 
-    // Writes host/user/password to a temp file so credentials never appear in the process list
-    private function createTempCredentialsFile(): string
-    {
-        $host = (string) $this->configService->get('site-backup-db-host');
-        $user = (string) $this->configService->get('site-backup-db-user');
-        $password = (string) $this->configService->get('site-backup-db-password');
-
-        $tmpFile = tempnam(sys_get_temp_dir(), 'site_export_');
-        chmod($tmpFile, 0600);
-        file_put_contents($tmpFile, "[client]\nhost={$host}\nuser={$user}\npassword={$password}\n");
-
-        return $tmpFile;
-    }
-
     // Returns [tables, error], error being null on success site_config is excluded: ConfigBundle's own export has upsert semantics a TRUNCATE would destroy
     private function getTableList(string $database, string $prefix, string $credentialsFile): array
     {
-        $query = 'SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES '
-            . "WHERE TABLE_SCHEMA = '{$database}' AND TABLE_NAME LIKE '{$prefix}%' AND TABLE_TYPE != 'VIEW' "
-            . "AND TABLE_NAME != 'site_config'";
+        $query = $this->tableListQuery($database, $prefix);
 
         $process = new Process([
             'mysql',
@@ -182,6 +161,16 @@ class ExportTablesCommand extends Command
         ));
 
         return [$tables, null];
+    }
+
+    // The tables starting with the prefix, its "_" escaped so "site_" never matches "sitemap_cache" nor "sites" - both values already checked against IDENTIFIER_PATTERN
+    private function tableListQuery(string $database, string $prefix): string
+    {
+        $like = str_replace('_', '\\_', $prefix);
+
+        return 'SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES '
+            . "WHERE TABLE_SCHEMA = '{$database}' AND TABLE_NAME LIKE '{$like}%' AND TABLE_TYPE != 'VIEW' "
+            . "AND TABLE_NAME != 'site_config'";
     }
 
     // Dumps data only, wrapped in FK-checks-off + a TRUNCATE per table so the file can be replayed as-is on a target that already has (possibly wrong) data in these tables

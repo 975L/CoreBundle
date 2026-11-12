@@ -19,6 +19,7 @@ use c975L\ConfigBundle\Management\FileCounter;
 use c975L\ConfigBundle\Management\OffsiteState;
 use c975L\ConfigBundle\Management\OffsiteSynchronizer;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
+use c975L\ConfigBundle\Service\MySqlOptionsFile;
 use c975L\UiBundle\Model\EmailSendRequest;
 use c975L\UiBundle\Service\EmailService;
 use Doctrine\DBAL\Connection;
@@ -175,7 +176,7 @@ class BackupCommand extends Command
     // Every step of the backup, the temporary credentials file removed whatever happens
     private function backupAll(): void
     {
-        $this->credentialsFile = $this->createTempCredentialsFile();
+        $this->credentialsFile = MySqlOptionsFile::write($this->configService, 'site_backup_');
         try {
             foreach ($this->databases() as $database) {
                 $this->backupMySql($database);
@@ -224,19 +225,6 @@ class BackupCommand extends Command
         }
 
         $this->sqlBytes += $this->compressSqlFiles("MYSQL_-_{$db}_-_{$dateTime}_-_Tables.sql.tar.bz2");
-    }
-
-    private function createTempCredentialsFile(): string
-    {
-        $host = (string) $this->configService->get('site-backup-db-host');
-        $user = (string) $this->configService->get('site-backup-db-user');
-        $password = (string) $this->configService->get('site-backup-db-password');
-
-        $tmpFile = tempnam(sys_get_temp_dir(), 'site_backup_');
-        chmod($tmpFile, 0600);
-        file_put_contents($tmpFile, "[client]\nhost={$host}\nuser={$user}\npassword={$password}\n");
-
-        return $tmpFile;
     }
 
     private function getMySqlTableList(string $db, string $query): array

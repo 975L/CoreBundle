@@ -1,6 +1,6 @@
 ---
 name: c975l-forms-emails
-description: "Use this skill when building a form or sending an email in a Symfony application built on the c975L ecosystem — the admin-editable Form and FormField entities, the form block, form actions, the shared anti-spam layers and reCAPTCHA, the EmailTemplate builder, EmailService and the email layout registry. Covers why a contact form needs no controller and why a bundle never writes an email layout. Triggers on: FormTranslator, ui_form_label, translation_locale, FormTranslationBuilder, SeededTranslationWriteListener, translate a form, EmailAttachment, EmailAttachmentProviderInterface, EmailAttachmentRegistry, attachmentsFor, LegalDocumentAttachmentProvider, attachments, attaching a PDF, durable medium, Form entity, FormField, FormFieldTemplate, FormOutput, calculator, calculateur, ExpressionEvaluator, CalculatorExpressionLanguage, CalculatorController, ui_form_compute, isComputeOnly, submittable calculator, quote simulator, ui-calculator-form, ui-calculator-submit, _submit.html.twig, _flashes.html.twig, COMPUTED, ValidExpressions, FormOutputType, ui-calculator, TYPE_RANGE, TYPE_CHOICE, TYPE_CHECKBOX, TYPE_IMAGE, IMAGE_MIME_TYPES, IMAGE_MAX_SIZE, getMaxFiles, photo upload, image field, validateOptionValues, duplicate option value, NUMERIC_TYPES, yes/no switch, shareable link, query string, reset link, ui-calculator-reset, label.calculator_reset, autocomplete, PriceFormatter, optionLabel, price, priced field, priced choice, hiddenWhenZero, data-ui-calculator-hide-zero, detailed quote, outputsFirst, outputs_first, formulaVariables, formula-variables, FormExportProvider, FormImportProvider, site_form, exportSelection, FormController, form block, label.form_registered, label.form_submitted, FormActionInterface, SuccessUrlFormActionInterface, getSuccessUrl, successUrl, thank-you page, minDelay, submitLabel, getSubmitLabel, submit button label, FormActionRegistry, SendEmailFormAction, FormSeeder, form_url, FormPageUrlProviderInterface, FormBotProtection, honeypot, no_limit, ui_rating, ui_favorite, ui_review, CaptchaType, captcha_configured, recaptcha3-site-key, site-form-delay, url-privacy-policy, text.gdpr_information, FormField::$url, bracketed label, plainLabel, splitLinkedLabel, EmailTemplateProviderInterface, EmailTemplateProviderRegistry, EmailTemplateProviderPass, EmailTemplateFactory, EmailTemplateHealthCheckProvider, EmailTemplateRepository, findForRendering, renderNamed, c975l:ui:email-templates:ensure, EmailTemplateEnsureCommand, seededBlocks, locale, TYPE_SLOT, TYPE_HTML, html block, slot, DATA_TYPES, isDataBlock, data block, backfill, FormEditUrl, EmailTemplate, EmailBlock, EmailService, EmailSendRequest, wrapLayout, EmailLayoutProviderInterface, email_template_body, email-debug, EmailDebugShortcutController, consumeDebugPreviews, EmailDebugExtension, ui_email_debug_previews, Email:DebugPreview, absolute_urls, AbsoluteUrlsExtension."
+description: "Use this skill when building a form or sending an email in a Symfony application built on the c975L ecosystem — the admin-editable Form and FormField entities, the form block, form actions, the shared anti-spam layers and reCAPTCHA, the EmailTemplate builder, EmailService and the email layout registry. Covers why a contact form needs no controller and why a bundle never writes an email layout. Triggers on: FormTranslator, ui_form_label, translation_locale, FormTranslationBuilder, SeededTranslationWriteListener, translate a form, EmailAttachment, EmailAttachmentProviderInterface, EmailAttachmentRegistry, attachmentsFor, LegalDocumentAttachmentProvider, attachments, attaching a PDF, durable medium, Form entity, FormField, FormFieldTemplate, FormOutput, calculator, calculateur, ExpressionEvaluator, CalculatorExpressionLanguage, CalculatorController, ui_form_compute, isComputeOnly, submittable calculator, quote simulator, ui-calculator-form, ui-calculator-submit, _submit.html.twig, _flashes.html.twig, COMPUTED, ValidExpressions, FormOutputType, ui-calculator, TYPE_RANGE, TYPE_CHOICE, TYPE_CHECKBOX, TYPE_IMAGE, IMAGE_MIME_TYPES, IMAGE_MAX_SIZE, getMaxFiles, photo upload, image field, validateOptionValues, duplicate option value, NUMERIC_TYPES, yes/no switch, shareable link, query string, reset link, ui-calculator-reset, label.calculator_reset, autocomplete, PriceFormatter, optionLabel, price, priced field, priced choice, hiddenWhenZero, data-ui-calculator-hide-zero, detailed quote, outputsFirst, outputs_first, formulaVariables, formula-variables, FormExportProvider, FormImportProvider, site_form, exportSelection, FormController, form block, label.form_registered, label.form_submitted, FormActionInterface, SuccessUrlFormActionInterface, getSuccessUrl, successUrl, thank-you page, minDelay, submitLabel, getSubmitLabel, submit button label, FormActionRegistry, SendEmailFormAction, FormSeeder, form_url, FormPageUrlProviderInterface, FormBotProtection, honeypot, no_limit, ui_rating, ui_favorite, ui_review, CaptchaType, CaptchaProviderInterface, RecaptchaProvider, captcha_provider, captcha-provider, captcha-recaptcha-site-key, site-form-delay, url-privacy-policy, text.gdpr_information, FormField::$url, bracketed label, plainLabel, splitLinkedLabel, EmailTemplateProviderInterface, EmailTemplateProviderRegistry, EmailTemplateProviderPass, EmailTemplateFactory, EmailTemplateHealthCheckProvider, EmailTemplateRepository, findForRendering, renderNamed, c975l:ui:email-templates:ensure, EmailTemplateEnsureCommand, seededBlocks, locale, TYPE_SLOT, TYPE_HTML, html block, slot, DATA_TYPES, isDataBlock, data block, backfill, FormEditUrl, EmailTemplate, EmailBlock, EmailService, EmailSendRequest, wrapLayout, EmailLayoutProviderInterface, email_template_body, email-debug, EmailDebugShortcutController, consumeDebugPreviews, EmailDebugExtension, ui_email_debug_previews, Email:DebugPreview, absolute_urls, AbsoluteUrlsExtension."
 ---
 
 # c975L UiBundle — forms and emails
@@ -48,9 +48,9 @@ bundle never knows what your action does.**
 the admin still notifies someone, configured through `actionConfig` (`to`, `from`, `replyTo`,
 `subject`, `template` or `emailTemplate`, `senderEmailField`, `offerReceiveCopy`), everything unset
 falling back on the site-wide `email-*` settings. `offerReceiveCopy` sends the whole copy to the signed-in
-account's own address (`CurrentAccountAddress`, `copyToEmail`). Any other address, which proves nothing, gets the
-message on a request of its own, without its attachments and under the fixed sentence `text.form_copy_notice`
-(`EmailSendRequest::$preface`, written ahead of whichever body the message has, a site's own template included).
+account's own address (`CurrentAccountAddress`, `copyToEmail`). Any other address, which proves nothing, only gets a
+fixed acknowledgement on a request of its own (`label.form_acknowledgement_subject`, `text.form_acknowledgement`),
+carrying nothing the visitor typed: the site never relays a visitor's text to a third party.
 
 **The flash shown after a submission is picked on the action's key**, in `FormController::submit()`:
 `send_email` says the message was sent, `register` says a confirmation email may not have been resent
@@ -187,11 +187,18 @@ takes a new owner type as it stands.
 
 Shared by every public form, with **nothing to wire**: a rotating honeypot and a minimum submit delay
 (`site-form-delay`, which a form overrides with `minDelay` in its `actionConfig`), a site-wide GDPR information line (`url-privacy-policy`), a live MX/A DNS check on every
-email-typed field, `IsTrue` on every required checkbox, a rate limiter counting a caller rather than
-an address (an IPv6 one by its /64), and reCAPTCHA v3 — a no-op unless `recaptcha3-site-key` and
-`recaptcha3-secret-key` are both filled in, and always in the `dev` environment, whose production keys
-refuse localhost. A template saying whether the site uses reCAPTCHA (the privacy policy) reads
-`captcha_configured()` instead, true whenever both keys are set, `dev` included.
+email-typed field (a controller of its own calls `FormBotProtection::isUntimed()` then `isSuspicious()` before
+`handleRequest()` and `startTimer()` right before rendering: a POST no display armed is shown back filled with
+`text.form_resend`, never run), `IsTrue` on every required checkbox, a rate limiter counting a caller rather than
+an address (an IPv6 one by its /64), and a captcha — a no-op unless `captcha-provider` names a service
+whose own keys are filled in (`captcha-recaptcha-*` for reCAPTCHA v3, the one shipped), and always in
+the `dev` environment, whose production keys refuse localhost. A template saying which service the site
+uses (the privacy policy) reads `captcha_provider()` instead, `dev` included.
+
+**The captcha is a connector**: a new service is a `Contract\CaptchaProviderInterface` (auto-tagged
+`c975l.captcha_provider`) plus a driver registered in the driver map of `assets/js/captcha.js` and its paragraph
+in `templates/models/france/providers/captcha-<slug>.*.html.twig`. **Never write a service's name, url
+or keys into `CaptchaVerifier`, `CaptchaType` or `captcha.js`** — they belong to its provider.
 
 **Under `test` no limiter of this bundle refuses anything** — `ui_form`, `ui_rating`, `ui_favorite`,
 `ui_ai_search`, `ui_ai_search_site` and `ui_review` are prepended with `policy: no_limit` there, so a site's own functional suite never
@@ -227,6 +234,10 @@ $this->emailService->send(new EmailSendRequest(
     bcc: $this->configService->get('shop-email-bcc'),
 ));
 ```
+
+`headers` sets extra headers on the message, name => value (a reminder's `List-Unsubscribe` and
+`List-Unsubscribe-Post`, RFC 8058): a name EmailService sets itself (From, To, Subject...) or a value
+spanning lines is dropped, and the copy sent to `copyToEmail` carries none of them.
 
 **`wrapLayout: true` is what dresses it**: `EmailLayoutProviderInterface` answers with SiteBundle's
 branded layout when that bundle is installed, and with this bundle's bare one otherwise. Its
@@ -310,7 +321,9 @@ An order confirmation without the order's lines confirms nothing.
 - **On a restricted template, a data block moves but is never deleted.** `EmailTemplateCrudController` puts back
   any that a submission dropped, and `EmailBlockType` locks a saved one's kind and slot name (retyping a `slot`
   into a `text` is a deletion by another road). `email-data-block.js` takes the delete button out of the page,
-  but the page is only the courtesy - the guarantee is server-side.
+  but the page is only the courtesy - the guarantee is server-side. A restricted `Form` keeps its restricted
+  fields the same way, and a restricted `Form`, `EmailTemplate` or `FormFieldTemplate` is left in place
+  by `deleteEntity()` with a warning flash, which EasyAdmin's batch delete calls directly, the rest of the batch going on.
 - **A declaration that grows after the sites were built** is backfilled: `ensure` appends the data blocks a
   template never had, once each, `EmailTemplate::$seededBlocks` recording what it has already been offered.
   That is the whole difference between a template that never received a block and one whose admin took it out.
@@ -373,7 +386,8 @@ class InvoiceAttachmentProvider implements EmailAttachmentProviderInterface
   goes out alone until `c975l:ui:email-templates:ensure` seeds the row again.
 - `Service\LegalDocumentAttachmentProvider` ships every `LegalModelCatalog` model as `legal:france/terms-of-sales`
   and friends, drawn through `Service\LegalDocument` - the page and the attached file are the same document, and
-  the PDF is redrawn as soon as its text changes. The filename is written in the recipient's language.
+  the PDF is redrawn as soon as its text changes. The document is the oldest visible `legal_model` block of a
+  published page (else the model as shipped), never a copy in the trash. The filename is written in the recipient's language.
 - New column: `site_email_template.attachments`. Generate a migration on each site.
 
 

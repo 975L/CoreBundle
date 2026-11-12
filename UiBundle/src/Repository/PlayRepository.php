@@ -58,4 +58,16 @@ class PlayRepository extends ServiceEntityRepository
             ->execute()
         ;
     }
+
+    // Erases everything one holder played, which is what an account deleted or anonymized loses (see HolderAnonymizedListener)
+    public function deleteByHolder(string $holder): int
+    {
+        return (int) $this->createQueryBuilder('p')
+            ->delete()
+            ->andWhere('p.holder = :holder')
+            ->setParameter('holder', $holder)
+            ->getQuery()
+            ->execute()
+        ;
+    }
 }

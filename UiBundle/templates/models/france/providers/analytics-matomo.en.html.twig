@@ -1,0 +1,8 @@
+{# The cookies policy's section on Matomo, included by cookies.en.html.twig when it is the audience measurement provider in use (see AnalyticsProviderInterface) #}
+<section data-legal-id="audience-measurement">
+	<h2>Audience measurement (Matomo)</h2>
+	<div class="text text-justify">
+		This site uses Matomo, a self-hosted audience-measurement tool, to analyze its traffic. Configured according to the French data protection authority's (CNIL) exemption criteria (anonymized IP address, no cross-referencing with other sites, data kept for a maximum of 13 months, "Do Not Track" respected), its use likewise does not require your consent. It is only used for internal statistics, never for advertising purposes or resale to third parties.
+		You can still opt out at any time: <a href="{{ analyticsProvider.settings.url }}/index.php?module=CoreAdminHome&amp;action=optOut&amp;language=en" target="_blank" rel="noopener">opt out of Matomo tracking</a>.
+	</div>
+</section>

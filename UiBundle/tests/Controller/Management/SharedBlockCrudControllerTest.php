@@ -14,6 +14,7 @@ use c975L\ConfigBundle\Management\ContentLocaleScreen;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\ConfigBundle\Service\SiteLocales;
 use c975L\UiBundle\Controller\Management\SharedBlockCrudController;
+use c975L\UiBundle\Entity\Block;
 use c975L\UiBundle\Registry\BlockLocationRegistry;
 use c975L\UiBundle\Repository\SharedBlockRepository;
 use c975L\UiBundle\Service\BlockMoveRowAttrBuilder;
@@ -60,7 +61,21 @@ class SharedBlockCrudControllerTest extends TestCase
         $this->assertSame('name', $fields[0]->getAsDto()->getProperty());
     }
 
-    private function createController(string $asked): SharedBlockCrudController
+    // A page label is the editor's text, shown in a flash EasyAdmin renders raw
+    public function testTheLocationsOfAUsedBlockAreEscaped(): void
+    {
+        $pointer = new Block();
+        new \ReflectionProperty(Block::class, 'id')->setValue($pointer, 7);
+
+        $registry = $this->createStub(BlockLocationRegistry::class);
+        $registry->method('getLocations')->willReturn([7 => ['label' => 'Page « <img src=x onerror=alert(1)> »']]);
+
+        $locations = new \ReflectionMethod(SharedBlockCrudController::class, 'locations')->invoke($this->createController('fr', $registry), [$pointer]);
+
+        $this->assertSame('Page « &lt;img src=x onerror=alert(1)&gt; »', $locations);
+    }
+
+    private function createController(string $asked, BlockLocationRegistry $blockLocationRegistry = new BlockLocationRegistry()): SharedBlockCrudController
     {
         $requestStack = new RequestStack([new Request([ContentLocaleScreen::PARAM => $asked])]);
         $contentTranslator = $this->createStub(ContentTranslator::class);
@@ -74,7 +89,7 @@ class SharedBlockCrudControllerTest extends TestCase
             $this->createStub(BlockMoveRowAttrBuilder::class),
             $this->createStub(SharedBlockRepository::class),
             $this->createStub(SharedBlockUsage::class),
-            new BlockLocationRegistry(),
+            $blockLocationRegistry,
             $this->createStub(SluggerInterface::class),
             new ContentLocaleScreen($requestStack, $this->createStub(AdminUrlGeneratorInterface::class), new SiteLocales(['fr', 'es'], 'fr')),
             $contentTranslator,

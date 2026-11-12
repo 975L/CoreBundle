@@ -64,6 +64,84 @@ class ReviewControllerTest extends TestCase
         $this->assertSame($address, $captured->review->getAuthorEmail());
     }
 
+    // The timer is armed once the POST is checked, right before the render: a review corrected after a validation error is timed from the page showing the error, not from its own submission
+    public function testTheBotTimerIsArmedAfterTheCheck(): void
+    {
+        $calls = new \ArrayObject();
+        $botProtection = $this->createStub(FormBotProtection::class);
+        $botProtection->method('isSuspicious')->willReturnCallback(static function () use ($calls): bool {
+            $calls[] = 'check';
+
+            return false;
+        });
+        $botProtection->method('startTimer')->willReturnCallback(static function () use ($calls): void {
+            $calls[] = 'timer';
+        });
+        $controller = new class ($this->createConfiguredStub(ReviewService::class, ['isEnabled' => true]), self::signer(), $this->createConfiguredStub(FavoriteItemRegistry::class, ['resolve' => [['ownerType' => 'book', 'ownerId' => 12, 'item' => new CollectionItem(title: 'x')]]]), $botProtection, $this->createStub(RateLimiterGuard::class), $this->createStub(TranslatorInterface::class), null, $this->createStub(CurrentAccountAddress::class), $this->createStub(FormInterface::class)) extends ReviewController {
+            public function __construct(ReviewService $a, ReviewTokenSigner $b, FavoriteItemRegistry $c, FormBotProtection $d, RateLimiterGuard $e, TranslatorInterface $f, ?RateLimiterFactoryInterface $g, CurrentAccountAddress $h, private readonly FormInterface $form)
+            {
+                parent::__construct($a, $b, $c, $d, $e, $f, $g, $h);
+            }
+
+            protected function createForm(string $type, mixed $data = null, array $options = []): FormInterface
+            {
+                return $this->form;
+            }
+
+            protected function generateUrl(string $route, array $parameters = [], int $referenceType = 1): string
+            {
+                return '/review';
+            }
+
+            protected function render(string $view, array $parameters = [], ?Response $response = null): Response
+            {
+                return new Response();
+            }
+        };
+
+        $controller->new(self::token(), Request::create('/review', 'POST'));
+
+        $this->assertSame(['check', 'timer'], $calls->getArrayCopy());
+    }
+
+    // A review posted with no timed display is shown back with a word on why, and never stored
+    public function testAnUntimedReviewIsShownBackWithoutBeingStored(): void
+    {
+        $reviewService = $this->createMock(ReviewService::class);
+        $reviewService->method('isEnabled')->willReturn(true);
+        $reviewService->expects($this->never())->method('submit');
+        $botProtection = $this->createConfiguredStub(FormBotProtection::class, ['isUntimed' => true]);
+        $translator = $this->createStub(TranslatorInterface::class);
+        $translator->method('trans')->willReturnArgument(0);
+        $form = $this->createMock(FormInterface::class);
+        $form->method('isSubmitted')->willReturn(true);
+        $form->method('isValid')->willReturn(true);
+        $form->expects($this->once())->method('addError')->with($this->callback(static fn ($error): bool => 'text.form_resend' === $error->getMessage()));
+        $controller = new class ($reviewService, self::signer(), $this->createConfiguredStub(FavoriteItemRegistry::class, ['resolve' => [['ownerType' => 'book', 'ownerId' => 12, 'item' => new CollectionItem(title: 'x')]]]), $botProtection, $this->createStub(RateLimiterGuard::class), $translator, null, $this->createStub(CurrentAccountAddress::class), $form) extends ReviewController {
+            public function __construct(ReviewService $a, ReviewTokenSigner $b, FavoriteItemRegistry $c, FormBotProtection $d, RateLimiterGuard $e, TranslatorInterface $f, ?RateLimiterFactoryInterface $g, CurrentAccountAddress $h, private readonly FormInterface $form)
+            {
+                parent::__construct($a, $b, $c, $d, $e, $f, $g, $h);
+            }
+
+            protected function createForm(string $type, mixed $data = null, array $options = []): FormInterface
+            {
+                return $this->form;
+            }
+
+            protected function generateUrl(string $route, array $parameters = [], int $referenceType = 1): string
+            {
+                return '/review';
+            }
+
+            protected function render(string $view, array $parameters = [], ?Response $response = null): Response
+            {
+                return new Response();
+            }
+        };
+
+        $this->assertSame(200, $controller->new(self::token(), Request::create('/review', 'POST'))->getStatusCode());
+    }
+
     /** @return iterable<string, array{?string}> */
     public static function prefilledAddresses(): iterable
     {

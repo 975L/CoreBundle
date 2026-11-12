@@ -14,6 +14,7 @@ use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\UiBundle\Entity\FormFieldTemplate;
 use c975L\UiBundle\Form\FormFieldType;
 use c975L\UiBundle\Repository\FormFieldTemplateRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminRoute;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
@@ -25,6 +26,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Provider\AdminContextProvider;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 use function Symfony\Component\Translation\t;
 
@@ -34,12 +36,26 @@ class FormFieldTemplateCrudController extends AbstractCrudController
     public function __construct(
         private readonly ConfigServiceInterface $configService,
         private readonly AdminContextProvider $adminContextProvider,
+        private readonly TranslatorInterface $translator,
     ) {
     }
 
     public static function getEntityFqcn(): string
     {
         return FormFieldTemplate::class;
+    }
+
+    // A seeded field template is left in place with a warning here and not only hidden by displayIf(): EasyAdmin's delete and batch delete both end in this method, the rest of a batch still deleted
+    #[\Override]
+    public function deleteEntity(EntityManagerInterface $entityManager, mixed $entityInstance): void
+    {
+        if ($entityInstance instanceof FormFieldTemplate && $entityInstance->isRestricted()) {
+            $this->addFlash('warning', $this->translator->trans('flash.restricted_not_deleted', [], 'ui'));
+
+            return;
+        }
+
+        parent::deleteEntity($entityManager, $entityInstance);
     }
 
     #[\Override]

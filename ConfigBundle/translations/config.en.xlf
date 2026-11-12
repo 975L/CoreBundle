@@ -738,6 +738,10 @@
                 <source>help.value_json</source>
                 <target>Enter a valid JSON array, e.g. ["ROLE_ADMIN","ROLE_EDITOR"]</target>
             </trans-unit>
+            <trans-unit id="OU4bMIT">
+                <source>help.value_sensitive_unreadable</source>
+                <target>Unreadable with the current vault key: type the value again.</target>
+            </trans-unit>
             <trans-unit id="2R4Y3Vo">
                 <source>help.value_theme_color</source>
                 <target>Hex (#b30000), rgb()/rgba(), hsl()/hsla(), or a CSS name (e.g. tomato)</target>

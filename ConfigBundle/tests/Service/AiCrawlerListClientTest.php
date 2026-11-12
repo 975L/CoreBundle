@@ -32,6 +32,24 @@ class AiCrawlerListClientTest extends TestCase
         $this->assertSame(['GPTBot', 'CCBot'], $client->fetch(self::SOURCE));
     }
 
+    // A key holding a line break would write its own lines into robots.txt, so only crawler names are kept, a space or a slash between their segments included
+    public function testFetchDropsAKeyThatIsNoUserAgent(): void
+    {
+        $client = $this->createClient('{"GPTBot": {}, "X\\nUser-agent: *": {}, "Kangaroo Bot": {}, "iaskspider/2.0": {}, "Bot  Double": {}, "Trail/": {}}');
+
+        $this->assertSame(['GPTBot', 'Kangaroo Bot', 'iaskspider/2.0'], $client->fetch(self::SOURCE));
+    }
+
+    // Nothing left once the keys that are no user agent are dropped is no list either
+    public function testFetchThrowsWhenNoKeyIsAUserAgent(): void
+    {
+        $client = $this->createClient('{"X\\nUser-agent: *": {}}');
+
+        $this->expectException(\RuntimeException::class);
+
+        $client->fetch(self::SOURCE);
+    }
+
     // An html error page decodes to nothing: taking that for a list that lost all its entries would report every crawler this site blocks as unknown upstream
     public function testFetchThrowsOnAResponseThatIsNotAJsonObject(): void
     {

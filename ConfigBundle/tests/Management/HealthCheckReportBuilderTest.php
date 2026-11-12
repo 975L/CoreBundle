@@ -11,11 +11,13 @@
 namespace c975L\ConfigBundle\Tests\Management;
 
 use c975L\ConfigBundle\Entity\HealthCheckResult;
+use c975L\ConfigBundle\Management\BackupResultRecorder;
 use c975L\ConfigBundle\Management\HealthCheckReportBuilder;
 use c975L\ConfigBundle\Management\StatusReportBuilder;
 use c975L\ConfigBundle\Repository\HealthCheckResultRepository;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use PHPUnit\Framework\TestCase;
+use Symfony\Bundle\SecurityBundle\Security;
 
 class HealthCheckReportBuilderTest extends TestCase
 {
@@ -36,8 +38,11 @@ class HealthCheckReportBuilderTest extends TestCase
     }
 
     // Both builders read the same stubbed repository: the report is the status one plus the details it leaves out, so the two have to be looking at the very same run
-    private function createBuilder(array $rows = []): HealthCheckReportBuilder
+    private function createBuilder(array $rows = [], bool $superAdmin = false): HealthCheckReportBuilder
     {
+        $security = $this->createStub(Security::class);
+        $security->method('isGranted')->willReturn($superAdmin);
+
         $configService = $this->createStub(ConfigServiceInterface::class);
         $configService->method('get')->willReturn('https://example.com');
 
@@ -47,7 +52,16 @@ class HealthCheckReportBuilderTest extends TestCase
         return new HealthCheckReportBuilder(
             new StatusReportBuilder([], $configService, $repository, 'prod'),
             $repository,
+            $security,
         );
+    }
+
+    // A backup row in error, its raw tool output naming the database
+    private function backupRow(): HealthCheckResult
+    {
+        return $this->row(HealthCheckResult::STATUS_ERROR)
+            ->setKind(BackupResultRecorder::KIND)
+            ->setDetails(['errors' => ['mysqldump: Access denied for user "site_db"@"db.host"'], 'warnings' => ['a', 'b'], 'size' => 42]);
     }
 
     // Whoever reads the report gets the site's identity and versions for free: a bug read without the versions it happens on is a bug read twice
@@ -73,6 +87,22 @@ class HealthCheckReportBuilderTest extends TestCase
         $this->assertSame('/management/page/12/edit', $results[0]['editUrl']);
         $this->assertSame(['errors' => ['line 3: The types are incompatible']], $results[0]['details']);
         $this->assertNull($results[0]['acknowledgedAt']);
+    }
+
+    // Below the super admin, a backup's raw errors and warnings become their count
+    public function testABackupsRawOutputIsCountedBelowTheSuperAdmin(): void
+    {
+        $results = $this->createBuilder([$this->backupRow()])->build()['results'];
+
+        $this->assertSame(['errors' => 1, 'warnings' => 2, 'size' => 42], $results[0]['details']);
+    }
+
+    // The super admin reads them whole
+    public function testABackupsRawOutputIsKeptForTheSuperAdmin(): void
+    {
+        $results = $this->createBuilder([$this->backupRow()], superAdmin: true)->build()['results'];
+
+        $this->assertSame(['mysqldump: Access denied for user "site_db"@"db.host"'], $results[0]['details']['errors']);
     }
 
     // An "ok" row says nothing to fix and a "skipped" one says the check never ran - both would bury the rows that need reading under a site's whole page count

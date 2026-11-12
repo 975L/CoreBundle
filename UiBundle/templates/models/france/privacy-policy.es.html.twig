@@ -68,25 +68,24 @@
 	{% endif %}
 
 	{# The providers some features hand data to, each named only when this site uses it - the payment one and the site's own coming from PaymentBundle and from the app's templates/legal/, when they exist. No section at all when none is used #}
-	{% set captchaUsed = captcha_configured() %}
+	{% set captchaProvider = captcha_provider() %}
 	{% set oauthNames = oauth_login_providers()|map(provider => provider.name)|join(' o ') %}
 	{% set mapSettings = ui_map_settings() %}
-	{% set googleMapsUsed = 'google' == mapSettings.provider and mapSettings.usable %}
+	{% set mapParagraph %}{% if mapSettings.usable %}{% include '@c975LUi/models/france/providers/map-' ~ mapSettings.provider ~ '.es.html.twig' ignore missing %}{% endif %}{% endset %}
+	{% set ageProvider = age_verification_provider() %}
+	{% set ageParagraph %}{% if ageProvider %}{% include '@c975LUi/models/france/providers/age-verification-' ~ ageProvider.slug ~ '.es.html.twig' ignore missing %}{% endif %}{% endset %}
 	{% set otherProviders %}
 		{% include '@c975LPayment/legal/privacy-policy.es.html.twig' ignore missing %}
 		{% include 'legal/privacy-policy.es.html.twig' ignore missing %}
 	{% endset %}
-	{% if captchaUsed or oauthNames or googleMapsUsed or otherProviders|trim is not empty %}
+	{% if captchaProvider or oauthNames or mapParagraph|trim is not empty or ageParagraph|trim is not empty or otherProviders|trim is not empty %}
 	<section data-legal-id="third-parties">
 		<h2>Servicios de terceros</h2>
 		<div>
 			Algunas funciones de <strong>{{ legal_var('site-name') }}</strong> se apoyan en proveedores, que reciben entonces solo los datos que su servicio necesita. Algunos pueden tratarlos fuera de la Unión Europea, con las garantías previstas por el RGPD (decisión de adecuación o cláusulas contractuales tipo).
 		</div>
-		{% if captchaUsed %}
-		<h3 data-legal-id="third-parties.recaptcha">Protección de los formularios (Google reCAPTCHA)</h3>
-		<div>
-			Los formularios están protegidos contra los robots por Google reCAPTCHA. Al enviar un formulario, Google recibe su dirección IP e información sobre su navegador y su navegación, para estimar si el envío procede de una persona. Estos datos se tratan según la <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">política de privacidad de Google</a>.
-		</div>
+		{% if captchaProvider %}
+		{% include ['@c975LUi/models/france/providers/captcha-' ~ captchaProvider.slug ~ '.es.html.twig', '@c975LUi/models/france/providers/captcha.es.html.twig'] %}
 		{% endif %}
 		{% if oauthNames %}
 		<h3 data-legal-id="third-parties.oauth">Inicio de sesión con {{ oauthNames }}</h3>
@@ -94,12 +93,8 @@
 			Si elige iniciar sesión con {{ oauthNames }}, el servicio elegido nos transmite su dirección de correo electrónico, que ha verificado; no conservamos nada más. Ese servicio sabe entonces que usted utiliza <strong>{{ legal_var('site-name') }}</strong>.
 		</div>
 		{% endif %}
-		{% if googleMapsUsed %}
-		<h3 data-legal-id="third-parties.google-maps">Mapas (Google Maps)</h3>
-		<div>
-			Los mapas se muestran mediante Google Maps, solo después de que usted acepte los contenidos de terceros. Google recibe entonces su dirección IP y puede instalar sus propias cookies.
-		</div>
-		{% endif %}
+		{{ mapParagraph }}
+		{{ ageParagraph }}
 		{{ otherProviders }}
 	</section>
 	{% endif %}

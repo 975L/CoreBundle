@@ -145,12 +145,13 @@
                 {% endif %}
             {% endblock %}
 
-            {# Matomo's origin, since this shell renders its snippet below: its script is fetched from a third-party host, so the DNS lookup and the TLS handshake would otherwise only start once that JS runs. Origin only, a preconnect must carry no path - and none at all when the instance is served by this very host, where the connection is already open. Gated on the very check the component makes: a site whose tracking is off while its instance url stays filled would otherwise open a connection to a third party it never sends a measure to, which is exactly what turning the tracking off is meant to avoid #}
+            {# The audience measurement provider's origin, since this shell renders its snippet below: its script is fetched from a third-party host, so the DNS lookup and the TLS handshake would otherwise only start once that JS runs. None at all when it is served by this very host, where the connection is already open, nor when no provider is in use: a site whose tracking is off would otherwise open a connection to a third party it never sends a measure to #}
             {% block preconnect %}
-                {% set matomoOrigin = matomo_enabled() ? config('site-matomo-url')|trim|split('/')|slice(0, 3)|join('/') : '' %}
+                {% set analyticsProvider = analytics_provider() %}
+                {% set analyticsOrigin = analyticsProvider ? analyticsProvider.origin : null %}
                 {% set preconnectUrls = config('site-preconnect')|default([]) %}
-                {% if matomoOrigin and matomoOrigin != app.request.getSchemeAndHttpHost() and matomoOrigin not in preconnectUrls %}
-                    {% set preconnectUrls = preconnectUrls|merge([matomoOrigin]) %}
+                {% if analyticsOrigin and analyticsOrigin != app.request.getSchemeAndHttpHost() and analyticsOrigin not in preconnectUrls %}
+                    {% set preconnectUrls = preconnectUrls|merge([analyticsOrigin]) %}
                 {% endif %}
                 {% for preconnectUrl in preconnectUrls %}
                     <link rel="preconnect" href="{{ preconnectUrl }}">
@@ -243,8 +244,11 @@
             {% block footer %}{% endblock %}
 
             {# Both carry their own "is it enabled" guard, so nothing to check here. Rendered by the layout and not by a footer component, so a site overriding its footer keeps its tracking and its cookie banner #}
-            <twig:c975LUi:Analytics:Matomo />
+            <twig:c975LUi:Analytics:Tracker />
             <twig:c975LUi:Cookie:Consent />
+
+            {# Outside every cached block: the sentences a map shows its editor when it cannot be drawn, rendered for the back-office alone #}
+            {{ include('@c975LUi/components/Map/_diagnostic.html.twig') }}
 
             {# The site search's dialog, placed once for the whole site and opened from the navbar's magnifier (see components/AiSearch/Trigger.html.twig). It carries its own "is it on" guard, and sits outside the footer block so a site replacing its footer keeps it #}
             <twig:c975LUi:AiSearch:Dialog />

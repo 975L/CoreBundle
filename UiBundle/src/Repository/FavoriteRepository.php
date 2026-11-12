@@ -167,4 +167,16 @@ class FavoriteRepository extends ServiceEntityRepository
             ->execute()
         ;
     }
+
+    // Erases everything one holder put aside, which is what an account deleted or anonymized loses (see HolderAnonymizedListener)
+    public function deleteByHolder(string $holder): int
+    {
+        return (int) $this->createQueryBuilder('f')
+            ->delete()
+            ->andWhere('f.holder = :holder')
+            ->setParameter('holder', $holder)
+            ->getQuery()
+            ->execute()
+        ;
+    }
 }

@@ -21,6 +21,9 @@ class PlayService
     // No thing is raised past this in one go: a child does not hear one story more often than that before a parent connects the app
     private const int RAISE_MAX = 500;
 
+    // No handover adds more plays than this in all, whatever the number of things it names: an app hands over once, so what is past it is dropped, those counts earning nothing
+    private const int RAISE_BATCH_MAX = 200;
+
     // What an app says it played is held apart from the public total, in rows of its own that totals() never reads for the same owner type: "app:book" beside "book"
     public const string APP_TOTAL_PREFIX = 'app:';
 
@@ -82,10 +85,12 @@ class PlayService
     public function raise(string $holder, array $counts): void
     {
         $held = $this->counts($holder);
+        $budget = self::RAISE_BATCH_MAX;
 
         foreach ($counts as $key => $count) {
             [$ownerType, $ownerId] = explode(':', $key);
-            for ($missing = min($count, self::RAISE_MAX) - ($held[$key] ?? 0); $missing > 0; --$missing) {
+            $missing = min($count, self::RAISE_MAX) - ($held[$key] ?? 0);
+            for ($added = 0; $added < $missing && $budget > 0; ++$added, --$budget) {
                 $this->entityManager->persist(new Play()
                     ->setOwnerType($ownerType)
                     ->setOwnerId((int) $ownerId)

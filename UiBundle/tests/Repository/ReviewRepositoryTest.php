@@ -12,12 +12,14 @@ namespace c975L\UiBundle\Tests\Repository;
 
 use c975L\UiBundle\Entity\Review;
 use c975L\UiBundle\Repository\ReviewRepository;
+use c975L\UiBundle\Service\ReviewCollectionSourceProvider;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 use PHPUnit\Framework\TestCase;
+use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
 class ReviewRepositoryTest extends TestCase
 {
@@ -28,8 +30,10 @@ class ReviewRepositoryTest extends TestCase
      */
     private array $result = [];
 
+    private int $deleted = 0;
+
     // The query the repository builds is read back through the DQL the entity manager is handed, the rest of it being Doctrine's own
-    private function createRepository(): ReviewRepository
+    private function createRepository(?TagAwareCacheInterface $cache = null): ReviewRepository
     {
         $entityManager = $this->createStub(EntityManagerInterface::class);
         $entityManager->method('getClassMetadata')->willReturnMap([
@@ -45,6 +49,7 @@ class ReviewRepositoryTest extends TestCase
             $query->method('setMaxResults')->willReturnSelf();
             $query->method('getResult')->willReturn([]);
             $query->method('getSingleResult')->willReturn($this->result);
+            $query->method('execute')->willReturnCallback(fn (): int => $this->deleted);
 
             return $query;
         });
@@ -54,7 +59,26 @@ class ReviewRepositoryTest extends TestCase
             [Review::class, $entityManager],
         ]);
 
-        return new ReviewRepository($registry);
+        return new ReviewRepository($registry, $cache ?? $this->createStub(TagAwareCacheInterface::class));
+    }
+
+    // A bulk DELETE passes by ReviewCacheInvalidationListener, so the wall of reviews is emptied by the method itself
+    public function testDeleteForOwnerEmptiesTheReviewsCacheWhenRowsWent(): void
+    {
+        $this->deleted = 2;
+        $cache = $this->createMock(TagAwareCacheInterface::class);
+        $cache->expects($this->once())->method('invalidateTags')->with([ReviewCollectionSourceProvider::CACHE_TAG]);
+
+        $this->assertSame(2, $this->createRepository($cache)->deleteForOwner('product', 7));
+    }
+
+    // Nothing written about the thing, nothing cached to empty
+    public function testDeleteForOwnerLeavesTheCacheAloneWhenNothingWent(): void
+    {
+        $cache = $this->createMock(TagAwareCacheInterface::class);
+        $cache->expects($this->never())->method('invalidateTags');
+
+        $this->assertSame(0, $this->createRepository($cache)->deleteForOwner('product', 7));
     }
 
     // Newest first and nothing else: showing a subset is only defensible while what picks it is blind to how good the reviews are

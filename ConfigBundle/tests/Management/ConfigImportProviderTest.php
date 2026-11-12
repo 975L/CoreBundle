@@ -13,6 +13,7 @@ namespace c975L\ConfigBundle\Tests\Management;
 use c975L\ConfigBundle\Entity\Config;
 use c975L\ConfigBundle\Management\ConfigImportProvider;
 use c975L\ConfigBundle\Repository\ConfigRepository;
+use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
 
@@ -28,10 +29,19 @@ class ConfigImportProviderTest extends TestCase
 
     public function testSupportsImportOnlyMatchesSiteConfigKind(): void
     {
-        $provider = new ConfigImportProvider($this->createStub(EntityManagerInterface::class), $this->createConfigRepository());
+        $provider = new ConfigImportProvider($this->createStub(EntityManagerInterface::class), $this->createConfigRepository(), $this->createStub(ConfigServiceInterface::class));
 
         $this->assertTrue($provider->supportsImport('site_config'));
         $this->assertFalse($provider->supportsImport('site_page'));
+    }
+
+    // The config cache never expires on its own, so the site would keep running on the values the import replaced
+    public function testImportDropsTheConfigCacheOnceFlushed(): void
+    {
+        $configService = $this->createMock(ConfigServiceInterface::class);
+        $configService->expects($this->once())->method('invalidateCache');
+
+        new ConfigImportProvider($this->createStub(EntityManagerInterface::class), $this->createConfigRepository(), $configService)->import([]);
     }
 
     public function testImportCreatesANewNonSensitiveConfig(): void
@@ -42,7 +52,7 @@ class ConfigImportProviderTest extends TestCase
             $persisted[] = $entity;
         });
 
-        $provider = new ConfigImportProvider($em, $this->createConfigRepository());
+        $provider = new ConfigImportProvider($em, $this->createConfigRepository(), $this->createStub(ConfigServiceInterface::class));
 
         $result = $provider->import([[
             'slug' => 'site-title',
@@ -67,7 +77,7 @@ class ConfigImportProviderTest extends TestCase
 
         $em = $this->createStub(EntityManagerInterface::class);
 
-        $provider = new ConfigImportProvider($em, $this->createConfigRepository($existing));
+        $provider = new ConfigImportProvider($em, $this->createConfigRepository($existing), $this->createStub(ConfigServiceInterface::class));
 
         $result = $provider->import([[
             'slug' => 'site-title',
@@ -88,7 +98,7 @@ class ConfigImportProviderTest extends TestCase
 
         $em = $this->createStub(EntityManagerInterface::class);
 
-        $provider = new ConfigImportProvider($em, $this->createConfigRepository($existing));
+        $provider = new ConfigImportProvider($em, $this->createConfigRepository($existing), $this->createStub(ConfigServiceInterface::class));
 
         $result = $provider->import([[
             'slug' => 'api-key',
@@ -108,7 +118,7 @@ class ConfigImportProviderTest extends TestCase
 
         $em = $this->createStub(EntityManagerInterface::class);
 
-        $provider = new ConfigImportProvider($em, $this->createConfigRepository($existing));
+        $provider = new ConfigImportProvider($em, $this->createConfigRepository($existing), $this->createStub(ConfigServiceInterface::class));
 
         $result = $provider->import([[
             'slug' => 'api-key',
@@ -128,7 +138,7 @@ class ConfigImportProviderTest extends TestCase
 
         $em = $this->createStub(EntityManagerInterface::class);
 
-        $provider = new ConfigImportProvider($em, $this->createConfigRepository($existing));
+        $provider = new ConfigImportProvider($em, $this->createConfigRepository($existing), $this->createStub(ConfigServiceInterface::class));
 
         $result = $provider->import([[
             'slug' => 'api-key',
@@ -147,7 +157,7 @@ class ConfigImportProviderTest extends TestCase
     {
         $existing = new Config()->setSlug('theme-mode')->setLabel('Theme mode')->setKind(Config::TYPE_TEXT)->setValue('auto');
 
-        $provider = new ConfigImportProvider($this->createStub(EntityManagerInterface::class), $this->createConfigRepository($existing));
+        $provider = new ConfigImportProvider($this->createStub(EntityManagerInterface::class), $this->createConfigRepository($existing), $this->createStub(ConfigServiceInterface::class));
 
         $provider->import([[
             'slug' => 'theme-mode',
@@ -167,7 +177,7 @@ class ConfigImportProviderTest extends TestCase
     {
         $existing = new Config()->setSlug('theme-mode')->setLabel('Theme mode')->setKind(Config::TYPE_CHOICE)->setChoices(['auto', 'light', 'dark']);
 
-        $provider = new ConfigImportProvider($this->createStub(EntityManagerInterface::class), $this->createConfigRepository($existing));
+        $provider = new ConfigImportProvider($this->createStub(EntityManagerInterface::class), $this->createConfigRepository($existing), $this->createStub(ConfigServiceInterface::class));
 
         $provider->import([[
             'slug' => 'theme-mode',
@@ -188,7 +198,7 @@ class ConfigImportProviderTest extends TestCase
             $persisted[] = $entity;
         });
 
-        $provider = new ConfigImportProvider($em, $this->createConfigRepository());
+        $provider = new ConfigImportProvider($em, $this->createConfigRepository(), $this->createStub(ConfigServiceInterface::class));
 
         $result = $provider->import([[
             'slug' => 'api-key',

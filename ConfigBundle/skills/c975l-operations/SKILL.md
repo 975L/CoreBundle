@@ -32,6 +32,11 @@ php bin/console c975l:deprecations:check     # groups the logged deprecations yo
 php bin/console c975l:skills:install         # links every bundle's agent skills into .claude/skills/
 ```
 
+**The three backup tasks fail when not configured**: `c975l:config:backup` and `c975l:config:backup:digest`
+without `site-backup-database`, `c975l:config:backup:offsite` without a usable `site-backup-offsite-target`.
+A site backed up elsewhere, or whose backups an outside machine pulls, drops them from its
+`MaintenanceSchedule` (`addTasks($schedule, ['c975l:config:backup:offsite'])`).
+
 **Sitemaps and SEO files are generated static files under `public/`, not routes** — served by the web
 server, they keep answering 200 during a maintenance, where a controller-rendered `robots.txt` would
 503 and stop the crawl of the whole site. `robots.txt` only declares the sitemap index once that file
@@ -40,6 +45,8 @@ removed, and `sitemap-index.xml` goes too once no provider has any url left. Wit
 on, every provider counts as empty: no sitemap is written, the health check expects none, and
 `sitemap-robots` has nothing to compare against the closed `robots.txt`. The `config-seo` guided
 project (`ROLE_SUPER_ADMIN`) walks the three dashboard tiles: sitemaps, AI crawlers, then SEO files.
+`SeoFilesHealthCheckProvider` checks the sitemaps `sitemap-index.xml` declares, never `sitemap-site.xml`
+on its own, and a missing index is an error only when some provider declares urls.
 
 A `SitemapProviderInterface` url is `loc` plus the optional `lastmod`, `changefreq` and `priority`
 (declared on the admin's 0-10 scale, converted to the protocol's 0.0-1.0 by `SitemapWriter`). A site
@@ -298,7 +305,8 @@ since that second list appeared: a receiver reads it to tell a site that omits t
 that has nothing in it.
 
 `checks.issues` lists the rows **in error** only, capped at 20 (`issuesTruncated` says so), each as
-`kind`, `url`, `summary` and `errors`. `HealthCheckResult::$details` stays on the site, save the
+`kind`, `url`, `summary`, `errors` and `acknowledgedAt` (an acknowledged error still counts, and in
+`checks.acknowledged` too; a backup row's `errors` is always `[]`, `lastRunAt` ignores the backup rows). `HealthCheckResult::$details` stays on the site, save the
 checker's own `errors` list when it keeps one (the W3C checks do): five strings at most, 200
 characters each — enough for a receiver to say what to fix without opening the site. A checker whose
 messages should travel stores them as a list of strings under `details['errors']`; warnings and raw

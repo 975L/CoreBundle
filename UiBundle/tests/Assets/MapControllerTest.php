@@ -16,6 +16,7 @@ use PHPUnit\Framework\TestCase;
 class MapControllerTest extends TestCase
 {
     private const string MODULE = 'assets/js/map.js';
+    private const string DRIVER = 'assets/js/map-leaflet.js';
     private const string BARREL = 'assets/controllers.js';
     private const string COMPONENT = 'templates/components/Map/Map.html.twig';
 
@@ -28,25 +29,29 @@ class MapControllerTest extends TestCase
         $this->assertStringContainsString('data-controller="ui-map"', $this->read(self::COMPONENT));
     }
 
-    // The same contract as video-iframe.js, matched on both spellings: a missed match would conclude the page has no banner and load Google before any consent was given
-    public function testTheConsentBannerIsMatchedOnBothSpellings(): void
+    // The banner is consent.js's business, shared with video-iframe.js and matched there on both spellings: a missed match would conclude the page has no banner and load Google before any consent was given
+    public function testTheConsentIsAskedThroughTheSharedAdapter(): void
     {
         $module = $this->read(self::MODULE);
+        $adapter = $this->read('assets/js/consent.js');
 
-        $this->assertStringContainsString('[data-controller~="cookie-consent"]', $module);
-        $this->assertStringContainsString('[data-controller~="cookieConsent"]', $module);
-        $this->assertStringContainsString('acceptedCategory("content")', $module);
+        $this->assertStringContainsString('import * as consent from "./consent.js";', $module);
+        $this->assertStringContainsString('consent.isAccepted("content")', $module);
+        $this->assertStringNotContainsString('CookieConsent', $module, 'The map speaks to a banner directly again, bypassing the adapter a site with another banner relies on.');
+        $this->assertStringContainsString('[data-controller~="cookie-consent"]', $adapter);
+        $this->assertStringContainsString('[data-controller~="cookieConsent"]', $adapter);
     }
 
     // Served by this bundle and appended on demand, never imported: a consuming app has no package to require and no CDN host to open in its policy, and a page carrying no map downloads none of it (same reasoning as cookie-consent.js, which vendors its own banner)
     public function testLeafletIsServedByThisBundleAndNeverImported(): void
     {
-        $module = $this->read(self::MODULE);
+        $module = $this->read(self::MODULE) . $this->read(self::DRIVER);
 
         $this->assertDoesNotMatchRegularExpression('/import\s*\(\s*"leaflet/', $module, 'Leaflet is imported as a package again, which puts an "importmap:require" back on every consuming app.');
         $this->assertDoesNotMatchRegularExpression('/^import .*"leaflet/m', $module);
-        $this->assertStringContainsString('/bundles/c975lui/js/leaflet.js', $module);
-        $this->assertStringContainsString('/bundles/c975lui/css/leaflet.css', $module);
+        $provider = $this->read('src/Map/LeafletProvider.php');
+        $this->assertStringContainsString("'bundles/c975lui/js/leaflet.js'", $provider);
+        $this->assertStringContainsString("'bundles/c975lui/css/leaflet.css'", $provider);
     }
 
     // The two files really shipped, and declared in the manifest that says which version they are (see VendorAssetsTest)
@@ -64,7 +69,7 @@ class MapControllerTest extends TestCase
     // Leaflet reads the sizes its own rules give the panes as it builds, so a map built before the stylesheet applies lays its tiles out against an unstyled box
     public function testTheStylesheetIsWaitedForBeforeTheMapIsBuilt(): void
     {
-        $this->assertMatchesRegularExpression('/Promise\.all\(\[\s*this\.load\("link"/', $this->read(self::MODULE));
+        $this->assertMatchesRegularExpression('/Promise\.all\(\[\s*load\("link"/', $this->read(self::DRIVER));
     }
 
     // Drawn rather than loaded, so it takes the site's own palette instead of the library's fixed blue
@@ -106,18 +111,20 @@ class MapControllerTest extends TestCase
 
         $this->assertStringContainsString('data-ui-map-target="list"', $component);
         $this->assertStringContainsString('<div class="ui-map__canvas" data-ui-map-target="canvas" hidden>', $component);
-        $this->assertStringContainsString('openstreetmap.org/?mlat=', $component, 'A place no longer carries the link that works whether or not a map was ever drawn.');
+        $this->assertStringContainsString('href="{{ ui_map_place_url(point) }}"', $component, 'A place no longer carries the link that works whether or not a map was ever drawn.');
     }
 
-    // The half a scenario cannot see: it mounts markup of its own, so the element the diagnostic is written into, and the fact that it is rendered for nobody but whoever may act on it, are the template's own to guarantee
+    // The half a scenario cannot see: the map is cached for everyone, so the sentences saying why it is missing live in the layout, rendered for whoever may act on them and for nobody else
     public function testTheDiagnosticIsRenderedForWhoeverMayActOnItAndForNobodyElse(): void
     {
         $component = $this->read(self::COMPONENT);
+        $diagnostic = $this->read('templates/components/Map/_diagnostic.html.twig');
 
-        $this->assertStringContainsString('{% if settings.diagnostic %}', $component, 'The reason a map is missing is rendered whoever is reading the page.');
-        $this->assertStringContainsString('data-ui-map-target="diagnostic"', $component);
-        $this->assertStringContainsString('data-ui-map-diagnostic-csp-value=', $component);
-        $this->assertStringContainsString("'label.map_diagnostic_no_key'|trans", $component, 'A Google map with no key says nothing at all, and no controller is mounted to say it.');
+        $this->assertStringNotContainsString('diagnostic()', $component, 'The cached map asks who is looking, so the first visitor fixes what everybody is shown.');
+        $this->assertStringContainsString('<p class="ui-map__diagnostic" data-ui-map-target="diagnostic" hidden></p>', $component);
+        $this->assertStringContainsString('{% if ui_map_diagnostic() %}', $diagnostic, 'The reason a map is missing is rendered whoever is reading the page.');
+        $this->assertStringContainsString("'label.map_diagnostic_no_key'|trans", $diagnostic, 'A Google map with no key says nothing at all.');
+        $this->assertStringContainsString("include('@c975LUi/components/Map/_diagnostic.html.twig')", $this->read('templates/layout.html.twig'));
 
         // Painted by this bundle's own stylesheet: a class nothing draws is a message nobody sees
         $this->assertStringContainsString('.ui-map__diagnostic {', $this->read('sass/_map.scss'));

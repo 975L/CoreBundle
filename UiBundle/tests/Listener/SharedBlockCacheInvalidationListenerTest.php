@@ -28,6 +28,17 @@ class SharedBlockCacheInvalidationListenerTest extends TestCase
 
         $listener = new SharedBlockCacheInvalidationListener($cache);
         $listener->postPersist(new PostPersistEventArgs(new SharedBlock()->setSlug('contact-banner'), $this->createStub(EntityManagerInterface::class)));
+        $listener->postFlush();
+    }
+
+    // Nothing is emptied before the commit, a concurrent request caching the old render again otherwise
+    public function testNothingIsEmptiedBeforeTheFlush(): void
+    {
+        $cache = $this->createMock(TagAwareCacheInterface::class);
+        $cache->expects($this->never())->method('invalidateTags');
+
+        $listener = new SharedBlockCacheInvalidationListener($cache);
+        $listener->postPersist(new PostPersistEventArgs(new SharedBlock()->setSlug('contact-banner'), $this->createStub(EntityManagerInterface::class)));
     }
 
     public function testASharedBlockWithoutSlugEmptiesNothing(): void
@@ -37,6 +48,7 @@ class SharedBlockCacheInvalidationListenerTest extends TestCase
 
         $listener = new SharedBlockCacheInvalidationListener($cache);
         $listener->postPersist(new PostPersistEventArgs(new SharedBlock(), $this->createStub(EntityManagerInterface::class)));
+        $listener->postFlush();
     }
 
     public function testAnotherEntityEmptiesNothing(): void
@@ -46,5 +58,6 @@ class SharedBlockCacheInvalidationListenerTest extends TestCase
 
         $listener = new SharedBlockCacheInvalidationListener($cache);
         $listener->postPersist(new PostPersistEventArgs(new Block(), $this->createStub(EntityManagerInterface::class)));
+        $listener->postFlush();
     }
 }

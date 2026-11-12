@@ -12,6 +12,7 @@ namespace c975L\UiBundle\Twig;
 
 use c975L\UiBundle\Model\CollectionItem;
 use c975L\UiBundle\Repository\ReviewRepository;
+use c975L\UiBundle\Service\BlockCacheInvalidator;
 use c975L\UiBundle\Service\ReviewCollectionSourceProvider;
 use c975L\UiBundle\Service\ReviewService;
 use c975L\UiBundle\Service\ReviewTokenSigner;
@@ -84,8 +85,8 @@ class ReviewRuntime implements RuntimeExtensionInterface
             sprintf('ui_reviews_section_%s_%d_%s', $ownerType, $ownerId, $request->getLocale()),
             function (ItemInterface $item) use ($ownerType, $ownerId): string {
                 $item->expiresAfter(null);
-                // The tag the listener empties on every review written, imported or moderated - the section of one sheet is rebuilt on the next display and no sooner
-                $item->tag([ReviewCollectionSourceProvider::CACHE_TAG]);
+                // The tag the listener empties on every review written, imported or moderated - the section of one sheet is rebuilt on the next display and no sooner - plus the one the "empty the blocks cache" tile and a deployment clear
+                $item->tag([ReviewCollectionSourceProvider::CACHE_TAG, BlockCacheInvalidator::CACHE_TAG_ALL]);
 
                 return $this->render($ownerType, $ownerId);
             }

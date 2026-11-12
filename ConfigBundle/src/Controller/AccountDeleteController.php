@@ -45,8 +45,8 @@ class AccountDeleteController extends AbstractController
             throw $this->createNotFoundException();
         }
 
-        // The site's owner is not a visitor erasing their data: anonymized, nobody left could hand ROLE_SUPER_ADMIN back from the back office
-        if ($this->security->isGranted('ROLE_SUPER_ADMIN')) {
+        // The site's owner is not a visitor erasing their data: anonymized, nobody left could hand ROLE_SUPER_ADMIN back from the back office. Read off the account's own roles, a role preview answering isGranted() for a lower level
+        if (\in_array('ROLE_SUPER_ADMIN', $user->getRoles(), true)) {
             throw $this->createAccessDeniedException();
         }
 

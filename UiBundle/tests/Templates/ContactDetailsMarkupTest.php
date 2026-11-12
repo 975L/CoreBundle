@@ -10,11 +10,13 @@
 
 namespace c975L\UiBundle\Tests\Templates;
 
+use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\UiBundle\Registry\SameAsRegistry;
 use c975L\UiBundle\Service\ContactSnippetBuilder;
-use c975L\UiBundle\Service\GoogleMapsLinkBuilder;
 use c975L\UiBundle\Service\JsonLdBuilder;
+use c975L\UiBundle\Service\MapLinkBuilder;
 use c975L\UiBundle\Tests\Fixtures\HtmlSanitizerKernel;
+use c975L\UiBundle\Tests\Map\MapResolverFactory;
 use c975L\UiBundle\Twig\BoolExtension;
 use c975L\UiBundle\Twig\ContactExtension;
 use PHPUnit\Framework\TestCase;
@@ -155,6 +157,10 @@ class ContactDetailsMarkupTest extends TestCase
 
     private function render(array $context): string
     {
+        // A site drawing with Google, whose Maps URLs the directions button then points at
+        $configService = $this->createStub(ConfigServiceInterface::class);
+        $configService->method('get')->willReturnMap([['ui-map-provider', 'google'], ['ui-map-google-api-key', 'key']]);
+
         $twig = HtmlSanitizerKernel::register(new Environment(new FilesystemLoader(\dirname(__DIR__, 2) . '/templates')));
         // Untranslated keys come back as-is, which is what the assertions above read
         $twig->addExtension(new TranslationExtension(new IdentityTranslator()));
@@ -163,7 +169,7 @@ class ContactDetailsMarkupTest extends TestCase
         // The "Directions" button reads a checkbox through it (see the component), and a missing filter is a syntax error on the whole template
         $twig->addExtension(new AttributeExtension(BoolExtension::class));
         $twig->addRuntimeLoader(new FactoryRuntimeLoader([
-            ContactExtension::class => static fn (): ContactExtension => new ContactExtension(new ContactSnippetBuilder(new SameAsRegistry(), new JsonLdBuilder()), new GoogleMapsLinkBuilder()),
+            ContactExtension::class => static fn (): ContactExtension => new ContactExtension(new ContactSnippetBuilder(new SameAsRegistry(), new JsonLdBuilder()), new MapLinkBuilder(MapResolverFactory::create($configService))),
             BoolExtension::class => static fn (): BoolExtension => new BoolExtension(),
         ]));
 

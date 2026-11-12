@@ -1,11 +1,12 @@
 {# <twig:c975LUi:AgeGate age="{{ item.age }}">What only an adult may see</twig:c975LUi:AgeGate> #}
-{# Its content as is for an item under 18, on a site that configured no go.cam keys, and for a visitor already verified; the go.cam gate in its place otherwise. Never inside a cached fragment: the gate carries the visitor's own nonce and request (see AgeVerifier) #}
+{# Its content as is for an item under 18, on a site with no age verification provider in use ("age-verification-provider"), and for a visitor already verified; the provider's gate in its place otherwise. Never inside a cached fragment: the gate carries the visitor's own nonce and request (see AgeVerifier) #}
 
 {% set age = age | default(null) %}
 {% if age_gate_closed(age) %}
-    <div class="age-gate" data-controller="age-gate" data-age-gate-url-value="{{ age_verification_url() }}" data-age-gate-confirm-value="{{ path('ui_age_verification_confirm') }}">
-        <p class="age-gate__text">{{ 'text.age_gate'|trans({}, 'ui') }}</p>
-        <button type="button" class="btn btn-primary" data-age-gate-target="button" data-action="age-gate#open" disabled>{{ 'label.age_gate_verify'|trans({}, 'ui') }}</button>
+    {% set provider = age_verification_provider() %}
+    <div class="age-gate" data-controller="age-gate" data-age-gate-provider-value="{{ provider.slug }}" data-age-gate-url-value="{{ age_verification_url() }}" data-age-gate-confirm-value="{{ path('ui_age_verification_confirm') }}">
+        <twig:c975LUi:Alert:Alert type="info" label="false">{{ 'text.age_gate'|trans({'%provider%': provider.name}, 'ui') }}</twig:c975LUi:Alert:Alert>
+        <button type="button" class="btn btn-primary" data-age-gate-target="button" data-action="age-gate#open">{{ 'label.age_gate_verify'|trans({}, 'ui') }}</button>
         <p class="age-gate__error" data-age-gate-target="error" hidden>{{ 'text.age_gate_failed'|trans({}, 'ui') }}</p>
     </div>
 {% else %}

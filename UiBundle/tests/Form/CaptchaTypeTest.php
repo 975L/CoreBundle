@@ -11,6 +11,7 @@
 namespace c975L\UiBundle\Tests\Form;
 
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
+use c975L\UiBundle\Captcha\RecaptchaProvider;
 use c975L\UiBundle\Form\CaptchaType;
 use c975L\UiBundle\Service\CaptchaVerifier;
 use c975L\UiBundle\Validator\Constraints\Captcha;
@@ -36,12 +37,13 @@ class CaptchaTypeTest extends TestCase
 
         $requestStack = new RequestStack([new Request()]);
 
-        return new CaptchaType(new CaptchaVerifier(new MockHttpClient(), $configService, $requestStack));
+        return new CaptchaType(new CaptchaVerifier($configService, $requestStack, [new RecaptchaProvider(new MockHttpClient(), $configService)]));
     }
 
     private const array KEYS = [
-        'recaptcha3-site-key' => 'site-key',
-        'recaptcha3-secret-key' => 'secret-key',
+        'captcha-provider' => 'recaptcha',
+        'captcha-recaptcha-site-key' => 'site-key',
+        'captcha-recaptcha-secret-key' => 'secret-key',
     ];
 
     /**
@@ -69,6 +71,7 @@ class CaptchaTypeTest extends TestCase
 
         $this->assertTrue($vars['enabled']);
         $this->assertSame('site-key', $vars['site_key']);
+        $this->assertSame('recaptcha', $vars['provider']);
         $this->assertSame('contact', $vars['action_name']);
     }
 

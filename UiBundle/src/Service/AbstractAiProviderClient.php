@@ -11,20 +11,38 @@
 namespace c975L\UiBundle\Service;
 
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
+use c975L\UiBundle\Ai\AnthropicProvider;
+use c975L\UiBundle\Ai\EuriaProvider;
+use c975L\UiBundle\Ai\OpenAiProvider;
+use c975L\UiBundle\Contract\AiProviderInterface;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\DependencyInjection\Attribute\AutowireIterator;
 use Symfony\Contracts\HttpClient\Exception\ExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\HttpExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
+use Symfony\Contracts\Service\Attribute\Required;
 
-// Calls an LLM with the site's own key, for every feature billed to it: the rephrase and the site search differ by their config prefix and their prompts alone. Anthropic is called with its native API, anything else as an OpenAI-compatible one (OpenAI itself, or Infomaniak's Euria, whose only difference is its base URI). Nothing is defaulted in code: an empty entry keeps the feature off rather than calling an address or a model nobody chose
+// Calls an LLM with the site's own key, for every feature billed to it: the rephrase and the site search differ by their config prefix and their prompts alone. The API is a connector (see AiProviderInterface), the one "<prefix>-provider" names. Nothing is defaulted in code: an empty entry keeps the feature off rather than calling an address or a model nobody chose
 abstract class AbstractAiProviderClient
 {
+    use ConfigChosenProviderTrait;
+
+    // The providers shipped, built on the client given, so a feature constructed by hand (a subclass passing four arguments, a test) calls them all the same; the container then hands every tagged one through setProviders()
     public function __construct(
-        private readonly HttpClientInterface $httpClient,
+        HttpClientInterface $httpClient,
         private readonly ConfigServiceInterface $configService,
         private readonly LoggerInterface $logger,
         private readonly AiUsageTracker $aiUsageTracker,
     ) {
+        $this->setProviders([new AnthropicProvider($httpClient), new OpenAiProvider($httpClient), new EuriaProvider($httpClient)]);
+    }
+
+    // Every provider registered, a tagged one replacing a shipped one of the same slug
+    /** @param iterable<AiProviderInterface> $providers */
+    #[Required]
+    public function setProviders(#[AutowireIterator('c975l.ai_provider')] iterable $providers): void
+    {
+        $this->indexProviders($providers);
     }
 
     // Prefix of the four config entries ("<prefix>-provider", "-api-key", "-base-uri", "-model")
@@ -49,14 +67,27 @@ abstract class AbstractAiProviderClient
             return null;
         }
 
-        $provider = $this->config('provider');
+        $provider = $this->namedProvider($this->configPrefix() . '-provider');
+        if (!$provider instanceof AiProviderInterface) {
+            return null;
+        }
 
         try {
-            return match ($provider) {
-                'anthropic' => $this->callAnthropic($prompt, $system, $maxTokens, $images),
-                'openai', 'euria' => $this->callOpenAiCompatible($prompt, $system, $images),
-                default => null,
-            };
+            $answer = $provider->complete($prompt, $system, $maxTokens, $images, [
+                'api-key' => $this->config('api-key'),
+                'base-uri' => $this->config('base-uri'),
+                'model' => $this->config('model'),
+            ]);
+            $this->aiUsageTracker->record($answer['inputTokens'], $answer['outputTokens'], $this->feature());
+
+            // An answer the ceiling cut is billed all the same, but a half JSON or a half text is worth nothing to the feature
+            if ($answer['truncated'] ?? false) {
+                $this->fail('the answer reached its ceiling of ' . $maxTokens . ' tokens and was cut');
+
+                return null;
+            }
+
+            return $answer['text'];
         } catch (ExceptionInterface $e) {
             // The response body carries the provider's own detail, far more actionable than "HTTP 400"
             $message = $e->getMessage();
@@ -64,111 +95,21 @@ abstract class AbstractAiProviderClient
                 $message .= ' ' . $e->getResponse()->getContent(false);
             }
 
-            $this->logger->error('AI request failed ({feature}): {message}', ['feature' => $this->feature(), 'message' => $message]);
-            $this->aiUsageTracker->recordFailure($message, $this->feature());
+            $this->fail($message);
 
             return null;
         }
     }
 
+    // Logged and recorded, so AiAlertProvider can raise it
+    private function fail(string $message): void
+    {
+        $this->logger->error('AI request failed ({feature}): {message}', ['feature' => $this->feature(), 'message' => $message]);
+        $this->aiUsageTracker->recordFailure($message, $this->feature());
+    }
+
     private function config(string $entry): string
     {
         return (string) $this->configService->get($this->configPrefix() . '-' . $entry);
-    }
-
-    /** @param list<string> $images */
-    private function callAnthropic(string $prompt, ?string $system, int $maxTokens, array $images): string
-    {
-        // A plain string while there is no image, the request every existing feature has always sent
-        $content = $prompt;
-        if ([] !== $images) {
-            $content = [];
-            foreach ($images as $image) {
-                [$mediaType, $data] = self::splitDataUri($image);
-                $content[] = ['type' => 'image', 'source' => ['type' => 'base64', 'media_type' => $mediaType, 'data' => $data]];
-            }
-            $content[] = ['type' => 'text', 'text' => $prompt];
-        }
-
-        $json = [
-            'model' => $this->config('model'),
-            'max_tokens' => $maxTokens,
-            'messages' => [
-                ['role' => 'user', 'content' => $content],
-            ],
-        ];
-        if (null !== $system) {
-            $json['system'] = $system;
-        }
-
-        $response = $this->httpClient->request('POST', $this->config('base-uri'), [
-            'headers' => [
-                'x-api-key' => $this->config('api-key'),
-                'anthropic-version' => '2023-06-01',
-            ],
-            'json' => $json,
-            'timeout' => self::timeout($images),
-        ]);
-
-        $data = $response->toArray();
-        $this->aiUsageTracker->record(
-            (int) ($data['usage']['input_tokens'] ?? 0),
-            (int) ($data['usage']['output_tokens'] ?? 0),
-            $this->feature(),
-        );
-
-        return (string) ($data['content'][0]['text'] ?? '');
-    }
-
-    // Covers both OpenAI and Euria (Infomaniak AI Tools), called on the base URI their own entry carries. No token ceiling: OpenAI's reasoning models refuse "max_tokens", and a long translation must not be cut
-    /** @param list<string> $images */
-    private function callOpenAiCompatible(string $prompt, ?string $system, array $images): string
-    {
-        $content = $prompt;
-        if ([] !== $images) {
-            $content = [['type' => 'text', 'text' => $prompt]];
-            foreach ($images as $image) {
-                $content[] = ['type' => 'image_url', 'image_url' => ['url' => $image]];
-            }
-        }
-
-        $messages = null !== $system ? [['role' => 'system', 'content' => $system]] : [];
-        $messages[] = ['role' => 'user', 'content' => $content];
-
-        $response = $this->httpClient->request('POST', rtrim($this->config('base-uri'), '/') . '/chat/completions', [
-            'auth_bearer' => $this->config('api-key'),
-            'json' => [
-                'model' => $this->config('model'),
-                'messages' => $messages,
-            ],
-            'timeout' => self::timeout($images),
-        ]);
-
-        $data = $response->toArray();
-        $this->aiUsageTracker->record(
-            (int) ($data['usage']['prompt_tokens'] ?? 0),
-            (int) ($data['usage']['completion_tokens'] ?? 0),
-            $this->feature(),
-        );
-
-        return (string) ($data['choices'][0]['message']['content'] ?? '');
-    }
-
-    // Idle timeout: a model reading a photo takes longer before its first byte than one reading a sentence
-    /** @param list<string> $images */
-    private static function timeout(array $images): int
-    {
-        return [] === $images ? 20 : 60;
-    }
-
-    // "data:image/jpeg;base64,AAAA" split into its media type and its data, the two fields Anthropic asks for apart
-    /** @return array{0: string, 1: string} */
-    private static function splitDataUri(string $image): array
-    {
-        if (1 !== preg_match('#^data:(?<type>[\w/+.-]+);base64,(?<data>.+)$#s', $image, $matches)) {
-            throw new \InvalidArgumentException('An image is sent to the AI provider as a base64 data URI.');
-        }
-
-        return [$matches['type'], $matches['data']];
     }
 }

@@ -320,6 +320,66 @@ class MediaFileRemoveListenerTest extends TestCase
 
         $this->assertFileDoesNotExist($this->projectDir . '/private/medias/site/tree.pdf');
     }
+
+    // VichPdfThumbnailListener writes the first page next to the PDF: left behind, it stays readable by anyone once the document is gone
+    public function testPreRemoveDeletesTheThumbnailOfAPdf(): void
+    {
+        mkdir($this->projectDir . '/public/medias/site', 0777, true);
+        file_put_contents($this->projectDir . '/public/medias/site/cv.pdf', 'content');
+        file_put_contents($this->projectDir . '/public/medias/site/cv.webp', 'content');
+
+        $listener = $this->createListener();
+        $listener->preRemove($this->createEventArgs(new Media()->setFilename('medias/site/cv.pdf')));
+        $listener->postFlush($this->createPostFlushEventArgs());
+
+        $this->assertFileDoesNotExist($this->projectDir . '/public/medias/site/cv.webp');
+    }
+
+    // The document is Vich's to remove, its thumbnail is no one's but this listener's
+    public function testPreUpdateDeletesTheThumbnailOfAReplacedPublicPdf(): void
+    {
+        mkdir($this->projectDir . '/public/medias/site', 0777, true);
+        file_put_contents($this->projectDir . '/public/medias/site/cv.pdf', 'content');
+        file_put_contents($this->projectDir . '/public/medias/site/cv.webp', 'content');
+        file_put_contents($this->projectDir . '/new-upload.pdf', 'content');
+
+        $media = new Media()->setFilename('medias/site/cv.pdf');
+        $media->setFile(new File($this->projectDir . '/new-upload.pdf'));
+
+        $listener = $this->createListener();
+        $listener->preUpdate($this->createUpdateEventArgs($media));
+        $listener->postFlush($this->createPostFlushEventArgs());
+
+        $this->assertFileDoesNotExist($this->projectDir . '/public/medias/site/cv.webp');
+        $this->assertFileExists($this->projectDir . '/public/medias/site/cv.pdf');
+    }
+
+    // A document reserved to members keeps its thumbnail beside it, outside public/
+    public function testPreRemoveDeletesTheThumbnailOfAMembersOnlyPdfFromItsDirectory(): void
+    {
+        mkdir($this->projectDir . '/private/medias/site', 0777, true);
+        file_put_contents($this->projectDir . '/private/medias/site/tree.webp', 'content');
+
+        $listener = $this->createListener();
+        $listener->preRemove($this->createEventArgs(new Media()->setFilename('medias/site/tree.pdf')->setMembersOnly(true)));
+        $listener->postFlush($this->createPostFlushEventArgs());
+
+        $this->assertFileDoesNotExist($this->projectDir . '/private/medias/site/tree.webp');
+    }
+
+    // A flush that threw is followed by a clear (or a worker's reset): the next flush must not remove the file of a row still there
+    public function testAClearDropsTheRemovalsOfAFlushThatFailed(): void
+    {
+        mkdir($this->projectDir . '/public/medias/site', 0777, true);
+        file_put_contents($this->projectDir . '/public/medias/site/cover.webp', 'content');
+
+        $listener = $this->createListener();
+        $listener->preRemove($this->createEventArgs(new MediaFileRemoveListenerTestFilenameFixture('medias/site/cover.webp')));
+        $listener->onClear();
+        $listener->postFlush($this->createPostFlushEventArgs());
+
+        $this->assertFileExists($this->projectDir . '/public/medias/site/cover.webp');
+    }
 }
 
 // fileNameProperty: 'name' - as ShopBundle's/CrowdfundingBundle's real media entities are, via VichMediaTrait
@@ -336,6 +396,11 @@ class MediaFileRemoveListenerTestNameFixture implements VichMediaNamableInterfac
     public function getName(): ?string
     {
         return $this->name;
+    }
+
+    public function getFile(): ?File
+    {
+        return $this->file;
     }
 
     public function getVichMediaPath(): string

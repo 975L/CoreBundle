@@ -14,6 +14,7 @@ use c975L\UiBundle\Contract\VichMediaNamableInterface;
 use c975L\UiBundle\Repository\FontRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\HttpFoundation\File\File;
+use Symfony\Component\Validator\Constraints as Assert;
 use Vich\UploaderBundle\Mapping\Attribute as Vich;
 
 // An admin-uploaded font file turned into a @font-face rule by FontCssListener; its own Vich field, not a Media, being no image to resize
@@ -25,6 +26,9 @@ class Font implements VichMediaNamableInterface, \Stringable
     // Sentinel meaning "variable font": real weights start at 100, and the actual fvar axis is unreadable behind Brotli
     public const WEIGHT_VARIABLE = 0;
 
+    // The font files a row may hold, whether uploaded one by one, in bulk or by an import
+    public const array FILE_EXTENSIONS = ['ttf', 'woff', 'woff2'];
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -32,12 +36,15 @@ class Font implements VichMediaNamableInterface, \Stringable
 
     // Several rows may share one family name with a different weight or style
     #[ORM\Column(length: 100)]
+    #[Assert\Length(max: 100)]
     private ?string $name = null;
 
     #[ORM\Column(options: ['default' => 400])]
+    #[Assert\Range(min: 1, max: 1000)]
     private int $weight = 400;
 
     #[ORM\Column(length: 10, options: ['default' => 'normal'])]
+    #[Assert\Length(max: 10)]
     private string $style = 'normal';
 
     #[Vich\UploadableField(
@@ -49,12 +56,14 @@ class Font implements VichMediaNamableInterface, \Stringable
     private ?File $file = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\Length(max: 255)]
     private ?string $filename = null;
 
     #[ORM\Column(nullable: true)]
     private ?int $size = null;
 
     #[ORM\Column(length: 100, nullable: true)]
+    #[Assert\Length(max: 100)]
     private ?string $mimeType = null;
 
     public function getId(): ?int

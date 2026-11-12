@@ -103,7 +103,7 @@ class FormBotProtection
         ]);
     }
 
-    // Timestamps when the form was first displayed, to later measure how fast it was filled - call once, right after building the GET response, before isSuspicious()
+    // Timestamps when the form was displayed, to later measure how fast it was filled - call right before rendering the form, after any submission was handled, so a form re-displayed after a validation error is timed from that display
     public function startTimer(Request $request, string $sessionKey): void
     {
         $session = $request->getSession();
@@ -112,21 +112,30 @@ class FormBotProtection
         }
     }
 
-    // Bot detection: honeypot field filled, or form submitted faster than a human could fill it (site-form-delay, in seconds). Reads the honeypot straight off the raw request instead of a submitted/validated FormInterface, so the caller can check this before running the Symfony form through handleRequest() - and skip that validation (DnsEmail's DNS/MX lookup included) entirely for a suspicious submission. Call once per submission, after startTimer() populated the same $sessionKey and addHoneypotField() added the honeypot field to the form built under $formName - the caller should silently redirect on true, with no hint to the bot. $minDelay overrides site-form-delay for a form filled in faster than most by design (a single url pasted in)
+    // Whether this POST has no display timed before it while the visitor holds a session: a second tab whose twin was already sent, a session expired while the visitor wrote. Asked before isSuspicious(), so the caller shows the form back, filled and with a word on why, rather than drop what a visitor typed - the action is never run, a bot gaining nothing
+    public function isUntimed(Request $request, string $sessionKey): bool
+    {
+        return $request->hasPreviousSession() && null === $request->getSession()->get($sessionKey);
+    }
+
+    // Bot detection: a POST with no session cookie and no form displayed, honeypot field filled, or form submitted faster than a human could fill it (site-form-delay, in seconds). Reads the honeypot straight off the raw request, so the caller checks this before handleRequest() and skips validation entirely for a suspicious submission - silently, with no hint to the bot. The timer is consumed, the honeypot stays the same for the whole session so a form re-displayed after an error keeps its field. $minDelay overrides site-form-delay for a form filled in faster than most by design (a single url pasted in)
     public function isSuspicious(Request $request, string $formName, string $sessionKey, ?int $minDelay = null): bool
     {
         $session = $request->getSession();
-        $startedAt = (int) $session->get($sessionKey, 0);
+        $startedAt = $session->get($sessionKey);
         $session->remove($sessionKey);
 
+        // No display before it and no session either: it never went through the form, and costs nothing more than this check. With a session, the caller's isUntimed() tells the visitor, and a caller not asking it lets the submission through
+        if (null === $startedAt && !$request->hasPreviousSession()) {
+            return true;
+        }
+
         $honeypotValue = $request->request->all($formName)[$this->honeypotFieldName($request)] ?? null;
-        $session->remove(self::SESSION_HONEYPOT_FIELD);
-        $session->remove(self::SESSION_HONEYPOT_LABEL);
 
         // Whatever "site-form-delay" holds, unless the form sets its own: the entry ships with its own value, an empty one leaves the honeypot alone to answer
         $formDelay = $minDelay ?? (int) $this->configService->get('site-form-delay');
 
         return !empty($honeypotValue)
-            || (time() - $startedAt) < $formDelay;
+            || (time() - (int) $startedAt) < $formDelay;
     }
 }

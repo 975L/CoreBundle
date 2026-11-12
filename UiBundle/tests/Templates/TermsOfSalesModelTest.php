@@ -40,4 +40,46 @@ class TermsOfSalesModelTest extends TestCase
         $delivery = substr($template, (int) strpos($template, 'data-legal-id="delivery"'), 600);
         $this->assertStringContainsString($account, $delivery);
     }
+
+    // The shop ships by country zones, so the terms never narrow delivery to one territory
+    #[DataProvider('languages')]
+    public function testDeliveryFollowsTheDestinationsOfferedAtCheckout(string $locale): void
+    {
+        $template = $this->model('terms-of-sales', $locale);
+
+        $this->assertDoesNotMatchRegularExpression('/métropolitaine|mainland France|Francia metropolitana/', $template);
+    }
+
+    // A consumer may always bring a dispute before the court of their own domicile, which an exclusive clause cannot take away
+    #[DataProvider('jurisdictions')]
+    public function testTheJurisdictionClauseKeepsTheConsumersOwnCourt(string $model, string $locale): void
+    {
+        $template = $this->model($model, $locale);
+
+        $this->assertStringContainsString('R.631-3', $template);
+        $this->assertDoesNotMatchRegularExpression('/professionnel\/les ou particuliers|professional or private users|profesionales (como|o) particulares/', $template);
+    }
+
+    /** @return iterable<array{string}> */
+    public static function languages(): iterable
+    {
+        yield ['fr'];
+        yield ['en'];
+        yield ['es'];
+    }
+
+    /** @return iterable<array{string, string}> */
+    public static function jurisdictions(): iterable
+    {
+        foreach (['terms-of-sales', 'terms-of-use'] as $model) {
+            foreach (['fr', 'en', 'es'] as $locale) {
+                yield $model . '.' . $locale => [$model, $locale];
+            }
+        }
+    }
+
+    private function model(string $model, string $locale): string
+    {
+        return (string) file_get_contents(\dirname(__DIR__, 2) . '/templates/models/france/' . $model . '.' . $locale . '.html.twig');
+    }
 }

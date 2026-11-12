@@ -13,6 +13,7 @@ namespace c975L\ConfigBundle\Entity;
 use c975L\ConfigBundle\Repository\NotFoundRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 // A 404 someone was actually sent to, one row per path. Only requests carrying a Referer are recorded (see NotFoundSubscriber): a scanner walking "/wp-admin" sends none, or a forged one the subscriber filters out, so what lands here is a link that exists somewhere and no longer answers - either on the site itself, which is the case worth an alert, or on another one pointing at it
 #[ORM\Entity(repositoryClass: NotFoundRepository::class)]
@@ -30,10 +31,12 @@ class NotFound implements \Stringable
 
     // The path alone, never the query string: "/histoire/abc?utm_source=x" and the same url shared without its tracking are one broken link, and one row to fix. Unique, so the table grows with the number of distinct dead urls rather than with the traffic hitting them
     #[ORM\Column(length: 255, unique: true)]
+    #[Assert\Length(max: 255)]
     private ?string $path = null;
 
     // The last referer seen, not the first: a link fixed on one page and still live on another has the page still carrying it as the one worth opening
     #[ORM\Column(length: 255)]
+    #[Assert\Length(max: 255)]
     private ?string $referer = null;
 
     // Whether that last referer is a page of this very site - what tells a broken link of our own from a stale link someone else publishes. The pair is one fact, so both columns describe the same last referer rather than each keeping its own history

@@ -201,6 +201,15 @@ class PwaControllerTest extends TestCase
         $this->assertSame('text/javascript', $response->headers->get('Content-Type'));
     }
 
+    // A full cache drops its oldest copy, never the offline page the install put first
+    public function testTheWorkerNeverEvictsTheOfflinePage(): void
+    {
+        $content = (string) $this->controller()->serviceWorker()->getContent();
+
+        $this->assertStringContainsString('keys.find((key) => key.url !== offline)', $content);
+        $this->assertStringContainsString('keys.length > MAX_ENTRIES && evictOldest(cache, keys)', $content, 'A full cache evicts keys[0], which is the offline page.');
+    }
+
     // A browser keeps a worker whose update fails, so turning the app off serves one that unregisters itself
     public function testTheWorkerUnregistersItselfWhileTurnedOff(): void
     {

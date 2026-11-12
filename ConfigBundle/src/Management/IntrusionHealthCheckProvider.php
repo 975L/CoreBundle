@@ -160,7 +160,7 @@ class IntrusionHealthCheckProvider implements HealthCheckProviderInterface
         }
 
         $count = $this->privilegedAccountCounter->countHolding($adminRole);
-        $previous = $this->previousAccountCount($siteRoot);
+        $previous = $this->referenceAccountCount($siteRoot);
 
         // A first run has nothing to compare against, and a count that dropped is an account removed - which is somebody doing their job, not a trace to raise
         if (null === $previous || $count <= $previous) {
@@ -173,22 +173,38 @@ class IntrusionHealthCheckProvider implements HealthCheckProviderInterface
             );
         }
 
+        // The reference stays the count before the gain, so the warning comes back every run until an admin acknowledges it
         return $this->row(
             $siteRoot . self::ROW_ACCOUNTS,
             HealthCheckResult::STATUS_WARNING,
             'label.health_check_intrusion_accounts_gained',
             ['%count%' => $count, '%previous%' => $previous],
-            ['accounts' => $count, 'previous' => $previous],
+            ['accounts' => $previous, 'current' => $count],
         );
     }
 
-    // The count this same row carried last run, from the results the runner already persists - no state of its own to keep, and none to migrate
-    private function previousAccountCount(string $siteRoot): ?int
+    // The count the last run kept as reference, from the results the runner already persists - no state of its own to keep, and none to migrate. A gain an admin acknowledged becomes the new reference, one left unacknowledged never does
+    private function referenceAccountCount(string $siteRoot): ?int
     {
         $result = $this->healthCheckResultRepository->findLatestByUrlAndKind($siteRoot . self::ROW_ACCOUNTS, self::KIND);
-        $previous = ($result?->getDetails() ?? [])['accounts'] ?? null;
+        $details = $result?->getDetails() ?? [];
+        $reference = null !== $result?->getAcknowledgedAt() ? $this->acknowledgedCount($details) : $this->unacknowledgedCount($details);
 
-        return \is_int($previous) ? $previous : null;
+        return \is_int($reference) ? $reference : null;
+    }
+
+    // The count a gain acknowledged leaves as reference: "current" since the reference moved to "accounts", the gained count under "accounts" before that
+    /** @param array<array-key, mixed> $details */
+    private function acknowledgedCount(array $details): mixed
+    {
+        return $details['current'] ?? $details['accounts'] ?? null;
+    }
+
+    // The count before a gain nobody acknowledged: "accounts", or "previous" in a row written when "accounts" held the gained count
+    /** @param array<array-key, mixed> $details */
+    private function unacknowledgedCount(array $details): mixed
+    {
+        return \array_key_exists('current', $details) ? $details['accounts'] ?? null : $details['previous'] ?? $details['accounts'] ?? null;
     }
 
     /** @return list<string> the declared directories, as absolute paths, the ones that are not directories (a single declared file, a path not deployed) being dropped */

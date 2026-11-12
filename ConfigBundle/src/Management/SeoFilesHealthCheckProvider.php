@@ -16,7 +16,7 @@ use c975L\ConfigBundle\Service\SeoFilesClient;
 use c975L\ConfigBundle\Service\SiteUrlResolver;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-// Checks robots.txt and sitemap-site.xml (see SitePageSitemapProvider) are actually reachable and sane - both are silent, easy-to-forget deployment steps (eg. a fresh environment never running c975l:sitemaps:create, or an app-level robots.txt left blocking everything from a staging config). The robots.txt "blocks everything" check is a heuristic, not a full parser - it only catches the single most damaging misconfiguration (a global "Disallow: /" under "User-agent: *"), not every possible robots.txt edge case. Also checks sitemap-index.xml (written by ConfigBundle's SitemapWriter, declaring every bundle's own sub-sitemap) and every child sitemap it references, when one is deployed. Exhaustive, the files it reads depending on the site - no sitemap once it is private, no llms.txt while none is deployed - so a file it no longer reads has its last row dropped
+// Checks robots.txt and the sitemaps are actually reachable and sane - both are silent, easy-to-forget deployment steps (eg. a fresh environment never running c975l:sitemaps:create, or an app-level robots.txt left blocking everything from a staging config). The robots.txt "blocks everything" check is a heuristic, not a full parser - it only catches the single most damaging misconfiguration (a global "Disallow: /" under "User-agent: *"), not every possible robots.txt edge case. The sitemaps are read off sitemap-index.xml (written by ConfigBundle's SitemapWriter, declaring every bundle's own sub-sitemap), each child it references getting its own row: SitemapWriter writes no file for a provider declaring nothing, so a sitemap-site.xml the index does not declare is not missing, and a missing index is an error only when a provider declares urls. Exhaustive, the files it reads depending on the site - no sitemap once it is private, no llms.txt while none is deployed - so a file it no longer reads has its last row dropped
 class SeoFilesHealthCheckProvider implements HealthCheckExhaustiveInterface
 {
     // How long the sitemap file may go without being rewritten before it is called stale. Not a rule Google publishes: it's simply longer than any of the schedules this bundle documents (the weekly c975l:sitemaps:create entry), so only a sitemap that genuinely stopped being regenerated trips it
@@ -27,6 +27,8 @@ class SeoFilesHealthCheckProvider implements HealthCheckExhaustiveInterface
         private readonly SeoFilesClient $seoFilesClient,
         private readonly TranslatorInterface $translator,
         private readonly ConfigServiceInterface $configService,
+        // Every SitemapProviderInterface, asked whether any url should have been written when the index is missing
+        private readonly iterable $sitemapProviders,
     ) {
     }
 
@@ -56,7 +58,6 @@ class SeoFilesHealthCheckProvider implements HealthCheckExhaustiveInterface
         return array_merge(
             $rows,
             $this->checkLlms($siteUrl . '/llms.txt'),
-            [$this->checkSitemap($siteUrl . '/sitemap-site.xml', 'sitemap-site.xml')],
             $this->checkSitemapIndex($siteUrl . '/sitemap-index.xml')
         );
     }
@@ -180,17 +181,17 @@ class SeoFilesHealthCheckProvider implements HealthCheckExhaustiveInterface
         return false === $xml ? 0 : $xml->url->count();
     }
 
-    // sitemap-index.xml is optional (only multi-sitemap setups via the app-level scaffolded command generate one) - a missing/unreachable index yields no rows at all, unlike a missing sitemap-site.xml. When present, each referenced sitemap gets its own row (via checkSitemap()) alongside the index's own row, so a broken child is pinpointed instead of buried in a single aggregate result
+    // A missing or unreachable index is an error only when a provider declares urls, SitemapWriter removing it otherwise. When present, each referenced sitemap gets its own row (via checkSitemap()) alongside the index's own row, so a broken child is pinpointed instead of buried in a single aggregate result
     private function checkSitemapIndex(string $url): array
     {
         try {
             $file = $this->seoFilesClient->fetch($url);
-        } catch (\Throwable) {
-            return [];
+        } catch (\Throwable $e) {
+            return $this->declaresUrls() ? [$this->errorRow($url, 'sitemap-index.xml', 'label.health_check_seo_files_call_failed', $e->getMessage())] : [];
         }
 
         if ($file['statusCode'] >= 400) {
-            return [];
+            return $this->declaresUrls() ? [$this->row($url, 'sitemap-index.xml', HealthCheckResult::STATUS_ERROR, 'label.health_check_sitemap_missing')] : [];
         }
 
         if (!str_contains($file['content'], '<sitemapindex')) {
@@ -208,6 +209,18 @@ class SeoFilesHealthCheckProvider implements HealthCheckExhaustiveInterface
         }
 
         return $rows;
+    }
+
+    // Whether any provider declares a url, which is what SitemapWriter needs to write the index at all
+    private function declaresUrls(): bool
+    {
+        foreach ($this->sitemapProviders as $provider) {
+            if ([] !== $provider->getUrls()) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private function labelFromUrl(string $url): string
