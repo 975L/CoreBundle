@@ -1,5 +1,12 @@
 # ChangeLog
 
+## v1.90.6
+
+CI replay runs the other PHP versions in parallel
+
+- `bin/ci.sh`: tests on the other PHP versions run in parallel with `composer qa` at a lower priority, each in its own copy, its log shown only on failure (12/11/2026)
+- `bin/ci.sh`: identical in every bundle, the versions printed are those of the binaries `composer qa` runs (12/11/2026)
+
 ## v1.90.5
 
 CSP origin parameters set before nelmio_security loads

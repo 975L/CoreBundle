@@ -81,13 +81,13 @@ composer qa
 
 `rector` runs `--dry-run`, so it reports rather than rewrites, over the same sets `SymfonyMigrate.sh` gives a site. It covers `scaffold/` next to each bundle's own code: what is left unmodernised here gets rewritten in the application, where the rewritten file no longer matches the hash `ScaffoldInstaller` recorded, and the site is then told forever it customized a file it never touched.
 
-A development machine's `vendor/` stays at the versions of its `composer.lock`, which can lag behind Packagist — where the CI resolves everything. `bin/ci.sh` replays `composer qa` on a copy of the repository whose dependencies are resolved from Packagist, uncommitted changes included, then the tests on each other PHP version it finds installed among 8.4, 8.5 and 8.6, those the CI runs them on:
+A development machine's `vendor/` stays at the versions of its `composer.lock`, which can lag behind Packagist — where the CI resolves everything. `bin/ci.sh` replays `composer qa` on a copy of the repository whose dependencies are resolved from Packagist, uncommitted changes included, while the tests on each other PHP version it finds installed among 8.4, 8.5 and 8.6, those the CI runs them on, run in parallel in their own copy, their log shown only when they fail:
 
 ```bash
 bin/ci.sh
 ```
 
-The quality tools themselves are not dependencies of the bundle — PHPStan aside, which `require-dev` carries for its deprecation rules: the CI installs them with `setup-php`, which always takes the latest release, where a development machine keeps whatever it installed the day it installed it. `bin/ci.sh` installs them fresh too, and prints the versions it ran with, Lizard included: a rule removed upstream since is otherwise still enforced here, and a rule added since is missed.
+The quality tools themselves are not dependencies of the bundle — PHPStan aside, which `require-dev` carries for its deprecation rules: the CI installs them with `setup-php`, which always takes the latest release, where a development machine keeps whatever it installed the day it installed it. `bin/ci.sh` installs them fresh too, and prints the versions it ran with, Lizard included, taking a tool from `vendor/bin` when `require-dev` carries it, as `composer qa` does: a rule removed upstream since is otherwise still enforced here, and a rule added since is missed.
 
 ## Migrating from `c975l/config-bundle` / `c975l/ui-bundle`
 
