@@ -44,6 +44,12 @@ class MySqlOptionsFileTest extends TestCase
             $process = new Process(['my_print_defaults', '--defaults-file=' . $path, 'client']);
             $process->mustRun();
 
+            // MySQL's client masks the password unless asked with --show, MariaDB's prints it as is
+            if (str_contains($process->getOutput(), '--password=*****')) {
+                $process = new Process(['my_print_defaults', '--show', '--defaults-file=' . $path, 'client']);
+                $process->mustRun();
+            }
+
             $this->assertContains('--password=' . self::PASSWORD, explode("\n", trim($process->getOutput())));
             $this->assertSame('0600', substr(\sprintf('%o', fileperms($path)), -4));
         } finally {

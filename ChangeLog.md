@@ -1,5 +1,12 @@
 # ChangeLog
 
+## v1.90.1
+
+Backup tests independent of the machine's rclone and MySQL client
+
+- `BackupOffsiteCommandTest`: a stand-in rclone in the project's `bin/`, the CI having none (12/11/2026)
+- `MySqlOptionsFileTest`: the password read back with `--show` from MySQL's `my_print_defaults`, which masks it (12/11/2026)
+
 ## v1.90.0
 
 Third-party services as connectors, chosen in the configuration

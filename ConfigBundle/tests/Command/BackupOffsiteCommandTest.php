@@ -138,6 +138,11 @@ class BackupOffsiteCommandTest extends TestCase
     // Nothing declared for mirroring is a normal state - an install may keep every irreplaceable file in "archive" mode - and must not be dressed up as an error
     public function testNoDeclaredFolderWarnsRatherThanFails(): void
     {
+        // A stand-in rclone in the project's bin/, so the run does not depend on the machine having one
+        mkdir($this->projectDir . '/bin', 0775, true);
+        file_put_contents($this->projectDir . '/bin/rclone', "#!/bin/sh\nexit 0\n");
+        chmod($this->projectDir . '/bin/rclone', 0755);
+
         $tester = new CommandTester($this->createCommand('storagebox:example.com'));
         $tester->execute([]);
 
