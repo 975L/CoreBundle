@@ -134,10 +134,19 @@ class User implements InactivityAwareInterface, PasswordAuthenticatedUserInterfa
         }
 
         $password = (string) $this->password;
-        $samePassword = $password === (string) $user->getPassword() || hash('crc32c', (string) $user->getPassword()) === $password;
-        $sameRoles = [] === array_diff($this->getRoles(), $user->getRoles()) && [] === array_diff($user->getRoles(), $this->getRoles());
+        $refreshedPassword = (string) $user->getPassword();
+        $samePassword = $password === $refreshedPassword || hash('crc32c', $refreshedPassword) === $password;
 
-        return $samePassword && $sameRoles && $this->getUserIdentifier() === $user->getUserIdentifier() && $this->isEnabled() === $user->isEnabled();
+        // Sorted copies, so a role granted counts as much as a role taken away
+        $roles = $this->getRoles();
+        $refreshedRoles = $user->getRoles();
+        sort($roles);
+        sort($refreshedRoles);
+
+        return $samePassword
+            && $roles === $refreshedRoles
+            && $this->getUserIdentifier() === $user->getUserIdentifier()
+            && $this->isEnabled() === $user->isEnabled();
     }
 
     public function isVerified(): bool

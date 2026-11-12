@@ -18,7 +18,6 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
-use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
 
 class c975LUiBundleTest extends TestCase
 {
@@ -255,12 +254,12 @@ class c975LUiBundleTest extends TestCase
         $this->assertContains(PlaceholderMediaProviderPass::class, $passes);
     }
 
-    // A site builds its frame-src from this parameter rather than from a list copied out of the README, so declaring a platform never leaves it framed in development and blocked in production (see Video\VideoPlatform)
-    public function testLoadExtensionExposesTheVideoEmbedOriginsAsAParameter(): void
+    // A site builds its frame-src from this parameter rather than from a list copied out of the README, so declaring a platform never leaves it framed in development and blocked in production (see Video\VideoPlatform), and it is set while prepending so nelmio_security reads it even when bundles.php declares it before this bundle
+    public function testPrependExtensionExposesTheVideoEmbedOriginsAsAParameter(): void
     {
         $container = new ContainerBuilder();
 
-        new c975LUiBundle()->loadExtension([], $this->containerConfigurator($container), $container);
+        new c975LUiBundle()->prependExtension($this->createStub(ContainerConfigurator::class), $container);
 
         $origins = $container->getParameter('c975l_ui.video.embed_origins');
 
@@ -270,11 +269,11 @@ class c975LUiBundleTest extends TestCase
     }
 
     // Same reading for the map providers: a tile server an "img-src" refuses is an empty box in production, and the site names this parameter wherever its own policy needs it (see Map\MapProvider)
-    public function testLoadExtensionExposesTheMapOriginsAsAParameter(): void
+    public function testPrependExtensionExposesTheMapOriginsAsAParameter(): void
     {
         $container = new ContainerBuilder();
 
-        new c975LUiBundle()->loadExtension([], $this->containerConfigurator($container), $container);
+        new c975LUiBundle()->prependExtension($this->createStub(ContainerConfigurator::class), $container);
 
         $this->assertSame(implode(' ', MapProviderResolver::shippedOrigins()['img']), $container->getParameter('c975l_ui.map.img_origins'));
         $this->assertStringContainsString('https://tile.openstreetmap.org', (string) $container->getParameter('c975l_ui.map.img_origins'));
@@ -283,14 +282,6 @@ class c975LUiBundleTest extends TestCase
         $this->assertStringNotContainsString('openstreetmap', (string) $container->getParameter('c975l_ui.map.script_origins'));
         $this->assertSame('https://maps.googleapis.com', $container->getParameter('c975l_ui.map.script_origins'));
         $this->assertSame('https://maps.googleapis.com', $container->getParameter('c975l_ui.map.connect_origins'));
-    }
-
-    // A real configurator over a stubbed loader: ContainerConfigurator::import() is final, so it cannot be stubbed away, and the service definitions it would pull in are not what this test reads
-    private function containerConfigurator(ContainerBuilder $container): ContainerConfigurator
-    {
-        $instanceof = [];
-
-        return new ContainerConfigurator($container, $this->createStub(PhpFileLoader::class), $instanceof, __DIR__, 'services.php');
     }
 
     // A bare extension, just enough for hasExtension() to answer true

@@ -1,5 +1,13 @@
 # ChangeLog
 
+## v1.90.5
+
+CSP origin parameters set before nelmio_security loads
+
+- `c975l_ui.video.embed_origins` and `c975l_ui.map.*_origins`: set while prepending, so a site declaring `NelmioSecurityBundle` before this bundle can name them (12/11/2026)
+- Scaffold `User::isEqualTo()`: roles compared as sorted lists, lines kept under 120 characters (12/11/2026)
+- Scaffold `UserTest`: a granted role, roles in another order and a foreign user covered (12/11/2026)
+
 ## v1.90.4
 
 map-csp health check worded for every map provider

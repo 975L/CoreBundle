@@ -123,6 +123,15 @@ class c975LUiBundle extends AbstractBundle
 
     public function prependExtension(ContainerConfigurator $configurator, ContainerBuilder $container): void
     {
+        // Set here and not in loadExtension(): a parameter an extension sets while loading only exists for the extensions loaded after it, and nelmio_security, which reads these, comes first in most sites' bundles.php - prepending runs before any extension loads, whatever that order. Every origin the declared video platforms need framed, for a site to build its Content-Security-Policy from the registry rather than from a list copied out of a README - one entry of nelmio_security's frame-src (and of its child-src fallback), so declaring a new platform never leaves a site with an empty frame in production and none in development. A space-separated string rather than the array it is built from: a CSP directive is exactly that, and a parameter holding an array can only be a whole config node, never one item of a yaml sequence next to the site's own origins - which is the only way this is ever used. PHP callers read VideoPlatform::allCspOrigins() directly. A parameter rather than a prepended nelmio_security config: the app owns its policy, and a bundle silently widening someone's frame-src is exactly what a security header exists to prevent
+        $container->setParameter('c975l_ui.video.embed_origins', implode(' ', VideoPlatform::allCspOrigins()));
+
+        // Same reading for the map providers, on the directives a drawn map needs instead. One parameter per directive and not one blob for the three: a list holding a tile server and a script host at once would authorise scripts from that tile server the day a site named it in its "script-src", which is the opposite of what naming origins is for. The script list holds Google's host alone, this bundle serving Leaflet itself (public/js/leaflet.js) - an OpenStreetMap site opens its policy to nobody
+        $mapOrigins = MapProviderResolver::shippedOrigins();
+        $container->setParameter('c975l_ui.map.img_origins', implode(' ', $mapOrigins['img']));
+        $container->setParameter('c975l_ui.map.script_origins', implode(' ', $mapOrigins['script']));
+        $container->setParameter('c975l_ui.map.connect_origins', implode(' ', $mapOrigins['connect']));
+
         // The ceilings below are lifted under "test", for the reason ConfigBundle's own comment states: a functional suite drives its whole run from one address, and these four are twenty times tighter than the front limiter - a site posting two reviews in one scenario would answer 429 to itself. hasParameter() guards the bundle's own tests, which prepend onto a bare ContainerBuilder holding no kernel parameter at all
         $testEnvironment = $container->hasParameter('kernel.environment') && 'test' === $container->getParameter('kernel.environment');
 
@@ -225,18 +234,6 @@ class c975LUiBundle extends AbstractBundle
     public function loadExtension(array $config, ContainerConfigurator $containerConfigurator, ContainerBuilder $containerBuilder): void
     {
         $containerConfigurator->import('../config/services.yaml');
-
-        // Every origin the declared video platforms need framed, for a site to build its Content-Security-Policy from the registry rather than from a list copied out of a README - one entry of nelmio_security's frame-src (and of its child-src fallback), so declaring a new platform never leaves a site with an empty frame in production and none in development
-        // A space-separated string rather than the array it is built from: a CSP directive is exactly that, and a parameter holding an array can only be a whole config node, never one item of a yaml sequence next to the site's own origins - which is the only way this is ever used. PHP callers read VideoPlatform::allCspOrigins() directly
-        // A parameter rather than a prepended nelmio_security config: the app owns its policy, and a bundle silently widening someone's frame-src is exactly what a security header exists to prevent
-        $containerBuilder->setParameter('c975l_ui.video.embed_origins', implode(' ', VideoPlatform::allCspOrigins()));
-
-        // Same reading for the map providers, on the directives a drawn map needs instead. One parameter per directive and not one blob for the three: a list holding a tile server and a script host at once would authorise scripts from that tile server the day a site named it in its "script-src", which is the opposite of what naming origins is for
-        // The script list holds Google's host alone, this bundle serving Leaflet itself (public/js/leaflet.js) - an OpenStreetMap site opens its policy to nobody
-        $mapOrigins = MapProviderResolver::shippedOrigins();
-        $containerBuilder->setParameter('c975l_ui.map.img_origins', implode(' ', $mapOrigins['img']));
-        $containerBuilder->setParameter('c975l_ui.map.script_origins', implode(' ', $mapOrigins['script']));
-        $containerBuilder->setParameter('c975l_ui.map.connect_origins', implode(' ', $mapOrigins['connect']));
 
         // Where the generated stylesheets go, relative to public/ - an app running a second context against its own database (a demo) sets its own, or each context's flush overwrites the other's theme and fonts. An app parameter wins over this one
         $containerBuilder->setParameter('c975l_ui.build_dir', 'bundles/build');

@@ -4,6 +4,7 @@ namespace App\Tests\Entity;
 
 use App\Entity\User;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 class UserTest extends TestCase
 {
@@ -70,6 +71,28 @@ class UserTest extends TestCase
         $this->assertFalse($session->isEqualTo($this->account()->setEmail('other@example.test')));
     }
 
+    // A role granted ends the session as surely as one taken away, the session's roles being the token's
+    public function testAGrantedRoleIsNoLongerTheSessionUser(): void
+    {
+        $session = $this->sessionCopy($this->account());
+
+        $this->assertFalse($session->isEqualTo($this->account()->setRoles(['ROLE_ADMIN', 'ROLE_SUPER_ADMIN'])));
+    }
+
+    // The same roles in another order are still the same account
+    public function testRolesInAnotherOrderAreStillTheSessionUser(): void
+    {
+        $session = $this->sessionCopy($this->account()->setRoles(['ROLE_ADMIN', 'ROLE_EDITOR']));
+
+        $this->assertTrue($session->isEqualTo($this->account()->setRoles(['ROLE_EDITOR', 'ROLE_ADMIN'])));
+    }
+
+    // A user of another class is never the session's account
+    public function testAForeignUserIsNoLongerTheSessionUser(): void
+    {
+        $this->assertFalse($this->account()->isEqualTo($this->createStub(UserInterface::class)));
+    }
+
     public function testFluentSettersReturnSameInstance(): void
     {
         $user = new User();
@@ -94,7 +117,11 @@ class UserTest extends TestCase
     // An enabled admin account, as the database holds it
     private function account(): User
     {
-        return new User()->setEmail('user@example.test')->setPassword('$argon2id$hashedPassword')->setRoles(['ROLE_ADMIN'])->setIsEnabled(true);
+        return new User()
+            ->setEmail('user@example.test')
+            ->setPassword('$argon2id$hashedPassword')
+            ->setRoles(['ROLE_ADMIN'])
+            ->setIsEnabled(true);
     }
 
     // The account as the session stores it between two requests
