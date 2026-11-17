@@ -86,11 +86,11 @@ class UsersCleanupCommandTest extends TestCase
         $finder = $this->createMock(InactiveUserFinder::class);
         $finder->method('isSupported')->willReturn(true);
         $finder->expects($this->once())->method('findToAnonymize')->with(
-            $this->callback(fn (\DateTimeInterface $date): bool => $this->isDaysAgo($date, 100)),
-            $this->callback(fn (\DateTimeInterface $date): bool => $this->isDaysAgo($date, 10)),
+            $this->callback(fn (\DateTimeInterface $date): bool => $date instanceof \DateTimeImmutable && $this->isDaysAgo($date, 100)),
+            $this->callback(fn (\DateTimeInterface $date): bool => $date instanceof \DateTimeImmutable && $this->isDaysAgo($date, 10)),
         )->willReturn([]);
         $finder->expects($this->once())->method('findToNotify')->with(
-            $this->callback(fn (\DateTimeInterface $date): bool => $this->isDaysAgo($date, 90)),
+            $this->callback(fn (\DateTimeInterface $date): bool => $date instanceof \DateTimeImmutable && $this->isDaysAgo($date, 90)),
         )->willReturn([]);
 
         new CommandTester($this->command(['user-inactivity-days' => 100, 'user-inactivity-notice-days' => 10], $finder))->execute([]);

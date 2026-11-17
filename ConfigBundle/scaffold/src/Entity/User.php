@@ -43,21 +43,21 @@ class User implements InactivityAwareInterface, PasswordAuthenticatedUserInterfa
     private bool $isEnabled = false;
 
     #[ORM\Column]
-    private ?\DateTime $creation = null;
+    private ?\DateTimeImmutable $creation = null;
 
     #[ORM\Column]
-    private ?\DateTime $modification = null;
+    private ?\DateTimeImmutable $modification = null;
 
     #[ORM\Column(nullable: true)]
-    private ?\DateTime $lastLogin = null;
+    private ?\DateTimeImmutable $lastLogin = null;
 
     #[ORM\Column(nullable: true)]
-    private ?\DateTime $inactivityNoticeSentAt = null;
+    private ?\DateTimeImmutable $inactivityNoticeSentAt = null;
 
     // The inactivity clock starts with the account, one never logged in to being as unused as one left for years
     public function __construct()
     {
-        $this->lastLogin = new \DateTime();
+        $this->lastLogin = new \DateTimeImmutable();
     }
 
     public function getId(): ?int
@@ -173,50 +173,50 @@ class User implements InactivityAwareInterface, PasswordAuthenticatedUserInterfa
         return $this;
     }
 
-    public function getCreation(): ?\DateTime
+    public function getCreation(): ?\DateTimeImmutable
     {
         return $this->creation;
     }
 
-    public function setCreation(\DateTime $creation): static
+    public function setCreation(\DateTimeInterface $creation): static
     {
-        $this->creation = $creation;
+        $this->creation = \DateTimeImmutable::createFromInterface($creation);
 
         return $this;
     }
 
-    public function getModification(): ?\DateTime
+    public function getModification(): ?\DateTimeImmutable
     {
         return $this->modification;
     }
 
-    public function setModification(\DateTime $modification): static
+    public function setModification(\DateTimeInterface $modification): static
     {
-        $this->modification = $modification;
+        $this->modification = \DateTimeImmutable::createFromInterface($modification);
 
         return $this;
     }
 
-    public function getLastLogin(): ?\DateTime
+    public function getLastLogin(): ?\DateTimeImmutable
     {
         return $this->lastLogin;
     }
 
     public function setLastLogin(\DateTimeInterface $lastLogin): static
     {
-        $this->lastLogin = \DateTime::createFromInterface($lastLogin);
+        $this->lastLogin = \DateTimeImmutable::createFromInterface($lastLogin);
 
         return $this;
     }
 
-    public function getInactivityNoticeSentAt(): ?\DateTime
+    public function getInactivityNoticeSentAt(): ?\DateTimeImmutable
     {
         return $this->inactivityNoticeSentAt;
     }
 
     public function setInactivityNoticeSentAt(?\DateTimeInterface $inactivityNoticeSentAt): static
     {
-        $this->inactivityNoticeSentAt = null !== $inactivityNoticeSentAt ? \DateTime::createFromInterface($inactivityNoticeSentAt) : null;
+        $this->inactivityNoticeSentAt = null !== $inactivityNoticeSentAt ? \DateTimeImmutable::createFromInterface($inactivityNoticeSentAt) : null;
 
         return $this;
     }
@@ -229,6 +229,6 @@ class User implements InactivityAwareInterface, PasswordAuthenticatedUserInterfa
         $this->roles = [];
         $this->isEnabled = false;
         $this->inactivityNoticeSentAt = null;
-        $this->modification = new \DateTime();
+        $this->modification = new \DateTimeImmutable();
     }
 }

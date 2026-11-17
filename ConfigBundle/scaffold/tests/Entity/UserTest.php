@@ -114,6 +114,16 @@ class UserTest extends TestCase
         $this->assertFalse($user->isEnabled());
     }
 
+    // A mutable date handed to a setter is stored immutable, same instant, the columns being immutable
+    public function testDatesAreStoredImmutable(): void
+    {
+        $user = new User()->setCreation(new \DateTime('2026-01-15 10:00:00'))->setModification(new \DateTime('2026-01-16 10:00:00'));
+
+        $this->assertInstanceOf(\DateTimeImmutable::class, $user->getCreation());
+        $this->assertSame('2026-01-15 10:00:00', $user->getCreation()->format('Y-m-d H:i:s'));
+        $this->assertInstanceOf(\DateTimeImmutable::class, $user->getModification());
+    }
+
     // An enabled admin account, as the database holds it
     private function account(): User
     {

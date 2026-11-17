@@ -83,7 +83,8 @@ depends on the core and on nothing else.
 Two nuances that get lost:
 
 - Menu sections sharing the same `label` **and** `translation_domain` merge under one heading, and the
-  entries are sorted alphabetically on the **translated** label. Each section is drawn as a collapsible
+  entries are sorted alphabetically on the **translated** label, an item set `'first' => true` opening
+  its section ahead of that order. Each section is drawn as a collapsible
   submenu carrying the optional `icon` of `getMenuSection()`, the shared "management" one staying open;
   `icon` and `tier` belong to whichever provider is merged first when several share a section.
 - `getLinks()` is not one section: **the `target` key is what says where a link is drawn.** Naming one

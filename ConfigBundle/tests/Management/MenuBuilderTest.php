@@ -81,6 +81,20 @@ class MenuBuilderTest extends TestCase
         $this->assertSame(['apple', 'zebra'], array_keys($menus));
     }
 
+    // An item set 'first' opens its section whatever its label, the others staying alphabetical
+    public function testGetMenusPutsAFirstItemAheadOfTheAlphabeticalOrder(): void
+    {
+        $section = ['label' => 'label.management', 'translation_domain' => 'site'];
+        $provider = $this->createProvider($section, [
+            'zebra' => ['controller' => 'ZebraController', 'label' => 'label.zebra', 'translation_domain' => 'config', 'icon' => 'fa fa-z', 'first' => true],
+            'mango' => ['controller' => 'MangoController', 'label' => 'label.mango', 'translation_domain' => 'config', 'icon' => 'fa fa-m'],
+            'apple' => ['controller' => 'AppleController', 'label' => 'label.apple', 'translation_domain' => 'config', 'icon' => 'fa fa-a'],
+        ]);
+        $builder = new MenuBuilder([$provider], $this->createConfigService(), $this->createTranslator(), $this->createUrlGenerator());
+
+        $this->assertSame(['zebra', 'apple', 'mango'], array_keys($builder->getMenus()));
+    }
+
     // getOrderedMenus() must match the sidebar's own visual order (see getMenuItems()): every essential item first (section order, alphabetical within a section), then every advanced item grouped together at the end - not getMenus()'s plain alphabetical merge across everything
     public function testGetOrderedMenusPutsEveryAdvancedItemAfterEveryEssentialItem(): void
     {

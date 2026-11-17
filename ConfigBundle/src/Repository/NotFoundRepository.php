@@ -102,7 +102,7 @@ class NotFoundRepository extends ServiceEntityRepository
 
     public function purgeOlderThan(int $days): int
     {
-        $limit = new \DateTime(sprintf('-%d days', $days));
+        $limit = new \DateTimeImmutable(sprintf('-%d days', $days));
 
         return (int) $this->createQueryBuilder('n')
             ->delete()

@@ -1,5 +1,14 @@
 # ChangeLog
 
+## v1.93.0
+
+Menu item opening its section
+
+- `MenuProviderInterface`: a menu item set `'first' => true` opens its section, ahead of the alphabetical order (17/11/2026)
+- Date query parameters immutable, Doctrine DBAL deprecating the mutable date types (17/11/2026)
+- Scaffold `User`: immutable date columns, setters still accepting any `\DateTimeInterface` (17/11/2026)
+- `CaptchaBehaviourTest` waits for what each scenario expects instead of a fixed delay, no longer failing under load (17/11/2026)
+
 ## v1.92.0
 
 Row actions of every list icon-only by default

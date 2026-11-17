@@ -1080,7 +1080,7 @@ Make sure your bundle's `services.yaml` includes the `Management/` folder in its
 
 **Section icon:** `getMenuSection()` accepts an optional `'icon'` key — the icon drawn next to the section's own caption, the way its items carry one. Omit it for a caption with none. Like `tier`, it belongs to whichever provider is merged first when several share one section.
 
-**Alphabetical ordering:** within a section, menu items are always sorted alphabetically by their translated label.
+**Alphabetical ordering:** within a section, menu items are sorted alphabetically by their translated label; an item set `'first' => true` opens its section ahead of that order (the screen a section is built around, its settings following).
 
 **Role:** each entry in `getMenus()` accepts an optional `'role'` key, defaulting to the `site-role-admin` value every entry used to be given. Set it to the bar the entry's own screen states — its CRUD's `setPermission(Action::INDEX, …)`, or the `denyAccessUnlessGranted()` of its `#[AdminRoute]` action — whenever that screen opens below the admin one: a media library or a redirects list an editor is meant to reach. Nothing here can read a CRUD's own `setPermission()`, so the entry has to say it. Too high and it goes missing from a sidebar its screen would have answered; too low and it leads that user to a 403, and the guided tour walks them to it — `OnboardingStepBuilder` skips a menu the current user lacks the `role` for exactly as it already skips a link.
 

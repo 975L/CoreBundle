@@ -35,6 +35,12 @@ class CaptchaBehaviourTest extends JsCase
             };
         }';
 
+    // Waits for what a scenario expects rather than for a fixed delay, the driver's import() taking longer than any guess when the suite runs under load, and gives up after a while so a promise broken still reads as a failed assertion
+    private const string UNTIL = 'const until = async (done) => {
+            for (const end = Date.now() + 3000; !done() && Date.now() < end;) { await new Promise((r) => setTimeout(r, 20)); }
+        };
+        ';
+
     // The script is the whole cost of this feature, and a visitor reading a page with a form on it must not pay it
     public function testNothingIsFetchedUntilTheVisitorTouchesTheForm(): void
     {
@@ -51,6 +57,7 @@ class CaptchaBehaviourTest extends JsCase
              form.dispatchEvent(new FocusEvent("focusin", { bubbles: true }));
              form.dispatchEvent(new FocusEvent("focusin", { bubbles: true }));
              form.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true }));
+             await until(() => window.__asked.length > 0);
              await new Promise((r) => setTimeout(r, 60));
 
              return window.__asked.length;'
@@ -67,7 +74,7 @@ class CaptchaBehaviourTest extends JsCase
              let submits = 0;
              form.addEventListener("submit", (event) => { submits += 1; event.preventDefault(); });
              form.requestSubmit();
-             await new Promise((r) => setTimeout(r, 300));
+             await until(() => 2 === submits);
 
              return { token: root.querySelector("[name=captcha]").value, submits, asked: window.__asked.length };'
         );
@@ -85,7 +92,7 @@ class CaptchaBehaviourTest extends JsCase
              let submits = 0;
              form.addEventListener("submit", (event) => { submits += 1; event.preventDefault(); });
              form.requestSubmit();
-             await new Promise((r) => setTimeout(r, 900));
+             await until(() => 2 === submits);
 
              return { token: root.querySelector("[name=captcha]").value, submits };',
             // No stub this time: a refused connection, which is what a blocker or a lost network does - Google itself would answer, slowly under load
@@ -124,7 +131,7 @@ class CaptchaBehaviourTest extends JsCase
              let submits = 0;
              form.addEventListener("submit", (event) => { submits += 1; event.preventDefault(); });
              form.requestSubmit();
-             await new Promise((r) => setTimeout(r, 300));
+             await until(() => 2 === submits);
 
              return { token: root.querySelector("[name=captcha]").value, submits, asked: window.__asked.length };',
             provider: 'unknown'
@@ -147,7 +154,7 @@ class CaptchaBehaviourTest extends JsCase
                 $provider
             ),
             ['captcha' => 'captcha'],
-            $probe,
+            self::UNTIL . $probe,
             [
                 // Whatever the previous scenario left behind: its recorded appends, its stub, and the grecaptcha a loaded stub had defined
                 'before' => self::SEAM . sprintf('window.__stub = %s; delete window.grecaptcha;', $stub ? 'true' : 'false'),

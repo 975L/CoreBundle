@@ -264,10 +264,16 @@ class MenuBuilder
         return $sections;
     }
 
-    // Sorts an array of menus/links by their translated label, keeping their keys - an item can set 'pinned' => true (links only, see MenuProviderInterface::getLinks()) to always sort after every non-pinned item, regardless of label (e.g. a "visit the site" link meant to stay at the very bottom of the links section)
+    // Sorts an array of menus/links by their translated label, keeping their keys - an item can set 'pinned' => true (links only, see MenuProviderInterface::getLinks()) to always sort after every non-pinned item, regardless of label (e.g. a "visit the site" link meant to stay at the very bottom of the links section), and a menu item 'first' => true to open its section, ahead of the alphabetical order (the entry a section is built around)
     private function sortAlphabetically(array $items): array
     {
         uasort($items, function (array $a, array $b) {
+            $firstA = $a['first'] ?? false;
+            $firstB = $b['first'] ?? false;
+            if ($firstA !== $firstB) {
+                return $firstB <=> $firstA;
+            }
+
             $pinnedA = $a['pinned'] ?? false;
             $pinnedB = $b['pinned'] ?? false;
             if ($pinnedA !== $pinnedB) {

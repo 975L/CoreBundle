@@ -86,7 +86,7 @@ class UsersCleanupCommand extends Command
         $this->inactiveUserFinder->startMissingClocks();
 
         // Anonymizes the accounts warned long enough ago, before warning new ones so an account is never both in the same run
-        $anonymized = $this->inactiveUserFinder->findToAnonymize(new \DateTime('-' . $days . ' days'), new \DateTime('-' . $noticeDays . ' days'));
+        $anonymized = $this->inactiveUserFinder->findToAnonymize(new \DateTimeImmutable('-' . $days . ' days'), new \DateTimeImmutable('-' . $noticeDays . ' days'));
         foreach ($anonymized as $user) {
             $email = $user->getEmail();
             $user->anonymize();
@@ -95,9 +95,9 @@ class UsersCleanupCommand extends Command
 
         // Warns the accounts about to reach the limit, the date being written down only once the email has left
         $notified = 0;
-        foreach ($this->inactiveUserFinder->findToNotify(new \DateTime('-' . ($days - $noticeDays) . ' days')) as $user) {
+        foreach ($this->inactiveUserFinder->findToNotify(new \DateTimeImmutable('-' . ($days - $noticeDays) . ' days')) as $user) {
             if ($this->notify($user, $noticeDays)) {
-                $user->setInactivityNoticeSentAt(new \DateTime());
+                $user->setInactivityNoticeSentAt(new \DateTimeImmutable());
                 ++$notified;
             }
         }

@@ -36,7 +36,7 @@ class InactiveUserFinder
             ->update(UserInterface::class, 'u')
             ->set('u.lastLogin', ':now')
             ->where('u.lastLogin IS NULL')
-            ->setParameter('now', new \DateTime())
+            ->setParameter('now', new \DateTimeImmutable())
             ->getQuery()
             ->execute();
     }
