@@ -1,5 +1,11 @@
 # ChangeLog
 
+## v1.91.2
+
+Dashboard header buttons wrap on a phone
+
+- The dashboard header buttons wrap onto several lines instead of overflowing on a narrow screen (17/11/2026)
+
 ## v1.91.1
 
 JS test server never taken for a parallel copy's

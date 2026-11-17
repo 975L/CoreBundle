@@ -5,7 +5,7 @@
         <h1>{{ ('label.management'|trans({}, 'config')) }}</h1>
         <p>{{ ('label.management_interface'|trans({}, 'config')) }}</p>
         {# Guided tour and guided projects side by side: the first shows what the back-office holds, the second walks through a real task to carry out, listed on a page of their own (see GuidedProjectController::index()). Then the ecosystem's films and block showcase, the same for every site (see EcosystemUrls) #}
-        <div class="d-flex justify-content-center gap-2">
+        <div class="d-flex flex-wrap justify-content-center gap-2">
             {{ include('@c975LConfig/management/_onboarding_tour.html.twig', { steps: onboardingSteps }) }}
             {% if hasGuidedProjects %}
                 <twig:ea:Button htmlElement="a" href="{{ path('management_guided_projects_index') }}" icon="fa fa-list-check" class="mb-3">

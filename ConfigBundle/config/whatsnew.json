@@ -6,6 +6,11 @@
                 "en": "The broken links list no longer keeps the scanners' visits: files such as scripts, sitemaps or data, and links pointing to themselves, are left out and those already listed are deleted.",
                 "fr": "La liste des liens cassés ne garde plus les passages des robots scanners : les fichiers (scripts, plans de site, données) et les liens qui pointent sur eux-mêmes sont écartés, et ceux déjà listés sont supprimés.",
                 "es": "La lista de enlaces rotos ya no conserva las visitas de los robots de escaneo: los archivos (scripts, mapas del sitio, datos) y los enlaces que apuntan a sí mismos se descartan, y los ya listados se eliminan."
+            },
+            {
+                "en": "On a phone, the buttons at the top of the dashboard now go onto several lines instead of overflowing the screen.",
+                "fr": "Sur un téléphone, les boutons en haut du tableau de bord passent désormais sur plusieurs lignes au lieu de déborder de l'écran.",
+                "es": "En un teléfono, los botones de la parte superior del panel pasan ahora a varias líneas en lugar de desbordar la pantalla."
             }
         ]
     },
