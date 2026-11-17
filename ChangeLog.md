@@ -1,5 +1,11 @@
 # ChangeLog
 
+## v1.91.3
+
+Guided project block 12000 reserved for PilotBundle
+
+- `GuidedProjectProviderInterface`: block 12000 reserved for PilotBundle (17/11/2026)
+
 ## v1.91.2
 
 Dashboard header buttons wrap on a phone
