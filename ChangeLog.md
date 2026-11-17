@@ -1,5 +1,12 @@
 # ChangeLog
 
+## v1.91.1
+
+JS test server never taken for a parallel copy's
+
+- `JsCase::serve()` passes over a port another server answers on and keeps a port only while its own server runs, so the parallel copies of `bin/ci.sh` no longer fetch each other's fixtures (17/11/2026)
+- Added the protected `JsCase::port()`, the port tried next (17/11/2026)
+
 ## v1.91.0
 
 Broken links list turns down forged referers and files

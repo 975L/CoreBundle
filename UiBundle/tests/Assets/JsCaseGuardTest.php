@@ -27,6 +27,10 @@ class JsCaseGuardTest extends JsCase
 
     private bool $refuseToOpen = false;
 
+    // The ports port() hands out first, before drawing at random
+    /** @var list<int> */
+    private array $ports = [];
+
     // A server that never answers, standing in for the twenty ports serve() tries in vain
     protected function serve(string $docroot): int
     {
@@ -35,6 +39,12 @@ class JsCaseGuardTest extends JsCase
         }
 
         return parent::serve($docroot);
+    }
+
+    // The ports queued by a test first, a random one once they run out
+    protected function port(): int
+    {
+        return array_shift($this->ports) ?? parent::port();
     }
 
     // A page that never finishes being mounted, standing in for a navigate() or an evaluate() that throws
@@ -82,6 +92,34 @@ class JsCaseGuardTest extends JsCase
 
         $this->assertNotNull($failure, 'An openPage() that throws is swallowed, so the failure below says nothing about the page.');
         $this->assertNull($page, 'A page that never finished being mounted is shared all the same, so every scenario left in the run is handed that half-built one.');
+    }
+
+    // A port another server already answers on is passed over, so the fixtures are never asked of a parallel copy's server (bin/ci.sh) that serves its own files
+    public function testAPortAnsweredByAnotherServerIsPassedOver(): void
+    {
+        $foreign = stream_socket_server('tcp://127.0.0.1:0');
+        $this->assertNotFalse($foreign);
+        $taken = (int) substr((string) strrchr((string) stream_socket_get_name($foreign, false), ':'), 1);
+        $shared = $this->sharedState();
+        $docroot = sys_get_temp_dir() . '/jscase-guard-' . bin2hex(random_bytes(4));
+        mkdir($docroot);
+
+        // The run's own server and the foreign one are put back whatever serve() did, a failing attempt included
+        $this->ports = [$taken];
+        try {
+            $port = $this->serve($docroot);
+        } finally {
+            $server = $this->readShared('server');
+            if (\is_resource($server)) {
+                proc_terminate($server);
+                proc_close($server);
+            }
+            $this->putBack($shared);
+            fclose($foreign);
+            rmdir($docroot);
+        }
+
+        $this->assertNotSame($taken, $port, 'A port another server answers on is kept, so the fixtures are asked of that server.');
     }
 
     // The attempt itself, its failure answered rather than thrown: the run's state has to be put back before anything is asserted

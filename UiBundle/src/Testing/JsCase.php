@@ -542,11 +542,18 @@ abstract class JsCase extends TestCase
         }
     }
 
-    // A port taken at random and tried until one answers: the suite may well be run beside a site's own server, and a fixed port would make the two collide. Protected so a test describing the harness can refuse to serve and watch what the failure leaves behind
+    // A port taken at random and tried until its own server answers on it: the suite may well be run beside a site's own server or a parallel copy of itself (bin/ci.sh), whose server would otherwise answer for a port this one could not bind. Protected so a test describing the harness can refuse to serve and watch what the failure leaves behind
     protected function serve(string $docroot): int
     {
         for ($attempt = 0; $attempt < 20; ++$attempt) {
-            $port = random_int(8300, 8999);
+            $port = $this->port();
+            // A port already answering is another server's, which would serve its own files rather than this docroot's
+            if (self::answers($port)) {
+                $refused = sprintf('port %d already answered by another server', $port);
+
+                continue;
+            }
+
             // $pipes is the by-reference third argument proc_open's signature requires; nothing here writes to the server's stdin
             self::$server = proc_open(
                 sprintf('exec php -S 127.0.0.1:%d -t %s', $port, escapeshellarg($docroot)),
@@ -559,16 +566,12 @@ abstract class JsCase extends TestCase
                 continue;
             }
 
+            // Its own server exits at once on a port taken meanwhile, so the port is only kept while it still runs
             $deadline = microtime(true) + 3;
-            while (microtime(true) < $deadline) {
-                if ($socket = @fsockopen('127.0.0.1', $port, $code, $message, 0.1)) {
-                    fclose($socket);
-
+            while (microtime(true) < $deadline && self::running()) {
+                if (self::answers($port, $refused) && self::running()) {
                     return $port;
                 }
-
-                // Both are by-reference out parameters fsockopen's signature requires; kept for the failure below rather than dropped
-                $refused = sprintf('%s (%d)', $message, $code);
 
                 usleep(20000);
             }
@@ -579,6 +582,34 @@ abstract class JsCase extends TestCase
         }
 
         $this->fail(sprintf('No port could be found to serve the javascript fixtures from: %s.', $refused ?? 'no attempt was made'));
+    }
+
+    // One port to try, at random among those the suite serves from - protected so a test describing the harness can hand it a port already taken
+    protected function port(): int
+    {
+        return random_int(8300, 8999);
+    }
+
+    // Whether its own server still runs, read again on every call
+    /** @phpstan-impure */
+    private static function running(): bool
+    {
+        return \is_resource(self::$server) && proc_get_status(self::$server)['running'];
+    }
+
+    // Whether a server answers on $port, $refused saying why not
+    private static function answers(int $port, ?string &$refused = null): bool
+    {
+        // Both are by-reference out parameters fsockopen's signature requires; kept for the failure message rather than dropped
+        $socket = @fsockopen('127.0.0.1', $port, $code, $message, 0.1);
+        if (false === $socket) {
+            $refused = sprintf('%s (%d)', $message, $code);
+
+            return false;
+        }
+        fclose($socket);
+
+        return true;
     }
 
     private static function remove(string $path): void

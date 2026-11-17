@@ -137,12 +137,14 @@ and its server being kept, since they are what the bundles already copied are se
 **A renderer that crashes rather than a tab that goes away reads as a timeout and is not replayed**,
 being indistinguishable from a scenario that never settles.
 
-Three members are protected for a test describing the harness itself, and for nothing else:
-`JsCase::tab()` hands over the run's tab, `JsCase::serve()` starts the server and `JsCase::openPage()`
-mounts the page. `JsCaseRecoveryTest` destroys the tab and asserts the next scenario still answers;
-`JsCaseGuardTest` refuses a server and then a page, and asserts an attempt that failed halfway
-published neither its docroot nor its page — a half-built one, shared, condemns every scenario that
-comes after it rather than the one that met the failure.
+Four members are protected for a test describing the harness itself, and for nothing else:
+`JsCase::tab()` hands over the run's tab, `JsCase::serve()` starts the server, `JsCase::port()` draws
+the port it tries next and `JsCase::openPage()` mounts the page. `JsCaseRecoveryTest` destroys the tab
+and asserts the next scenario still answers; `JsCaseGuardTest` refuses a server and then a page, and
+asserts an attempt that failed halfway published neither its docroot nor its page — a half-built one,
+shared, condemns every scenario that comes after it rather than the one that met the failure. It also
+hands `serve()` a port another server already answers on, and asserts it is passed over: a parallel
+copy of the suite (`bin/ci.sh`) would otherwise be asked for fixtures it does not serve.
 
 ## Why a real browser and not an emulated DOM
 
@@ -184,7 +186,7 @@ or `/usr/bin/google-chrome` is not executable, so a checkout without Chrome stay
 - **Do not load a vendored library inside the scenario**; hand it to `scripts` or `styles`, which put it
   on the page and wait for it — appending a script only queues it, and a scenario reading its global
   before it ran fails on the ordering rather than on the library.
-- **Do not call `JsCase::tab()`, `JsCase::serve()` or `JsCase::openPage()` from a behaviour test.** They
+- **Do not call `JsCase::tab()`, `JsCase::serve()`, `JsCase::port()` or `JsCase::openPage()` from a behaviour test.** They
   exist for a test describing the harness, and a behaviour test speaking to the tab rather than to the
   page it carries is one that leaves the next scenario something.
 - **Do not catch a dead session yourself and retry** — the harness replays a destroyed tab once, and a
