@@ -12,6 +12,7 @@ namespace c975L\ConfigBundle\Repository;
 
 use c975L\ConfigBundle\Entity\NotFound;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\DBAL\ParameterType;
@@ -71,6 +72,32 @@ class NotFoundRepository extends ServiceEntityRepository
     public function deleteByPath(string $path): void
     {
         $this->connection->delete(NotFound::TABLE, ['path' => $path]);
+    }
+
+    // Path and referer of every row, all a filter needs to judge one again - one row per distinct dead url, so a table small enough to read whole
+    /**
+     * @return array<string, string>
+     */
+    public function findReferersIndexedByPath(): array
+    {
+        return $this->connection->fetchAllKeyValue(sprintf('SELECT path, referer FROM %s', NotFound::TABLE));
+    }
+
+    // One statement for every path given, as deleteByPath() does for one
+    /**
+     * @param list<string> $paths
+     */
+    public function deleteByPaths(array $paths): int
+    {
+        if ([] === $paths) {
+            return 0;
+        }
+
+        return (int) $this->connection->executeStatement(
+            sprintf('DELETE FROM %s WHERE path IN (:paths)', NotFound::TABLE),
+            ['paths' => $paths],
+            ['paths' => ArrayParameterType::STRING],
+        );
     }
 
     public function purgeOlderThan(int $days): int

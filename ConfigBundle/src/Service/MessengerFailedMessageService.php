@@ -32,7 +32,7 @@ use Symfony\Component\Mime\Email;
 // Reads/purges/retries the Doctrine Messenger failure transport ("messenger_messages" table, queue_name = 'failed'), used by MessengerCleanupCommand, MessengerAlertProvider and MessengerFailedController so the logic to decode a failed Envelope lives in one place
 class MessengerFailedMessageService
 {
-    // Exception message keywords indicating the failure is caused by the recipient's own reputation (blacklisted spammer domain, ...) rather than an issue worth an admin's attention
+    // Exception message keywords indicating the failure is caused by the recipient's own reputation (spammer domain on a denylist, ...) rather than an issue worth an admin's attention
     private const array MINOR_KEYWORDS = ['blacklist', 'blocklist', 'block-listed', 'rbl', 'spam', 'reputation'];
 
     // What decode() knows about a row whose body it couldn't read back into an Envelope - the same keys describeEnvelope() fills in, so the row is still listed with its id and date

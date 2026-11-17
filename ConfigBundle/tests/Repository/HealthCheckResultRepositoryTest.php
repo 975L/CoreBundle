@@ -100,6 +100,7 @@ class HealthCheckResultRepositoryTest extends TestCase
     {
         $config = ORMSetup::createAttributeMetadataConfig([\dirname(__DIR__, 2) . '/src/Entity'], true);
         $config->enableNativeLazyObjects(true);
+        $config->setUseSchemaEditorApi(true);
         $entityManager = new EntityManager(DriverManager::getConnection(['driver' => 'pdo_sqlite', 'memory' => true], $config), $config);
         new SchemaTool($entityManager)->createSchema([$entityManager->getClassMetadata(HealthCheckResult::class)]);
 

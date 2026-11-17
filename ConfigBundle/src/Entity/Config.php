@@ -151,11 +151,11 @@ class Config
     #[Assert\Length(max: 20)]
     private ?string $severity = null;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    private ?\DateTimeInterface $creation = null;
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
+    private ?\DateTimeImmutable $creation = null;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    private ?\DateTimeInterface $modification = null;
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
+    private ?\DateTimeImmutable $modification = null;
 
     // "SET NULL" and not the default: this only records who last changed the entry, and a setting outlives whoever set it - left restricting, an account that ever touched one config entry could no longer be deleted at all
     #[ORM\ManyToOne]
@@ -306,7 +306,7 @@ class Config
 
     public function setCreation(\DateTimeInterface $creation): self
     {
-        $this->creation = $creation;
+        $this->creation = \DateTimeImmutable::createFromInterface($creation);
 
         return $this;
     }
@@ -318,7 +318,7 @@ class Config
 
     public function setModification(\DateTimeInterface $modification): self
     {
-        $this->modification = $modification;
+        $this->modification = \DateTimeImmutable::createFromInterface($modification);
 
         return $this;
     }

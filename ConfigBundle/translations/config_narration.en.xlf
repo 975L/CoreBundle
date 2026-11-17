@@ -144,7 +144,7 @@
             </trans-unit>
             <trans-unit id="k1GKkGC">
                 <source>narration.guided_step_config_messenger_failed_purge</source>
-                <target>Finally, the Purge now button, at the very top, runs the nightly cleanup without waiting: the minor cases, blacklist or spam, past their retention are deleted.</target>
+                <target>Finally, the Purge now button, at the very top, runs the nightly cleanup without waiting: the minor cases, denylist or spam, past their retention are deleted.</target>
             </trans-unit>
             <trans-unit id="wuNz6dq">
                 <source>narration.guided_step_config_messenger_failed_retry</source>
@@ -368,7 +368,7 @@
             </trans-unit>
             <trans-unit id="zi68mlp">
                 <source>narration.messenger_failed</source>
-                <target>"Failed messages" lists the emails and tasks that could not go out. Minor cases, blacklist or spam, are purged on their own; the others are replayed or deleted here.</target>
+                <target>"Failed messages" lists the emails and tasks that could not go out. Minor cases, denylist or spam, are purged on their own; the others are replayed or deleted here.</target>
             </trans-unit>
             <trans-unit id="Dgj9o_a">
                 <source>narration.not_founds</source>

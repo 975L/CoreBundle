@@ -144,7 +144,7 @@
             </trans-unit>
             <trans-unit id="k1GKkGC">
                 <source>narration.guided_step_config_messenger_failed_purge</source>
-                <target>Por último, el botón Purgar ahora, arriba del todo, lanza la limpieza nocturna sin esperar: los casos menores, lista negra o spam, que superan su retención se eliminan.</target>
+                <target>Por último, el botón Purgar ahora, arriba del todo, lanza la limpieza nocturna sin esperar: los casos menores, lista de bloqueo o spam, que superan su retención se eliminan.</target>
             </trans-unit>
             <trans-unit id="wuNz6dq">
                 <source>narration.guided_step_config_messenger_failed_retry</source>
@@ -368,7 +368,7 @@
             </trans-unit>
             <trans-unit id="zi68mlp">
                 <source>narration.messenger_failed</source>
-                <target>«Mensajes fallidos» enumera los correos y tareas que no pudieron salir. Los casos menores, lista negra o spam, se purgan solos; los demás se reintentan o se eliminan aquí.</target>
+                <target>«Mensajes fallidos» enumera los correos y tareas que no pudieron salir. Los casos menores, lista de bloqueo o spam, se purgan solos; los demás se reintentan o se eliminan aquí.</target>
             </trans-unit>
             <trans-unit id="Dgj9o_a">
                 <source>narration.not_founds</source>

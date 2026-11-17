@@ -77,12 +77,12 @@ class HealthCheckResult
     #[ORM\Column(type: Types::JSON, nullable: true)]
     private ?array $details = null;
 
-    #[ORM\Column(name: 'checked_at', type: Types::DATETIME_MUTABLE)]
-    private \DateTimeInterface $checkedAt;
+    #[ORM\Column(name: 'checked_at', type: Types::DATETIME_IMMUTABLE)]
+    private \DateTimeImmutable $checkedAt;
 
     // When an admin declared this very row dealt with, from the dashboard's own table - it then leaves the table's default view and stops counting towards the dashboard alert, while staying in the table and in the CSV export the audit trail is made of. Borne by the row and not by the (url, kind) pair on purpose: rows are appended, never updated, so the next run records a fresh unacknowledged one and a problem that was not actually fixed comes straight back
-    #[ORM\Column(name: 'acknowledged_at', type: Types::DATETIME_MUTABLE, nullable: true)]
-    private ?\DateTimeInterface $acknowledgedAt = null;
+    #[ORM\Column(name: 'acknowledged_at', type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    private ?\DateTimeImmutable $acknowledgedAt = null;
 
     public function getId(): ?int
     {
@@ -180,7 +180,7 @@ class HealthCheckResult
 
     public function setCheckedAt(\DateTimeInterface $checkedAt): static
     {
-        $this->checkedAt = $checkedAt;
+        $this->checkedAt = \DateTimeImmutable::createFromInterface($checkedAt);
 
         return $this;
     }
@@ -192,7 +192,7 @@ class HealthCheckResult
 
     public function setAcknowledgedAt(?\DateTimeInterface $acknowledgedAt): static
     {
-        $this->acknowledgedAt = $acknowledgedAt;
+        $this->acknowledgedAt = null === $acknowledgedAt ? null : \DateTimeImmutable::createFromInterface($acknowledgedAt);
 
         return $this;
     }

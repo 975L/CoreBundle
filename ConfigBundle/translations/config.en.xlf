@@ -288,7 +288,7 @@
             </trans-unit>
             <trans-unit id="Y0RGYHF">
                 <source>description.guided_step_config_messenger_failed_purge</source>
-                <target>Runs the nightly cleanup right away: the minor cases (blacklist, spam) past their retention are deleted.</target>
+                <target>Runs the nightly cleanup right away: the minor cases (denylist, spam) past their retention are deleted.</target>
             </trans-unit>
             <trans-unit id="7zfCw4K">
                 <source>description.guided_step_config_messenger_failed_retry</source>
@@ -504,11 +504,11 @@
             </trans-unit>
             <trans-unit id="khpNT6d">
                 <source>description.messenger_alert_super_admin</source>
-                <target>Send failures unrelated to a blacklisted address. Click for details.</target>
+                <target>Send failures unrelated to a denylisted address. Click for details.</target>
             </trans-unit>
             <trans-unit id="5OjCR2m">
                 <source>description.messenger_failed</source>
-                <target>Messages that failed to send; minor cases (blacklist, spam) are purged after retention.</target>
+                <target>Messages that failed to send; minor cases (denylist, spam) are purged after retention.</target>
             </trans-unit>
             <trans-unit id="ZpY7bgI">
                 <source>description.not_found_alert</source>

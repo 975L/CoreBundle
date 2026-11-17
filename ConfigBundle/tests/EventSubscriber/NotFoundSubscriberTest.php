@@ -12,6 +12,7 @@ namespace c975L\ConfigBundle\Tests\EventSubscriber;
 
 use c975L\ConfigBundle\EventSubscriber\NotFoundSubscriber;
 use c975L\ConfigBundle\Repository\NotFoundRepository;
+use c975L\ConfigBundle\Service\NotFoundFilter;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -52,7 +53,7 @@ class NotFoundSubscriberTest extends TestCase
 
     private function createSubscriber(NotFoundRepository $repository): NotFoundSubscriber
     {
-        return new NotFoundSubscriber($repository, new MockClock(self::SEEN_AT));
+        return new NotFoundSubscriber($repository, new MockClock(self::SEEN_AT), new NotFoundFilter());
     }
 
     // Runs on its own, well before the listener turning the exception into the response (priority -128)

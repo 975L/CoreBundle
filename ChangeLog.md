@@ -1,5 +1,19 @@
 # ChangeLog
 
+## v1.91.0
+
+Broken links list turns down forged referers and files
+
+- Added `NotFoundFilter`, the broken-link filter `NotFoundSubscriber` and `c975l:config:not-found-cleanup` share (17/11/2026)
+- `NotFoundSubscriber::PROBE_PATH_PATTERN` moved to `NotFoundFilter`, `graphql` and `.alfa` added (17/11/2026)
+- Broken links: a referer naming the requested url with doubled or trailing slashes, or in another case, is turned down (17/11/2026)
+- Broken links: scripts, styles, fonts, data, sitemaps and archives are no longer recorded, images still are (17/11/2026)
+- Broken links: a referer that is a `robots.txt` or a sitemap is turned down (17/11/2026)
+- `c975l:config:not-found-cleanup` deletes the rows the filter now turns down, whatever the retention (17/11/2026)
+- Failed messages labels say denylist rather than blacklist (17/11/2026)
+- `Config`, `HealthCheckResult` and `NotFound` dates mapped as `datetime_immutable`, setters still taking any `DateTimeInterface` (17/11/2026)
+- `HealthCheckResultRepositoryTest` builds its schema through the schema editor API (17/11/2026)
+
 ## v1.90.6
 
 CI replay runs the other PHP versions in parallel

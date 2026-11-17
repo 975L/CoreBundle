@@ -144,7 +144,7 @@
             </trans-unit>
             <trans-unit id="k1GKkGC">
                 <source>narration.guided_step_config_messenger_failed_purge</source>
-                <target>Pour finir, le bouton Purger maintenant, tout en haut, lance le nettoyage de la nuit sans attendre : les cas mineurs, blacklist ou spam, passés leur rétention sont supprimés.</target>
+                <target>Pour finir, le bouton Purger maintenant, tout en haut, lance le nettoyage de la nuit sans attendre : les cas mineurs, liste de blocage ou spam, passés leur rétention sont supprimés.</target>
             </trans-unit>
             <trans-unit id="wuNz6dq">
                 <source>narration.guided_step_config_messenger_failed_retry</source>

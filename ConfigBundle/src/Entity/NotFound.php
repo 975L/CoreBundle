@@ -46,11 +46,11 @@ class NotFound implements \Stringable
     #[ORM\Column(options: ['default' => 1])]
     private int $hits = 1;
 
-    #[ORM\Column(name: 'first_seen', type: Types::DATETIME_MUTABLE)]
-    private ?\DateTimeInterface $firstSeen = null;
+    #[ORM\Column(name: 'first_seen', type: Types::DATETIME_IMMUTABLE)]
+    private ?\DateTimeImmutable $firstSeen = null;
 
-    #[ORM\Column(name: 'last_seen', type: Types::DATETIME_MUTABLE)]
-    private ?\DateTimeInterface $lastSeen = null;
+    #[ORM\Column(name: 'last_seen', type: Types::DATETIME_IMMUTABLE)]
+    private ?\DateTimeImmutable $lastSeen = null;
 
     public function __toString(): string
     {
@@ -117,7 +117,7 @@ class NotFound implements \Stringable
 
     public function setFirstSeen(\DateTimeInterface $firstSeen): self
     {
-        $this->firstSeen = $firstSeen;
+        $this->firstSeen = \DateTimeImmutable::createFromInterface($firstSeen);
 
         return $this;
     }
@@ -129,7 +129,7 @@ class NotFound implements \Stringable
 
     public function setLastSeen(\DateTimeInterface $lastSeen): self
     {
-        $this->lastSeen = $lastSeen;
+        $this->lastSeen = \DateTimeImmutable::createFromInterface($lastSeen);
 
         return $this;
     }

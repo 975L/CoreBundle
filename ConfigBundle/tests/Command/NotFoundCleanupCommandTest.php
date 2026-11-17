@@ -13,6 +13,7 @@ namespace c975L\ConfigBundle\Tests\Command;
 use c975L\ConfigBundle\Command\NotFoundCleanupCommand;
 use c975L\ConfigBundle\Repository\NotFoundRepository;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
+use c975L\ConfigBundle\Service\NotFoundFilter;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Command\Command;
@@ -33,7 +34,7 @@ class NotFoundCleanupCommandTest extends TestCase
         $configService = $this->createStub(ConfigServiceInterface::class);
         $configService->method('get')->willReturn($retention);
 
-        return new CommandTester(new NotFoundCleanupCommand($repository, $configService));
+        return new CommandTester(new NotFoundCleanupCommand($repository, new NotFoundFilter(), $configService));
     }
 
     public function testPurgesWithTheConfiguredRetention(): void
@@ -66,5 +67,22 @@ class NotFoundCleanupCommandTest extends TestCase
 
         $this->assertSame(Command::SUCCESS, $tester->execute([]));
         $this->assertStringContainsString('keep everything', $tester->getDisplay());
+    }
+
+    // Rows recorded before a rule caught them go whatever the retention, a "keep everything" one included: the broken link stays, the probe does not
+    public function testDeletesTheRowsTheFilterNowTurnsDown(): void
+    {
+        $repository = $this->createRepository();
+        $repository->method('findReferersIndexedByPath')->willReturn([
+            '/item-1' => 'https://elsewhere.example/catalog',
+            '/upload/server/php/' => 'https://example.com//upload/server/php',
+            '/sitemap.xml.gz' => 'https://example.com',
+        ]);
+        $repository->expects($this->once())->method('deleteByPaths')->with(['/upload/server/php/', '/sitemap.xml.gz'])->willReturn(2);
+
+        $tester = $this->createTester($repository, '0');
+
+        $this->assertSame(Command::SUCCESS, $tester->execute([]));
+        $this->assertStringContainsString('Deleted 2 recorded 404(s) the filter now turns down', $tester->getDisplay());
     }
 }

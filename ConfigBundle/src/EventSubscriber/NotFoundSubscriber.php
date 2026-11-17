@@ -10,8 +10,8 @@
 
 namespace c975L\ConfigBundle\EventSubscriber;
 
-use c975L\ConfigBundle\Entity\Redirect;
 use c975L\ConfigBundle\Repository\NotFoundRepository;
+use c975L\ConfigBundle\Service\NotFoundFilter;
 use Psr\Clock\ClockInterface;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\HttpFoundation\Request;
@@ -19,15 +19,13 @@ use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\KernelEvents;
 
-// Records the 404s that came from a link, so a broken one is known before anyone reports it. Monolog is deliberately not that place: its prod handler excludes 404 precisely because the mail it would otherwise send is 99% scanners walking "/wp-admin", and the same noise would drown a table just as well - hence the Referer, which a browser following a link always sends and most scanners do not. Some forge one, which PROBE_PATH_PATTERN and the self-referer check are there for
+// Records the 404s that came from a link, so a broken one is known before anyone reports it. Monolog is deliberately not that place: its prod handler excludes 404 precisely because the mail it would otherwise send is 99% scanners walking "/wp-admin", and the same noise would drown a table just as well - hence the Referer, which a browser following a link always sends and most scanners do not. Some forge one, which NotFoundFilter is there for
 class NotFoundSubscriber
 {
-    // What scanners walk for and this site never serves: dotfiles, WordPress, CGI and server-side scripts or config files. Scanners forge a referer too ("https://www.binance.com/", "https://google.com/", the url itself), so the shape of the path is what is left to tell them apart
-    public const string PROBE_PATH_PATTERN = '#(?:^|/)(?:\.|wp-|cgi-bin)|\.(?:php\d?|aspx?|axd|jsp|cgi|cc|env|ini|ya?ml|sql|bak|old|log|properties|py|sh)$#i';
-
     public function __construct(
         private readonly NotFoundRepository $notFoundRepository,
         private readonly ClockInterface $clock,
+        private readonly NotFoundFilter $notFoundFilter,
     ) {
     }
 
@@ -46,57 +44,15 @@ class NotFoundSubscriber
 
         $referer = (string) $request->headers->get('referer', '');
         $path = $request->getPathInfo();
-        if (!$this->isWorthRecording($path, $referer)) {
+        if (!$this->notFoundFilter->isWorthRecording($path, $referer)) {
             return;
         }
 
         // A failure here is a failure to take a note, and the response being built is an error page that may well need the very connection this just tripped on - including on a site whose migration has not run yet, the table simply not existing. Nothing about it is worth turning a 404 into a 500
         try {
-            $this->notFoundRepository->record($path, $referer, $this->isInternal($referer, $request), $this->clock->now());
+            $this->notFoundRepository->record($path, $referer, $this->notFoundFilter->isInternal($referer, $request->getHost()), $this->clock->now());
         } catch (\Throwable) {
             return;
         }
-    }
-
-    // What separates a link that broke from the traffic a 404 otherwise attracts: a referer that reads as a web page, a path this site could have served, and both of them short enough to be a url someone published rather than an attack. Shape and nothing more - a referer is written by whoever sent the request and no server can check it came from where it says, so a plausible one is all this proves
-    private function isWorthRecording(string $path, string $referer): bool
-    {
-        if ('' === $referer || !$this->isWebUrl($referer)) {
-            return false;
-        }
-
-        // The same paths RedirectSubscriber declines to answer for: a missing asset is a deployment matter, not a published url anyone can be sent to
-        if (1 === preg_match(Redirect::STATIC_PATH_PATTERN, $path) || 1 === preg_match(self::PROBE_PATH_PATTERN, $path)) {
-            return false;
-        }
-
-        // A page linking to itself does not 404 - a referer naming the very url asked for is forged
-        if (parse_url($referer, \PHP_URL_PATH) === $path) {
-            return false;
-        }
-
-        // Skipped rather than truncated - a path or a referer past the column's length is a probe, and half of one would be a row nobody could act on anyway
-        return mb_strlen($path) <= 255 && mb_strlen($referer) <= 255;
-    }
-
-    // A referer on this very host reads as a link of ours: the page carrying it is ours to fix, and only these are alerted on (see NotFoundAlertProvider). Taken on trust for want of anything better - the header is the client's to write, so anyone can file their own 404s as broken links of ours and set that alert off. A nuisance on a screen an admin reads, which is what it costs to hear about a link that genuinely broke
-    private function isInternal(string $referer, Request $request): bool
-    {
-        return 0 === strcasecmp((string) $this->hostOf($referer), $request->getHost());
-    }
-
-    // The scheme is checked as well as the host: a header is whatever its sender wrote, and "javascript://example.com/..." carries this very host - it would be filed as one of our own broken links and listed as a link to click on
-    private function isWebUrl(string $referer): bool
-    {
-        $scheme = parse_url($referer, \PHP_URL_SCHEME);
-
-        return \in_array($scheme, ['http', 'https'], true) && null !== $this->hostOf($referer);
-    }
-
-    private function hostOf(string $referer): ?string
-    {
-        $host = parse_url($referer, \PHP_URL_HOST);
-
-        return \is_string($host) && '' !== $host ? $host : null;
     }
 }

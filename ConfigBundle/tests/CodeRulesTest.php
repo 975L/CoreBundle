@@ -38,6 +38,7 @@ class CodeRulesTest extends CodeRulesTestCase
                 'c975L\ConfigBundle\Repository\HealthCheckResultRepository::deleteByKindNotInUrls' => 'Health check rows are read live by the dashboard and the status report, never cached',
                 'c975L\ConfigBundle\Repository\NotFoundRepository::record' => 'The 404 log is read live by its back-office list, never cached (RedirectSubscriber caches the redirects, not this table)',
                 'c975L\ConfigBundle\Repository\NotFoundRepository::purgeOlderThan' => 'The 404 log is read live by its back-office list, never cached (RedirectSubscriber caches the redirects, not this table)',
+                'c975L\ConfigBundle\Repository\NotFoundRepository::deleteByPaths' => 'The 404 log is read live by its back-office list, never cached (RedirectSubscriber caches the redirects, not this table)',
                 'c975L\ConfigBundle\Service\InactiveUserFinder::startMissingClocks' => 'A last login date is account data, which no cached fragment holds',
                 'c975L\ConfigBundle\Service\MessengerFailedMessageService::purgeOlderThan' => 'The messenger queue is read live by the failed messages screen, never cached',
                 'c975L\ConfigBundle\Service\MessengerFailedMessageService::deleteById' => 'The messenger queue is read live by the failed messages screen, never cached',
