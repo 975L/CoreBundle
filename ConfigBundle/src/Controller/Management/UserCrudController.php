@@ -188,9 +188,6 @@ class UserCrudController extends AbstractCrudController
             ->askConfirmation(t('confirm.anonymize', [], 'config'))
             ->asDangerAction();
 
-        // EasyAdmin's own Edit and Delete as icons on the list, their label kept as the title
-        EasyAdminActionHelper::iconOnlyDefaults($actions, $this->translator);
-
         return $actions
             ->disable(Action::NEW)
             ->disable(Action::DETAIL)

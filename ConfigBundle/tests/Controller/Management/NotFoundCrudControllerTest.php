@@ -131,14 +131,6 @@ class NotFoundCrudControllerTest extends TestCase
         $this->assertSame('/management?crudAction=new', $url(new NotFound()->setPath('/histoire/disparue')));
     }
 
-    // Index row actions become icon-only (see EasyAdminActionHelper::toIconOnly()), the label moving to the hover "title"
-    public function testConfigureActionsSetsTheIndexRowActionsIconOnly(): void
-    {
-        $actionConfigDto = $this->configureActions($this->createController())->getAsDto(Crud::PAGE_INDEX);
-
-        $this->assertFalse($actionConfigDto->getAction(Crud::PAGE_INDEX, Action::DELETE)->getLabel());
-    }
-
     // The most recently followed broken link is the one that matters, a row nothing has hit for weeks being on its way out anyway
     public function testConfigureCrudSortsByTheLastRequestAndGivesTheEntityTheEditorPermission(): void
     {

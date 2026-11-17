@@ -178,15 +178,6 @@ class RedirectCrudControllerTest extends TestCase
         $this->assertContains(Action::DETAIL, $this->configureActions($this->createController())->getAsDto(null)->getDisabledActions());
     }
 
-    // Index-page row actions become icon-only (see EasyAdminActionHelper::toIconOnly()), the label moving to the hover "title"
-    public function testConfigureActionsSetsTheIndexRowActionsIconOnly(): void
-    {
-        $actionConfigDto = $this->configureActions($this->createController())->getAsDto(Crud::PAGE_INDEX);
-
-        $this->assertFalse($actionConfigDto->getAction(Crud::PAGE_INDEX, Action::EDIT)->getLabel());
-        $this->assertFalse($actionConfigDto->getAction(Crud::PAGE_INDEX, Action::DELETE)->getLabel());
-    }
-
     // A "Cancel" action on the new/edit pages lets the admin back out without saving
     public function testConfigureActionsAddsCancelOnBothWriteScreens(): void
     {

@@ -200,6 +200,8 @@ class DashboardController extends AbstractDashboardController
         $crud = Crud::new()
             // How many rows a list shows, an admin's own choice when they made one (see PaginatorPageSize) - EasyAdmin only knows a fixed size, set here for every CRUD at once, and the overridden paginator is where the sizes are offered
             ->setPaginatorPageSize($this->paginatorPageSize->resolve())
+            // Row actions inline, where IconOnlyRowActionsExtension turns them into icons - a CRUD still free to ask for its dropdown back
+            ->showEntityActionsInlined()
             ->overrideTemplate('crud/paginator', '@c975LUi/management/paginator.html.twig');
 
         foreach ($this->formThemeRegistry->all() as $formTheme) {

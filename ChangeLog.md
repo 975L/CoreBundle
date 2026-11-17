@@ -1,5 +1,14 @@
 # ChangeLog
 
+## v1.92.0
+
+Row actions of every list icon-only by default
+
+- `IconOnlyRowActionsExtension`: EasyAdmin's Edit, Delete and Detail row actions icon-only on every inline list, an app's CRUD included (17/11/2026)
+- `DashboardController`: row actions inline by default (17/11/2026)
+- `EasyAdminActionHelper::iconOnlyDefaults()`: an action already icon-only keeps its own title (17/11/2026)
+- Removed the `iconOnlyDefaults()` calls of the bundle's CRUD controllers, now made by `IconOnlyRowActionsExtension` (17/11/2026)
+
 ## v1.91.3
 
 Guided project block 12000 reserved for PilotBundle

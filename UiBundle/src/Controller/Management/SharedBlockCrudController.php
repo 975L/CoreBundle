@@ -124,9 +124,6 @@ class SharedBlockCrudController extends AbstractCrudController
         $cancelAction = Action::new('cancel', $this->translator->trans('action.cancel', [], 'EasyAdminBundle'), 'fa fa-times')
             ->linkToCrudAction(Action::INDEX);
 
-        // EasyAdmin's own Edit as an icon on the list, its label kept as the title
-        EasyAdminActionHelper::iconOnlyDefaults($actions, $this->translator, [Action::EDIT]);
-
         return $actions
             ->add(Crud::PAGE_NEW, $cancelAction)
             ->add(Crud::PAGE_EDIT, $cancelAction)

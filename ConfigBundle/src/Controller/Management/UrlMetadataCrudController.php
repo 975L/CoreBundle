@@ -11,7 +11,6 @@
 namespace c975L\ConfigBundle\Controller\Management;
 
 use c975L\ConfigBundle\Entity\UrlMetadata;
-use c975L\ConfigBundle\Management\EasyAdminActionHelper;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\UiBundle\Field\OgImageField;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
@@ -79,9 +78,6 @@ class UrlMetadataCrudController extends AbstractCrudController
         // Lets the admin back out of an edit without saving - mirrors EasyAdmin's own built-in actions, same as RedirectCrudController does
         $cancelAction = Action::new('cancel', $this->translator->trans('action.cancel', [], 'EasyAdminBundle'), 'fa fa-times')
             ->linkToCrudAction(Action::INDEX);
-
-        // EasyAdmin's own Edit and Delete as icons on the list, their label kept as the title
-        EasyAdminActionHelper::iconOnlyDefaults($actions, $this->translator);
 
         return $actions
             ->add(Crud::PAGE_EDIT, $cancelAction)

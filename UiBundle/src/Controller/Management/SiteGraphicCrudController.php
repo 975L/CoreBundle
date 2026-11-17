@@ -10,7 +10,6 @@
 
 namespace c975L\UiBundle\Controller\Management;
 
-use c975L\ConfigBundle\Management\EasyAdminActionHelper;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\UiBundle\Entity\Media;
 use c975L\UiBundle\Form\VichImageOptions;
@@ -111,9 +110,6 @@ class SiteGraphicCrudController extends AbstractCrudController
         // Lets the admin back out of a create/edit without saving - mirrors EasyAdmin's own built-in actions (linkToCrudAction targeting INDEX, same as Action::INDEX itself)
         $cancelAction = Action::new('cancel', $this->translator->trans('action.cancel', [], 'EasyAdminBundle'), 'fa fa-times')
             ->linkToCrudAction(Action::INDEX);
-
-        // EasyAdmin's own Edit and Delete as icons on the list, their label kept as the title
-        EasyAdminActionHelper::iconOnlyDefaults($actions, $this->translator);
 
         return $actions
             ->add(Crud::PAGE_NEW, $cancelAction)

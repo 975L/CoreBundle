@@ -94,6 +94,20 @@ class EasyAdminActionHelperTest extends TestCase
         $this->assertNull($index->getAction(Crud::PAGE_INDEX, Action::DELETE));
     }
 
+    // A row action the controller already made icon-only keeps the title it was given
+    public function testIconOnlyDefaultsKeepsTheTitleOfAnActionAlreadyIconOnly(): void
+    {
+        $translator = $this->createStub(TranslatorInterface::class);
+        $translator->method('trans')->willReturnArgument(0);
+        $actions = Actions::new()
+            ->add(Crud::PAGE_INDEX, Action::EDIT)
+            ->update(Crud::PAGE_INDEX, Action::EDIT, static fn (Action $action) => EasyAdminActionHelper::toIconOnly($action, 'Edit the item'));
+
+        $index = EasyAdminActionHelper::iconOnlyDefaults($actions, $translator)->getAsDto(Crud::PAGE_INDEX);
+
+        $this->assertSame('Edit the item', $index->getAction(Crud::PAGE_INDEX, Action::EDIT)->getHtmlAttributes()['title']);
+    }
+
     // The app goes on configuring after it: a reorder() reads every page of the dto
     public function testIconOnlyDefaultsLeavesTheActionsReorderable(): void
     {

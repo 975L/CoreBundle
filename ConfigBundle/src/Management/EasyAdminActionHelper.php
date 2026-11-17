@@ -37,13 +37,14 @@ class EasyAdminActionHelper
         return $action->setLabel(false)->setHtmlAttributes([...$htmlAttributes, 'title' => $title, 'aria-label' => $title]);
     }
 
-    // Turns EasyAdmin's own row actions of the index (Edit and Delete by default) into icon-only, titled by EasyAdmin's label - one the app took off the index is skipped, as EasyAdmin's update() would throw on it
+    // Turns EasyAdmin's own row actions of the index (Edit and Delete by default) into icon-only, titled by EasyAdmin's label - one the app took off the index is skipped, as EasyAdmin's update() would throw on it, and one already icon-only keeps its own title
     /** @param list<string> $names */
     public static function iconOnlyDefaults(Actions $actions, TranslatorInterface $translator, array $names = [Action::EDIT, Action::DELETE]): Actions
     {
         foreach ($names as $name) {
             // Read through getAsDto(null): naming a page there pins the dto to it, and a reorder() made afterwards no longer finds its pages
-            if (null === $actions->getAsDto(null)->getAction(Crud::PAGE_INDEX, $name)) {
+            $action = $actions->getAsDto(null)->getAction(Crud::PAGE_INDEX, $name);
+            if (null === $action || false === $action->getLabel()) {
                 continue;
             }
 

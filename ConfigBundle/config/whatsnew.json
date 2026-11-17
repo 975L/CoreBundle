@@ -3,6 +3,11 @@
         "date": "2026-11-17",
         "description": [
             {
+                "en": "In every list of the back office, the Edit, Delete and Show buttons of each row now show their icon alone, their name appearing on hover.",
+                "fr": "Dans toutes les listes du back-office, les boutons Modifier, Supprimer et Consulter de chaque ligne n'affichent plus que leur icône, leur nom apparaissant au survol.",
+                "es": "En todas las listas del back-office, los botones Editar, Eliminar y Ver de cada fila muestran ahora solo su icono, y su nombre aparece al pasar el ratón."
+            },
+            {
                 "en": "The broken links list no longer keeps the scanners' visits: files such as scripts, sitemaps or data, and links pointing to themselves, are left out and those already listed are deleted.",
                 "fr": "La liste des liens cassés ne garde plus les passages des robots scanners : les fichiers (scripts, plans de site, données) et les liens qui pointent sur eux-mêmes sont écartés, et ceux déjà listés sont supprimés.",
                 "es": "La lista de enlaces rotos ya no conserva las visitas de los robots de escaneo: los archivos (scripts, mapas del sitio, datos) y los enlaces que apuntan a sí mismos se descartan, y los ya listados se eliminan."

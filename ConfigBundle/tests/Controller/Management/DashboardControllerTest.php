@@ -500,4 +500,12 @@ class DashboardControllerTest extends TestCase
 
         $this->assertSame('@c975LUi/management/paginator.html.twig', $crudDto->getOverriddenTemplates()['crud/paginator'] ?? null);
     }
+
+    // Inline, the row actions are where IconOnlyRowActionsExtension turns them into icons - for every CRUD at once
+    public function testConfigureCrudShowsTheRowActionsInline(): void
+    {
+        $crudDto = $this->createController(false, [])->configureCrud()->getAsDto();
+
+        $this->assertFalse($crudDto->showEntityActionsAsDropdown());
+    }
 }

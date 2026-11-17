@@ -132,15 +132,6 @@ class UrlMetadataCrudControllerTest extends TestCase
         $this->assertContains(Action::DETAIL, $this->configureActions($this->createController())->getAsDto(null)->getDisabledActions());
     }
 
-    // Index-page row actions become icon-only (see EasyAdminActionHelper::toIconOnly()), the label moving to the hover "title"
-    public function testConfigureActionsSetsTheIndexRowActionsIconOnly(): void
-    {
-        $actionConfigDto = $this->configureActions($this->createController())->getAsDto(Crud::PAGE_INDEX);
-
-        $this->assertFalse($actionConfigDto->getAction(Crud::PAGE_INDEX, Action::EDIT)->getLabel());
-        $this->assertFalse($actionConfigDto->getAction(Crud::PAGE_INDEX, Action::DELETE)->getLabel());
-    }
-
     // A "Cancel" action on the edit page lets the admin back out without saving - the only write screen left, rows never being created by hand
     public function testConfigureActionsAddsCancelOnTheEditScreen(): void
     {

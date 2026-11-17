@@ -1036,25 +1036,6 @@ class ConfigCrudControllerTest extends TestCase
         $this->assertInstanceOf(Actions::class, $actions);
     }
 
-    // Index-page row action becomes icon-only (see EasyAdminActionHelper::toIconOnly()), the label moving to the hover "title" and the "aria-label" instead
-    public function testConfigureActionsSetsEditIconOnlyOnIndexPage(): void
-    {
-        $requestStack = new RequestStack([new Request()]);
-
-        $controller = $this->createController(requestStack: $requestStack);
-
-        $actions = $controller->configureActions(
-            Actions::new()
-                ->add(Crud::PAGE_INDEX, Action::EDIT)
-        );
-
-        $actionConfigDto = $actions->getAsDto(Crud::PAGE_INDEX);
-        $editAction = $actionConfigDto->getAction(Crud::PAGE_INDEX, Action::EDIT);
-
-        $this->assertFalse($editAction->getLabel());
-        $this->assertSame(['title' => 'action.edit', 'aria-label' => 'action.edit'], $editAction->getHtmlAttributes());
-    }
-
     // The toggle would be a dead button in the "to fill in" view, which lists sensitive and non-sensitive entries together
     public function testConfigureActionsHidesTheSensitiveToggleInTheEmptyView(): void
     {
