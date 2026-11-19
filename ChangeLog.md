@@ -1,5 +1,13 @@
 # ChangeLog
 
+## v1.94.0
+
+Email refused for its recipient on a RBL dropped with a warning
+
+- `RejectedRecipientMessageHandler`: an email whose recipient the SMTP server refuses for good for its reputation (5.7.1 naming the address along with a spam keyword, such as a RBL) is dropped with a warning instead of being retried then logged as CRITICAL (19/11/2026)
+- `MessengerFailedMessageService::isMinor()` public and static, shared with `RejectedRecipientMessageHandler` (19/11/2026)
+- `SslCertificateClientTest`: TLS test server on a port the system picks, no longer refused when the suite runs in parallel (19/11/2026)
+
 ## v1.93.0
 
 Menu item opening its section

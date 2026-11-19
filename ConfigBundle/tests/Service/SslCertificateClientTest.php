@@ -100,28 +100,23 @@ class SslCertificateClientTest extends TestCase
 
         $expiresAt = new \DateTimeImmutable()->setTimestamp(openssl_x509_parse($certificate)['validTo_time_t']);
 
-        $port = random_int(20000, 60000);
-        // Loops rather than accepting one connection, the readiness probe consuming one of its own
+        // Port 0 lets the system pick a free one, a fixed or random port colliding with a parallel run of the suite; the server prints it once listening and loops until tearDown kills it
         $script = sprintf(
             '$c=stream_context_create(["ssl"=>["local_cert"=>%s,"allow_self_signed"=>true,"verify_peer"=>false]]);'
-            . '$s=stream_socket_server("tls://127.0.0.1:%d",$e,$m,STREAM_SERVER_BIND|STREAM_SERVER_LISTEN,$c);'
-            . '$deadline=microtime(true)+5;'
+            . '$s=stream_socket_server("tls://127.0.0.1:0",$e,$m,STREAM_SERVER_BIND|STREAM_SERVER_LISTEN,$c);'
+            . 'if(false===$s){fwrite(STDERR,$m);exit(1);}'
+            . 'echo substr(strrchr(stream_socket_get_name($s,false),":"),1),PHP_EOL;'
+            . '$deadline=microtime(true)+60;'
             . 'while(microtime(true)<$deadline){if($conn=@stream_socket_accept($s,0.2)){usleep(200000);fclose($conn);}}',
             var_export($this->certificatePath, true),
-            $port,
         );
 
-        $this->serverProcess = proc_open(['php', '-r', $script], [1 => ['pipe', 'w'], 2 => ['pipe', 'w']], $pipes);
+        $this->serverProcess = proc_open([\PHP_BINARY, '-r', $script], [1 => ['pipe', 'w'], 2 => ['pipe', 'w']], $pipes);
 
-        // Waits for the server to actually be listening rather than a fixed sleep
-        $deadline = microtime(true) + 5;
-        while (microtime(true) < $deadline) {
-            $probe = @stream_socket_client("tcp://127.0.0.1:{$port}", $errno, $errstr, 0.1);
-            if ($probe) {
-                fclose($probe);
-                break;
-            }
-            usleep(50000);
+        // Blocks until the server is actually listening, rather than probing a port or sleeping a fixed time
+        $port = (int) fgets($pipes[1]);
+        if (0 === $port) {
+            $this->fail('TLS test server failed to start: ' . stream_get_contents($pipes[2]));
         }
 
         return [$port, $expiresAt];

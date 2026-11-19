@@ -1,5 +1,15 @@
 [
     {
+        "date": "2026-11-19",
+        "description": [
+            {
+                "en": "An email refused because its recipient's address is on a spam list (often a robot's, typed into a form) is no longer retried nor reported as a critical error: it is simply noted in the log.",
+                "fr": "Un e-mail refusé parce que l'adresse du destinataire figure sur une liste anti-spam (souvent celle d'un robot, saisie dans un formulaire) n'est plus réessayé ni signalé comme erreur critique : il est simplement noté dans le journal.",
+                "es": "Un correo rechazado porque la dirección del destinatario figura en una lista antispam (a menudo la de un robot, escrita en un formulario) ya no se reintenta ni se señala como error crítico: simplemente se anota en el registro."
+            }
+        ]
+    },
+    {
         "date": "2026-11-17",
         "description": [
             {

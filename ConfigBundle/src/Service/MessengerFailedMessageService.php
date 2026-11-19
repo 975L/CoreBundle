@@ -218,7 +218,7 @@ class MessengerFailedMessageService
             'retryCount' => $details['retryCount'],
             'originalTransport' => $details['originalTransport'],
             // Messages we cannot identify as email (to === null) are kept as important by precaution
-            'important' => null === $details['to'] || null === $details['exceptionMessage'] || !$this->isMinor($details['exceptionMessage']),
+            'important' => null === $details['to'] || null === $details['exceptionMessage'] || !self::isMinor($details['exceptionMessage']),
         ];
     }
 
@@ -276,8 +276,8 @@ class MessengerFailedMessageService
         ];
     }
 
-    // Checks whether the exception message indicates a minor, spam-related failure
-    private function isMinor(string $exceptionMessage): bool
+    // Checks whether the exception message indicates a minor, spam-related failure, also read by RejectedRecipientMessageHandler to drop such an email before it fails
+    public static function isMinor(string $exceptionMessage): bool
     {
         $lower = strtolower($exceptionMessage);
 
