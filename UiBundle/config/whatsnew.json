@@ -1,5 +1,15 @@
 [
     {
+        "date": "2026-11-20",
+        "description": [
+            {
+                "en": "On your forms, the \"Receive a copy\" box now reads \"Receive an acknowledgement of receipt\": that is what a visitor receives, the full copy going only to the address of a signed-in account.",
+                "fr": "Sur vos formulaires, la case « Recevoir une copie » devient « Recevoir un accusé de réception » : c'est ce que reçoit le visiteur, la copie complète n'allant qu'à l'adresse d'un compte connecté.",
+                "es": "En sus formularios, la casilla «Recibir una copia» pasa a ser «Recibir un acuse de recibo»: es lo que recibe el visitante, la copia completa solo va a la dirección de una cuenta conectada."
+            }
+        ]
+    },
+    {
         "date": "2026-11-12",
         "description": [
             {

@@ -1,5 +1,12 @@
 # ChangeLog
 
+## v1.94.1
+
+Form copy box labelled as the acknowledgement it sends
+
+- `label.receive_copy`: "Receive an acknowledgement of receipt" instead of "Receive a copy" (20/11/2026)
+- `actionConfig` help naming `offerReceiveCopy` instead of `receiveCopy` (20/11/2026)
+
 ## v1.94.0
 
 Email refused for its recipient on a RBL dropped with a warning

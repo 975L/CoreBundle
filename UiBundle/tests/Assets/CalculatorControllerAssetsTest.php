@@ -121,7 +121,7 @@ class CalculatorControllerAssetsTest extends TestCase
         $this->assertMatchesRegularExpression('/\.ui-calculator-form \{\s*display: contents;/', $this->read(self::STYLESHEET));
     }
 
-    // The "receive a copy" box sits in the fields column: a checkbox row matched as any descendant also caught the div wrapping every row, laying the whole calculator on one reversed line
+    // The acknowledgement box sits in the fields column: a checkbox row matched as any descendant also caught the div wrapping every row, laying the whole calculator on one reversed line
     public function testTheCheckboxRowRuleOnlyMatchesTheCheckboxOwnRow(): void
     {
         $forms = $this->read('sass/_forms.scss');

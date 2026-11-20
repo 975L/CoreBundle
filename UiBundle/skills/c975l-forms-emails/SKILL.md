@@ -50,7 +50,8 @@ the admin still notifies someone, configured through `actionConfig` (`to`, `from
 falling back on the site-wide `email-*` settings. `offerReceiveCopy` sends the whole copy to the signed-in
 account's own address (`CurrentAccountAddress`, `copyToEmail`). Any other address, which proves nothing, only gets a
 fixed acknowledgement on a request of its own (`label.form_acknowledgement_subject`, `text.form_acknowledgement`),
-carrying nothing the visitor typed: the site never relays a visitor's text to a third party.
+carrying nothing the visitor typed: the site never relays a visitor's text to a third party. Its box therefore
+reads "Receive an acknowledgement of receipt" (`label.receive_copy`), the most any visitor is sure to get.
 
 **The flash shown after a submission is picked on the action's key**, in `FormController::submit()`:
 `send_email` says the message was sent, `register` says a confirmation email may not have been resent

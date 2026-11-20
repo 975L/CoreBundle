@@ -58,7 +58,7 @@ class FormSubmissionType extends AbstractType
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        // A calculator given no action posts nothing (see Form::isCalculator()), so it gets none of the three: a honeypot to trap a submission that never happens, a captcha to score a visitor who only moved a slider, and a "receive a copy" box with no email to copy
+        // A calculator given no action posts nothing (see Form::isCalculator()), so it gets none of the three: a honeypot to trap a submission that never happens, a captcha to score a visitor who only moved a slider, and an acknowledgement box with no email to answer
         if ($options['protections']) {
             $this->botProtection->addHoneypotField($builder, $this->requestStack->getCurrentRequest());
         }
