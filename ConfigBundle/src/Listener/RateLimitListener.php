@@ -11,6 +11,7 @@
 namespace c975L\ConfigBundle\Listener;
 
 use c975L\ConfigBundle\Controller\Management\DashboardController;
+use c975L\ConfigBundle\Security\RateLimitExemptionInterface;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\ConfigBundle\Service\HealthCheck;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
@@ -37,9 +38,11 @@ class RateLimitListener
         '/images/',
     ];
 
+    /** @param iterable<RateLimitExemptionInterface> $exemptions */
     public function __construct(
         private readonly ConfigServiceInterface $configService,
         private readonly RateLimiterFactoryInterface $frontRequestLimiter,
+        private readonly iterable $exemptions = [],
     ) {
     }
 
@@ -90,6 +93,13 @@ class RateLimitListener
         $path = $request->getPathInfo();
         if (DashboardController::isManagementPath($path)) {
             return false;
+        }
+
+        // A bundle's own signed-in pages or machine API, declared by it (RateLimitExemptionInterface)
+        foreach ($this->exemptions as $exemption) {
+            if ($exemption->isExempt($path)) {
+                return false;
+            }
         }
 
         return array_all(self::EXEMPT_PREFIXES, static fn (string $prefix): bool => !str_starts_with($path, $prefix));

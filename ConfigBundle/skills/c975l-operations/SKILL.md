@@ -367,6 +367,10 @@ both sides: a message quoting a template's path must not hand out `templates/com
 above `SessionListener`, so a refusal costs no session and no second database connection — which is
 the whole point, the burst it guards against being the one that runs the connection budget out.
 
+A bundle keeps its own signed-in pages outside `/management`, or a machine's API, out of the count by
+implementing `Security\RateLimitExemptionInterface::isExempt(string $path)`, collected under
+`c975l.rate_limit_exemption` (PilotBundle's `/pilot` pages and runner API).
+
 **A caller is an IP address, IPv6 counted on its `/64`** (`clientKey()`): a machine is routinely
 handed that whole block, and counting the full address lets one scraper renumber itself through the
 ceiling. The limiter (`c975l_front_request`) and its filesystem pool (`c975l.rate_limiter`) are

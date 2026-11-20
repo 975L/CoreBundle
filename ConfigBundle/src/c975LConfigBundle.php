@@ -42,6 +42,7 @@ use c975L\ConfigBundle\Management\UrlMetadataProviderInterface;
 use c975L\ConfigBundle\Management\WhatsNewProviderInterface;
 use c975L\ConfigBundle\Scheduler\MaintenanceTaskProviderInterface;
 use c975L\ConfigBundle\Security\OAuthLoginProviderInterface;
+use c975L\ConfigBundle\Security\RateLimitExemptionInterface;
 use Nelmio\SecurityBundle\ContentSecurityPolicy\NonceGeneratorInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
@@ -139,6 +140,8 @@ class c975LConfigBundle extends AbstractBundle
         $container->addCompilerPass(new TaggedInterfacePass(AccountDataProviderInterface::class, 'c975l.account_data_provider'));
         // Collected by OAuthLoginProviderRegistry: a "sign in with X" shipped by another bundle or by an application is enabled by existing, with no list to edit here
         $container->addCompilerPass(new TaggedInterfacePass(OAuthLoginProviderInterface::class, 'c975l.oauth_login_provider'));
+        // Collected by RateLimitListener: a bundle's own signed-in pages or machine API kept out of the front limiter
+        $container->addCompilerPass(new TaggedInterfacePass(RateLimitExemptionInterface::class, 'c975l.rate_limit_exemption'));
         // Only ever has anything to collect in dev, every implementation being marked #[When('dev')] - the pass itself stays registered in every environment, it simply tags nothing in prod
         $container->addCompilerPass(new TaggedInterfacePass(DevProfilePathProviderInterface::class, 'c975l.dev_profile_path_provider'));
 

@@ -11,6 +11,7 @@
 namespace c975L\ConfigBundle\Tests\Listener;
 
 use c975L\ConfigBundle\Listener\RateLimitListener;
+use c975L\ConfigBundle\Security\RateLimitExemptionInterface;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\ConfigBundle\Service\HealthCheck;
 use PHPUnit\Framework\TestCase;
@@ -27,7 +28,8 @@ class RateLimitListenerTest extends TestCase
     // Deliberately tiny, so a test spends three requests rather than sixty proving the ceiling exists
     private const int LIMIT = 3;
 
-    private function createListener(bool $enabled = true): RateLimitListener
+    /** @param list<RateLimitExemptionInterface> $exemptions */
+    private function createListener(bool $enabled = true, array $exemptions = []): RateLimitListener
     {
         $configService = $this->createStub(ConfigServiceInterface::class);
         $configService->method('get')->willReturnCallback(static fn (string $slug) => 'site-rate-limit' === $slug ? $enabled : null);
@@ -42,7 +44,7 @@ class RateLimitListenerTest extends TestCase
             new CacheStorage(new ArrayAdapter()),
         );
 
-        return new RateLimitListener($configService, $factory);
+        return new RateLimitListener($configService, $factory, $exemptions);
     }
 
     private function createRequestEvent(string $path, string $ip = '203.0.113.7', ?string $userAgent = null, bool $mainRequest = true): RequestEvent
@@ -70,6 +72,21 @@ class RateLimitListenerTest extends TestCase
         $listener->onKernelRequest($event);
 
         return $event;
+    }
+
+    // A path a bundle declares exempt never counts, the others still do
+    public function testABundlesExemptPathNeverCounts(): void
+    {
+        $exemption = new class implements RateLimitExemptionInterface {
+            public function isExempt(string $path): bool
+            {
+                return str_starts_with($path, '/catalog/');
+            }
+        };
+        $listener = $this->createListener(true, [$exemption]);
+
+        $this->assertNull($this->exhaust($listener, '/catalog/item-1')->getResponse());
+        $this->assertSame(Response::HTTP_TOO_MANY_REQUESTS, $this->exhaust($listener, '/item-1')->getResponse()?->getStatusCode());
     }
 
     public function testLetsARequestUnderTheCeilingThrough(): void

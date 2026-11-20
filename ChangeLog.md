@@ -1,5 +1,11 @@
 # ChangeLog
 
+## v1.95.0
+
+Rate limiter exemptions declared by the bundles
+
+- `RateLimitExemptionInterface`: a bundle keeps its own signed-in pages or machine API out of the front rate limiter (20/11/2026)
+
 ## v1.94.1
 
 Form copy box labelled as the acknowledgement it sends

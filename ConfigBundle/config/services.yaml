@@ -169,6 +169,7 @@ services:
     c975L\ConfigBundle\Listener\RateLimitListener:
         arguments:
             $frontRequestLimiter: '@limiter.c975l_front_request'
+            $exemptions: !tagged_iterator c975l.rate_limit_exemption
 
     # The per-account ceiling on wrong login codes, declared by c975LConfigBundle::prependExtension() too
     c975L\ConfigBundle\Security\LoginCode:
