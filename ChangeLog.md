@@ -1,5 +1,11 @@
 # ChangeLog
 
+## v1.96.1
+
+php-http/discovery plugin allowed
+
+- `php-http/discovery` plugin allowed in `allow-plugins`, so `composer qa` no longer stops on its prompt (21/11/2026)
+
 ## v1.96.0
 
 MCP endpoint for AI agents, its tools brought by the bundles
