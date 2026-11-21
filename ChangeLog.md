@@ -1,5 +1,12 @@
 # ChangeLog
 
+## v1.97.1
+
+Missing configuration table only noticed on a first install
+
+- The back office's title shows the favicon only once it exists, a new site no longer showing a broken image (21/11/2026)
+- A configuration table not built yet only noticed, no longer logged as an error on a first install (21/11/2026)
+
 ## v1.97.0
 
 Security hardening: tokens, SVG uploads, flashes and rate limits

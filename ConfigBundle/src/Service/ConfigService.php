@@ -13,6 +13,7 @@ namespace c975L\ConfigBundle\Service;
 use c975L\ConfigBundle\Entity\Config;
 use c975L\ConfigBundle\Repository\ConfigRepository;
 use Doctrine\DBAL\Exception as DBALException;
+use Doctrine\DBAL\Exception\TableNotFoundException;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\Mapping\MappingException;
 use Psr\Cache\InvalidArgumentException;
@@ -113,6 +114,13 @@ class ConfigService implements ConfigServiceInterface, ResetInterface
         // A database whose schema predates the current entity (a site being migrated from an older base, whose site_config has yet to gain a column findAllValues() reads) answers nothing readable, and this runs on every console command through TimezoneListener - so the very commands that would migrate that schema could no longer boot. The configuration is left empty for this call instead, exactly as an empty table would leave it, and the failure goes to the log. Deliberately not memoized in $this->configs nor written to the cache: the next call retries, and the run that finally migrates the schema sees the real values. The mapping is just as unreadable on a site that has yet to be created: Config::$user resolves to App\Entity\User (see c975LConfigBundle::prependExtension), a class only written by "make:user" or the scaffold - two console commands that could no longer boot to write it
         try {
             return $this->loadAllFromDatabase();
+        } catch (TableNotFoundException $exception) {
+            // A site whose schema is still to be built (a first install, a demo set up from nothing) has no table yet: expected, so only a notice
+            $this->logger?->notice('Configuration left empty, its table does not exist yet', [
+                'reason' => $exception->getMessage(),
+            ]);
+
+            return self::withRoleFallbacks([]);
         } catch (DBALException | MappingException $exception) {
             $this->logger?->error('Configuration left empty, the database could not be read', [
                 'reason' => $exception->getMessage(),

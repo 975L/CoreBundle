@@ -26,6 +26,7 @@ use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
+use Symfony\Component\Translation\TranslatableMessage;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class AgentTokenCrudControllerTest extends TestCase
@@ -81,8 +82,12 @@ class AgentTokenCrudControllerTest extends TestCase
     public function testTheScreenCarriesItsOwnLabels(): void
     {
         $crud = $this->controller()->configureCrud(Crud::new())->getAsDto();
-        $this->assertSame('label.agent_token', $crud->getEntityLabelInSingular()?->getMessage());
-        $this->assertSame('label.agent_tokens', $crud->getEntityLabelInPlural()?->getMessage());
+        $singular = $crud->getEntityLabelInSingular();
+        $plural = $crud->getEntityLabelInPlural();
+        $this->assertInstanceOf(TranslatableMessage::class, $singular);
+        $this->assertInstanceOf(TranslatableMessage::class, $plural);
+        $this->assertSame('label.agent_token', $singular->getMessage());
+        $this->assertSame('label.agent_tokens', $plural->getMessage());
     }
 
     // The controller signed in as the test's account, its flashes kept in a session

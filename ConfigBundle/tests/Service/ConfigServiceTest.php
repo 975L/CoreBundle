@@ -14,7 +14,9 @@ use c975L\ConfigBundle\Entity\Config;
 use c975L\ConfigBundle\Repository\ConfigRepository;
 use c975L\ConfigBundle\Service\ConfigService;
 use c975L\ConfigBundle\Service\VaultEncryptor;
+use Doctrine\DBAL\Driver\PDO\Exception as PdoException;
 use Doctrine\DBAL\Exception as DBALException;
+use Doctrine\DBAL\Exception\TableNotFoundException;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\MappingException;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -275,6 +277,20 @@ class ConfigServiceTest extends TestCase
         $logger->expects($this->once())
             ->method('error')
             ->with('Configuration left empty, the database could not be read', $this->anything());
+
+        $service = $this->createService($repository, logger: $logger);
+
+        $this->assertSame(self::DEFAULT_ROLES, $service->loadAll());
+    }
+
+    // A schema still to be built has no table yet: the configuration is left empty with a notice, never an error
+    public function testLoadAllOnlyNoticesATableNotBuiltYet(): void
+    {
+        $repository = $this->createStub(ConfigRepository::class);
+        $repository->method('findAllValues')->willThrowException(new TableNotFoundException(PdoException::new(new \PDOException('no such table: site_config')), null));
+        $logger = $this->createMock(LoggerInterface::class);
+        $logger->expects($this->never())->method('error');
+        $logger->expects($this->once())->method('notice')->with('Configuration left empty, its table does not exist yet', $this->anything());
 
         $service = $this->createService($repository, logger: $logger);
 

@@ -133,8 +133,8 @@ class DashboardController extends AbstractDashboardController
     public function configureDashboard(): Dashboard
     {
         $dashboard = Dashboard::new()
-            // Fixed path: c975L\SiteBundle's SiteGraphicCrudController always saves the favicon there (see UiMediaNamer). The name escaped, EasyAdmin printing the title raw on every page - quotes left as they are, the logo's tooltip escaping the title a second time
-            ->setTitle('<img src="/favicon.ico">' . htmlspecialchars((string) $this->configService->get('site-name'), \ENT_NOQUOTES))
+            // Fixed path: c975L\SiteBundle's SiteGraphicCrudController always saves the favicon there (see UiMediaNamer), shown only once it exists so a site not given one yet shows no broken image. The name escaped, EasyAdmin printing the title raw on every page - quotes left as they are, the logo's tooltip escaping the title a second time
+            ->setTitle((is_file($this->projectDir . '/public/favicon.ico') ? '<img src="/favicon.ico">' : '') . htmlspecialchars((string) $this->configService->get('site-name'), \ENT_NOQUOTES))
             ->setFaviconPath('/favicon.ico')
             ->setTranslationDomain('config')
             ->setTheme($this->theme())
