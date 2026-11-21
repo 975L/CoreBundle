@@ -778,6 +778,33 @@ On `/app/connect` only, the schemes are added to the `form-action` of the site's
 
 A call carrying no token goes through as a visitor, which is what lets UiBundle's `AppLibraryController` hold an app's favorites and plays under the device's own token until the member connects. The tokens live in `site_app_token` (**needs db update**), hashed, and are deleted with the account or when it is anonymized.
 
+### Opening the site to AI agents
+
+`/api/mcp` is a [Model Context Protocol](https://modelcontextprotocol.io) server over Streamable HTTP, without sessions (`mcp/sdk`). An agent (Claude Code, Claude Desktop, any MCP client) sends an agent token as `Authorization: Bearer ...` and acts with the rights of the token's account, every check of the bundles (`is_granted`, their own access rules) applying as on the back office. Each account makes its tokens on the Agent tokens screen (`AgentTokenCrudController`): read only or writing, for every bundle or those chosen, until a day (that day included) or for good; the token shows once, only its sha256 is kept (`site_agent_token`, **needs db update**), deleting it revokes it, and an account whose password changes or that is anonymized loses its tokens. The agents' writes go to the activity log under their account, with `/api/mcp` as their path; the endpoint is kept out of the front rate limiter.
+
+Three things to set on a site, which otherwise answers 404 (403 when the firewall below is missing, the tools never running with no account):
+
+- check the `mcp-enabled` config entry;
+- open the path in `access_control`: `- { path: ^/api/mcp$, roles: PUBLIC_ACCESS }` (the endpoint refuses by itself a request without a valid token);
+- a stateless firewall over it, **before** `main`, in `config/packages/security.yaml`:
+
+```yaml
+security:
+    firewalls:
+        mcp:
+            pattern: ^/api/mcp$
+            stateless: true
+            provider: app_user_provider
+            access_token:
+                token_handler: c975L\ConfigBundle\Security\AgentTokenHandler
+```
+
+A bundle brings its tools by implementing `Mcp\McpToolProviderInterface` (autoconfigured): `getMcpKey()` names it for the tokens (`pilot`), `getMcpInstructions()` tells the agent how its tools go together, and `getMcpTools()` yields `McpTool`s, each a callable whose parameters and PHPDoc make the tool's schema, flagged `writes` (left out for a reading token) and `destroys` (marked so for the client to confirm). A refusal is a `Mcp\Server\Exception\ToolCallException`, shown to the agent as a tool error. With Claude Code:
+
+```bash
+claude mcp add --transport http <site> https://<site>/api/mcp --header "Authorization: Bearer <token>"
+```
+
 ### Welcoming new accounts
 
 `UserCreatedEvent` is dispatched once a visitor's account becomes usable: when its address is confirmed from the registration email (`EmailVerifier::handleEmailConfirmation`, the first time only), or on a first OAuth sign-in creating the account or taking over one never confirmed (`OAuthUserResolver`). An account registered and never confirmed doesn't dispatch it, so a bot posting addresses at the form is handed nothing. It is the counterpart of `UserAnonymizedEvent`. An app gives its new members something there (a gift, a first item...) with a `#[AsEventListener]` on it; its `user` is the account just made usable. The accounts created from the console don't dispatch it.
@@ -1653,7 +1680,7 @@ Make sure your bundle's `services.yaml` includes the `Management/` folder in its
 
 The `/management` dashboard shows a "Guided projects" button next to the guided tour, opening their own page (`management_guided_projects_index`, `/management/guided-projects`): one section per bundle, titled with its name read off the provider's namespace (`c975L\SiteBundle\…` gives "SiteBundle"), the application's own projects under the site's name. Where the tour *shows* the back office, a project puts the user to work in it: a real task to carry out — create a page, add a block to it, put it in a menu — with a panel following them from screen to screen.
 
-`ConfigGuidedProjectProvider` ships this bundle's own, in the 1000 block `GuidedProjectProviderInterface` reserves it: find and change a setting, run the health check, rehearse the maintenance switch, turn on the admins' login code (`config-login-code`, the dashboard tile), open or close registration (`config-registration`, the tile painted as a warning while nobody can register), turn a missing page into a redirect, write a redirect by hand (`config-redirect`, a whole folder moved at once with a trailing `*`), describe an url no entity carries, regenerate the sitemaps, the AI crawlers list and the SEO files from their tiles (`config-seo`, `ROLE_SUPER_ADMIN`), give an account its roles, anonymize an account from the Users screen (`config-user-anonymize`), see the back office as another role, and replay or drop the messages that failed for good (`config-messenger-failed`, held at `ROLE_SUPER_ADMIN`: an admin opens that screen but is only shown the failure, the buttons it walks being a super admin's — they carry `data-messenger-retry`, `data-messenger-delete` and `data-messenger-delete-group` for its steps to point at, the "Purge now" button closing the walk), export the whole site in one zip (`config-content-export`, the "export sync all" dashboard tile), import content exported from another site (`config-content-import`), and prune the settings no bundle declares any more (`config-prune`).
+`ConfigGuidedProjectProvider` ships this bundle's own, in the 1000 block `GuidedProjectProviderInterface` reserves it: find and change a setting, run the health check, rehearse the maintenance switch, turn on the admins' login code (`config-login-code`, the dashboard tile), open or close registration (`config-registration`, the tile painted as a warning while nobody can register), turn a missing page into a redirect, write a redirect by hand (`config-redirect`, a whole folder moved at once with a trailing `*`), describe an url no entity carries, regenerate the sitemaps, the AI crawlers list and the SEO files from their tiles (`config-seo`, `ROLE_SUPER_ADMIN`), give an account its roles, anonymize an account from the Users screen (`config-user-anonymize`), see the back office as another role, make an agent token for an AI agent (`config-agent-token`, ending on copying the token it shows once), and replay or drop the messages that failed for good (`config-messenger-failed`, held at `ROLE_SUPER_ADMIN`: an admin opens that screen but is only shown the failure, the buttons it walks being a super admin's — they carry `data-messenger-retry`, `data-messenger-delete` and `data-messenger-delete-group` for its steps to point at, the "Purge now" button closing the walk), export the whole site in one zip (`config-content-export`, the "export sync all" dashboard tile), import content exported from another site (`config-content-import`), and prune the settings no bundle declares any more (`config-prune`).
 
 A project is a **replayable exercise**, not a wizard to get through once. Nothing is derived from the site's own data, so a project is still worth following on a site already full of pages, and still worth replaying once done. Consequently it carries no `isDone`: nothing is ever detected server-side, the user says when a step is done. Whatever they create along the way stays on the site — deleting the practice page is their call.
 

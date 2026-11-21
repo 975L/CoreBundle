@@ -14,6 +14,7 @@ use c975L\ConfigBundle\Attribute\ActivityLogIgnored;
 use c975L\ConfigBundle\Attribute\ActivityLogUnnamed;
 use c975L\ConfigBundle\Contract\UserInterface;
 use c975L\ConfigBundle\Controller\Management\DashboardController;
+use c975L\ConfigBundle\Controller\McpController;
 use c975L\ConfigBundle\Entity\ActivityLog;
 use c975L\ConfigBundle\Entity\Config;
 use c975L\ConfigBundle\Management\ConfigLabelResolver;
@@ -30,7 +31,7 @@ use Psr\Log\LoggerInterface;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\RequestStack;
 
-// Writes the activity log: whatever a signed-in account saves under the back office's path, whichever bundle the entity comes from. The front's own writes (a play, a favorite, a form sent) and the console's are no part of it, which is what keeps the log readable with no list of entities to maintain
+// Writes the activity log: whatever a signed-in account saves under the back office's path or through its agents on the MCP endpoint, whichever bundle the entity comes from. The front's own writes (a play, a favorite, a form sent) and the console's are no part of it, which is what keeps the log readable with no list of entities to maintain
 #[AsDoctrineListener(event: Events::onFlush)]
 #[AsDoctrineListener(event: Events::postFlush)]
 class ActivityLogListener
@@ -70,7 +71,8 @@ class ActivityLogListener
         }
 
         $path = $this->requestStack->getMainRequest()?->getPathInfo();
-        if (null === $path || !DashboardController::isManagementPath($path)) {
+        // The agents' writes through the MCP endpoint are logged as their account's, the path telling them apart
+        if (null === $path || (!DashboardController::isManagementPath($path) && McpController::PATH !== $path)) {
             return;
         }
 

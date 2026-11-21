@@ -13,21 +13,24 @@ namespace c975L\ConfigBundle\Tests\EventSubscriber;
 use c975L\ConfigBundle\Contract\InactivityAwareInterface;
 use c975L\ConfigBundle\Event\UserAnonymizedEvent;
 use c975L\ConfigBundle\EventSubscriber\AppTokenSubscriber;
+use c975L\ConfigBundle\Repository\AgentTokenRepository;
 use c975L\ConfigBundle\Repository\AppTokenRepository;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 
 class AppTokenSubscriberTest extends TestCase
 {
-    // An anonymized account keeps its row, so its apps are signed out here rather than by the cascade
+    // An anonymized account keeps its row, so its apps and agents are signed out here rather than by the cascade
     public function testAnAnonymizedAccountLosesItsTokens(): void
     {
         $user = $this->createStub(InactivityAwareInterface::class);
         $repository = $this->createMock(AppTokenRepository::class);
         $repository->expects($this->once())->method('deleteOfUser')->with($user);
+        $agents = $this->createMock(AgentTokenRepository::class);
+        $agents->expects($this->once())->method('deleteOfUser')->with($user);
 
         $this->assertSame(UserAnonymizedEvent::class, new \ReflectionMethod(AppTokenSubscriber::class, 'onUserAnonymized')->getAttributes(AsEventListener::class)[0]->newInstance()->event);
 
-        new AppTokenSubscriber($repository)->onUserAnonymized(new UserAnonymizedEvent($user));
+        new AppTokenSubscriber($repository, $agents)->onUserAnonymized(new UserAnonymizedEvent($user));
     }
 }

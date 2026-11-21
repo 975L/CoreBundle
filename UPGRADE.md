@@ -1,5 +1,9 @@
 # UPGRADE
 
+## v1.96.0
+
+**Agent tokens live in `site_agent_token`** (**needs db update**). To open the MCP endpoint on a site: check `mcp-enabled`, open `^/api/mcp$` to `PUBLIC_ACCESS` and add a stateless firewall before `main` (see ConfigBundle's README, "Opening the site to AI agents"). **Constructor**: `AppTokenSubscriber` and `PasswordResetter` also take `AgentTokenRepository`: nothing to do with autowiring.
+
 ## v1.90.2
 
 **AVIF is refused on the way in**: an upload, a language's file, a content or site graphics import and a demo placeholder no longer take an avif, read off its name and its bytes. Nothing to migrate: an avif already stored is served as before, and its language files still leave the disk with it. A site's own form reusing `AllowedUploadExtension` refuses it too.

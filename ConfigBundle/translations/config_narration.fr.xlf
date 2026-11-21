@@ -6,6 +6,10 @@
                 <source>narration.activity_logs</source>
                 <target>Le journal des modifications dit qui a fait quoi et quand sur le back-office : pages, blocs, réglages, mode maintenance. Personne ne peut en effacer une ligne.</target>
             </trans-unit>
+            <trans-unit id="4cbeqIV">
+                <source>narration.agent_tokens</source>
+                <target>Les jetons d'agent ouvrent le site à un agent IA, avec les droits de votre compte, en lecture seule ou en écriture, et seulement sur les bundles choisis.</target>
+            </trans-unit>
             <trans-unit id="5ATKQD9">
                 <source>narration.block_showcase</source>
                 <target>Juste à côté, « Vitrine des blocks » montre tous les types de blocks disponibles, chacun avec un aperçu en direct : de quoi choisir lequel poser sur une page.</target>
@@ -41,6 +45,38 @@
             <trans-unit id="HnKNWkN">
                 <source>narration.guided_step_config_activity_log_row</source>
                 <target>Chaque ligne dit quand, quel compte, quelle action et sur quel élément. La plus récente est en haut.</target>
+            </trans-unit>
+            <trans-unit id="gjXImxs">
+                <source>narration.guided_step_config_agent_token_bundles</source>
+                <target>Choisissez les bundles dont l'agent recevra les outils, ou aucun pour les lui ouvrir tous.</target>
+            </trans-unit>
+            <trans-unit id="fJhsBDy">
+                <source>narration.guided_step_config_agent_token_done</source>
+                <target>Copiez le jeton tout de suite, il ne s'affichera plus ; le supprimer de cette liste le révoque.</target>
+            </trans-unit>
+            <trans-unit id="Hk2MRcj">
+                <source>narration.guided_step_config_agent_token_expiration</source>
+                <target>Fixez le dernier jour où le jeton servira, ou laissez vide pour le garder jusqu'à ce que vous le supprimiez.</target>
+            </trans-unit>
+            <trans-unit id="ksbwKG1">
+                <source>narration.guided_step_config_agent_token_name</source>
+                <target>Donnez le nom de l'agent qui s'en servira, pour reconnaître ce jeton plus tard.</target>
+            </trans-unit>
+            <trans-unit id="we.cEnj">
+                <source>narration.guided_step_config_agent_token_new</source>
+                <target>Cliquez sur le bouton de création, en haut à droite.</target>
+            </trans-unit>
+            <trans-unit id="pjTnbPC">
+                <source>narration.guided_step_config_agent_token_open</source>
+                <target>Le panneau vous emmène sur l'écran des jetons d'agent : chacun ouvre le site à un agent IA, avec les droits de votre compte.</target>
+            </trans-unit>
+            <trans-unit id="bwgkoNW">
+                <source>narration.guided_step_config_agent_token_save</source>
+                <target>Enregistrez : le jeton s'affiche en haut de la liste.</target>
+            </trans-unit>
+            <trans-unit id="F8t4IMe">
+                <source>narration.guided_step_config_agent_token_writable</source>
+                <target>Laissez la case décochée si l'agent n'a qu'à lire : il ne recevra aucun outil qui modifie le site.</target>
             </trans-unit>
             <trans-unit id="GpCKJ6q">
                 <source>narration.guided_step_config_content_export_carry</source>

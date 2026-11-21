@@ -369,7 +369,7 @@ the whole point, the burst it guards against being the one that runs the connect
 
 A bundle keeps its own signed-in pages outside `/management`, or a machine's API, out of the count by
 implementing `Security\RateLimitExemptionInterface::isExempt(string $path)`, collected under
-`c975l.rate_limit_exemption` (PilotBundle's `/pilot` pages and runner API).
+`c975l.rate_limit_exemption` (PilotBundle's `/pilot` pages and runner API, this bundle's own `/api/mcp`).
 
 **A caller is an IP address, IPv6 counted on its `/64`** (`clientKey()`): a machine is routinely
 handed that whole block, and counting the full address lets one scraper renumber itself through the

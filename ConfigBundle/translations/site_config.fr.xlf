@@ -70,6 +70,10 @@
                 <source>description.made_by_wording</source>
                 <target>Formulation du crédit dans le pied de page : made (« Réalisé par ») ou powered (« Propulsé par »), pour un site qui utilise le système sans avoir été réalisé par lui</target>
             </trans-unit>
+            <trans-unit id="nADy1G1">
+                <source>description.mcp_enabled</source>
+                <target>Ouvre /api/mcp : un agent IA (Claude Code, Claude Desktop…) y agit avec les droits du compte de son jeton d'agent, limité à ce que ce jeton permet. Décoché, l'adresse répond 404.</target>
+            </trans-unit>
             <trans-unit id="FXZbjDI">
                 <source>description.seo_humans_from</source>
                 <target>Pays depuis lequel le site est administré, tel qu'affiché dans humans.txt, ex. France</target>
@@ -381,6 +385,10 @@
             <trans-unit id="I_2UGaK">
                 <source>label.made_by_wording</source>
                 <target>Formulation du crédit « Réalisé par »</target>
+            </trans-unit>
+            <trans-unit id="DOTTM9q">
+                <source>label.mcp_enabled</source>
+                <target>Ouvrir le site aux agents IA (MCP)</target>
             </trans-unit>
             <trans-unit id="5LRQEmv">
                 <source>label.seo_humans_from</source>

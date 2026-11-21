@@ -102,6 +102,10 @@
                 <source>description.guided_project_config_activity_log</source>
                 <target>Lire le journal des modifications et y retrouver une action précise.</target>
             </trans-unit>
+            <trans-unit id="on77d3r">
+                <source>description.guided_project_config_agent_token</source>
+                <target>Un agent IA (Claude Code, Claude Desktop…) agit sur le site avec vos droits, par un jeton que vous lui créez : en lecture seule ou en écriture, sur les bundles choisis, jusqu'au jour fixé.</target>
+            </trans-unit>
             <trans-unit id="09u2h9T">
                 <source>description.guided_project_config_content_export</source>
                 <target>Tout le contenu du site en un seul zip, prêt à être importé ailleurs.</target>
@@ -185,6 +189,30 @@
             <trans-unit id="lxcVOTr">
                 <source>description.guided_step_config_activity_log_row</source>
                 <target>Une ligne dit quand, quel compte, quelle action et sur quel élément. La plus récente est en haut. Une page enregistrée avec plusieurs blocs donne une ligne par bloc modifié : la colonne « Écran » dit de quelle page il s'agit.</target>
+            </trans-unit>
+            <trans-unit id="EUjFSTs">
+                <source>description.guided_step_config_agent_token_bundles</source>
+                <target>L'agent ne reçoit que les outils des bundles choisis ; aucun choisi, il les reçoit tous.</target>
+            </trans-unit>
+            <trans-unit id="XOrepvF">
+                <source>description.guided_step_config_agent_token_done</source>
+                <target>Le jeton ne s'affiche qu'une fois : copiez-le dans la configuration de l'agent. L'adresse MCP reste fermée tant que le réglage « Ouvrir le site aux agents IA » n'est pas coché, et supprimer le jeton le révoque.</target>
+            </trans-unit>
+            <trans-unit id="begbadp">
+                <source>description.guided_step_config_agent_token_expiration</source>
+                <target>Le jeton sert jusqu'à ce jour inclus ; laissé vide, il sert jusqu'à ce que vous le supprimiez.</target>
+            </trans-unit>
+            <trans-unit id="EcZMk.1">
+                <source>description.guided_step_config_agent_token_name</source>
+                <target>Le nom de l'agent qui s'en servira, pour distinguer vos jetons entre eux.</target>
+            </trans-unit>
+            <trans-unit id="P2lB38Q">
+                <source>description.guided_step_config_agent_token_open</source>
+                <target>Chaque jeton ouvre le site à un agent, avec les droits de votre compte ; vous ne voyez que les vôtres.</target>
+            </trans-unit>
+            <trans-unit id="VCpIq6h">
+                <source>description.guided_step_config_agent_token_writable</source>
+                <target>Décochée, l'agent ne fait que lire ; cochée, il peut aussi modifier et supprimer, comme vous.</target>
             </trans-unit>
             <trans-unit id="uQsSrc2">
                 <source>description.guided_step_config_content_export_carry</source>
@@ -525,6 +553,10 @@
             <trans-unit id="1IMEbQm">
                 <source>flash.account_deleted</source>
                 <target>Mon compte a été supprimé.</target>
+            </trans-unit>
+            <trans-unit id="kksCGfW">
+                <source>flash.agent_token_created</source>
+                <target>Jeton de l'agent « %name% », à copier maintenant, il ne s'affichera plus : %token%</target>
             </trans-unit>
             <trans-unit id="duvD5dn">
                 <source>flash.config_cache_cleared</source>
@@ -898,6 +930,30 @@
                 <source>label.activity_logs</source>
                 <target>Journal des modifications</target>
             </trans-unit>
+            <trans-unit id="tmu5laO">
+                <source>label.agent_token_bundles</source>
+                <target>Bundles</target>
+            </trans-unit>
+            <trans-unit id="xSJF_eQ">
+                <source>label.agent_token_expiration</source>
+                <target>Expiration</target>
+            </trans-unit>
+            <trans-unit id="rnqliO4">
+                <source>label.agent_token_last_use</source>
+                <target>Dernier usage</target>
+            </trans-unit>
+            <trans-unit id="opasNFZ">
+                <source>label.agent_token_name</source>
+                <target>Agent</target>
+            </trans-unit>
+            <trans-unit id="2d2jJDy">
+                <source>label.agent_token_writable</source>
+                <target>Écriture</target>
+            </trans-unit>
+            <trans-unit id="DWav1as">
+                <source>label.agent_tokens</source>
+                <target>Jetons d'agent</target>
+            </trans-unit>
             <trans-unit id="4TsTMJK">
                 <source>label.app_connect</source>
                 <target>Connecter l'application</target>
@@ -1258,6 +1314,10 @@
                 <source>label.guided_project_config_activity_log</source>
                 <target>Retrouver qui a fait quoi</target>
             </trans-unit>
+            <trans-unit id="V3xhGUN">
+                <source>label.guided_project_config_agent_token</source>
+                <target>Ouvrir le site à un agent IA</target>
+            </trans-unit>
             <trans-unit id="XDpFqMy">
                 <source>label.guided_project_config_content_export</source>
                 <target>Exporter le contenu vers un autre environnement</target>
@@ -1385,6 +1445,38 @@
             <trans-unit id="siwWl6.">
                 <source>label.guided_step_config_activity_log_row</source>
                 <target>Lisez une ligne</target>
+            </trans-unit>
+            <trans-unit id="IkRsxuV">
+                <source>label.guided_step_config_agent_token_bundles</source>
+                <target>Les bundles ouverts</target>
+            </trans-unit>
+            <trans-unit id="Ece6d3c">
+                <source>label.guided_step_config_agent_token_done</source>
+                <target>Copier le jeton</target>
+            </trans-unit>
+            <trans-unit id="DT__Ts0">
+                <source>label.guided_step_config_agent_token_expiration</source>
+                <target>Jusqu'à quand</target>
+            </trans-unit>
+            <trans-unit id="rh9qh2R">
+                <source>label.guided_step_config_agent_token_name</source>
+                <target>Nommer l'agent</target>
+            </trans-unit>
+            <trans-unit id="lONNWWl">
+                <source>label.guided_step_config_agent_token_new</source>
+                <target>Créer un jeton</target>
+            </trans-unit>
+            <trans-unit id="uyorUxv">
+                <source>label.guided_step_config_agent_token_open</source>
+                <target>Ouvrir les jetons d'agent</target>
+            </trans-unit>
+            <trans-unit id="viZ.UfD">
+                <source>label.guided_step_config_agent_token_save</source>
+                <target>Créer le jeton</target>
+            </trans-unit>
+            <trans-unit id="tVwk19A">
+                <source>label.guided_step_config_agent_token_writable</source>
+                <target>Lecture ou écriture</target>
             </trans-unit>
             <trans-unit id="v8kPZur">
                 <source>label.guided_step_config_content_export_carry</source>
@@ -2333,6 +2425,14 @@
             <trans-unit id="62Bfe7u">
                 <source>label.info_activity_log</source>
                 <target>Qui a fait quoi et quand sur le back-office : chaque création, modification, mise à la corbeille, restauration ou suppression y figure. Seuls les noms des champs modifiés sont conservés, jamais leur contenu, sauf l'état d'une option activée ou désactivée.</target>
+            </trans-unit>
+            <trans-unit id="OCRWgod">
+                <source>label.info_agent_token</source>
+                <target>Un jeton d'agent laisse un agent IA agir sur le site par son adresse MCP, avec les droits de son compte : en lecture seule ou en écriture, sur tous les bundles ou ceux choisis, jusqu'à sa date d'expiration. Le jeton ne s'affiche qu'une fois, à sa création ; le supprimer le révoque.</target>
+            </trans-unit>
+            <trans-unit id="LpVDUPK">
+                <source>label.info_agent_token_bundles</source>
+                <target>Aucun choisi : tous les bundles.</target>
             </trans-unit>
             <trans-unit id="p4rGI4c">
                 <source>label.info_not_found</source>

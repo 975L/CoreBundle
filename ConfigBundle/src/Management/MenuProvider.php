@@ -11,6 +11,7 @@
 namespace c975L\ConfigBundle\Management;
 
 use c975L\ConfigBundle\Controller\Management\ActivityLogCrudController;
+use c975L\ConfigBundle\Controller\Management\AgentTokenCrudController;
 use c975L\ConfigBundle\Controller\Management\ConfigCrudController;
 use c975L\ConfigBundle\Controller\Management\NotFoundCrudController;
 use c975L\ConfigBundle\Controller\Management\RedirectCrudController;
@@ -81,6 +82,17 @@ class MenuProvider implements MenuProviderInterface
                 // The bar RedirectCrudController sets on its own index and edit - a url that moved is the editor's business, whoever published the page it pointed at
                 'role' => $this->configService->get('site-role-editor'),
                 'description' => 'label.info_redirect',
+            ],
+            // Each account its own tokens, an agent acting with that account's rights (see AgentTokenCrudController)
+            'agent_token' => [
+                'controller' => AgentTokenCrudController::class,
+                'label' => 'label.agent_tokens',
+                'narration' => 'narration.agent_tokens',
+                'translation_domain' => 'config',
+                'icon' => 'fas fa-robot',
+                'tier' => 'advanced',
+                'role' => $this->configService->get('site-role-contributor'),
+                'description' => 'label.info_agent_token',
             ],
             // Admin rather than editor: the screen tells what each colleague did (see ActivityLogCrudController)
             'activity_log' => [

@@ -924,5 +924,16 @@
         "group": "security",
         "severity": null,
         "description": "description.app_connect_schemes"
+    },
+    {
+        "label": "label.mcp_enabled",
+        "slug": "mcp-enabled",
+        "sensitive": false,
+        "restricted": true,
+        "value": "false",
+        "kind": "bool",
+        "group": "security",
+        "severity": null,
+        "description": "description.mcp_enabled"
     }
 ]

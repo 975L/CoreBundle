@@ -277,6 +277,19 @@ class ActivityLogListenerTest extends TestCase
         }
     }
 
+    // An agent's write through the MCP endpoint is logged as its account's, under that path; one merely starting like it is not
+    public function testAnAgentWriteIsLogged(): void
+    {
+        $user = $this->user();
+        $this->flush($this->listener('/api/mcp', $user), $this->manager(insertions: [new ActivityLogListenerPage()]));
+        $this->assertCount(1, $this->recorded);
+        $this->assertSame('/api/mcp', $this->recorded[0]->getPath());
+
+        $this->recorded = [];
+        $this->flush($this->listener('/api/mcp-other', $user), $this->manager(insertions: [new ActivityLogListenerPage()]));
+        $this->assertSame([], $this->recorded);
+    }
+
     // TranslationWriteListener flushes again from its own postFlush, which must not write the same rows twice
     public function testASecondFlushDoesNotWriteTheRowsAgain(): void
     {

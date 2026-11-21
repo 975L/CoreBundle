@@ -32,6 +32,7 @@ class CodeRulesTest extends CodeRulesTestCase
             self::BULK_QUERY => [
                 'c975L\ConfigBundle\Command\SessionsCleanupCommand::execute' => 'The sessions table is read by the session handler only, never cached',
                 'c975L\ConfigBundle\Repository\ActivityLogRepository::purgeOlderThan' => 'The activity log is read live by its back-office list, never cached',
+                'c975L\ConfigBundle\Repository\AgentTokenRepository::deleteOfUser' => 'Agent tokens are read live at each MCP request, never cached',
                 'c975L\ConfigBundle\Repository\AppTokenRepository::deleteOfUser' => 'App tokens are read live at each authentication, never cached',
                 'c975L\ConfigBundle\Repository\AppTokenRepository::deleteExpiredCodes' => 'App tokens are read live at each authentication, never cached',
                 'c975L\ConfigBundle\Repository\HealthCheckResultRepository::deleteOlderThan' => 'Health check rows are read live by the dashboard and the status report, never cached',

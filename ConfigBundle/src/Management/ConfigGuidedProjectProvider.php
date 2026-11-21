@@ -11,6 +11,7 @@
 namespace c975L\ConfigBundle\Management;
 
 use c975L\ConfigBundle\Controller\Management\ActivityLogCrudController;
+use c975L\ConfigBundle\Controller\Management\AgentTokenCrudController;
 use c975L\ConfigBundle\Controller\Management\ConfigCrudController;
 use c975L\ConfigBundle\Controller\Management\ConfigPruneController;
 use c975L\ConfigBundle\Controller\Management\ContentImportController;
@@ -25,7 +26,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-// This bundle's own guided projects, running the 1000 block GuidedProjectProviderInterface reserves them - the same docblock stating every other bundle's, so a range is read there rather than recopied here. Each carries the role its own screen is gated by, so a parcours is never offered to someone its very first step turns away - the projects' page the list is started from opens to a contributor (same BackOfficeAccessVoter floor as the dashboard, see GuidedProjectController::index()), and nine of these seventeen walk a screen only an admin may read, two the buttons or tiles only a super admin is shown, and two a screen a super admin alone opens. Only the opening step of each carries an url: from there the parcours walks the screen the user has been sent to, highlighting the button or the field they are meant to use next - one they click themselves, which brings the panel back on that very step (see assets/js/guided-project.js resume())
+// This bundle's own guided projects, running the 1000 block GuidedProjectProviderInterface reserves them - the same docblock stating every other bundle's, so a range is read there rather than recopied here. Each carries the role its own screen is gated by, so a parcours is never offered to someone its very first step turns away - the projects' page the list is started from opens to a contributor (same BackOfficeAccessVoter floor as the dashboard, see GuidedProjectController::index()), and nine of these eighteen walk a screen only an admin may read, two the buttons or tiles only a super admin is shown, and two a screen a super admin alone opens. Only the opening step of each carries an url: from there the parcours walks the screen the user has been sent to, highlighting the button or the field they are meant to use next - one they click themselves, which brings the panel back on that very step (see assets/js/guided-project.js resume())
 class ConfigGuidedProjectProvider implements GuidedProjectProviderInterface
 {
     public function __construct(
@@ -51,6 +52,7 @@ class ConfigGuidedProjectProvider implements GuidedProjectProviderInterface
             $this->userRoleProject(),
             $this->userAnonymizeProject(),
             $this->rolePreviewProject(),
+            $this->agentTokenProject(),
             $this->messengerFailedProject(),
             $this->contentExportProject(),
             $this->contentImportProject(),
@@ -171,6 +173,68 @@ class ConfigGuidedProjectProvider implements GuidedProjectProviderInterface
                     'label' => 'label.guided_step_config_role_preview_done',
                     'description' => 'description.guided_step_config_role_preview_done',
                     'narration' => 'narration.guided_step_config_role_preview_done',
+                ],
+            ],
+        ];
+    }
+
+    // An agent token is the one thing an AI agent needs to act on the site, and it shows once: the parcours ends on copying it
+    private function agentTokenProject(): array
+    {
+        return [
+            'slug' => 'config-agent-token',
+            'label' => 'label.guided_project_config_agent_token',
+            'description' => 'description.guided_project_config_agent_token',
+            'translation_domain' => 'config',
+            'order' => 1075,
+            // The bar AgentTokenCrudController sets on its index and its "new"
+            'role' => $this->configService->get('site-role-contributor'),
+            'steps' => [
+                [
+                    'label' => 'label.guided_step_config_agent_token_open',
+                    'description' => 'description.guided_step_config_agent_token_open',
+                    'narration' => 'narration.guided_step_config_agent_token_open',
+                    'url' => $this->indexUrl(AgentTokenCrudController::class),
+                ],
+                [
+                    'label' => 'label.guided_step_config_agent_token_new',
+                    'narration' => 'narration.guided_step_config_agent_token_new',
+                    'highlight' => '.action-new',
+                ],
+                [
+                    'label' => 'label.guided_step_config_agent_token_name',
+                    'description' => 'description.guided_step_config_agent_token_name',
+                    'narration' => 'narration.guided_step_config_agent_token_name',
+                    'highlight' => '#AgentToken_name',
+                ],
+                [
+                    'label' => 'label.guided_step_config_agent_token_writable',
+                    'description' => 'description.guided_step_config_agent_token_writable',
+                    'narration' => 'narration.guided_step_config_agent_token_writable',
+                    'highlight' => '#AgentToken_writable',
+                ],
+                [
+                    'label' => 'label.guided_step_config_agent_token_bundles',
+                    'description' => 'description.guided_step_config_agent_token_bundles',
+                    'narration' => 'narration.guided_step_config_agent_token_bundles',
+                    'highlight' => '[data-guided-agent-token-bundles]',
+                ],
+                [
+                    'label' => 'label.guided_step_config_agent_token_expiration',
+                    'description' => 'description.guided_step_config_agent_token_expiration',
+                    'narration' => 'narration.guided_step_config_agent_token_expiration',
+                    'highlight' => '#AgentToken_expiration',
+                ],
+                [
+                    'label' => 'label.guided_step_config_agent_token_save',
+                    'narration' => 'narration.guided_step_config_agent_token_save',
+                    'highlight' => '.action-saveAndReturn',
+                ],
+                [
+                    // The secret lives in the flash alone, only its sha256 being kept (see AgentTokenCrudController::persistEntity())
+                    'label' => 'label.guided_step_config_agent_token_done',
+                    'description' => 'description.guided_step_config_agent_token_done',
+                    'narration' => 'narration.guided_step_config_agent_token_done',
                 ],
             ],
         ];

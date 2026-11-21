@@ -135,11 +135,11 @@ class ConfigGuidedProjectProviderTest extends TestCase
         $projects = $this->createProvider()->getGuidedProjects();
 
         $this->assertSame(
-            ['config-settings', 'config-health-check', 'config-maintenance', 'config-login-code', 'config-registration', 'config-not-found', 'config-redirect', 'config-url-metadata', 'config-seo', 'config-user-role', 'config-user-anonymize', 'config-role-preview', 'config-messenger-failed', 'config-content-export', 'config-content-import', 'config-activity-log', 'config-prune'],
+            ['config-settings', 'config-health-check', 'config-maintenance', 'config-login-code', 'config-registration', 'config-not-found', 'config-redirect', 'config-url-metadata', 'config-seo', 'config-user-role', 'config-user-anonymize', 'config-role-preview', 'config-agent-token', 'config-messenger-failed', 'config-content-export', 'config-content-import', 'config-activity-log', 'config-prune'],
             array_column($projects, 'slug')
         );
         // 1040 rather than a value after 1050: the missing pages are walked to the redirects, the screen the url metadata has nothing to do with. 1035 and 1038 keep the login code and the registration beside the maintenance, the three dashboard toggles, and 1055 the SEO tiles beside the url metadata
-        $this->assertSame([1010, 1020, 1030, 1035, 1038, 1040, 1045, 1050, 1055, 1060, 1065, 1070, 1080, 1085, 1090, 1095, 1100], array_column($projects, 'order'));
+        $this->assertSame([1010, 1020, 1030, 1035, 1038, 1040, 1045, 1050, 1055, 1060, 1065, 1070, 1075, 1080, 1085, 1090, 1095, 1100], array_column($projects, 'order'));
     }
 
     // A project is offered on a dashboard a contributor now reaches, so one walking an admin screen has to say so or its very first step answers a 403
@@ -167,6 +167,8 @@ class ConfigGuidedProjectProviderTest extends TestCase
                 'config-user-anonymize' => 'site-role-admin',
                 // Every account on the back-office floor has a level below its own to look through
                 'config-role-preview' => null,
+                // Each account makes its own tokens (see AgentTokenCrudController)
+                'config-agent-token' => 'site-role-contributor',
                 // The screen opens to an admin, its buttons to a super admin alone (see MessengerFailedController)
                 'config-messenger-failed' => 'ROLE_SUPER_ADMIN',
                 // The bar the dashboard tile it walks declares

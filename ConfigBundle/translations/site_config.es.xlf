@@ -70,6 +70,10 @@
                 <source>description.made_by_wording</source>
                 <target>Redacción del crédito en el pie de página: made («Hecho por») o powered («Impulsado por»), para un sitio que usa el sistema sin haber sido realizado por él</target>
             </trans-unit>
+            <trans-unit id="nADy1G1">
+                <source>description.mcp_enabled</source>
+                <target>Abre /api/mcp: un agente de IA (Claude Code, Claude Desktop…) actúa allí con los derechos de la cuenta de su token de agente, limitado a lo que ese token permite. Desmarcado, la dirección responde 404.</target>
+            </trans-unit>
             <trans-unit id="FXZbjDI">
                 <source>description.seo_humans_from</source>
                 <target>País desde el que se administra el sitio, tal como aparece en humans.txt, p. ej. Francia</target>
@@ -381,6 +385,10 @@
             <trans-unit id="I_2UGaK">
                 <source>label.made_by_wording</source>
                 <target>Redacción del crédito «Hecho por»</target>
+            </trans-unit>
+            <trans-unit id="DOTTM9q">
+                <source>label.mcp_enabled</source>
+                <target>Abrir el sitio a los agentes de IA (MCP)</target>
             </trans-unit>
             <trans-unit id="5LRQEmv">
                 <source>label.seo_humans_from</source>

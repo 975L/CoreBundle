@@ -11,6 +11,7 @@
 namespace c975L\ConfigBundle\Service;
 
 use c975L\ConfigBundle\Contract\UserInterface;
+use c975L\ConfigBundle\Repository\AgentTokenRepository;
 use c975L\ConfigBundle\Repository\AppTokenRepository;
 use c975L\UiBundle\Model\EmailSendRequest;
 use c975L\UiBundle\Service\EmailService;
@@ -33,6 +34,7 @@ class PasswordResetter
         private readonly EmailTemplateRenderer $emailTemplateRenderer,
         private readonly TranslatorInterface $translator,
         private readonly AppTokenRepository $appTokenRepository,
+        private readonly AgentTokenRepository $agentTokenRepository,
     ) {
     }
 
@@ -52,9 +54,10 @@ class PasswordResetter
 
         $this->entityManager->flush();
 
-        // A token has no expiry and is no session, so the changed hash signing Symfony's sessions out does nothing to it: without this, an app connected by whoever stole the account would outlive the password that was changed to get rid of them
+        // A token is no session, so the changed hash signing Symfony's sessions out does nothing to it: without this, an app or an agent connected by whoever stole the account would outlive the password that was changed to get rid of them
         if ($user instanceof UserInterface) {
             $this->appTokenRepository->deleteOfUser($user);
+            $this->agentTokenRepository->deleteOfUser($user);
         }
 
         if ($notify) {

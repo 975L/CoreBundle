@@ -40,6 +40,7 @@ use c975L\ConfigBundle\Management\StatusProviderInterface;
 use c975L\ConfigBundle\Management\TutorialFilmUrlProviderInterface;
 use c975L\ConfigBundle\Management\UrlMetadataProviderInterface;
 use c975L\ConfigBundle\Management\WhatsNewProviderInterface;
+use c975L\ConfigBundle\Mcp\McpToolProviderInterface;
 use c975L\ConfigBundle\Scheduler\MaintenanceTaskProviderInterface;
 use c975L\ConfigBundle\Security\OAuthLoginProviderInterface;
 use c975L\ConfigBundle\Security\RateLimitExemptionInterface;
@@ -142,6 +143,8 @@ class c975LConfigBundle extends AbstractBundle
         $container->addCompilerPass(new TaggedInterfacePass(OAuthLoginProviderInterface::class, 'c975l.oauth_login_provider'));
         // Collected by RateLimitListener: a bundle's own signed-in pages or machine API kept out of the front limiter
         $container->addCompilerPass(new TaggedInterfacePass(RateLimitExemptionInterface::class, 'c975l.rate_limit_exemption'));
+        // Collected by McpServer: the tools each bundle hands the site's MCP endpoint
+        $container->addCompilerPass(new TaggedInterfacePass(McpToolProviderInterface::class, 'c975l.mcp_tool_provider'));
         // Only ever has anything to collect in dev, every implementation being marked #[When('dev')] - the pass itself stays registered in every environment, it simply tags nothing in prod
         $container->addCompilerPass(new TaggedInterfacePass(DevProfilePathProviderInterface::class, 'c975l.dev_profile_path_provider'));
 

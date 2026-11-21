@@ -10,6 +10,7 @@
 
 namespace c975L\ConfigBundle\Tests\Service;
 
+use c975L\ConfigBundle\Repository\AgentTokenRepository;
 use c975L\ConfigBundle\Repository\AppTokenRepository;
 use c975L\ConfigBundle\Service\PasswordResetter;
 use c975L\ConfigBundle\Tests\Fixtures\UserStub;
@@ -49,6 +50,17 @@ class PasswordResetterTest extends TestCase
         $tokens->expects($this->once())->method('deleteOfUser')->with($user);
 
         $this->resetter(appTokenRepository: $tokens)->resetPassword($user, 'NewStr0ngPassword!');
+    }
+
+    // An agent token made by whoever held the password goes with it, the "other devices" sign-out included
+    public function testTheAccountsAgentTokensAreDeleted(): void
+    {
+        $user = new UserStub('user@example.test');
+        $agents = $this->createMock(AgentTokenRepository::class);
+        $agents->expects($this->exactly(2))->method('deleteOfUser')->with($user);
+
+        $this->resetter(agentTokenRepository: $agents)->resetPassword($user, 'NewStr0ngPassword!');
+        $this->resetter(agentTokenRepository: $agents)->resetPassword($user, 'NewStr0ngPassword!', notify: false);
     }
 
     // The "other devices" sign-out reaches the apps too, the same call doing it
@@ -91,7 +103,7 @@ class PasswordResetterTest extends TestCase
 
     // Collaborators stubbed to succeed, the emails leaving collected in $sent
     /** @param list<EmailSendRequest> $sent */
-    private function resetter(?UserPasswordHasherInterface $passwordHasher = null, ?EntityManagerInterface $entityManager = null, ?array &$sent = null, ?string $html = '<html>notice</html>', ?AppTokenRepository $appTokenRepository = null): PasswordResetter
+    private function resetter(?UserPasswordHasherInterface $passwordHasher = null, ?EntityManagerInterface $entityManager = null, ?array &$sent = null, ?string $html = '<html>notice</html>', ?AppTokenRepository $appTokenRepository = null, ?AgentTokenRepository $agentTokenRepository = null): PasswordResetter
     {
         $renderer = $this->createStub(EmailTemplateRenderer::class);
         $renderer->method('renderNamed')->willReturn($html);
@@ -113,6 +125,7 @@ class PasswordResetterTest extends TestCase
             $renderer,
             $translator,
             $appTokenRepository ?? $this->createStub(AppTokenRepository::class),
+            $agentTokenRepository ?? $this->createStub(AgentTokenRepository::class),
         );
     }
 }

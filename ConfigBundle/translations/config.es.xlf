@@ -102,6 +102,10 @@
                 <source>description.guided_project_config_activity_log</source>
                 <target>Leer el registro de actividad y encontrar en él una acción concreta.</target>
             </trans-unit>
+            <trans-unit id="on77d3r">
+                <source>description.guided_project_config_agent_token</source>
+                <target>Un agente de IA (Claude Code, Claude Desktop…) actúa en el sitio con sus derechos, mediante un token que usted le crea: en solo lectura o en escritura, en los bundles elegidos, hasta el día fijado.</target>
+            </trans-unit>
             <trans-unit id="09u2h9T">
                 <source>description.guided_project_config_content_export</source>
                 <target>Todo el contenido del sitio en un solo zip, listo para importarse en otro lugar.</target>
@@ -185,6 +189,30 @@
             <trans-unit id="lxcVOTr">
                 <source>description.guided_step_config_activity_log_row</source>
                 <target>Una línea indica cuándo, qué cuenta, qué acción y sobre qué elemento. La más reciente está arriba. Una página guardada con varios bloques da una línea por bloque modificado: la columna «Pantalla» indica de qué página se trata.</target>
+            </trans-unit>
+            <trans-unit id="EUjFSTs">
+                <source>description.guided_step_config_agent_token_bundles</source>
+                <target>El agente solo recibe las herramientas de los bundles elegidos; si no elige ninguno, las recibe todas.</target>
+            </trans-unit>
+            <trans-unit id="XOrepvF">
+                <source>description.guided_step_config_agent_token_done</source>
+                <target>El token solo se muestra una vez: cópielo en la configuración del agente. La dirección MCP permanece cerrada mientras no se marque el ajuste «Abrir el sitio a los agentes de IA», y eliminar el token lo revoca.</target>
+            </trans-unit>
+            <trans-unit id="begbadp">
+                <source>description.guided_step_config_agent_token_expiration</source>
+                <target>El token sirve hasta ese día incluido; vacío, sirve hasta que usted lo elimine.</target>
+            </trans-unit>
+            <trans-unit id="EcZMk.1">
+                <source>description.guided_step_config_agent_token_name</source>
+                <target>El nombre del agente que lo usará, para distinguir sus tokens entre sí.</target>
+            </trans-unit>
+            <trans-unit id="P2lB38Q">
+                <source>description.guided_step_config_agent_token_open</source>
+                <target>Cada token abre el sitio a un agente, con los derechos de su cuenta; solo ve los suyos.</target>
+            </trans-unit>
+            <trans-unit id="VCpIq6h">
+                <source>description.guided_step_config_agent_token_writable</source>
+                <target>Desmarcada, el agente solo lee; marcada, también puede modificar y eliminar, como usted.</target>
             </trans-unit>
             <trans-unit id="uQsSrc2">
                 <source>description.guided_step_config_content_export_carry</source>
@@ -525,6 +553,10 @@
             <trans-unit id="1IMEbQm">
                 <source>flash.account_deleted</source>
                 <target>Mi cuenta ha sido eliminada.</target>
+            </trans-unit>
+            <trans-unit id="kksCGfW">
+                <source>flash.agent_token_created</source>
+                <target>Token del agente «%name%», para copiar ahora, no volverá a mostrarse: %token%</target>
             </trans-unit>
             <trans-unit id="duvD5dn">
                 <source>flash.config_cache_cleared</source>
@@ -898,6 +930,30 @@
                 <source>label.activity_logs</source>
                 <target>Registro de actividad</target>
             </trans-unit>
+            <trans-unit id="tmu5laO">
+                <source>label.agent_token_bundles</source>
+                <target>Bundles</target>
+            </trans-unit>
+            <trans-unit id="xSJF_eQ">
+                <source>label.agent_token_expiration</source>
+                <target>Caducidad</target>
+            </trans-unit>
+            <trans-unit id="rnqliO4">
+                <source>label.agent_token_last_use</source>
+                <target>Último uso</target>
+            </trans-unit>
+            <trans-unit id="opasNFZ">
+                <source>label.agent_token_name</source>
+                <target>Agente</target>
+            </trans-unit>
+            <trans-unit id="2d2jJDy">
+                <source>label.agent_token_writable</source>
+                <target>Escritura</target>
+            </trans-unit>
+            <trans-unit id="DWav1as">
+                <source>label.agent_tokens</source>
+                <target>Tokens de agente</target>
+            </trans-unit>
             <trans-unit id="4TsTMJK">
                 <source>label.app_connect</source>
                 <target>Conectar la aplicación</target>
@@ -1258,6 +1314,10 @@
                 <source>label.guided_project_config_activity_log</source>
                 <target>Averiguar quién hizo qué</target>
             </trans-unit>
+            <trans-unit id="V3xhGUN">
+                <source>label.guided_project_config_agent_token</source>
+                <target>Abrir el sitio a un agente de IA</target>
+            </trans-unit>
             <trans-unit id="XDpFqMy">
                 <source>label.guided_project_config_content_export</source>
                 <target>Exportar el contenido a otro entorno</target>
@@ -1385,6 +1445,38 @@
             <trans-unit id="siwWl6.">
                 <source>label.guided_step_config_activity_log_row</source>
                 <target>Lea una línea</target>
+            </trans-unit>
+            <trans-unit id="IkRsxuV">
+                <source>label.guided_step_config_agent_token_bundles</source>
+                <target>Los bundles abiertos</target>
+            </trans-unit>
+            <trans-unit id="Ece6d3c">
+                <source>label.guided_step_config_agent_token_done</source>
+                <target>Copiar el token</target>
+            </trans-unit>
+            <trans-unit id="DT__Ts0">
+                <source>label.guided_step_config_agent_token_expiration</source>
+                <target>Hasta cuándo</target>
+            </trans-unit>
+            <trans-unit id="rh9qh2R">
+                <source>label.guided_step_config_agent_token_name</source>
+                <target>Nombrar el agente</target>
+            </trans-unit>
+            <trans-unit id="lONNWWl">
+                <source>label.guided_step_config_agent_token_new</source>
+                <target>Crear un token</target>
+            </trans-unit>
+            <trans-unit id="uyorUxv">
+                <source>label.guided_step_config_agent_token_open</source>
+                <target>Abrir los tokens de agente</target>
+            </trans-unit>
+            <trans-unit id="viZ.UfD">
+                <source>label.guided_step_config_agent_token_save</source>
+                <target>Crear el token</target>
+            </trans-unit>
+            <trans-unit id="tVwk19A">
+                <source>label.guided_step_config_agent_token_writable</source>
+                <target>Lectura o escritura</target>
             </trans-unit>
             <trans-unit id="v8kPZur">
                 <source>label.guided_step_config_content_export_carry</source>
@@ -2333,6 +2425,14 @@
             <trans-unit id="62Bfe7u">
                 <source>label.info_activity_log</source>
                 <target>Quién hizo qué y cuándo en el back-office: aquí figura cada creación, modificación, envío a la papelera, restauración o eliminación. Solo se conservan los nombres de los campos modificados, nunca su contenido, salvo el estado de una opción activada o desactivada.</target>
+            </trans-unit>
+            <trans-unit id="OCRWgod">
+                <source>label.info_agent_token</source>
+                <target>Un token de agente permite que un agente de IA actúe en el sitio mediante su dirección MCP, con los derechos de su cuenta: solo lectura o escritura, en todos los bundles o en los elegidos, hasta su fecha de caducidad. El token solo se muestra una vez, al crearlo; eliminarlo lo revoca.</target>
+            </trans-unit>
+            <trans-unit id="LpVDUPK">
+                <source>label.info_agent_token_bundles</source>
+                <target>Ninguno elegido: todos los bundles.</target>
             </trans-unit>
             <trans-unit id="p4rGI4c">
                 <source>label.info_not_found</source>

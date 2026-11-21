@@ -6,6 +6,10 @@
                 <source>narration.activity_logs</source>
                 <target>The activity log tells who did what and when in the back office: pages, blocks, settings, maintenance mode. Nobody can erase a row of it.</target>
             </trans-unit>
+            <trans-unit id="4cbeqIV">
+                <source>narration.agent_tokens</source>
+                <target>Agent tokens open the site to an AI agent, with your account's rights, read only or writing, and only on the bundles chosen.</target>
+            </trans-unit>
             <trans-unit id="5ATKQD9">
                 <source>narration.block_showcase</source>
                 <target>Right beside it, "Block showcase" shows every available block kind, each with a live preview: enough to choose which one to put on a page.</target>
@@ -41,6 +45,38 @@
             <trans-unit id="HnKNWkN">
                 <source>narration.guided_step_config_activity_log_row</source>
                 <target>Each row says when, which account, which action and on which item. The latest is on top.</target>
+            </trans-unit>
+            <trans-unit id="gjXImxs">
+                <source>narration.guided_step_config_agent_token_bundles</source>
+                <target>Choose the bundles whose tools the agent will be given, or none to open them all to it.</target>
+            </trans-unit>
+            <trans-unit id="fJhsBDy">
+                <source>narration.guided_step_config_agent_token_done</source>
+                <target>Copy the token right away, it will not show again; deleting it from this list revokes it.</target>
+            </trans-unit>
+            <trans-unit id="Hk2MRcj">
+                <source>narration.guided_step_config_agent_token_expiration</source>
+                <target>Set the last day the token will work, or leave it empty to keep it until you delete it.</target>
+            </trans-unit>
+            <trans-unit id="ksbwKG1">
+                <source>narration.guided_step_config_agent_token_name</source>
+                <target>Give the name of the agent that will use it, to recognize this token later.</target>
+            </trans-unit>
+            <trans-unit id="we.cEnj">
+                <source>narration.guided_step_config_agent_token_new</source>
+                <target>Click the create button, at the top right.</target>
+            </trans-unit>
+            <trans-unit id="pjTnbPC">
+                <source>narration.guided_step_config_agent_token_open</source>
+                <target>The panel takes you to the agent tokens screen: each one opens the site to an AI agent, with your account's rights.</target>
+            </trans-unit>
+            <trans-unit id="bwgkoNW">
+                <source>narration.guided_step_config_agent_token_save</source>
+                <target>Save: the token shows at the top of the list.</target>
+            </trans-unit>
+            <trans-unit id="F8t4IMe">
+                <source>narration.guided_step_config_agent_token_writable</source>
+                <target>Leave the box unchecked if the agent only has to read: it will be given no tool that changes the site.</target>
             </trans-unit>
             <trans-unit id="GpCKJ6q">
                 <source>narration.guided_step_config_content_export_carry</source>

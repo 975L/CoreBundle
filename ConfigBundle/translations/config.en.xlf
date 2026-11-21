@@ -102,6 +102,10 @@
                 <source>description.guided_project_config_activity_log</source>
                 <target>Read the activity log and find a specific action in it.</target>
             </trans-unit>
+            <trans-unit id="on77d3r">
+                <source>description.guided_project_config_agent_token</source>
+                <target>An AI agent (Claude Code, Claude Desktop…) acts on the site with your rights, through a token you make for it: read only or writing, on the bundles chosen, until the day set.</target>
+            </trans-unit>
             <trans-unit id="09u2h9T">
                 <source>description.guided_project_config_content_export</source>
                 <target>The whole site content in a single zip, ready to be imported elsewhere.</target>
@@ -185,6 +189,30 @@
             <trans-unit id="lxcVOTr">
                 <source>description.guided_step_config_activity_log_row</source>
                 <target>A row says when, which account, which action and on which item. The latest is on top. A page saved with several blocks gives one row per changed block: the "Screen" column tells which page it was.</target>
+            </trans-unit>
+            <trans-unit id="EUjFSTs">
+                <source>description.guided_step_config_agent_token_bundles</source>
+                <target>The agent is only given the tools of the bundles chosen; none chosen, it is given them all.</target>
+            </trans-unit>
+            <trans-unit id="XOrepvF">
+                <source>description.guided_step_config_agent_token_done</source>
+                <target>The token shows only once: copy it into the agent's configuration. The MCP address stays closed until the "Open the site to AI agents" setting is checked, and deleting the token revokes it.</target>
+            </trans-unit>
+            <trans-unit id="begbadp">
+                <source>description.guided_step_config_agent_token_expiration</source>
+                <target>The token works until that day included; left empty, it works until you delete it.</target>
+            </trans-unit>
+            <trans-unit id="EcZMk.1">
+                <source>description.guided_step_config_agent_token_name</source>
+                <target>The name of the agent that will use it, to tell your tokens apart.</target>
+            </trans-unit>
+            <trans-unit id="P2lB38Q">
+                <source>description.guided_step_config_agent_token_open</source>
+                <target>Each token opens the site to an agent, with your account's rights; you only see your own.</target>
+            </trans-unit>
+            <trans-unit id="VCpIq6h">
+                <source>description.guided_step_config_agent_token_writable</source>
+                <target>Unchecked, the agent only reads; checked, it may also change and delete, as you do.</target>
             </trans-unit>
             <trans-unit id="uQsSrc2">
                 <source>description.guided_step_config_content_export_carry</source>
@@ -525,6 +553,10 @@
             <trans-unit id="1IMEbQm">
                 <source>flash.account_deleted</source>
                 <target>My account has been deleted.</target>
+            </trans-unit>
+            <trans-unit id="kksCGfW">
+                <source>flash.agent_token_created</source>
+                <target>Token of the agent "%name%", to copy now, it will not show again: %token%</target>
             </trans-unit>
             <trans-unit id="duvD5dn">
                 <source>flash.config_cache_cleared</source>
@@ -898,6 +930,30 @@
                 <source>label.activity_logs</source>
                 <target>Activity log</target>
             </trans-unit>
+            <trans-unit id="tmu5laO">
+                <source>label.agent_token_bundles</source>
+                <target>Bundles</target>
+            </trans-unit>
+            <trans-unit id="xSJF_eQ">
+                <source>label.agent_token_expiration</source>
+                <target>Expiry</target>
+            </trans-unit>
+            <trans-unit id="rnqliO4">
+                <source>label.agent_token_last_use</source>
+                <target>Last use</target>
+            </trans-unit>
+            <trans-unit id="opasNFZ">
+                <source>label.agent_token_name</source>
+                <target>Agent</target>
+            </trans-unit>
+            <trans-unit id="2d2jJDy">
+                <source>label.agent_token_writable</source>
+                <target>Writing</target>
+            </trans-unit>
+            <trans-unit id="DWav1as">
+                <source>label.agent_tokens</source>
+                <target>Agent tokens</target>
+            </trans-unit>
             <trans-unit id="4TsTMJK">
                 <source>label.app_connect</source>
                 <target>Connect the app</target>
@@ -1258,6 +1314,10 @@
                 <source>label.guided_project_config_activity_log</source>
                 <target>Find out who did what</target>
             </trans-unit>
+            <trans-unit id="V3xhGUN">
+                <source>label.guided_project_config_agent_token</source>
+                <target>Open the site to an AI agent</target>
+            </trans-unit>
             <trans-unit id="XDpFqMy">
                 <source>label.guided_project_config_content_export</source>
                 <target>Export content to another environment</target>
@@ -1385,6 +1445,38 @@
             <trans-unit id="siwWl6.">
                 <source>label.guided_step_config_activity_log_row</source>
                 <target>Read a row</target>
+            </trans-unit>
+            <trans-unit id="IkRsxuV">
+                <source>label.guided_step_config_agent_token_bundles</source>
+                <target>The bundles opened</target>
+            </trans-unit>
+            <trans-unit id="Ece6d3c">
+                <source>label.guided_step_config_agent_token_done</source>
+                <target>Copy the token</target>
+            </trans-unit>
+            <trans-unit id="DT__Ts0">
+                <source>label.guided_step_config_agent_token_expiration</source>
+                <target>Until when</target>
+            </trans-unit>
+            <trans-unit id="rh9qh2R">
+                <source>label.guided_step_config_agent_token_name</source>
+                <target>Name the agent</target>
+            </trans-unit>
+            <trans-unit id="lONNWWl">
+                <source>label.guided_step_config_agent_token_new</source>
+                <target>Make a token</target>
+            </trans-unit>
+            <trans-unit id="uyorUxv">
+                <source>label.guided_step_config_agent_token_open</source>
+                <target>Open the agent tokens</target>
+            </trans-unit>
+            <trans-unit id="viZ.UfD">
+                <source>label.guided_step_config_agent_token_save</source>
+                <target>Make the token</target>
+            </trans-unit>
+            <trans-unit id="tVwk19A">
+                <source>label.guided_step_config_agent_token_writable</source>
+                <target>Reading or writing</target>
             </trans-unit>
             <trans-unit id="v8kPZur">
                 <source>label.guided_step_config_content_export_carry</source>
@@ -2333,6 +2425,14 @@
             <trans-unit id="62Bfe7u">
                 <source>label.info_activity_log</source>
                 <target>Who did what and when in the back office: every creation, change, move to the recycle bin, restoration or deletion is listed. Only the names of the changed fields are kept, never their content, except the state of an option turned on or off.</target>
+            </trans-unit>
+            <trans-unit id="OCRWgod">
+                <source>label.info_agent_token</source>
+                <target>An agent token lets an AI agent act on the site through its MCP address, with the rights of its account: read only or writing, on every bundle or those chosen, until its expiry date. The token shows only once, when created; deleting it revokes it.</target>
+            </trans-unit>
+            <trans-unit id="LpVDUPK">
+                <source>label.info_agent_token_bundles</source>
+                <target>None chosen: every bundle.</target>
             </trans-unit>
             <trans-unit id="p4rGI4c">
                 <source>label.info_not_found</source>

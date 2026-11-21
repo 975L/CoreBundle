@@ -70,6 +70,10 @@
                 <source>description.made_by_wording</source>
                 <target>Wording of the credit in the footer: made ("Made by") or powered ("Powered by"), for a site running the system without having been built by it</target>
             </trans-unit>
+            <trans-unit id="nADy1G1">
+                <source>description.mcp_enabled</source>
+                <target>Opens /api/mcp: an AI agent (Claude Code, Claude Desktop…) acts there with the rights of its agent token's account, kept to what that token allows. Unchecked, the address answers 404.</target>
+            </trans-unit>
             <trans-unit id="FXZbjDI">
                 <source>description.seo_humans_from</source>
                 <target>Country the site is run from, as shown in humans.txt, e.g. France</target>
@@ -381,6 +385,10 @@
             <trans-unit id="I_2UGaK">
                 <source>label.made_by_wording</source>
                 <target>Made By Wording</target>
+            </trans-unit>
+            <trans-unit id="DOTTM9q">
+                <source>label.mcp_enabled</source>
+                <target>Open the site to AI agents (MCP)</target>
             </trans-unit>
             <trans-unit id="5LRQEmv">
                 <source>label.seo_humans_from</source>

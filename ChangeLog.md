@@ -1,5 +1,15 @@
 # ChangeLog
 
+## v1.96.0
+
+MCP endpoint for AI agents, its tools brought by the bundles
+
+- `/api/mcp`: an AI agent acts on the site with the rights of its agent token's account, closed until `mcp-enabled` is checked (21/11/2026)
+- `McpToolProviderInterface`: a bundle hands its tools to the endpoint, a reading token given only the reading ones (21/11/2026)
+- Agent tokens screen: each account makes its own, read only or writing, for every bundle or those chosen, until a day; the token shows once, deleted it is revoked, a password changed revokes them all (21/11/2026)
+- An agent's writes through the endpoint written to the activity log under its account (21/11/2026)
+- `config-agent-token` guided project: making an agent token, down to copying it (21/11/2026)
+
 ## v1.95.1
 
 Vich uploader helper aliased by UiBundle
