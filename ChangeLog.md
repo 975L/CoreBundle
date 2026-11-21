@@ -1,5 +1,11 @@
 # ChangeLog
 
+## v1.95.1
+
+Vich uploader helper aliased by UiBundle
+
+- `UploaderHelperInterface` aliased by UiBundle, so a site without SiteBundle compiles its container (21/11/2026)
+
 ## v1.95.0
 
 Rate limiter exemptions declared by the bundles

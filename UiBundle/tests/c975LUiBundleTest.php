@@ -199,6 +199,16 @@ class c975LUiBundleTest extends TestCase
         );
     }
 
+    // VichUploaderBundle registers no alias for its helper interface, so without this one a site lacking SiteBundle fails to compile MediaUrlExtension
+    public function testTheVichUploaderHelperInterfaceIsAliased(): void
+    {
+        $this->assertStringContainsString(
+            "Vich\\UploaderBundle\\Templating\\Helper\\UploaderHelperInterface: '@Vich\\UploaderBundle\\Templating\\Helper\\UploaderHelper'",
+            (string) file_get_contents(__DIR__ . '/../config/services.yaml'),
+            'MediaUrlExtension autowires UploaderHelperInterface, which VichUploaderBundle leaves unaliased.'
+        );
+    }
+
     // Every entity of this bundle carrying an uploaded file needs its mapping declared here - Font's used to come from SiteBundle, which an app running Config + Ui plus a satellite bundle doesn't have, and an upload then died on "No mapping named site_font configured"
     public function testPrependExtensionRegistersAVichMappingForEveryUploadingEntity(): void
     {
@@ -301,7 +311,7 @@ class c975LUiBundleTest extends TestCase
                 return '';
             }
 
-            public function getXsdValidationBasePath(): string | false
+            public function getXsdValidationBasePath(): false
             {
                 return false;
             }

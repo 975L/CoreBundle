@@ -18,6 +18,9 @@ services:
     c975L\UiBundle\Service\DemoFixtureTranslator:
         shared: false
 
+    # VichUploaderBundle registers its concrete UploaderHelper without an alias for its interface, which MediaUrlExtension autowires
+    Vich\UploaderBundle\Templating\Helper\UploaderHelperInterface: '@Vich\UploaderBundle\Templating\Helper\UploaderHelper'
+
     # Three classes implement PdfGeneratorInterface - the two engines and the service picking between them - so the contract has to say which one a caller gets. It is the picker: which engine draws a document is decided per site from "ui-pdf-engine", and nothing calling for a PDF has to know there are two (see PdfGenerator)
     c975L\UiBundle\Contract\PdfGeneratorInterface: '@c975L\UiBundle\Service\PdfGenerator'
 

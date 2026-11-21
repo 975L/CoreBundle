@@ -37,10 +37,11 @@ class HeadlessChromeTest extends TestCase
         $this->assertSame(0, $code, $output);
     }
 
-    // A browser launched and never closed, taken down with the process
+    // A browser launched and never closed, taken down with the process, launched once more if the first start times out as JsCase does: the CI replay runs each PHP version's suite at once, and a cold Chrome under that load has been seen missing chrome-php's 30 s startup window
     public function testALaunchedBrowserIsKilledWithTheProcess(): void
     {
-        [$code, $output] = $this->runChild("echo HeadlessChrome::launch('" . self::CHROME . "', ['headless' => true, 'noSandbox' => true])->getConnection()->isConnected() ? 'connected' : 'not connected';");
+        $launch = "HeadlessChrome::launch('" . self::CHROME . "', ['headless' => true, 'noSandbox' => true, 'customFlags' => ['--disable-dev-shm-usage']])";
+        [$code, $output] = $this->runChild("try {\n    \$browser = " . $launch . ";\n} catch (\\RuntimeException) {\n    \$browser = " . $launch . ";\n}\necho \$browser->getConnection()->isConnected() ? 'connected' : 'not connected';");
 
         $this->assertSame('connected', $output);
         $this->assertSame(0, $code, $output);
