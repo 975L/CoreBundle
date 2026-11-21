@@ -12,7 +12,7 @@ namespace c975L\UiBundle\Validator;
 
 use Symfony\Component\Validator\Constraint;
 
-// The file extensions an upload may carry, on a form's file field - the one list UiMediaNamer stores names from too, so a file past this door and a name on the disk cannot disagree. Not Symfony's File "extensions" option, which also compares the type read off the bytes and so refuses an SVG detected as text. No script, markup or server configuration in here, ever: php, html, xml and what is served as xml (gpx, kml), js, htaccess, ini, sh. A file under public/ with such a name is what a web server runs, or a browser opens on the site's own origin. SVG is the one exception, kept for the logos and icons sites do store, and it does run its scripts when opened directly
+// The file extensions an upload may carry, on a form's file field - the one list UiMediaNamer stores names from too, so a file past this door and a name on the disk cannot disagree. Not Symfony's File "extensions" option, which also compares the type read off the bytes and so refuses an SVG detected as text. No script, markup or server configuration in here, ever: php, html, xml and what is served as xml (gpx, kml), js, htaccess, ini, sh. A file under public/ with such a name is what a web server runs, or a browser opens on the site's own origin. SVG is the one exception, kept for the logos and icons sites do store, its scripts stripped on upload by SvgSanitizeListener since it runs them when opened directly
 #[\Attribute(\Attribute::TARGET_PROPERTY)]
 class AllowedUploadExtension extends Constraint
 {
@@ -37,4 +37,7 @@ class AllowedUploadExtension extends Constraint
     public const array REFUSED_MIME_TYPES = ['image/avif'];
 
     public string $message = 'label.upload_extension_not_allowed';
+
+    // An SVG that cannot be read, so cannot be cleaned of its scripts (see SvgSanitizeListener)
+    public string $svgMessage = 'label.upload_svg_unreadable';
 }

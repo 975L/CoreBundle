@@ -95,7 +95,7 @@ class MessengerFailedController extends AbstractController
             } else {
                 $this->addFlash('danger', $this->translator->trans(
                     'flash.messenger_retry_failed',
-                    ['%id%' => $id, '%error%' => $result['error'] ?? '?'],
+                    ['%id%' => $id, '%error%' => htmlspecialchars((string) ($result['error'] ?? '?'))],
                     'config',
                 ));
             }

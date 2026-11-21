@@ -135,6 +135,8 @@ class AgentTokenCrudController extends AbstractCrudController
     public function configureCrud(Crud $crud): Crud
     {
         return $crud
+            ->setEntityLabelInSingular(t('label.agent_token', [], 'config'))
+            ->setEntityLabelInPlural(t('label.agent_tokens', [], 'config'))
             ->showEntityActionsInlined()
             ->setEntityPermission($this->configService->get('site-role-contributor'))
             ->setDefaultSort(['creation' => 'DESC'])

@@ -23,10 +23,12 @@ class ContentImportControllerTest extends TestCase
 {
     use ControllerContainerTestTrait;
 
-    private function createController(?ImportDispatcher $importDispatcher = null): ContentImportController
+    private function createController(?ImportDispatcher $importDispatcher = null, ?TranslatorInterface $translator = null): ContentImportController
     {
-        $translator = $this->createStub(TranslatorInterface::class);
-        $translator->method('trans')->willReturnArgument(0);
+        if (null === $translator) {
+            $translator = $this->createStub(TranslatorInterface::class);
+            $translator->method('trans')->willReturnArgument(0);
+        }
 
         return new ContentImportController(
             $importDispatcher ?? $this->createStub(ImportDispatcher::class),
@@ -348,6 +350,33 @@ class ContentImportControllerTest extends TestCase
         $controller->index($request);
 
         $this->assertSame(['flash.content_import_invalid_json'], $session->getFlashBag()->get('danger'));
+        unlink($file->getPathname());
+    }
+
+    // EasyAdmin prints a flash raw, so the kind an export file names is escaped
+    public function testTheKindAnExportNamesIsEscapedInTheFlash(): void
+    {
+        [$requestStack, $session] = $this->createRequestStackWithSession();
+        $file = $this->createZipUpload(json_encode(['kind' => '<img src=x onerror=alert(1)>', 'items' => []]));
+        // Echoes the parameters, so the flash shows what reached them
+        $translator = $this->createStub(TranslatorInterface::class);
+        $translator->method('trans')->willReturnCallback(static fn (string $id, array $parameters = []): string => $id . '|' . implode('|', $parameters));
+        $importDispatcher = $this->createStub(ImportDispatcher::class);
+        $importDispatcher->method('dispatch')->willReturn(null);
+
+        $controller = $this->createController($importDispatcher, $translator);
+        $controller->setContainer($this->createContainer([
+            'security.authorization_checker' => $this->createAuthorizationChecker(true),
+            'security.csrf.token_manager' => $this->createCsrfTokenManager(true),
+            'router' => $this->createRouter(),
+            'request_stack' => $requestStack,
+        ]));
+
+        $request = Request::create('/content-import', 'POST', ['_token' => 'valid']);
+        $request->files->set('export', $file);
+        $controller->index($request);
+
+        $this->assertSame(['flash.content_import_unsupported_kind|&lt;img src=x onerror=alert(1)&gt;'], $session->getFlashBag()->get('danger'));
         unlink($file->getPathname());
     }
 }

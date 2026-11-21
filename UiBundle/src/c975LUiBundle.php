@@ -181,6 +181,12 @@ class c975LUiBundle extends AbstractBundle
                     'limit' => 3,
                     'interval' => '1 hour',
                 ],
+                // The acknowledgement a form sends to the address a visitor typed (see SendEmailFormAction), per address whoever types it: an address nobody proved to own is not sent more than a few a day
+                'ui_form_acknowledgement' => [
+                    'policy' => $testEnvironment ? 'no_limit' : 'fixed_window',
+                    'limit' => 3,
+                    'interval' => '1 day',
+                ],
             ],
         ]);
 

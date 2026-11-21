@@ -23,6 +23,9 @@ use c975L\UiBundle\Service\ExpressionEvaluator;
 use c975L\UiBundle\Service\SendEmailFormAction;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\RateLimiter\RateLimiterFactory;
+use Symfony\Component\RateLimiter\RateLimiterFactoryInterface;
+use Symfony\Component\RateLimiter\Storage\InMemoryStorage;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class SendEmailFormActionTest extends TestCase
@@ -34,6 +37,7 @@ class SendEmailFormActionTest extends TestCase
         ?EmailTemplateRenderer $emailTemplateRenderer = null,
         ?ExpressionEvaluator $expressionEvaluator = null,
         bool $ownAddress = false,
+        ?RateLimiterFactoryInterface $acknowledgementLimiterFactory = null,
     ): SendEmailFormAction {
         $emailTemplateRepository ??= $this->createConfiguredStub(EmailTemplateRepository::class, ['findOneBy' => null]);
         $emailTemplateRenderer ??= $this->createStub(EmailTemplateRenderer::class);
@@ -54,6 +58,7 @@ class SendEmailFormActionTest extends TestCase
             $translator,
             $expressionEvaluator,
             currentAccountAddress: $this->createConfiguredStub(CurrentAccountAddress::class, ['owns' => $ownAddress]),
+            acknowledgementLimiterFactory: $acknowledgementLimiterFactory,
         );
     }
 
@@ -373,6 +378,31 @@ class SendEmailFormActionTest extends TestCase
         $this->assertNull($sent[1]->html);
         $this->assertSame('label.form_acknowledgement_subject', $sent[1]->subject);
         $this->assertSame('text.form_acknowledgement', $sent[1]->text);
+    }
+
+    // One address gets a few acknowledgements a day whoever types it, however written; past that the message still reaches the site, only the acknowledgement is skipped
+    public function testATypedAddressGetsAFewAcknowledgementsADayAtMost(): void
+    {
+        $sent = [];
+        $emailService = $this->createStub(EmailService::class);
+        $emailService->method('send')->willReturnCallback(function (EmailSendRequest $request) use (&$sent): bool {
+            $sent[] = $request;
+
+            return true;
+        });
+        $limiterFactory = new RateLimiterFactory(['id' => 'ui_form_acknowledgement', 'policy' => 'fixed_window', 'limit' => 2, 'interval' => '1 day'], new InMemoryStorage());
+        $action = $this->createAction($emailService, acknowledgementLimiterFactory: $limiterFactory);
+        $form = $this->buildForm('contact', ['senderEmailField' => 'email', 'offerReceiveCopy' => true], ['email' => 'Email']);
+
+        foreach (['visitor@example.com', 'Visitor@Example.com ', 'visitor@example.com'] as $address) {
+            $this->assertTrue($action->handle($form, ['email' => $address, 'receiveCopy' => true]));
+        }
+        $action->handle($form, ['email' => 'other@example.com', 'receiveCopy' => true]);
+
+        $acknowledgements = array_values(array_filter($sent, static fn (EmailSendRequest $request): bool => 'text.form_acknowledgement' === $request->text));
+        $this->assertCount(7, $sent);
+        $this->assertCount(3, $acknowledgements);
+        $this->assertSame('other@example.com', $acknowledgements[2]->to);
     }
 
     // Nor does a named EmailTemplate's body reach a typed address

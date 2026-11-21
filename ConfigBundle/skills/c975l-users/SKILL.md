@@ -41,7 +41,9 @@ decide which roles exist, so a plain `ROLE_ADMIN` must never reach them.
 its declared default, `ROLE_ADMIN`, while the row is absent, or a fresh install would lock everyone
 out including whoever would fix it. The same fallback answers when the database cannot be read at
 all: an outdated schema, or a mapping still pointing at the `App\Entity\User` that `make:user` has
-yet to write.
+yet to write. A role setting left empty takes the level above's role, an empty `site-role-admin`
+standing for `ROLE_SUPER_ADMIN` (`ConfigService::ROLE_FALLBACKS`): EasyAdmin grants an empty permission
+to anybody.
 
 ### The back-office floor
 
@@ -269,13 +271,16 @@ member signs in and agrees (CSRF id `app_connect`), and the app gets a one-time 
 scheme, traded at `POST /app/api/token` (`config_app_token`, `{code, verifier}`) for a token sent as
 `Authorization: Bearer`. `DELETE /app/api/token` revokes it, `GET /app/api/me` names the account.
 `AppTokenManager` holds the logic; `site_app_token` stores sha256 hashes only, a code living two minutes.
-The `app-connect-schemes` slug lists the schemes a code may be sent to: empty, every route is a 404. The
+The `app-connect-schemes` slug lists the schemes a code may be sent to (`http`, `https`, `javascript`, `data`,
+`file`, `vbscript` and `blob` ignored): empty, every route is a 404. A token left unused a year
+(`IDLE_LIFETIME`), or of a disabled account, opens nothing. The
 app declares a stateless firewall over `^/app/api/`, before `main`, with
 `access_token.token_handler: c975L\ConfigBundle\Security\AppTokenHandler` (see the readme); no token
 goes through as a visitor. Tokens cascade with the account, `AppTokenSubscriber` deletes them on
 `UserAnonymizedEvent`, and `PasswordResetter` on a password change, a reset or the "other devices" sign-out.
 `AppConnectCspSubscriber` adds the schemes to the policy's `form-action` on `config_app_connect` only,
-through `CspFormAction::widen()`; a policy without `form-action` is left alone.
+through `CspFormAction::widen()`; a policy without `form-action` is left alone. It also sends
+`X-Frame-Options: DENY` and a policy `frame-ancestors 'none'` of its own there, so the page is never framed.
 The agreement form carries `data-turbo="false"`: Turbo's `fetch()` would follow the redirection to the
 app under `connect-src`, which no app scheme is in, so an override of `app/connect.html.twig` keeps it.
 The page also carries `<meta name="turbo-visit-control" content="reload">` in its `meta` block: a Turbo
@@ -302,8 +307,7 @@ its own (`createIndexQueryBuilder()`, `deleteEntity()` refusing another's), the 
 `c975l:config:tutorial-account` opens a throwaway account for whatever drives the back office in a
 browser on a development copy — a tutorial recorder, an end-to-end run, a screenshot tool. It prints
 `{"email": ..., "password": ...}` on one line, the password fresh on every call; `--as` picks the level
-from `RolePreview::ladder()` (`contributor` by default, failing on a level whose `site-role-*` is
-empty), `--email` overrides `tutorial@example.com`, and `--close` removes it. An account left behind
+from `RolePreview::ladder()` (`contributor` by default, an emptied level taking the role above it), `--email` overrides `tutorial@example.com`, and `--close` removes it. An account left behind
 is taken over, never duplicated. The command refuses to run outside the `dev` environment.
 
 ## Do not

@@ -75,7 +75,7 @@ class ReviewController extends AbstractController
         // Counted per caller and not per address, an IPv6 subscriber holding a block far larger than any ceiling could count - see RateLimiterGuard::isAcceptedForIp()
         $clientIp = $request->getClientIp();
 
-        if (null !== $clientIp && !$this->rateLimiterGuard->isAcceptedForIp($this->reviewLimiterFactory, $clientIp)) {
+        if (!$this->rateLimiterGuard->isAcceptedForIp($this->reviewLimiterFactory, $clientIp)) {
             $this->addFlash('warning', $this->translator->trans('text.too_many_attempts', [], 'ui'));
 
             return false;

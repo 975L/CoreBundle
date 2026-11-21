@@ -10,6 +10,7 @@
 
 namespace c975L\ConfigBundle\Tests\Service;
 
+use c975L\ConfigBundle\Contract\InactivityAwareInterface;
 use c975L\ConfigBundle\Contract\UserInterface;
 use c975L\ConfigBundle\Entity\AgentToken;
 use c975L\ConfigBundle\Repository\AgentTokenRepository;
@@ -40,6 +41,24 @@ class AgentTokenManagerTest extends TestCase
         $agentToken->setExpiration(new \DateTimeImmutable('2026-11-20'));
         $expired = new AgentTokenManager($repository, $this->createStub(EntityManagerInterface::class), new MockClock('2026-11-21 10:00'));
         $this->assertNull($expired->find($secret));
+    }
+
+    // A token of a disabled account opens nothing, the same token opening again once the account is enabled
+    public function testADisabledAccountOpensNothing(): void
+    {
+        $enabled = false;
+        $user = $this->createStub(InactivityAwareInterface::class);
+        $user->method('isEnabled')->willReturnCallback(static function () use (&$enabled): bool {
+            return $enabled;
+        });
+        $agentToken = new AgentToken()->setUser($user)->setName('agent-1');
+        $repository = $this->createStub(AgentTokenRepository::class);
+        $repository->method('findOneByTokenHash')->willReturn($agentToken);
+
+        $this->assertNull(new AgentTokenManager($repository, $this->createStub(EntityManagerInterface::class), new MockClock())->find('secret-1'));
+
+        $enabled = true;
+        $this->assertSame($agentToken, new AgentTokenManager($repository, $this->createStub(EntityManagerInterface::class), new MockClock())->find('secret-1'));
     }
 
     // A token still opens on its expiry day, the day after it opens nothing

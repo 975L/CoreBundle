@@ -10,6 +10,7 @@
 
 namespace c975L\ConfigBundle\Service;
 
+use c975L\ConfigBundle\Contract\InactivityAwareInterface;
 use c975L\ConfigBundle\Contract\UserInterface;
 use c975L\ConfigBundle\Entity\AppToken;
 use c975L\ConfigBundle\Repository\AppTokenRepository;
@@ -27,6 +28,12 @@ class AppTokenManager
     // A token's last use is only rewritten once it is that old: one write a day, not one per request
     private const string LAST_USE_PRECISION = '-1 day';
 
+    // A token left unused that long opens nothing any more: a phone lost or sold does not keep the account open for good
+    public const string IDLE_LIFETIME = '-1 year';
+
+    // Schemes that are no app's own, refused even when "app-connect-schemes" names them: a code sent there lands on a web page, or runs as a script
+    private const array REFUSED_SCHEMES = ['http', 'https', 'javascript', 'data', 'file', 'vbscript', 'blob'];
+
     public function __construct(
         private readonly AppTokenRepository $appTokenRepository,
         private readonly EntityManagerInterface $entityManager,
@@ -34,14 +41,17 @@ class AppTokenManager
     ) {
     }
 
-    // The url schemes this site hands codes to ("papacalin"), from the "app-connect-schemes" entry: none on a site with no app, which then offers no connection at all
+    // The url schemes this site hands codes to ("papacalin"), from the "app-connect-schemes" entry, a web or script scheme left out: none on a site with no app, which then offers no connection at all
     /** @return list<string> */
     public function schemes(): array
     {
-        return array_values(array_filter(array_map(
-            static fn (string $scheme): string => strtolower(trim($scheme)),
-            explode(',', (string) $this->configService->get('app-connect-schemes'))
-        )));
+        return array_values(array_filter(
+            array_map(
+                static fn (string $scheme): string => strtolower(trim($scheme)),
+                explode(',', (string) $this->configService->get('app-connect-schemes'))
+            ),
+            static fn (string $scheme): bool => '' !== $scheme && !\in_array($scheme, self::REFUSED_SCHEMES, true)
+        ));
     }
 
     // Whether a code may be sent to that address: one of the site's own apps, and nothing else - a code sent anywhere else is an account given away
@@ -99,21 +109,32 @@ class AppTokenManager
         return $token;
     }
 
-    // The row behind a token the app sent, null for one that was never issued or was revoked. Notes that it served, a day at most behind
+    // The row behind a token the app sent, null for one that was never issued, was revoked, was left unused for IDLE_LIFETIME or belongs to a disabled account. Notes that it served, a day at most behind
     public function find(string $token): ?AppToken
     {
         $appToken = $this->appTokenRepository->findOneByTokenHash(self::hash($token));
-        if (null === $appToken) {
+        $now = new \DateTimeImmutable();
+        if (null === $appToken || !self::opens($appToken, $now)) {
             return null;
         }
 
-        $now = new \DateTimeImmutable();
+        // Its last use rewritten once a day at most
         if (null === $appToken->getLastUse() || $appToken->getLastUse() < $now->modify(self::LAST_USE_PRECISION)) {
             $appToken->setLastUse($now);
             $this->entityManager->flush();
         }
 
         return $appToken;
+    }
+
+    // Whether the token still opens: its account there and enabled (a banned one losing its app too, the stateless firewall having no user checker), and used, or made, within IDLE_LIFETIME
+    private static function opens(AppToken $appToken, \DateTimeImmutable $now): bool
+    {
+        $user = $appToken->getUser();
+
+        return null !== $user
+            && (!$user instanceof InactivityAwareInterface || $user->isEnabled())
+            && ($appToken->getLastUse() ?? $appToken->getCreation()) >= $now->modify(self::IDLE_LIFETIME);
     }
 
     // The app signs out: its token opens nothing any more

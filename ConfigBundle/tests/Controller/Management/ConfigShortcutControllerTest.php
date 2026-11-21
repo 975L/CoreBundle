@@ -46,9 +46,12 @@ class ConfigShortcutControllerTest extends TestCase
         ?FormRepository $formRepository = null,
         ?EntityManagerInterface $entityManager = null,
         ?IndexNowNotifier $indexNowNotifier = null,
+        ?TranslatorInterface $translator = null,
     ): ConfigShortcutController {
-        $translator = $this->createStub(TranslatorInterface::class);
-        $translator->method('trans')->willReturnArgument(0);
+        if (null === $translator) {
+            $translator = $this->createStub(TranslatorInterface::class);
+            $translator->method('trans')->willReturnArgument(0);
+        }
 
         return new ConfigShortcutController(
             $configService,
@@ -567,5 +570,32 @@ class ConfigShortcutControllerTest extends TestCase
         ]));
 
         $this->assertSame(302, $controller->registrationEnabledToggle(new Request([], ['_token' => 'valid-token']))->getStatusCode());
+    }
+
+    // EasyAdmin prints a flash raw, so an exception's message and an export error are escaped
+    public function testTheErrorsAFlashCarriesAreEscaped(): void
+    {
+        $sitemapWriter = $this->createStub(SitemapWriter::class);
+        $sitemapWriter->method('write')->willThrowException(new IOException('<script>alert(1)</script>'));
+        $exportTablesCommand = $this->createStub(ExportTablesCommand::class);
+        $exportTablesCommand->method('exportTables')->willReturn(['error' => '<b>item-1</b>', 'message' => null, 'tables' => [], 'content' => null]);
+        // Echoes the parameters, so the flash shows what reached them
+        $translator = $this->createStub(TranslatorInterface::class);
+        $translator->method('trans')->willReturnCallback(static fn (string $id, array $parameters = []): string => $id . '|' . implode('|', $parameters));
+
+        $controller = $this->createController($this->createStub(ConfigServiceInterface::class), sitemapWriter: $sitemapWriter, exportTablesCommand: $exportTablesCommand, translator: $translator);
+        [$requestStack, $session] = $this->createRequestStackWithSession();
+        $controller->setContainer($this->createContainer([
+            'security.authorization_checker' => $this->createAuthorizationChecker(true),
+            'security.csrf.token_manager' => $this->createCsrfTokenManager(true),
+            'router' => $this->createRouter(),
+            'request_stack' => $requestStack,
+        ]));
+
+        $controller->createSitemaps(new Request([], ['_token' => 'valid-token']));
+        $controller->exportTables(new Request([], ['_token' => 'valid-token']));
+
+        $this->assertSame(['flash.config_sitemaps_error|&lt;script&gt;alert(1)&lt;/script&gt;'], $session->getFlashBag()->get('error'));
+        $this->assertSame(['&lt;b&gt;item-1&lt;/b&gt;'], $session->getFlashBag()->get('danger'));
     }
 }

@@ -10,6 +10,7 @@
 
 namespace c975L\ConfigBundle\Tests\Service;
 
+use c975L\ConfigBundle\Contract\InactivityAwareInterface;
 use c975L\ConfigBundle\Contract\UserInterface;
 use c975L\ConfigBundle\Entity\AppToken;
 use c975L\ConfigBundle\Repository\AppTokenRepository;
@@ -65,6 +66,18 @@ class AppTokenManagerTest extends TestCase
         $this->assertFalse($manager->isAllowedRedirect('https://evil.example/connect'));
         $this->assertFalse($manager->isAllowedRedirect('other://connect'));
         $this->assertFalse($manager->isAllowedRedirect('not an address'));
+    }
+
+    // A web or script scheme is never an app's own, even when the site names it: a code sent there lands on a page or runs
+    public function testAWebOrScriptSchemeIsRefusedEvenWhenNamed(): void
+    {
+        $manager = $this->createManager('papacalin, https, HTTP, javascript, data, file, vbscript, blob');
+
+        $this->assertSame(['papacalin'], $manager->schemes());
+        $this->assertFalse($manager->isAllowedRedirect('https://evil.example/connect'));
+        $this->assertFalse($manager->isAllowedRedirect('javascript:alert(1)'));
+        $this->assertFalse($manager->isAllowedRedirect('data:text/html,item-1'));
+        $this->assertTrue($manager->isAllowedRedirect('papacalin://connect'));
     }
 
     // A site with no app offers no connection at all
@@ -134,6 +147,41 @@ class AppTokenManagerTest extends TestCase
 
         $this->assertNull($manager->find($token));
         $this->assertNull($manager->find('a-token-nobody-issued'));
+    }
+
+    // A token of a disabled account opens nothing, the same token opening again once the account is enabled
+    public function testATokenOfADisabledAccountFindsNothing(): void
+    {
+        $enabled = false;
+        $user = $this->createStub(InactivityAwareInterface::class);
+        $user->method('isEnabled')->willReturnCallback(static function () use (&$enabled): bool {
+            return $enabled;
+        });
+        $manager = $this->createManager();
+        $code = $manager->createCode($user, AppTokenManager::challengeOf(self::VERIFIER), 'Pixel');
+        $token = (string) $manager->exchange($code, self::VERIFIER);
+
+        $this->assertNull($manager->find($token));
+
+        $enabled = true;
+        $this->assertNotNull($manager->find($token));
+    }
+
+    // A token left unused for a year opens nothing, nor does one never used since it was made a year ago
+    public function testATokenLeftIdleForAYearFindsNothing(): void
+    {
+        $manager = $this->createManager();
+        $token = (string) $manager->exchange($this->code($manager), self::VERIFIER);
+
+        $this->rows[0]->setLastUse(new \DateTimeImmutable('-11 months'));
+        $this->assertNotNull($manager->find($token));
+
+        $this->rows[0]->setLastUse(new \DateTimeImmutable('-13 months'));
+        $this->assertNull($manager->find($token));
+
+        $this->rows[0]->setLastUse(null);
+        new \ReflectionProperty(AppToken::class, 'creation')->setValue($this->rows[0], new \DateTimeImmutable('-13 months'));
+        $this->assertNull($manager->find($token));
     }
 
     // The "S256" method of RFC 7636, checked on the example the RFC itself gives

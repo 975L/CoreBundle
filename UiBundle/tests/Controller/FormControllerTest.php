@@ -600,11 +600,11 @@ class FormControllerTest extends TestCase
         $this->assertTrue($request->getSession()->getFlashBag()->has('warning'));
     }
 
-    // An unresolved client IP must fail open, not share one bucket with every other such visitor
-    public function testSubmitSkipsRateLimitingWhenClientIpIsUnresolved(): void
+    // An unresolved client IP is limited too, on the bucket every such visitor shares, and refused once it is spent
+    public function testSubmitLimitsAnUnresolvedClientIpToo(): void
     {
         $rateLimiterGuard = $this->createMock(RateLimiterGuard::class);
-        $rateLimiterGuard->expects($this->never())->method('isAcceptedForIp');
+        $rateLimiterGuard->expects($this->once())->method('isAcceptedForIp')->with($this->anything(), null)->willReturn(false);
         $action = new class implements FormActionInterface {
             public function getKey(): string
             {
@@ -628,7 +628,7 @@ class FormControllerTest extends TestCase
             rateLimiterGuard: $rateLimiterGuard,
         )->submit('contact', $request);
 
-        $this->assertFalse($request->getSession()->getFlashBag()->has('warning'));
+        $this->assertTrue($request->getSession()->getFlashBag()->has('warning'));
         $this->assertSame(200, $response->getStatusCode());
     }
 

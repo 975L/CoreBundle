@@ -163,10 +163,9 @@ class FormController extends AbstractController
     // What an accepted submission is worth: the action behind the form, unless the caller has already had their share of attempts. Returns where a success sends the visitor, when the action or the Form says so - null leaves them on the page they came from
     private function runAction(Form $uiForm, mixed $data, Request $request): ?string
     {
-        // Fails open with no client IP, rather than lumping every such visitor onto one shared bucket.
         // Counted per caller and not per address, an IPv6 subscriber holding a block far larger than any ceiling could count - see RateLimiterGuard::isAcceptedForIp()
         $clientIp = $request->getClientIp();
-        if (null !== $clientIp && !$this->rateLimiterGuard->isAcceptedForIp($this->formLimiterFactory, $clientIp)) {
+        if (!$this->rateLimiterGuard->isAcceptedForIp($this->formLimiterFactory, $clientIp)) {
             $this->addFlashTo($request, 'warning', $this->translator->trans('text.too_many_attempts', [], 'ui'));
 
             return null;

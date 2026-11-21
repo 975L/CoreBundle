@@ -26,12 +26,15 @@ class MessengerFailedControllerTest extends TestCase
     private function createController(
         MessengerFailedMessageService $service,
         ?MessengerCleanupCommand $cleanupCommand = null,
+        ?TranslatorInterface $translator = null,
     ): MessengerFailedController {
         $configService = $this->createStub(ConfigServiceInterface::class);
         $configService->method('get')->willReturn('ROLE_ADMIN');
 
-        $translator = $this->createStub(TranslatorInterface::class);
-        $translator->method('trans')->willReturnArgument(0);
+        if (null === $translator) {
+            $translator = $this->createStub(TranslatorInterface::class);
+            $translator->method('trans')->willReturnArgument(0);
+        }
 
         return new MessengerFailedController(
             $service,
@@ -165,5 +168,22 @@ class MessengerFailedControllerTest extends TestCase
         $this->prepare($controller, false);
 
         $controller->deleteGroup($this->createRequest(['ids' => ['3']]));
+    }
+
+    // EasyAdmin prints a flash raw, and the error comes from whatever the message's handler threw
+    public function testTheRetryErrorIsEscapedInTheFlash(): void
+    {
+        $service = $this->createStub(MessengerFailedMessageService::class);
+        $service->method('retry')->willReturn(['found' => true, 'success' => false, 'error' => '<script>alert(1)</script>']);
+        // Echoes the parameters, so the flash shows what reached them
+        $translator = $this->createStub(TranslatorInterface::class);
+        $translator->method('trans')->willReturnCallback(static fn (string $id, array $parameters = []): string => $id . '|' . implode('|', $parameters));
+
+        $controller = $this->createController($service, translator: $translator);
+        $session = $this->prepare($controller);
+
+        $controller->retry(12, $this->createRequest());
+
+        $this->assertSame(['flash.messenger_retry_failed|12|&lt;script&gt;alert(1)&lt;/script&gt;'], $session->getFlashBag()->get('danger'));
     }
 }

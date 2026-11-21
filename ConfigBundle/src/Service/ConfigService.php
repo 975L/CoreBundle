@@ -38,6 +38,13 @@ class ConfigService implements ConfigServiceInterface, ResetInterface
         'choices' => null,
     ];
 
+    // What an emptied role setting stands for, top down: the level above's role, up to ROLE_SUPER_ADMIN - an empty permission being one EasyAdmin grants to anybody, and a lower level never resolving to more than the one above it (see RolePreview)
+    private const array ROLE_FALLBACKS = [
+        'site-role-admin' => 'ROLE_SUPER_ADMIN',
+        'site-role-editor' => 'site-role-admin',
+        'site-role-contributor' => 'site-role-editor',
+    ];
+
     private ?array $configs = null;
 
     // The logger is optional: an app without Monolog leaves it null and everything else works the same, only an unreadable sensitive value goes unrecorded
@@ -111,15 +118,15 @@ class ConfigService implements ConfigServiceInterface, ResetInterface
                 'reason' => $exception->getMessage(),
             ]);
 
-            return ['site-role-admin' => 'ROLE_ADMIN'];
+            return self::withRoleFallbacks([]);
         }
     }
 
-    // Reads every config row through the cache, the one place the database is actually hit
+    // Reads every config row through the cache, the one place the database is actually hit, the role fallbacks applied to what the cache hands back so an entry cached before them is read with them too
     private function loadAllFromDatabase(): array
     {
         // $this->invalidateCache(); // For debug
-        $this->configs = $this->cache->get(self::CACHE_KEY, function (ItemInterface $item): array {
+        $cached = $this->cache->get(self::CACHE_KEY, function (ItemInterface $item): array {
             $item->expiresAfter(null);
 
             $configs = [];
@@ -145,13 +152,26 @@ class ConfigService implements ConfigServiceInterface, ResetInterface
                 $configs[$configEntry['slug']] = $this->castValue($configEntry['kind'], $value);
             }
 
-            // Missing from the database, site-role-admin would lock the whole back-office out, so it falls back on its configs.json default
-            $configs['site-role-admin'] ??= 'ROLE_ADMIN';
-
             return $configs;
         });
 
-        return $this->configs;
+        return $this->configs = self::withRoleFallbacks($cached);
+    }
+
+    // The role settings never empty: site-role-admin missing from the database (a fresh install) takes its configs.json default, or the whole back-office would be locked out, and a role left empty takes the one above it (ROLE_FALLBACKS)
+    private static function withRoleFallbacks(array $configs): array
+    {
+        if (!\array_key_exists('site-role-admin', $configs)) {
+            $configs['site-role-admin'] = 'ROLE_ADMIN';
+        }
+
+        foreach (self::ROLE_FALLBACKS as $slug => $above) {
+            if ('' === trim((string) ($configs[$slug] ?? ''))) {
+                $configs[$slug] = str_starts_with($above, 'ROLE_') ? $above : $configs[$above];
+            }
+        }
+
+        return $configs;
     }
 
     private function castValue(string $kind, mixed $value): mixed

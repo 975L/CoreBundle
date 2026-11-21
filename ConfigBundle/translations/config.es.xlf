@@ -930,6 +930,10 @@
                 <source>label.activity_logs</source>
                 <target>Registro de actividad</target>
             </trans-unit>
+            <trans-unit id="jqABSxy">
+                <source>label.agent_token</source>
+                <target>Token de agente</target>
+            </trans-unit>
             <trans-unit id="tmu5laO">
                 <source>label.agent_token_bundles</source>
                 <target>Bundles</target>

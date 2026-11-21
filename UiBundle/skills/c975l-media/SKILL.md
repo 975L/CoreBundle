@@ -239,6 +239,9 @@ live, for an EasyAdmin `setFormTypeOptions()` and a plain `FormBuilder::add()` a
 `Validator\AllowedUploadExtension`, which any other upload field adds to its `constraints`: `UiMediaNamer` stores
 under `public/` nothing off that list, an extension off it being read from the bytes and otherwise becoming `.bin`.
 An avif is refused by its bytes too (`REFUSED_MIME_TYPES`), an import asking `AllowedUploadExtensionValidator::hasRefusedType()`.
+Every uploaded SVG is rewritten without scripts, event handlers nor remote references by `Listener\SvgSanitizeListener`
+(`enshrined/svg-sanitize`, `vich_uploader.post_upload`, priority 20), one that does not parse removed and refused.
+The SVGs stored before it are cleaned by `c975l:ui:media-sanitize-svg [--dry-run]` (all of `public/medias`, an unreadable one listed, never removed).
 
 An entity carrying a share image of its own - SiteBundle's `Page`, ConfigBundle's `UrlMetadata` - embeds
 `Form\OgImageType`, a single `Media` upload and its alternative text. On an EasyAdmin screen it is

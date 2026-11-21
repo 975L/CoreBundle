@@ -930,6 +930,10 @@
                 <source>label.activity_logs</source>
                 <target>Activity log</target>
             </trans-unit>
+            <trans-unit id="jqABSxy">
+                <source>label.agent_token</source>
+                <target>Agent token</target>
+            </trans-unit>
             <trans-unit id="tmu5laO">
                 <source>label.agent_token_bundles</source>
                 <target>Bundles</target>

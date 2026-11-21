@@ -26,6 +26,9 @@ use Symfony\Contracts\Cache\ItemInterface;
 
 class ConfigServiceTest extends TestCase
 {
+    // What the role settings stand for with nothing read from the database
+    private const array DEFAULT_ROLES = ['site-role-admin' => 'ROLE_ADMIN', 'site-role-editor' => 'ROLE_ADMIN', 'site-role-contributor' => 'ROLE_ADMIN'];
+
     // Builds a Config entity the way the fixtures loader/admin would (fluent setters, no DB needed)
     private function createConfig(
         string $slug,
@@ -228,6 +231,30 @@ class ConfigServiceTest extends TestCase
         $this->assertSame('ROLE_ADMIN', $service->get('site-role-admin'));
     }
 
+    // An emptied role is never one EasyAdmin grants to anybody: it takes the level above's, up to ROLE_SUPER_ADMIN, while a role that is set stays as it is
+    public function testAnEmptiedRoleTakesTheOneAboveIt(): void
+    {
+        $callLog = [];
+        $service = $this->createService($this->createConfigRepository([
+            $this->createConfig('site-role-admin', ''),
+            $this->createConfig('site-role-editor', null),
+            $this->createConfig('site-role-contributor', ' '),
+        ], $callLog));
+
+        $this->assertSame('ROLE_SUPER_ADMIN', $service->get('site-role-admin'));
+        $this->assertSame('ROLE_SUPER_ADMIN', $service->get('site-role-editor'));
+        $this->assertSame('ROLE_SUPER_ADMIN', $service->get('site-role-contributor'));
+
+        $service = $this->createService($this->createConfigRepository([
+            $this->createConfig('site-role-admin', 'ROLE_ADMIN'),
+            $this->createConfig('site-role-editor', 'ROLE_EDITOR'),
+            $this->createConfig('site-role-contributor', ''),
+        ], $callLog));
+
+        $this->assertSame('ROLE_ADMIN', $service->get('site-role-admin'));
+        $this->assertSame('ROLE_EDITOR', $service->get('site-role-contributor'));
+    }
+
     public function testLoadAllKeepsTheAdminRoleStoredInDatabase(): void
     {
         $callLog = [];
@@ -251,7 +278,7 @@ class ConfigServiceTest extends TestCase
 
         $service = $this->createService($repository, logger: $logger);
 
-        $this->assertSame(['site-role-admin' => 'ROLE_ADMIN'], $service->loadAll());
+        $this->assertSame(self::DEFAULT_ROLES, $service->loadAll());
     }
 
     // A site that has yet to be created has no App\Entity\User for Config::$user to resolve to, so its metadata cannot be read at all - and "make:user", the very command that would write that class, boots through TimezoneListener like any other
@@ -264,7 +291,7 @@ class ConfigServiceTest extends TestCase
 
         $service = $this->createService($repository);
 
-        $this->assertSame(['site-role-admin' => 'ROLE_ADMIN'], $service->loadAll());
+        $this->assertSame(self::DEFAULT_ROLES, $service->loadAll());
     }
 
     // Neither memoized nor cached, so the run that finally migrates the schema sees the real values
@@ -285,7 +312,7 @@ class ConfigServiceTest extends TestCase
 
         $service = $this->createService($repository);
 
-        $this->assertSame(['site-role-admin' => 'ROLE_ADMIN'], $service->loadAll());
+        $this->assertSame(self::DEFAULT_ROLES, $service->loadAll());
         $this->assertSame('My Site', $service->get('site-name'));
     }
 

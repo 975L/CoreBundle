@@ -53,9 +53,9 @@ class AiSearchController extends AbstractController
             return $this->answer(['error' => 'bad_request'], Response::HTTP_BAD_REQUEST);
         }
 
-        // Fails open with no client ip, same reading as RatingController's
+        // Per caller, a caller with no address sharing one bucket, same reading as RatingController's
         $clientIp = $request->getClientIp();
-        $callerAccepted = null === $clientIp || $this->rateLimiterGuard->isAcceptedForIp($this->aiSearchLimiterFactory, $clientIp);
+        $callerAccepted = $this->rateLimiterGuard->isAcceptedForIp($this->aiSearchLimiterFactory, $clientIp);
         if (!$callerAccepted || !$this->rateLimiterGuard->isAccepted($this->aiSearchSiteLimiterFactory, 'site')) {
             return $this->answer(['error' => 'too_many_requests'], Response::HTTP_TOO_MANY_REQUESTS);
         }

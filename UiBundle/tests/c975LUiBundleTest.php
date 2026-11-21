@@ -142,7 +142,7 @@ class c975LUiBundleTest extends TestCase
 
         $limiters = $container->getExtensionConfig('framework')[0]['rate_limiter'];
 
-        foreach (['ui_form', 'ui_rating', 'ui_favorite', 'ui_ai_search', 'ui_ai_search_site', 'ui_review'] as $name) {
+        foreach (['ui_form', 'ui_rating', 'ui_favorite', 'ui_ai_search', 'ui_ai_search_site', 'ui_review', 'ui_form_acknowledgement'] as $name) {
             $this->assertSame('no_limit', $limiters[$name]['policy'], sprintf('The "%s" limiter still refuses under test.', $name));
         }
 
@@ -158,7 +158,7 @@ class c975LUiBundleTest extends TestCase
 
         new c975LUiBundle()->prependExtension($this->createStub(ContainerConfigurator::class), $container);
 
-        $this->assertSame(['ui_form', 'ui_rating', 'ui_favorite', 'ui_ai_search', 'ui_ai_search_site', 'ui_review'], array_keys($container->getExtensionConfig('framework')[0]['rate_limiter']));
+        $this->assertSame(['ui_form', 'ui_rating', 'ui_favorite', 'ui_ai_search', 'ui_ai_search_site', 'ui_review', 'ui_form_acknowledgement'], array_keys($container->getExtensionConfig('framework')[0]['rate_limiter']));
 
         $services = file_get_contents(__DIR__ . '/../config/services.yaml');
         $this->assertStringContainsString(
@@ -185,6 +185,11 @@ class c975LUiBundleTest extends TestCase
             '@?limiter.ui_ai_search_site',
             $services,
             'AiSearchController no longer asks for limiter.ui_ai_search_site, which is the name prepended here.'
+        );
+        $this->assertStringContainsString(
+            '@?limiter.ui_form_acknowledgement',
+            $services,
+            'SendEmailFormAction no longer asks for limiter.ui_form_acknowledgement, which is the name prepended here.'
         );
     }
 

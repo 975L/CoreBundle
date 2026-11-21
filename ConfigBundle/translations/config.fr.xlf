@@ -930,6 +930,10 @@
                 <source>label.activity_logs</source>
                 <target>Journal des modifications</target>
             </trans-unit>
+            <trans-unit id="jqABSxy">
+                <source>label.agent_token</source>
+                <target>Jeton d'agent</target>
+            </trans-unit>
             <trans-unit id="tmu5laO">
                 <source>label.agent_token_bundles</source>
                 <target>Bundles</target>

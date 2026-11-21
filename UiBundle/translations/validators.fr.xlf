@@ -22,6 +22,10 @@
                 <source>label.upload_extension_not_allowed</source>
                 <target>Les fichiers portant l'extension « .%extension% » ne peuvent pas être envoyés ici.</target>
             </trans-unit>
+            <trans-unit id="9FDm_iX">
+                <source>label.upload_svg_unreadable</source>
+                <target>Ce fichier SVG est illisible : exportez-le à nouveau depuis votre logiciel de dessin.</target>
+            </trans-unit>
             <trans-unit id="Dz4ecQu">
                 <source>label.url_scheme_not_allowed</source>
                 <target>Cette adresse n'est pas acceptée : utilisez un lien http ou https, mailto, tel, ou un chemin du site.</target>

@@ -74,6 +74,11 @@ services:
         arguments:
             $reviewLimiterFactory: '@?limiter.ui_review'
 
+    # Same reading for the acknowledgement a form sends to the address a visitor typed, counted per address rather than per caller
+    c975L\UiBundle\Service\SendEmailFormAction:
+        arguments:
+            $acknowledgementLimiterFactory: '@?limiter.ui_form_acknowledgement'
+
     # The application's own secret, which is what makes a review token unforgeable - autowiring has nothing to bind a plain string argument to
     c975L\UiBundle\Service\ReviewTokenSigner:
         arguments:

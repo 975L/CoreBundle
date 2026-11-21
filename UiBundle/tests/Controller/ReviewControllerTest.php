@@ -11,6 +11,7 @@
 namespace c975L\UiBundle\Tests\Controller;
 
 use c975L\UiBundle\Controller\ReviewController;
+use c975L\UiBundle\Entity\Review;
 use c975L\UiBundle\Model\CollectionItem;
 use c975L\UiBundle\Registry\FavoriteItemRegistry;
 use c975L\UiBundle\Service\CurrentAccountAddress;
@@ -20,9 +21,13 @@ use c975L\UiBundle\Service\ReviewService;
 use c975L\UiBundle\Service\ReviewTokenSigner;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\RateLimiter\RateLimiterFactoryInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -184,6 +189,26 @@ class ReviewControllerTest extends TestCase
         } catch (NotFoundHttpException) {
             // The gate is what this checks; the expectation above is what witnesses it
         }
+    }
+
+    // A caller with no address is limited too, on the bucket every such caller shares, and its review not stored once that is spent
+    public function testAReviewWithoutClientAddressIsLimitedToo(): void
+    {
+        $rateLimiterGuard = $this->createMock(RateLimiterGuard::class);
+        $rateLimiterGuard->expects($this->once())->method('isAcceptedForIp')->with($this->anything(), null)->willReturn(false);
+        $reviewService = $this->createMock(ReviewService::class);
+        $reviewService->expects($this->never())->method('submit');
+        $controller = new ReviewController($reviewService, self::signer(), $this->createStub(FavoriteItemRegistry::class), $this->createStub(FormBotProtection::class), $rateLimiterGuard, $this->createStub(TranslatorInterface::class));
+
+        $request = new Request();
+        $request->server->remove('REMOTE_ADDR');
+        $request->setSession(new Session(new MockArraySessionStorage()));
+        $container = new Container();
+        $container->set('request_stack', new RequestStack([$request]));
+        $controller->setContainer($container);
+
+        $this->assertFalse(new \ReflectionMethod(ReviewController::class, 'acceptReview')->invoke($controller, new Review(), $request));
+        $this->assertTrue($request->getSession()->getFlashBag()->has('warning'));
     }
 
     // A token this site signed, naming the book the three tests above ask for

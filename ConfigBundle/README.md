@@ -342,7 +342,7 @@ A value seeded into a `sensitive` entry is encrypted on the way in, exactly as a
 
 A file that can't be loaded — an unparsable JSON, a database refusing the insert — is reported with a `✗` and the run carries on to the next one, so one broken bundle doesn't hide what the others would have said. The command then exits with a failure code, one unloaded file being enough: it runs unattended in deployment scripts, where that single line would otherwise scroll by and the batch carry on with the entries that file declares missing from the site.
 
-`site-role-admin` is the one entry read before it can exist: every `/management` permission derives from it, so a database missing that row — a fresh install where `load-all` hasn't run yet, an entry deleted by mistake — would deny the dashboard to everyone, including whoever would fix it. `ConfigService::loadAll()` therefore falls back on its declared default, `ROLE_ADMIN`, as long as the row is absent.
+`site-role-admin` is the one entry read before it can exist: every `/management` permission derives from it, so a database missing that row — a fresh install where `load-all` hasn't run yet, an entry deleted by mistake — would deny the dashboard to everyone, including whoever would fix it. `ConfigService::loadAll()` therefore falls back on its declared default, `ROLE_ADMIN`, as long as the row is absent. A role setting present but **left empty** is never read as empty, an empty permission being one EasyAdmin grants to anybody: it takes the role of the level above (`site-role-contributor` that of `site-role-editor`, `site-role-editor` that of `site-role-admin`), and an empty `site-role-admin` stands for `ROLE_SUPER_ADMIN`, until `load-all` seeds the default back.
 
 ## Pruning entries no longer declared
 
@@ -756,11 +756,11 @@ Declare its two config keys in your own bundle's `configs.json` (the interface a
 
 ### Connecting the site's mobile app to an account
 
-A mobile app of the site can act for a member without ever holding their password (RFC 8252, with PKCE): it opens `/app/connect` in the browser, the member signs in by whatever means the site offers and agrees, the app is handed a one-time code through its own url scheme and trades it at `/app/api/token` for the token it then sends as `Authorization: Bearer ...`. See `AppTokenManager` and `AppConnectController`. A token has no expiry: it goes when the app signs out, or when the account's password changes (`PasswordResetter`, which the "other devices" sign-out goes through too).
+A mobile app of the site can act for a member without ever holding their password (RFC 8252, with PKCE): it opens `/app/connect` in the browser, the member signs in by whatever means the site offers and agrees, the app is handed a one-time code through its own url scheme and trades it at `/app/api/token` for the token it then sends as `Authorization: Bearer ...`. See `AppTokenManager` and `AppConnectController`. A token has no fixed expiry: it goes when the app signs out, or when the account's password changes (`PasswordResetter`, which the "other devices" sign-out goes through too); it also opens nothing once left unused for a year (`AppTokenManager::IDLE_LIFETIME`, counted from its creation when it never served), nor while its account is disabled.
 
 Two things to set on a site that has an app, nothing on one that has none (every route then answers 404):
 
-- the `app-connect-schemes` config entry: the app's url scheme (`papacalin`), several separated by commas - the only addresses a code is ever sent to;
+- the `app-connect-schemes` config entry: the app's url scheme (`papacalin`), several separated by commas - the only addresses a code is ever sent to, `http`, `https`, `javascript`, `data`, `file`, `vbscript` and `blob` being ignored if named there;
 - a stateless firewall over the app's routes, **before** `main`, in `config/packages/security.yaml`:
 
 ```yaml
@@ -774,13 +774,13 @@ security:
                 token_handler: c975L\ConfigBundle\Security\AppTokenHandler
 ```
 
-On `/app/connect` only, the schemes are added to the `form-action` of the site's Content-Security-Policy when it declares one, the agreement being answered by a redirection to the app that a policy limited to `'self'` would stop silently. The agreement form is posted with `data-turbo="false"`, Turbo's `fetch()` following that redirection under `connect-src` instead: keep it if you override `@c975LConfig/app/connect.html.twig`.
+On `/app/connect` only, the schemes are added to the `form-action` of the site's Content-Security-Policy when it declares one, the agreement being answered by a redirection to the app that a policy limited to `'self'` would stop silently. That page is never framed either: it answers `X-Frame-Options: DENY` and a `Content-Security-Policy: frame-ancestors 'none'` of its own, next to the site's policy, so no other site can lay its button over the agreement. The agreement form is posted with `data-turbo="false"`, Turbo's `fetch()` following that redirection under `connect-src` instead: keep it if you override `@c975LConfig/app/connect.html.twig`.
 
 A call carrying no token goes through as a visitor, which is what lets UiBundle's `AppLibraryController` hold an app's favorites and plays under the device's own token until the member connects. The tokens live in `site_app_token` (**needs db update**), hashed, and are deleted with the account or when it is anonymized.
 
 ### Opening the site to AI agents
 
-`/api/mcp` is a [Model Context Protocol](https://modelcontextprotocol.io) server over Streamable HTTP, without sessions (`mcp/sdk`). An agent (Claude Code, Claude Desktop, any MCP client) sends an agent token as `Authorization: Bearer ...` and acts with the rights of the token's account, every check of the bundles (`is_granted`, their own access rules) applying as on the back office. Each account makes its tokens on the Agent tokens screen (`AgentTokenCrudController`): read only or writing, for every bundle or those chosen, until a day (that day included) or for good; the token shows once, only its sha256 is kept (`site_agent_token`, **needs db update**), deleting it revokes it, and an account whose password changes or that is anonymized loses its tokens. The agents' writes go to the activity log under their account, with `/api/mcp` as their path; the endpoint is kept out of the front rate limiter.
+`/api/mcp` is a [Model Context Protocol](https://modelcontextprotocol.io) server over Streamable HTTP, without sessions (`mcp/sdk`). An agent (Claude Code, Claude Desktop, any MCP client) sends an agent token as `Authorization: Bearer ...` and acts with the rights of the token's account, every check of the bundles (`is_granted`, their own access rules) applying as on the back office. Each account makes its tokens on the Agent tokens screen (`AgentTokenCrudController`): read only or writing, for every bundle or those chosen, until a day (that day included) or for good; the token shows once, only its sha256 is kept (`site_agent_token`, **needs db update**), deleting it revokes it, an account whose password changes or that is anonymized loses its tokens, and a disabled account's tokens open nothing until it is enabled again. The agents' writes go to the activity log under their account, with `/api/mcp` as their path; the endpoint is kept out of the front rate limiter.
 
 Three things to set on a site, which otherwise answers 404 (403 when the firewall below is missing, the tools never running with no account):
 

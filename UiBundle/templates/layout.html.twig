@@ -219,7 +219,7 @@
                                 {% set variant = variant in ['success', 'info', 'warning', 'danger'] ? variant : 'info' %}
                                 {% for message in messages %}
                                     <div class="flash alert alert-{{ variant }} text-center" role="alert">
-                                        {{ message|raw|nl2br }}
+                                        {{ message|nl2br }}
                                     </div>
                                 {% endfor %}
                             {% endfor %}

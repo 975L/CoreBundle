@@ -19,6 +19,7 @@ use c975L\ConfigBundle\Repository\AgentTokenRepository;
 use c975L\ConfigBundle\Service\AgentTokenManager;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use Doctrine\ORM\EntityManagerInterface;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Clock\MockClock;
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -76,6 +77,14 @@ class AgentTokenCrudControllerTest extends TestCase
         $this->assertStringContainsString("'highlight' => '[data-guided-agent-token-bundles]'", (string) file_get_contents((string) new \ReflectionClass(ConfigGuidedProjectProvider::class)->getFileName()));
     }
 
+    // The screen is titled with its own labels, never the entity's class name
+    public function testTheScreenCarriesItsOwnLabels(): void
+    {
+        $crud = $this->controller()->configureCrud(Crud::new())->getAsDto();
+        $this->assertSame('label.agent_token', $crud->getEntityLabelInSingular()?->getMessage());
+        $this->assertSame('label.agent_tokens', $crud->getEntityLabelInPlural()?->getMessage());
+    }
+
     // The controller signed in as the test's account, its flashes kept in a session
     private function controller(): AgentTokenCrudController
     {
@@ -86,7 +95,9 @@ class AgentTokenCrudControllerTest extends TestCase
         $tokenStorage->setToken(new UsernamePasswordToken($this->user, 'main', []));
         [$requestStack, $this->session] = $this->createRequestStackWithSession();
 
-        $controller = new AgentTokenCrudController($this->createStub(ConfigServiceInterface::class), $manager, new McpServer(), $translator);
+        $configService = $this->createStub(ConfigServiceInterface::class);
+        $configService->method('get')->willReturn('ROLE_CONTRIBUTOR');
+        $controller = new AgentTokenCrudController($configService, $manager, new McpServer(), $translator);
         $controller->setContainer($this->createContainer(['security.token_storage' => $tokenStorage, 'request_stack' => $requestStack]));
 
         return $controller;

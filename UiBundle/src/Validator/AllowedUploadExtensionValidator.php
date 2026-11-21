@@ -10,6 +10,7 @@
 
 namespace c975L\UiBundle\Validator;
 
+use c975L\UiBundle\Listener\SvgSanitizeListener;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Constraint;
@@ -29,13 +30,24 @@ class AllowedUploadExtensionValidator extends ConstraintValidator
             return;
         }
 
-        if (self::isAllowed($value)) {
+        if (!self::isAllowed($value)) {
+            $this->context->buildViolation($constraint->message)
+                ->setParameter('%extension%', self::shownExtension($value))
+                ->addViolation();
+
             return;
         }
 
-        $this->context->buildViolation($constraint->message)
-            ->setParameter('%extension%', self::shownExtension($value))
-            ->addViolation();
+        // An SVG SvgSanitizeListener could not clean is told here, rather than refused by an exception once uploaded
+        if (self::isSvg($value) && null === SvgSanitizeListener::sanitize((string) file_get_contents($value->getPathname()))) {
+            $this->context->buildViolation($constraint->svgMessage)->addViolation();
+        }
+    }
+
+    // An SVG by the name the browser sent or by its bytes
+    private static function isSvg(File $file): bool
+    {
+        return 'svg' === self::extension($file) || str_contains((string) $file->getMimeType(), 'svg');
     }
 
     // What the message names: the type read off the bytes when that is what is refused, so an avif named "photo.jpg" is not told ".jpg" is refused

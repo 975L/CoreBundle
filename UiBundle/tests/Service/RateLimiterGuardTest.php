@@ -98,4 +98,16 @@ class RateLimiterGuardTest extends TestCase
         $this->assertFalse($guard->isAcceptedForIp($factory, '::ffff:203.0.113.7'));
         $this->assertTrue($guard->isAcceptedForIp($factory, '::ffff:203.0.113.8'));
     }
+
+    // Callers with no address are limited too, all of them sharing one bucket
+    public function testIsAcceptedForIpSharesOneBucketWithoutAddress(): void
+    {
+        $guard = new RateLimiterGuard();
+        $factory = $this->limiterFactory(1);
+
+        $this->assertTrue($guard->isAcceptedForIp($factory, null));
+        $this->assertFalse($guard->isAcceptedForIp($factory, null));
+        $this->assertFalse($guard->isAccepted($factory, RateLimiterGuard::NO_IP));
+        $this->assertTrue($guard->isAcceptedForIp($factory, '203.0.113.7'));
+    }
 }

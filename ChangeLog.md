@@ -1,5 +1,25 @@
 # ChangeLog
 
+## v1.97.0
+
+Security hardening: tokens, SVG uploads, flashes and rate limits
+
+- An agent token of a disabled account opens nothing on `/api/mcp`, a banned account losing its agents with its login (21/11/2026)
+- An app token of a disabled account, or left unused for a year, opens nothing (21/11/2026)
+- `app-connect-schemes` ignores `http`, `https`, `javascript`, `data`, `file`, `vbscript` and `blob` (21/11/2026)
+- `/app/connect` answers `X-Frame-Options: DENY` and `frame-ancestors 'none'` (21/11/2026)
+- Every uploaded SVG stripped of its scripts, event handlers and remote references by `SvgSanitizeListener`, one that does not parse refused (21/11/2026)
+- An unreadable SVG refused at the upload field with `label.upload_svg_unreadable` (21/11/2026)
+- `c975l:ui:media-sanitize-svg` cleans the SVGs stored under `public/medias` before the listener, an unreadable one listed and kept (21/11/2026)
+- `enshrined/svg-sanitize` required (21/11/2026)
+- The agent tokens screen titled with its own label, « AgentToken » no longer shown (21/11/2026)
+- Dynamic values of the back-office flashes escaped in the failed messages, shortcuts and content import screens (21/11/2026)
+- Flashes escaped on the public layout (21/11/2026)
+- The acknowledgement a form sends to a typed address limited to three a day per address (`ui_form_acknowledgement`) (21/11/2026)
+- A request without client address shares one `no-ip` rate limit bucket instead of going unlimited (21/11/2026)
+- The OAuth login state compared with `hash_equals()` (21/11/2026)
+- An empty `site-role-*` setting takes the role of the level above, `ROLE_SUPER_ADMIN` for `site-role-admin` (21/11/2026)
+
 ## v1.96.1
 
 php-http/discovery plugin allowed

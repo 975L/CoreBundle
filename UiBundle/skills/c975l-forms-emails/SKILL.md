@@ -50,7 +50,9 @@ the admin still notifies someone, configured through `actionConfig` (`to`, `from
 falling back on the site-wide `email-*` settings. `offerReceiveCopy` sends the whole copy to the signed-in
 account's own address (`CurrentAccountAddress`, `copyToEmail`). Any other address, which proves nothing, only gets a
 fixed acknowledgement on a request of its own (`label.form_acknowledgement_subject`, `text.form_acknowledgement`),
-carrying nothing the visitor typed: the site never relays a visitor's text to a third party. Its box therefore
+carrying nothing the visitor typed: the site never relays a visitor's text to a third party; one address gets
+three a day at most whoever types it (`limiter.ui_form_acknowledgement`, keyed on its sha256), the message
+still reaching the site past that. Its box therefore
 reads "Receive an acknowledgement of receipt" (`label.receive_copy`), the most any visitor is sure to get.
 
 **The flash shown after a submission is picked on the action's key**, in `FormController::submit()`:
@@ -202,7 +204,7 @@ in `templates/models/france/providers/captcha-<slug>.*.html.twig`. **Never write
 or keys into `CaptchaVerifier`, `CaptchaType` or `captcha.js`** — they belong to its provider.
 
 **Under `test` no limiter of this bundle refuses anything** — `ui_form`, `ui_rating`, `ui_favorite`,
-`ui_ai_search`, `ui_ai_search_site` and `ui_review` are prepended with `policy: no_limit` there, so a site's own functional suite never
+`ui_ai_search`, `ui_ai_search_site`, `ui_review` and `ui_form_acknowledgement` are prepended with `policy: no_limit` there, so a site's own functional suite never
 meets a 429 it caused itself. The numbers stay declared and `RateLimiterGuard` stays wired: only the
 refusal disappears, and what a refusal does is tested against a limiter a test builds for itself.
 

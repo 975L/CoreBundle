@@ -44,7 +44,6 @@ class CodeRulesTest extends CodeRulesTestCase
                 'emails/blocks/html.html.twig: content|raw|nl2br' => 'Markup the admin wrote on purpose, its placeholder values escaped by EmailTemplateRenderer::contentFor()',
                 'emails/blocks/slot.html.twig: slot|raw' => 'Html a bundle\'s own Twig computed, never anything an admin typed (see EmailTemplateRenderer::blockContext())',
                 'emails/blocks/text.html.twig: content|raw' => 'Text already escaped by EmailTemplateRenderer::contentToHtml()',
-                'layout.html.twig: message|raw|nl2br' => 'Flashes carry translated interface text the bundles write, any third-party text escaped where the flash is added, as EasyAdmin prints the same flashes raw',
                 'management/legal_model_customize.html.twig: drifted[unit.id].html|raw' => 'The html of a legal model unit rendered by the bundle\'s own Twig template, never typed by an admin',
             ],
             self::BULK_QUERY => [

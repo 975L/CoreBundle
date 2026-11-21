@@ -11,11 +11,21 @@
 namespace c975L\ConfigBundle\Tests\Controller;
 
 use c975L\ConfigBundle\Controller\OAuthLoginController;
+use c975L\ConfigBundle\Security\OAuthLoginProviderInterface;
+use c975L\ConfigBundle\Security\OAuthLoginProviderRegistry;
+use c975L\ConfigBundle\Service\OAuthLoginClient;
+use c975L\ConfigBundle\Service\OAuthUserResolver;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 // The two rules of this controller worth testing on their own: where it agrees to send a visitor back to once the provider answered, and how Apple's posted answer is passed on. Reached without a kernel, the alternative being a firewall for a string check.
 class OAuthLoginControllerTest extends TestCase
@@ -75,5 +85,43 @@ class OAuthLoginControllerTest extends TestCase
         $this->assertSame(Response::HTTP_SEE_OTHER, $response->getStatusCode());
         $this->assertSame('/connect/apple/check?code=a-code&state=a-state', $response->headers->get('Location'));
         $this->assertSame([], $response->headers->getCookies());
+    }
+
+    // A state that is not the one this session sent, or not a string at all, is refused before any code is traded
+    #[DataProvider('wrongStates')]
+    public function testAWrongStateIsRefusedBeforeTheCodeIsTraded(mixed $state): void
+    {
+        $provider = $this->createStub(OAuthLoginProviderInterface::class);
+        $provider->method('getKey')->willReturn('google');
+        $registry = $this->createStub(OAuthLoginProviderRegistry::class);
+        $registry->method('get')->willReturn($provider);
+        $client = $this->createMock(OAuthLoginClient::class);
+        $client->expects($this->never())->method('exchangeCodeForToken');
+
+        $session = new Session(new MockArraySessionStorage());
+        $session->set('config_oauth_state_google', 'state-1');
+        $request = Request::create('/connect/google/check', 'GET', ['code' => 'a-code', 'state' => $state]);
+        $request->setSession($session);
+
+        $router = $this->createStub(UrlGeneratorInterface::class);
+        $router->method('generate')->willReturn('/login');
+        $container = new Container();
+        $container->set('router', $router);
+        $container->set('request_stack', new RequestStack([$request]));
+
+        $controller = new OAuthLoginController($registry, $client, $this->createStub(OAuthUserResolver::class), $this->createStub(TranslatorInterface::class));
+        $controller->setContainer($container);
+        $response = $controller->check($request, 'google', $this->createStub(Security::class));
+
+        $this->assertSame('/login', $response->headers->get('Location'));
+        $this->assertFalse($session->has('config_oauth_state_google'));
+    }
+
+    /** @return iterable<string, array{mixed}> */
+    public static function wrongStates(): iterable
+    {
+        yield 'another state' => ['state-2'];
+        yield 'a prefix of it' => ['state-'];
+        yield 'none' => [null];
     }
 }

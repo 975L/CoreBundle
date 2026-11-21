@@ -66,7 +66,7 @@ class AllowedUploadExtensionValidatorTest extends TestCase
     /** @return iterable<array{string}> */
     public static function accepted(): iterable
     {
-        foreach (['x.jpg', 'X.JPG', 'x.svg', 'x.pdf', 'x.mp3', 'x.mp4', 'x.woff2', 'x.vtt', 'x.epub', 'x.zip', 'x.heic', 'x.jfif', 'x.m4b', 'x.mkv', 'x.7z', 'archive.tar.gz', 'noextension'] as $name) {
+        foreach (['x.jpg', 'X.JPG', 'x.pdf', 'x.mp3', 'x.mp4', 'x.woff2', 'x.vtt', 'x.epub', 'x.zip', 'x.heic', 'x.jfif', 'x.m4b', 'x.mkv', 'x.7z', 'archive.tar.gz', 'noextension'] as $name) {
             yield $name => [$name];
         }
     }
@@ -89,6 +89,19 @@ class AllowedUploadExtensionValidatorTest extends TestCase
     public function testOtherBytesAreNoRefusedType(): void
     {
         $this->assertFalse(AllowedUploadExtensionValidator::hasRefusedType(new File($this->path)));
+    }
+
+    // A readable SVG goes through, one that cannot be parsed, so cannot be cleaned of its scripts, is told so
+    public function testAnSvgIsAcceptedOnlyWhenItCanBeRead(): void
+    {
+        file_put_contents($this->path, '<svg xmlns="http://www.w3.org/2000/svg" onload="alert(1)"><rect width="1" height="1"/></svg>');
+        $this->assertSame([], $this->violations('item-1.svg'));
+
+        file_put_contents($this->path, '<svg><script>alert(1)</scr');
+        $violations = $this->violations('item-1.svg');
+
+        $this->assertCount(1, $violations);
+        $this->assertSame('label.upload_svg_unreadable', $violations[0]->getMessageTemplate());
     }
 
     // Nothing was uploaded: the field stays optional

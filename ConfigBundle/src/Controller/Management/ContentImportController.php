@@ -102,7 +102,7 @@ class ContentImportController extends AbstractController
 
         $result = $this->importDispatcher->dispatch($payload['kind'], $payload['items'], $extractDir);
         if (null === $result) {
-            $this->addFlash('danger', $this->translator->trans('flash.content_import_unsupported_kind', ['%kind%' => $payload['kind']], 'config'));
+            $this->addFlash('danger', $this->translator->trans('flash.content_import_unsupported_kind', ['%kind%' => htmlspecialchars($payload['kind'])], 'config'));
 
             return $this->redirectToRoute(self::IMPORT_ROUTE);
         }
@@ -128,13 +128,13 @@ class ContentImportController extends AbstractController
 
             $result = $this->importDispatcher->dispatch($export['kind'], $export['items'], $extractDir);
             if (null === $result) {
-                $this->addFlash('warning', $this->translator->trans('flash.content_import_unsupported_kind', ['%kind%' => $export['kind']], 'config'));
+                $this->addFlash('warning', $this->translator->trans('flash.content_import_unsupported_kind', ['%kind%' => htmlspecialchars($export['kind'])], 'config'));
 
                 continue;
             }
 
             $summaries[] = $this->translator->trans('flash.content_import_success_kind', [
-                '%kind%' => $export['kind'],
+                '%kind%' => htmlspecialchars($export['kind']),
                 '%created%' => $result['created'],
                 '%updated%' => $result['updated'],
             ], 'config');

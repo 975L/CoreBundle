@@ -84,7 +84,7 @@ class PlayController extends AbstractController
             return new JsonResponse(['error' => 'forbidden'], Response::HTTP_FORBIDDEN);
         }
         $clientIp = $request->getClientIp();
-        if (null !== $clientIp && !$this->rateLimiterGuard->isAcceptedForIp($this->favoriteLimiterFactory, $clientIp)) {
+        if (!$this->rateLimiterGuard->isAcceptedForIp($this->favoriteLimiterFactory, $clientIp)) {
             return new JsonResponse(['error' => 'too_many_requests'], Response::HTTP_TOO_MANY_REQUESTS);
         }
         if ([] === $this->favoriteItemRegistry->resolve([$ownerType => [$ownerId]])) {

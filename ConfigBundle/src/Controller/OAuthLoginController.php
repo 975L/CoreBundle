@@ -88,9 +88,10 @@ class OAuthLoginController extends AbstractController
         $session = $request->getSession();
         $expected = $session->remove(self::SESSION_STATE_PREFIX . $oauthProvider->getKey());
         $code = $request->query->get('code');
+        $state = $request->query->get('state');
 
-        // Consumed whatever happens, a state being good for exactly one round trip
-        if (!is_string($expected) || $expected !== $request->query->get('state') || !is_string($code)) {
+        // Consumed whatever happens, a state being good for exactly one round trip, compared in constant time
+        if (!is_string($expected) || !is_string($state) || !hash_equals($expected, $state) || !is_string($code)) {
             return $this->refuse('flash.oauth_login_failed');
         }
 

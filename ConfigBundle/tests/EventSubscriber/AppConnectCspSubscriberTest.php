@@ -47,6 +47,26 @@ class AppConnectCspSubscriberTest extends TestCase
         $this->assertSame($expected, $response->headers->get('X-Content-Security-Policy'));
     }
 
+    // The connect page is never framed, with or without a policy of the site's, the site's policy kept as it was
+    public function testTheConnectPageIsNeverFramed(): void
+    {
+        $bare = new Response();
+        $this->subscriber('papacalin')->onKernelResponse($this->event('config_app_connect', $bare));
+
+        $this->assertSame('DENY', $bare->headers->get('X-Frame-Options'));
+        $this->assertSame(["frame-ancestors 'none'"], $bare->headers->all('Content-Security-Policy'));
+
+        $response = $this->response();
+        $this->subscriber('papacalin')->onKernelResponse($this->event('config_app_connect', $response));
+
+        $this->assertSame("default-src 'self'; form-action 'self' checkout.stripe.com papacalin:; frame-ancestors 'none'", $response->headers->all('Content-Security-Policy')[0]);
+        $this->assertSame("frame-ancestors 'none'", $response->headers->all('Content-Security-Policy')[1]);
+
+        $other = new Response();
+        $this->subscriber('papacalin')->onKernelResponse($this->event('app_home', $other));
+        $this->assertFalse($other->headers->has('X-Frame-Options'));
+    }
+
     // No other page of the site may send the browser to an app
     public function testLeavesOtherPagesAlone(): void
     {

@@ -6,6 +6,11 @@
                 "en": "An AI agent (Claude Code, Claude Desktop…) can now act on the site with your rights: make it an agent token in Agent tokens, read only or writing, on the bundles you choose and until the day you set. The site stays closed to agents until the « Open the site to AI agents » setting is checked.",
                 "fr": "Un agent IA (Claude Code, Claude Desktop…) peut désormais agir sur le site avec vos droits : créez-lui un jeton dans Jetons d'agent, en lecture seule ou en écriture, sur les bundles choisis et jusqu'au jour fixé. Le site reste fermé aux agents tant que le réglage « Ouvrir le site aux agents IA » n'est pas coché.",
                 "es": "Un agente de IA (Claude Code, Claude Desktop…) ya puede actuar en el sitio con sus derechos: créele un token en Tokens de agente, en solo lectura o en escritura, en los bundles elegidos y hasta el día fijado. El sitio permanece cerrado a los agentes mientras no se marque el ajuste «Abrir el sitio a los agentes de IA»."
+            },
+            {
+                "en": "A disabled account loses its mobile app connections and its agent tokens, and an app left unused for a year must be connected again. A role setting left empty now takes the role of the level above.",
+                "fr": "Un compte désactivé perd ses connexions d'applications mobiles et ses jetons d'agent, et une application inutilisée depuis un an doit être reconnectée. Un réglage de rôle laissé vide prend désormais le rôle du niveau au-dessus.",
+                "es": "Una cuenta desactivada pierde sus conexiones de aplicaciones móviles y sus tokens de agente, y una aplicación sin usar durante un año debe conectarse de nuevo. Un ajuste de rol dejado vacío toma ahora el rol del nivel superior."
             }
         ]
     },

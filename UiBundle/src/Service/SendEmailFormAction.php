@@ -18,9 +18,10 @@ use c975L\UiBundle\Model\EmailAttachment;
 use c975L\UiBundle\Model\EmailSendRequest;
 use c975L\UiBundle\Repository\EmailTemplateRepository;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\RateLimiter\RateLimiterFactoryInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-// Built-in FormActionInterface provider (key "send_email"), so a Form built entirely through the admin - no custom bundle/code - can still notify someone by email on submit. Configured via Form::$actionConfig: "to"/"toName"/"from"/"fromName"/"replyTo"/"replyToName"/"subject" (all optional, EmailService/ConfigService fill in the rest), "senderEmailField" (name of the submitted field holding the visitor's own email, used as replyTo) and "offerReceiveCopy" (shows a "receive an acknowledgement of receipt" checkbox, see FormSubmissionType - the visitor's own answer, not a fixed admin choice, decides whether anything is sent back: the whole copy to the address of the account signed in, and to any other, a typed address proving nothing, a fixed acknowledgement carrying nothing the visitor typed). The email body is either "emailTemplate" (the name of an EmailTemplate, rendered by EmailTemplateRenderer with the submitted fields available to a TYPE_FIELDS_TABLE block - see UiBundle Readme) or, failing that/its lookup, the legacy "template" Twig path (defaults to DEFAULT_TEMPLATE)
+// Built-in FormActionInterface provider (key "send_email"), so a Form built entirely through the admin - no custom bundle/code - can still notify someone by email on submit. Configured via Form::$actionConfig: "to"/"toName"/"from"/"fromName"/"replyTo"/"replyToName"/"subject" (all optional, EmailService/ConfigService fill in the rest), "senderEmailField" (name of the submitted field holding the visitor's own email, used as replyTo) and "offerReceiveCopy" (shows a "receive an acknowledgement of receipt" checkbox, see FormSubmissionType - the visitor's own answer, not a fixed admin choice, decides whether anything is sent back: the whole copy to the address of the account signed in, and to any other, a typed address proving nothing, a fixed acknowledgement carrying nothing the visitor typed, a few a day at most per address). The email body is either "emailTemplate" (the name of an EmailTemplate, rendered by EmailTemplateRenderer with the submitted fields available to a TYPE_FIELDS_TABLE block - see UiBundle Readme) or, failing that/its lookup, the legacy "template" Twig path (defaults to DEFAULT_TEMPLATE)
 class SendEmailFormAction implements FormActionInterface
 {
     private const string DEFAULT_TEMPLATE = '@c975LUi/emails/form_submission.html.twig';
@@ -35,6 +36,9 @@ class SendEmailFormAction implements FormActionInterface
         private readonly PriceFormatter $priceFormatter = new PriceFormatter(),
         // Optional for the same reason - without it, nobody is proven to own the address they typed, and every copy is the one of an unproven address
         private readonly ?CurrentAccountAddress $currentAccountAddress = null,
+        // Optional for the same reason - without it, an address typed by anybody is sent as many acknowledgements as the form is submitted
+        private readonly ?RateLimiterFactoryInterface $acknowledgementLimiterFactory = null,
+        private readonly RateLimiterGuard $rateLimiterGuard = new RateLimiterGuard(),
     ) {
     }
 
@@ -77,11 +81,17 @@ class SendEmailFormAction implements FormActionInterface
         ));
 
         // Only once the message left, and its own failure changes nothing to the answer: what the visitor wrote did reach the site
-        if ($sent && $wantsCopy && !$ownAddress) {
+        if ($sent && $wantsCopy && !$ownAddress && $this->acknowledgementAccepted($senderEmail)) {
             $this->sendAcknowledgement($senderEmail, $addressing['from'], $addressing['fromName']);
         }
 
         return $sent;
+    }
+
+    // Whether that address may still be sent an acknowledgement today, counted per address whoever types it, so the form cannot be used to flood a third party's inbox; the address kept only as its hash
+    private function acknowledgementAccepted(string $address): bool
+    {
+        return $this->rateLimiterGuard->isAccepted($this->acknowledgementLimiterFactory, hash('sha256', mb_strtolower(trim($address))));
     }
 
     // A typed address proves nothing, so it only gets a fixed acknowledgement carrying none of what the visitor typed: the site never relays a visitor's text to an address nobody proved to own. The address as its own name, EmailService otherwise naming any recipient after the site's "email-to-name"; no reply-to of the visitor's, who would be answering themselves

@@ -94,9 +94,9 @@ class AppLibraryController extends AbstractController
     // The key this caller's things are held under, null for a caller with neither an account nor a token the device made up, or a refusal for too many calls. What the device held is handed over to the account on the way
     private function holder(Request $request): string | Response | null
     {
-        // Fails open with no client ip, as FavoriteController does
+        // Per caller, a caller with no address sharing one bucket, as FavoriteController does
         $clientIp = $request->getClientIp();
-        if (null !== $clientIp && !$this->rateLimiterGuard->isAcceptedForIp($this->favoriteLimiterFactory, $clientIp)) {
+        if (!$this->rateLimiterGuard->isAcceptedForIp($this->favoriteLimiterFactory, $clientIp)) {
             return new JsonResponse(['error' => 'too_many_requests'], Response::HTTP_TOO_MANY_REQUESTS);
         }
 

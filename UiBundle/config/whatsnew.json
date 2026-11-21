@@ -1,5 +1,15 @@
 [
     {
+        "date": "2026-11-21",
+        "description": [
+            {
+                "en": "Every SVG you upload is now cleaned of the scripts and links to other sites it could carry; an SVG that cannot be read is refused, export it again from your drawing software. The SVGs already on your site are cleaned the same way.",
+                "fr": "Chaque SVG envoyé est désormais nettoyé des scripts et des liens vers d'autres sites qu'il pourrait contenir ; un SVG illisible est refusé, exportez-le à nouveau depuis votre logiciel de dessin. Les SVG déjà présents sur votre site sont nettoyés de la même façon.",
+                "es": "Cada SVG que envíe se limpia ahora de los scripts y enlaces a otros sitios que pudiera contener; un SVG ilegible se rechaza, vuelva a exportarlo desde su programa de dibujo. Los SVG ya presentes en su sitio se limpian de la misma manera."
+            }
+        ]
+    },
+    {
         "date": "2026-11-20",
         "description": [
             {

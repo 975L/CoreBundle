@@ -107,9 +107,9 @@ class FavoriteController extends AbstractController
             return new JsonResponse(['error' => 'forbidden'], Response::HTTP_FORBIDDEN);
         }
 
-        // Fails open with no client ip, rather than lumping every such visitor onto one shared bucket - same reading as FormController's
+        // Per caller, a caller with no address sharing one bucket (see RateLimiterGuard::isAcceptedForIp())
         $clientIp = $request->getClientIp();
-        if (null !== $clientIp && !$this->rateLimiterGuard->isAcceptedForIp($this->favoriteLimiterFactory, $clientIp)) {
+        if (!$this->rateLimiterGuard->isAcceptedForIp($this->favoriteLimiterFactory, $clientIp)) {
             return new JsonResponse(['error' => 'too_many_requests'], Response::HTTP_TOO_MANY_REQUESTS);
         }
 

@@ -73,13 +73,13 @@ class ConfigShortcutController extends AbstractController
         $result = $this->exportTablesCommand->exportTables(writeFile: false);
 
         if (null !== $result['error']) {
-            $this->addFlash('danger', $result['error']);
+            $this->addFlash('danger', htmlspecialchars($result['error']));
 
             return $this->redirectToRoute('management');
         }
 
         if (empty($result['tables'])) {
-            $this->addFlash('warning', $result['message']);
+            $this->addFlash('warning', htmlspecialchars((string) $result['message']));
 
             return $this->redirectToRoute('management');
         }
@@ -184,7 +184,7 @@ class ConfigShortcutController extends AbstractController
                 $this->addFlash('success', $this->translator->trans('flash.config_sitemaps_created', [], 'config'));
                 $this->notifyIndexNow();
             } catch (IOExceptionInterface | \LogicException $e) {
-                $this->addFlash('error', $this->translator->trans('flash.config_sitemaps_error', ['%error%' => $e->getMessage()], 'config'));
+                $this->addFlash('error', $this->translator->trans('flash.config_sitemaps_error', ['%error%' => htmlspecialchars($e->getMessage())], 'config'));
             }
         }
 
@@ -205,9 +205,9 @@ class ConfigShortcutController extends AbstractController
             // An unwritable public/ folder or a template a site overrode with a broken one must be reported, not turned into a 500 nor hidden behind a success flash
             try {
                 $files = $this->seoFilesWriter->write();
-                $this->addFlash('success', $this->translator->trans('flash.config_seo_files_created', ['%files%' => implode(', ', $files)], 'config'));
+                $this->addFlash('success', $this->translator->trans('flash.config_seo_files_created', ['%files%' => htmlspecialchars(implode(', ', $files))], 'config'));
             } catch (IOExceptionInterface | \Twig\Error\Error $e) {
-                $this->addFlash('error', $this->translator->trans('flash.config_seo_files_error', ['%error%' => $e->getMessage()], 'config'));
+                $this->addFlash('error', $this->translator->trans('flash.config_seo_files_error', ['%error%' => htmlspecialchars($e->getMessage())], 'config'));
             }
         }
 
@@ -233,10 +233,10 @@ class ConfigShortcutController extends AbstractController
                     $this->addFlash('info', $this->translator->trans('flash.config_seo_crawlers_up_to_date', [], 'config'));
                 } else {
                     $this->aiCrawlerListUpdater->apply($comparison['missing']);
-                    $this->addFlash('success', $this->translator->trans('flash.config_seo_crawlers_updated', ['%count%' => count($comparison['missing']), '%agents%' => implode(', ', $comparison['missing'])], 'config'));
+                    $this->addFlash('success', $this->translator->trans('flash.config_seo_crawlers_updated', ['%count%' => count($comparison['missing']), '%agents%' => htmlspecialchars(implode(', ', $comparison['missing']))], 'config'));
                 }
             } catch (\Throwable $e) {
-                $this->addFlash('error', $this->translator->trans('flash.config_seo_crawlers_error', ['%error%' => $e->getMessage()], 'config'));
+                $this->addFlash('error', $this->translator->trans('flash.config_seo_crawlers_error', ['%error%' => htmlspecialchars($e->getMessage())], 'config'));
             }
         }
 
@@ -249,7 +249,7 @@ class ConfigShortcutController extends AbstractController
         try {
             $submitted = $this->indexNowNotifier->notify($this->sitemapWriter->getDeclaredUrls());
         } catch (\RuntimeException | \JsonException $e) {
-            $this->addFlash('warning', $this->translator->trans('flash.config_indexnow_error', ['%error%' => $e->getMessage()], 'config'));
+            $this->addFlash('warning', $this->translator->trans('flash.config_indexnow_error', ['%error%' => htmlspecialchars($e->getMessage())], 'config'));
 
             return;
         }
