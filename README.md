@@ -1,17 +1,60 @@
 # c975L CoreBundle
 
-The base of the c975L ecosystem in a single package: **ConfigBundle** (database-backed configuration, EasyAdmin dashboard, user accounts, health check, sitemaps) and **UiBundle** (page blocks, media library, theme, legal models, forms, emails). Two bundles, one package, one release.
-
 [![GitHub](https://img.shields.io/github/license/975L/CoreBundle)](https://github.com/975L/CoreBundle/blob/main/LICENSE)
 [![Packagist Version](https://img.shields.io/packagist/v/c975l/core-bundle)](https://packagist.org/packages/c975l/core-bundle)
 [![PHP Version](https://img.shields.io/packagist/php-v/c975l/core-bundle)](https://packagist.org/packages/c975l/core-bundle)
 [![Codacy Grade](https://app.codacy.com/project/badge/Grade/2237035a504b4374a606d49bf6b02dcc)](https://app.codacy.com/gh/975L/CoreBundle/dashboard)
 
+![CoreBundle](.github/images/CoreBundle.svg)
+
+**Your site gets its settings, back-office dashboard, user accounts, page blocks, media library, forms and emails: the base every other c975L bundle builds on.**
+
 **[Bundle page](https://bundles.975l.com/en/pages/core-bundle) · [Tutorials](https://bundles.975l.com/en/tutoriels/core-bundle) · [Block kinds](https://bundles.975l.com/en/pages/blocks/Ui) · [Live demo](https://bundles.975l.com/demo/) · [Demo back-office](https://bundles.975l.com/demo/login)**
 
-## One package, two bundles
+> **TL;DR** — CoreBundle is the base of the c975L ecosystem: settings kept in the database, the back-office dashboard, user accounts and health check on one side, page blocks, media, theme, forms and emails on the other. It ships these as two bundles, ConfigBundle and UiBundle, in a single package with one release. Require the package and register both bundles.
 
-![CoreBundle](.github/images/CoreBundle.svg)
+## What you get
+
+- Site settings kept in the database.
+- An EasyAdmin back-office dashboard.
+- User accounts, a health check and the sitemaps.
+- Page blocks to compose a page in the back office, with no template to write.
+- A media library, the site's theme and legal models.
+- Forms and emails.
+- One package and one release for both bundles, keeping the namespaces of the former `c975l/config-bundle` and `c975l/ui-bundle`.
+
+## Quick start
+
+```bash
+composer require c975l/core-bundle
+```
+
+Then register both bundles as shown in the full [installation](#installation) section below.
+
+## For AI agents
+
+- Skills, read straight from `vendor/c975l/core-bundle/` by a coding agent:
+  - ConfigBundle: [`c975l-config`](ConfigBundle/skills/c975l-config/SKILL.md) — where a setting belongs and how to read it · [`c975l-management`](ConfigBundle/skills/c975l-management/SKILL.md) — adding menu entries, alerts and guided projects to the dashboard · [`c975l-operations`](ConfigBundle/skills/c975l-operations/SKILL.md) — sitemaps, redirects, health check and backups · [`c975l-users`](ConfigBundle/skills/c975l-users/SKILL.md) — accounts, roles and access control
+  - UiBundle: [`c975l-blocks`](UiBundle/skills/c975l-blocks/SKILL.md) — page blocks and custom block kinds · [`c975l-forms-emails`](UiBundle/skills/c975l-forms-emails/SKILL.md) — forms and emails · [`c975l-js-testing`](UiBundle/skills/c975l-js-testing/SKILL.md) — testing a bundle's JavaScript in a browser · [`c975l-media`](UiBundle/skills/c975l-media/SKILL.md) — uploads, images and site graphics · [`c975l-ui-assets`](UiBundle/skills/c975l-ui-assets/SKILL.md) — stylesheets, scripts, fonts and design tokens
+- MCP: ConfigBundle hosts the site's MCP endpoint, `/api/mcp`, where an AI agent works with the tools of every installed c975L bundle, with the rights of its token's account — see [Opening the site to AI agents](ConfigBundle/README.md#opening-the-site-to-ai-agents). UiBundle brings `ui_media_list`, `ui_media_get` and `ui_media_edit` for the media library — see its [MCP tools](UiBundle/README.md#mcp-tools).
+
+## Reference
+
+<details>
+<summary>Contents</summary>
+
+- [One package, two bundles](#one-package-two-bundles)
+- [Why they ship together](#why-they-ship-together)
+- [Installation](#installation)
+- [What the blocks look like](#what-the-blocks-look-like)
+- [Documentation](#documentation)
+- [Quality checks](#quality-checks)
+- [Migrating from `c975l/config-bundle` / `c975l/ui-bundle`](#migrating-from-c975lconfig-bundle--c975lui-bundle)
+- [License](#license)
+
+</details>
+
+## One package, two bundles
 
 This is **not** a merged bundle. A Composer package is not a Symfony bundle: this package ships the two bundles unchanged, each with its own namespace, its own `services.yaml`, its own `configs.json`, its own translation domain and its own dashboard section.
 
@@ -54,7 +97,7 @@ return [
 
 ![UiBundle blocks](.github/images/UiBlocks.png)
 
-One tile per kind of the 32 UiBundle ships, captured on the showcase at [bundles.975l.com](https://bundles.975l.com/pages/blocks/Ui), where every one of them is rendered live. A page is composed out of them in the back-office, with no template written for it - see [Built-in block kinds](UiBundle/README.md#built-in-block-kinds) for what each one takes.
+One tile per kind UiBundle ships, captured on the showcase at [bundles.975l.com](https://bundles.975l.com/pages/blocks/Ui), where every one of them is rendered live. A page is composed out of them in the back-office, with no template written for it - see [Built-in block kinds](UiBundle/README.md#built-in-block-kinds) for what each one takes.
 
 ## Documentation
 

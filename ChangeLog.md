@@ -1,5 +1,11 @@
 # ChangeLog
 
+## v1.98.1
+
+README opened on a short overview for humans
+
+- README opened on a short overview for humans, the reference folded below it (23/11/2026)
+
 ## v1.98.0
 
 Media library on MCP, agent tokens after a full login, MCP rate limit
