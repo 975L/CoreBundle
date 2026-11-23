@@ -1,5 +1,11 @@
 # ChangeLog
 
+## v1.98.2
+
+Markdown lint accepts the folded README reference
+
+- `.markdownlint.json` allows the `details` and `summary` elements the README folds its reference in (23/11/2026)
+
 ## v1.98.1
 
 README opened on a short overview for humans
