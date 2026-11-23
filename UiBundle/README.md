@@ -35,7 +35,7 @@ See it in action at [bundles.975l.com/pages/ui-bundle](https://bundles.975l.com/
 - **For satellite bundles** — [shared building blocks](#shared-building-blocks-for-satellite-bundles) · [deleting an entity in two steps](#deleting-an-entity-in-two-steps) · [exporting and importing blocks](#exporting-and-importing-blocks) · [forcing a download](#forcing-a-download)
 - **Demo sites** — [seeding a demo site](#seeding-a-demo-site)
 - **Quality** — [checking a page's layout](#checking-a-pages-layout)
-- **For coding agents** — [AI agent skills](#ai-agent-skills)
+- **For coding agents** — [MCP tools](#mcp-tools) · [AI agent skills](#ai-agent-skills)
 
 ## Features
 
@@ -3683,6 +3683,18 @@ Run it from the **consuming site's** console, and install its dependency there r
 It reports without failing unless `--strict` is passed — a headless browser is never deterministic enough to gate a push on, and a check that fails at random is a check that ends up disabled. A page it could not measure at all is reported too, rather than counted as a clean one.
 
 Deliberately not a `HealthCheckProviderInterface`: those run from cron on the managed server, which has no browser and no way to install one.
+
+---
+
+## MCP tools
+
+The media library brings its tools to the site's MCP endpoint, `/api/mcp`, which ConfigBundle serves and opens (see its README, "Opening the site to AI agents"): `Mcp\UiMcpProvider`, under the `ui` key of the agent tokens, for an account holding `site-role-editor` as on the library's screen. An agent reads the medias and writes their alt text and caption; nothing it does uploads, replaces or deletes a file, and a site graphic (logo, favicon...) is left to the Site graphics screen. The uploader's account is never given out, and the writes reach the activity log under the token's account, as every write through `/api/mcp` does.
+
+| Tool | Does |
+| --- | --- |
+| `ui_media_list` | The medias whose alt text, caption, name or file name holds the `search` words, every media without them, only those without an alt text with `withoutAlt`, the latest first, `limit` of them (50 by default, 100 at most), each with its file, url (`media_url()`, the members-only route for a PDF reserved to members), mime type, size, width and height, alt text, caption, site graphic role and where it is used (`MediaUsageRegistry`) |
+| `ui_media_get` | A `media`: the same, plus its name, credits, rights reserved and members-only switches |
+| `ui_media_edit` | The `alt` text or `caption` given of a `media` changed, only those given, an empty one clearing it, each refused by the entity's own constraints (`Assert\Length(max: 255)`) before any is written; a site graphic is refused |
 
 ---
 

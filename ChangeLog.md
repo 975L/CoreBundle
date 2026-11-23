@@ -1,5 +1,20 @@
 # ChangeLog
 
+## v1.98.0
+
+Media library on MCP, agent tokens after a full login, MCP rate limit
+
+- An agent token made only by an account signed in with its password in the session (23/11/2026)
+- `/api/mcp` limited to 120 requests per account and per minute by `c975l_mcp`, 429 past it (23/11/2026)
+- A tool flagged `destroys` kept from a reading token even without `writes` (23/11/2026)
+- The agent token guided project warns that a remembered login asks for the password again (23/11/2026)
+- `UiMcpProvider` brings the media library to `/api/mcp` under the `ui` key, for `site-role-editor` (23/11/2026)
+- `ui_media_list` lists the medias by search words, `limit` and `withoutAlt`, with url, type, size, dimensions and usages (23/11/2026)
+- `ui_media_get` reads a media, its name, credits and switches included, never its uploader (23/11/2026)
+- `ui_media_edit` writes a media's alt text and caption under the entity's constraints, a site graphic refused (23/11/2026)
+- `MediaRepository::findForAgents()` added (23/11/2026)
+- `JsCase` replays once a scenario whose message Chrome left unanswered in time, its late answer no longer read by the next one (23/11/2026)
+
 ## v1.97.1
 
 Missing configuration table only noticed on a first install

@@ -56,6 +56,13 @@ class AgentTokenCrudControllerTest extends TestCase
         $this->assertSame(hash('sha256', substr($flash, -64)), $agentToken->getTokenHash());
     }
 
+    // A login only remembered mints no token: the password is asked again
+    public function testANewTokenNeedsAFullLogin(): void
+    {
+        $this->expectException(AccessDeniedException::class);
+        $this->controller(false)->createEntity(AgentToken::class);
+    }
+
     // Another account's token is refused, batch delete included, its own revoked
     public function testOnlyTheAccountsOwnTokenIsDeleted(): void
     {
@@ -91,7 +98,7 @@ class AgentTokenCrudControllerTest extends TestCase
     }
 
     // The controller signed in as the test's account, its flashes kept in a session
-    private function controller(): AgentTokenCrudController
+    private function controller(bool $fully = true): AgentTokenCrudController
     {
         $translator = $this->createStub(TranslatorInterface::class);
         $translator->method('trans')->willReturnCallback(static fn (string $id, array $parameters): string => $parameters['%name%'] . ': ' . $parameters['%token%']);
@@ -103,7 +110,7 @@ class AgentTokenCrudControllerTest extends TestCase
         $configService = $this->createStub(ConfigServiceInterface::class);
         $configService->method('get')->willReturn('ROLE_CONTRIBUTOR');
         $controller = new AgentTokenCrudController($configService, $manager, new McpServer(), $translator);
-        $controller->setContainer($this->createContainer(['security.token_storage' => $tokenStorage, 'request_stack' => $requestStack]));
+        $controller->setContainer($this->createContainer(['security.token_storage' => $tokenStorage, 'request_stack' => $requestStack, 'security.authorization_checker' => $this->createAuthorizationCheckerFor($fully ? 'IS_AUTHENTICATED_FULLY' : 'none')]));
 
         return $controller;
     }

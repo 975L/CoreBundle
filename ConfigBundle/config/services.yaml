@@ -181,6 +181,10 @@ services:
         arguments:
             $loginCodeLimiter: '@limiter.c975l_login_code'
 
+    c975L\ConfigBundle\Controller\McpController:
+        arguments:
+            $mcpLimiter: '@limiter.c975l_mcp'
+
 
 # Wiring for c975l:dev-profile:run, kept under when@dev on purpose: its classes are all marked #[When('dev')], and an entry in the block above would put them back in every environment, prod included, where the "profiler" service doesn't exist. _defaults has to be repeated, a when@ block being parsed as its own root
 when@dev:

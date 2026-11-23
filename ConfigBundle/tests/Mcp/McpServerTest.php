@@ -28,6 +28,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\RateLimiter\RateLimiterFactory;
+use Symfony\Component\RateLimiter\Storage\InMemoryStorage;
 
 class McpServerTest extends TestCase
 {
@@ -58,6 +60,29 @@ class McpServerTest extends TestCase
     {
         $this->assertTrue(new McpRateLimitExemption()->isExempt(McpController::PATH));
         $this->assertFalse(new McpRateLimitExemption()->isExempt(McpController::PATH . '-other'));
+    }
+
+    // An account past its ceiling is told to wait, whatever token it uses
+    public function testAnAccountPastItsCeilingWaits(): void
+    {
+        $limiter = new RateLimiterFactory(['id' => 'mcp', 'policy' => 'fixed_window', 'limit' => 1, 'interval' => '1 minute'], new InMemoryStorage());
+        $message = ['jsonrpc' => '2.0', 'id' => 1, 'method' => 'tools/list'];
+        $this->send($message, 'token-1', limiter: $limiter);
+
+        $refused = $this->send($message, 'token-1', limiter: $limiter);
+        $this->assertSame(429, $refused->getStatusCode());
+        $this->assertGreaterThan(0, (int) $refused->headers->get('Retry-After'));
+    }
+
+    // A deleting tool is kept from a reading token even when it does not say it writes
+    public function testADeletingToolIsAWritingOne(): void
+    {
+        McpServerTestProvider::$deleteWrites = false;
+        try {
+            $this->assertSame(['catalog_list'], array_column($this->tools(), 'name'));
+        } finally {
+            McpServerTestProvider::$deleteWrites = true;
+        }
     }
 
     // A valid token whose account no firewall signed in is refused, rather than running the tools as a visitor
@@ -122,7 +147,7 @@ class McpServerTest extends TestCase
 
     // A message sent to the endpoint with the token as a Bearer, the endpoint open or not, the firewall having signed the token's account in or not
     /** @param array<string, mixed> $message */
-    private function send(array $message, string $token, bool $enabled = true, bool $signedIn = true): Response
+    private function send(array $message, string $token, bool $enabled = true, bool $signedIn = true, ?RateLimiterFactory $limiter = null): Response
     {
         $security = $this->createStub(Security::class);
         $security->method('getUser')->willReturn($signedIn ? $this->agentToken->getUser() : null);
@@ -133,13 +158,16 @@ class McpServerTest extends TestCase
         $manager = new AgentTokenManager($repository, $this->createStub(EntityManagerInterface::class), new MockClock());
         $server = ['HTTP_HOST' => 'site.example', 'HTTPS' => 'on', 'CONTENT_TYPE' => 'application/json', 'HTTP_ACCEPT' => 'application/json, text/event-stream', 'HTTP_MCP_PROTOCOL_VERSION' => '2025-06-18', 'HTTP_AUTHORIZATION' => 'Bearer ' . $token];
 
-        return new McpController($config, $manager, new McpServer([new McpServerTestProvider()]), $security)(Request::create('https://site.example' . McpController::PATH, 'POST', server: $server, content: json_encode($message, \JSON_THROW_ON_ERROR)));
+        return new McpController($config, $manager, new McpServer([new McpServerTestProvider()]), $security, $limiter ?? new RateLimiterFactory(['id' => 'mcp', 'policy' => 'no_limit'], new InMemoryStorage()))(Request::create('https://site.example' . McpController::PATH, 'POST', server: $server, content: json_encode($message, \JSON_THROW_ON_ERROR)));
     }
 }
 
 // A bundle offering one reading and one deleting tool
 class McpServerTestProvider implements McpToolProviderInterface
 {
+    // Whether the deleting tool also says it writes
+    public static bool $deleteWrites = true;
+
     public function getMcpKey(): string
     {
         return 'catalog';
@@ -153,7 +181,7 @@ class McpServerTestProvider implements McpToolProviderInterface
     public function getMcpTools(): iterable
     {
         yield new McpTool('catalog_list', 'Items', 'Items holding the words.', $this->list(...));
-        yield new McpTool('catalog_delete', 'Delete an item', 'Deletes an item.', static fn (int $item): array => ['deleted' => $item], true, true);
+        yield new McpTool('catalog_delete', 'Delete an item', 'Deletes an item.', static fn (int $item): array => ['deleted' => $item], self::$deleteWrites, true);
     }
 
     // Items holding the words

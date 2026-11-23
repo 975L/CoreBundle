@@ -206,6 +206,10 @@
                 <source>description.guided_step_config_agent_token_name</source>
                 <target>El nombre del agente que lo usará, para distinguir sus tokens entre sí.</target>
             </trans-unit>
+            <trans-unit id="ueYEY2v">
+                <source>description.guided_step_config_agent_token_new</source>
+                <target>El sitio vuelve a pedirle su contraseña si su sesión solo estaba recordada: un token solo se crea tras un inicio de sesión real.</target>
+            </trans-unit>
             <trans-unit id="P2lB38Q">
                 <source>description.guided_step_config_agent_token_open</source>
                 <target>Cada token abre el sitio a un agente, con los derechos de su cuenta; solo ve los suyos.</target>

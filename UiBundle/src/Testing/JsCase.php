@@ -75,12 +75,12 @@ abstract class JsCase extends TestCase
     {
         try {
             $answer = $this->runScenario($html, $controllers, $probe, $options);
-        } catch (TargetDestroyed | EvaluationFailed $failure) {
+        } catch (TargetDestroyed | EvaluationFailed | OperationTimedOut $failure) {
             if ($failure instanceof EvaluationFailed && !str_contains($failure->getMessage(), self::SESSION_NOT_FOUND)) {
                 throw $failure;
             }
 
-            // The tab the whole run shares has gone away under it - Chrome upgraded while the suite was running, a renderer taken for its memory - and every scenario after this one would read the same dead session
+            // The tab the whole run shares has gone away under it - Chrome upgraded while the suite was running, a renderer taken for its memory - or left a message unanswered under a loaded machine, its scenario still running and bound to write its answer over the next one's: every scenario after this one would read the same dead or crossed session
             $this->reopen();
             $answer = $this->runScenario($html, $controllers, $probe, $options);
         }

@@ -1,6 +1,6 @@
 ---
 name: c975l-js-testing
-description: "Use this skill when a bundle's javascript has to be tested in a Symfony application built on the c975L ecosystem — running a Stimulus controller or a plain module in a real browser and reading back what it made of the DOM, rather than asserting on the text of the file. Covers the harness UiBundle ships for every bundle depending on it, what a satellite declares, what a scenario is given back clean, and what still belongs to a textual test. Triggers on: JsCase, browser test, behaviour test, BehaviourTest, observe, probe, bundleRoot, shipped, tab, openPage, serve, reopen, TargetDestroyed, The session is destroyed, Group('browser'), exclude-group browser, chrome-php/chrome, BrowserFactory, headless Chrome, stimulus.js, vendor-assets.json, scope tests, docroot, settle, keepBody, timeout, JsCaseTimeoutTest, fresh, modules, before, css option, scripts option, styles option, JsCaseRecoveryTest, JsCaseGuardTest, StylesheetCascade, jsdom, node test runner, package.json, DOM emulation, scrollHeight, matchMedia stub, window.__out, window.__storage, window.__globals, navigator.webdriver, vanilla-cookieconsent hideFromBots."
+description: "Use this skill when a bundle's javascript has to be tested in a Symfony application built on the c975L ecosystem — running a Stimulus controller or a plain module in a real browser and reading back what it made of the DOM, rather than asserting on the text of the file. Covers the harness UiBundle ships for every bundle depending on it, what a satellite declares, what a scenario is given back clean, and what still belongs to a textual test. Triggers on: JsCase, browser test, behaviour test, BehaviourTest, observe, probe, bundleRoot, shipped, tab, openPage, serve, reopen, TargetDestroyed, The session is destroyed, Group('browser'), exclude-group browser, chrome-php/chrome, BrowserFactory, headless Chrome, stimulus.js, vendor-assets.json, scope tests, docroot, settle, keepBody, timeout, JsCaseTimeoutTest, fresh, modules, before, css option, scripts option, styles option, JsCaseRecoveryTest, OperationTimedOut, JsCaseGuardTest, StylesheetCascade, jsdom, node test runner, package.json, DOM emulation, scrollHeight, matchMedia stub, window.__out, window.__storage, window.__globals, navigator.webdriver, vanilla-cookieconsent hideFromBots."
 ---
 
 # c975L UiBundle — javascript run rather than read
@@ -131,8 +131,10 @@ instead of the half second a fresh page costs:
 A Chrome upgraded while the suite runs, or a renderer taken for its memory, destroys the tab — and
 every scenario left then answered `The session is destroyed` without ever running. A scenario meeting a
 `TargetDestroyed`, or an `EvaluationFailed` carrying Chrome's `-32001` when Chrome answers before
-chrome-php has read the loss, is given a browser and a tab of its own and run **once** again, the docroot
-and its server being kept, since they are what the bundles already copied are served from.
+chrome-php has read the loss, or an `OperationTimedOut` when a loaded machine leaves one of chrome-php's
+messages unanswered (the scenario still running would otherwise write its answer over the next one's), is
+given a browser and a tab of its own and run **once** again, the docroot and its server being kept, since
+they are what the bundles already copied are served from.
 
 **A renderer that crashes rather than a tab that goes away reads as a timeout and is not replayed**,
 being indistinguishable from a scenario that never settles.

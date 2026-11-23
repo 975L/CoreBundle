@@ -80,6 +80,13 @@ class c975LConfigBundle extends AbstractBundle
                     'interval' => '10 seconds',
                     'cache_pool' => 'c975l.rate_limiter',
                 ],
+                // 120 MCP requests per account and per minute, sliding: an agent working a task stays under, a loop or a leaked token is cut (see McpController)
+                'c975l_mcp' => [
+                    'policy' => $testEnvironment ? 'no_limit' : 'sliding_window',
+                    'limit' => 120,
+                    'interval' => '1 minute',
+                    'cache_pool' => 'c975l.rate_limiter',
+                ],
                 // 20 wrong login codes per account and per day, whatever the number of password logins they were spread over (see LoginCode)
                 'c975l_login_code' => [
                     'policy' => 'fixed_window',

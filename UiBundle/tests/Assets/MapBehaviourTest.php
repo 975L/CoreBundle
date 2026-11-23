@@ -202,9 +202,12 @@ class MapBehaviourTest extends JsCase
     public function testConsentGivenAfterwardsDrawsTheMapAndTakesThePromptAway(): void
     {
         $state = $this->map(
+            // The drawn map is waited for rather than timed: under load, the library loads after a fixed settle
             'window.CookieConsent.granted = true;
              window.dispatchEvent(new CustomEvent("cc:onConsent"));
-             await new Promise((r) => setTimeout(r, 200));
+             for (let i = 0; i < 60 && !root.querySelector(".leaflet-container"); i++) {
+                 await new Promise((r) => setTimeout(r, 50));
+             }
 
              return { drawn: !!root.querySelector(".leaflet-container"), prompt: !root.querySelector("[data-ui-map-target=consent]").hidden };',
             ['needsConsent' => 'true', 'banner' => true, 'consent' => 'false']

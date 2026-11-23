@@ -198,6 +198,7 @@ class ConfigGuidedProjectProvider implements GuidedProjectProviderInterface
                 ],
                 [
                     'label' => 'label.guided_step_config_agent_token_new',
+                    'description' => 'description.guided_step_config_agent_token_new',
                     'narration' => 'narration.guided_step_config_agent_token_new',
                     'highlight' => '.action-new',
                 ],

@@ -1,5 +1,15 @@
 [
     {
+        "date": "2026-11-23",
+        "description": [
+            {
+                "en": "Making an agent token now asks for a sign-in with your password in the session, a remembered login is not enough. An agent sending too many requests in a minute is asked to wait.",
+                "fr": "Créer un jeton d'agent demande désormais une connexion avec votre mot de passe dans la session, une connexion mémorisée ne suffit plus. Un agent qui envoie trop de requêtes en une minute est invité à patienter.",
+                "es": "Crear un token de agente pide ahora iniciar sesión con su contraseña en la sesión, un inicio de sesión recordado ya no basta. Un agente que envía demasiadas solicitudes en un minuto debe esperar."
+            }
+        ]
+    },
+    {
         "date": "2026-11-21",
         "description": [
             {

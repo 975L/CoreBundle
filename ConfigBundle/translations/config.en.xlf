@@ -206,6 +206,10 @@
                 <source>description.guided_step_config_agent_token_name</source>
                 <target>The name of the agent that will use it, to tell your tokens apart.</target>
             </trans-unit>
+            <trans-unit id="ueYEY2v">
+                <source>description.guided_step_config_agent_token_new</source>
+                <target>The site asks for your password again if your login was only remembered: a token is made only after a real sign-in.</target>
+            </trans-unit>
             <trans-unit id="P2lB38Q">
                 <source>description.guided_step_config_agent_token_open</source>
                 <target>Each token opens the site to an agent, with your account's rights; you only see your own.</target>

@@ -206,6 +206,10 @@
                 <source>description.guided_step_config_agent_token_name</source>
                 <target>Le nom de l'agent qui s'en servira, pour distinguer vos jetons entre eux.</target>
             </trans-unit>
+            <trans-unit id="ueYEY2v">
+                <source>description.guided_step_config_agent_token_new</source>
+                <target>Le site vous redemande votre mot de passe si votre connexion n'était que mémorisée : un jeton ne se crée qu'après une vraie connexion.</target>
+            </trans-unit>
             <trans-unit id="P2lB38Q">
                 <source>description.guided_step_config_agent_token_open</source>
                 <target>Chaque jeton ouvre le site à un agent, avec les droits de votre compte ; vous ne voyez que les vôtres.</target>

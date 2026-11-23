@@ -291,12 +291,12 @@ override keeps it too.
 
 `McpController` answers `/api/mcp` (`config_mcp`), a 404 until `mcp-enabled` is checked, 401 without a
 valid agent token (`AgentTokenManager::fromHeader()`, refused the day after its expiry), 403 when no firewall
-signed the token's account in. The site declares a stateless
+signed the token's account in, 429 with `Retry-After` past the `c975l_mcp` limiter (`$mcpLimiter`, 120 per account and per minute). The site declares a stateless
 firewall over `^/api/mcp$` with `access_token.token_handler: c975L\ConfigBundle\Security\AgentTokenHandler`
 and opens the path to `PUBLIC_ACCESS`, so the agent acts as the token's account and every `is_granted` applies.
 `McpServer` builds an `mcp/sdk` server per request from the tagged `McpToolProviderInterface` services
-(`c975l.mcp_tool_provider`): only the bundles `AgentToken::allows()`, and only the tools not flagged `writes`
-for a token that is not `isWritable()`. Tokens are made and revoked on `AgentTokenCrudController`, each account
+(`c975l.mcp_tool_provider`): only the bundles `AgentToken::allows()`, and only the tools flagged neither `writes` nor `destroys`
+for a token that is not `isWritable()`. Tokens are made and revoked on `AgentTokenCrudController`, `createEntity()` requiring `IS_AUTHENTICATED_FULLY`, each account
 its own (`createIndexQueryBuilder()`, `deleteEntity()` refusing another's), the secret shown once in a flash
 (`flash.agent_token_created`), `site_agent_token` keeping the sha256; `PasswordResetter::resetPassword()` deletes them with the app tokens, and
 `AppTokenSubscriber` on `UserAnonymizedEvent`. The `config-agent-token` guided project walks making one. `ActivityLogListener` logs the writes made under `McpController::PATH`;

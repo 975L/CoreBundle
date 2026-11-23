@@ -50,10 +50,11 @@ class AgentTokenCrudController extends AbstractCrudController
         return AgentToken::class;
     }
 
-    // A new token belongs to the account making it
+    // A new token belongs to the account making it, signed in with its password in this session: a remembered login or a stolen cookie mints no lasting bearer
     #[\Override]
     public function createEntity(string $entityFqcn): AgentToken
     {
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
         $user = $this->getUser();
 
         return new AgentToken()->setUser($user instanceof UserInterface ? $user : null);

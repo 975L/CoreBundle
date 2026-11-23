@@ -18,6 +18,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\RateLimiter\RateLimiterFactoryInterface;
 use Symfony\Component\Routing\Attribute\Route;
 
 // The site's MCP endpoint, closed until "mcp-enabled" is checked, answering an agent token as a Bearer with the rights of its account
@@ -30,6 +31,7 @@ class McpController
         private readonly AgentTokenManager $agentTokenManager,
         private readonly McpServer $mcpServer,
         private readonly Security $security,
+        private readonly RateLimiterFactoryInterface $mcpLimiter,
     ) {
     }
 
@@ -48,6 +50,12 @@ class McpController
         // Without the "mcp" firewall of the README the tools would run with no account, every is_granted answering for a visitor and no write logged
         if ($this->security->getUser()?->getUserIdentifier() !== $agentToken->getUser()?->getUserIdentifier()) {
             return new JsonResponse(['error' => 'The agent token\'s account is not signed in: declare the "mcp" firewall (see ConfigBundle\'s README).'], Response::HTTP_FORBIDDEN);
+        }
+
+        // Counted per account, whatever its tokens: the front limiter leaves the endpoint out, a runaway agent stopped here
+        $limit = $this->mcpLimiter->create((string) $agentToken->getUser()?->getUserIdentifier())->consume();
+        if (!$limit->isAccepted()) {
+            return new JsonResponse(['error' => 'Too many requests for this account: wait before the next one.'], Response::HTTP_TOO_MANY_REQUESTS, ['Retry-After' => (string) max(1, $limit->getRetryAfter()->getTimestamp() - time())]);
         }
 
         return $this->mcpServer->handle($request, $agentToken);

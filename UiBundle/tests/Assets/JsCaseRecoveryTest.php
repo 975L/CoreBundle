@@ -50,4 +50,16 @@ class JsCaseRecoveryTest extends JsCase
             'A session Chrome no longer knows reaches the run as a failed evaluation rather than as a destroyed target, and is not replayed.'
         );
     }
+
+    // A message Chrome leaves unanswered in time, as a loaded machine does, is replayed on a tab of its own rather than leaving its scenario to answer for the next one
+    public function testAScenarioIsRunAgainWhenChromeAnswersTooLate(): void
+    {
+        new \ReflectionProperty(Connection::class, 'sendSyncDefaultTimeout')->setValue($this->tab()->getSession()->getConnection(), 0);
+
+        $this->assertSame(
+            'here',
+            $this->observe('<p id="after">here</p>', [], 'return root.querySelector("#after").textContent;'),
+            'A message left unanswered in time fails the scenario, and the scenario still running answers for the next one.'
+        );
+    }
 }

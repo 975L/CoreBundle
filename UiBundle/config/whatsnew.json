@@ -1,5 +1,15 @@
 [
     {
+        "date": "2026-11-23",
+        "description": [
+            {
+                "en": "An AI agent holding an agent token of an account editing the content can now list and read the medias of the library, with where each one is used, and write their alternative text and caption, for instance to fill in the missing alternative texts; uploading, replacing and deleting a file stay yours, from the back office, and so do the site graphics.",
+                "fr": "Un agent IA muni d'un jeton d'agent d'un compte qui édite le contenu peut désormais lister et lire les médias de la médiathèque, avec l'endroit où chacun est utilisé, et rédiger leur texte alternatif et leur légende, par exemple pour compléter les textes alternatifs manquants ; l'envoi, le remplacement et la suppression d'un fichier restent les vôtres, depuis le back-office, tout comme les graphismes du site.",
+                "es": "Un agente de IA con un token de agente de una cuenta que edita el contenido puede ahora listar y leer los medios de la mediateca, con el lugar donde se usa cada uno, y redactar su texto alternativo y su leyenda, por ejemplo para completar los textos alternativos que faltan; el envío, la sustitución y la eliminación de un archivo siguen siendo suyos, desde el back-office, al igual que los gráficos del sitio."
+            }
+        ]
+    },
+    {
         "date": "2026-11-21",
         "description": [
             {

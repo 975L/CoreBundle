@@ -64,7 +64,7 @@ class McpServer
                 continue;
             }
             foreach ($provider->getMcpTools() as $tool) {
-                if ($agentToken->isWritable() || !$tool->writes) {
+                if ($agentToken->isWritable() || (!$tool->writes && !$tool->destroys)) {
                     $tools[] = $tool;
                 }
             }
@@ -93,7 +93,7 @@ class McpServer
             ->setInstructions($this->instructions($agentToken))
             ->setLogger($this->logger ?? new NullLogger());
         foreach ($this->tools($agentToken) as $tool) {
-            $annotations = new ToolAnnotations(readOnlyHint: !$tool->writes, destructiveHint: $tool->destroys, openWorldHint: false);
+            $annotations = new ToolAnnotations(readOnlyHint: !$tool->writes && !$tool->destroys, destructiveHint: $tool->destroys, openWorldHint: false);
             $builder->addTool($tool->handler, $tool->name, $tool->title, $tool->description, $annotations);
         }
 

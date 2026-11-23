@@ -93,6 +93,28 @@ class MediaRepository extends ServiceEntityRepository
         ;
     }
 
+    // @return Media[] The library as UiMcpProvider lists it, the latest first: the words looked for in the alt text, caption, name and file name, their wildcards escaped, only the rows without an alt text when asked, the block joined for MediaUsageRegistry
+    public function findForAgents(?string $search, bool $withoutAlt, int $limit): array
+    {
+        $builder = $this->createQueryBuilder('m')
+            ->addSelect('b')
+            ->leftJoin('m.block', 'b')
+            ->orderBy('m.id', \SortDirection::Descending)
+            ->setMaxResults($limit);
+
+        if ('' !== trim((string) $search)) {
+            $builder
+                ->andWhere('m.alt LIKE :words OR m.label LIKE :words OR m.name LIKE :words OR m.filename LIKE :words')
+                ->setParameter('words', '%' . addcslashes(trim((string) $search), '%_\\') . '%');
+        }
+
+        if ($withoutAlt) {
+            $builder->andWhere('m.alt IS NULL OR m.alt = :empty')->setParameter('empty', '');
+        }
+
+        return $builder->getQuery()->getResult();
+    }
+
     // @return Media[] Rows whose width or height is still unset - what MediaDimensionsCommand backfills. An empty string counts as unset: the admin form (see MediaUploadType) submits one for a field left blank, where an untouched row holds null
     public function findWithoutDimensions(): array
     {
