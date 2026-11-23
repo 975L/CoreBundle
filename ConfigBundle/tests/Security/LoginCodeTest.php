@@ -125,6 +125,21 @@ class LoginCodeTest extends TestCase
         $this->assertCount(4, $this->codes);
     }
 
+    // The wish to stay signed in is kept while the code is awaited, and gone with it
+    public function testTheRememberMeWishLastsAsLongAsTheWait(): void
+    {
+        $session = new Session(new MockArraySessionStorage());
+        $loginCode = $this->loginCode();
+
+        $loginCode->start($session, new UserStub(), '/', true);
+        $this->assertTrue($loginCode->isRemembered($session));
+
+        $loginCode->finish($session);
+        $this->assertFalse($loginCode->isRemembered($session));
+        $loginCode->start($session, new UserStub(), '/');
+        $this->assertFalse($loginCode->isRemembered($session));
+    }
+
     // A login under way is not exhausted by a single wrong code
     public function testALoginIsNotExhaustedByOneWrongCode(): void
     {

@@ -29,6 +29,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
+use Symfony\Component\Security\Http\RememberMe\RememberMeHandlerInterface;
 use Symfony\Component\Validator\Validation;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Twig\Environment;
@@ -47,6 +48,19 @@ class LoginCodeControllerTest extends TestCase
 
         $this->assertSame('/management', $response->headers->get('Location'));
         $this->assertSame(TrustedDevice::COOKIE, $response->headers->getCookies()[0]->getName());
+    }
+
+    // A login that asked to stay signed in gets its remember-me cookie once the code is right, not before
+    public function testTheRightCodeSetsTheRememberMeCookieAsked(): void
+    {
+        $rememberMe = $this->createMock(RememberMeHandlerInterface::class);
+        $rememberMe->expects($this->once())->method('createRememberMeCookie');
+        $this->controller(LoginCode::VALID, rememberMe: $rememberMe, remembered: true)->index($this->submit());
+
+        $silent = $this->createMock(RememberMeHandlerInterface::class);
+        $silent->expects($this->never())->method('createRememberMeCookie');
+        $this->controller(LoginCode::INVALID, rememberMe: $silent, remembered: true)->index($this->submit());
+        $this->controller(LoginCode::VALID, rememberMe: $silent)->index($this->submit());
     }
 
     // A wrong code shows the page again
@@ -111,7 +125,7 @@ class LoginCodeControllerTest extends TestCase
     }
 
     // Over a LoginCode answering that outcome
-    private function controller(string $result, bool $pending = true, bool $resent = false, ?Security $security = null, bool $exhausted = false): LoginCodeController
+    private function controller(string $result, bool $pending = true, bool $resent = false, ?Security $security = null, bool $exhausted = false, ?RememberMeHandlerInterface $rememberMe = null, bool $remembered = false): LoginCodeController
     {
         $loginCode = $this->createStub(LoginCode::class);
         $loginCode->method('isPending')->willReturn($pending);
@@ -119,6 +133,7 @@ class LoginCodeControllerTest extends TestCase
         $loginCode->method('verify')->willReturn($result);
         $loginCode->method('finish')->willReturn('/management');
         $loginCode->method('resend')->willReturn($resent);
+        $loginCode->method('isRemembered')->willReturn($remembered);
 
         $translator = $this->createStub(TranslatorInterface::class);
         $translator->method('trans')->willReturnArgument(0);
@@ -144,7 +159,7 @@ class LoginCodeControllerTest extends TestCase
             ->addExtension(new ValidatorExtension(Validation::createValidator()))
             ->getFormFactory();
 
-        $controller = new LoginCodeController($loginCode, new TrustedDevice('secret'), $security ?? $this->createStub(Security::class), $translator);
+        $controller = new LoginCodeController($loginCode, new TrustedDevice('secret'), $security ?? $this->createStub(Security::class), $translator, $rememberMe);
         $controller->setContainer($this->createContainer([
             'form.factory' => $formFactory,
             'request_stack' => new RequestStack([$request]),

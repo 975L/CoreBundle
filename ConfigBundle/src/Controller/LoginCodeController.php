@@ -21,6 +21,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Security\Http\RememberMe\RememberMeHandlerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 // The page an admin types the emailed login code on (see LoginCodeSubscriber), the browser then remembered by TrustedDevice
@@ -35,6 +36,8 @@ class LoginCodeController extends AbstractController
         private readonly TrustedDevice $trustedDevice,
         private readonly Security $security,
         private readonly TranslatorInterface $translator,
+        // Absent while no firewall declares remember_me
+        private readonly ?RememberMeHandlerInterface $rememberMe = null,
     ) {
     }
 
@@ -86,6 +89,10 @@ class LoginCodeController extends AbstractController
         $result = $this->loginCode->verify($session, (string) $form->get('code')->getData());
 
         if (LoginCode::VALID === $result) {
+            // The remember-me cookie the held login was refused, set now that the code proved it
+            if ($this->loginCode->isRemembered($session)) {
+                $this->rememberMe?->createRememberMeCookie($user);
+            }
             $response = $this->redirect($this->loginCode->finish($session));
             $response->headers->setCookie($this->trustedDevice->cookie($request, $user));
 

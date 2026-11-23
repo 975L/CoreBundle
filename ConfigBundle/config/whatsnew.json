@@ -3,6 +3,16 @@
         "date": "2026-11-23",
         "description": [
             {
+                "en": "Sign-in: a \"Keep me signed in\" box keeps you connected for thirty days, even after the email code asked of administrators on a new device.",
+                "fr": "Connexion : une case « Rester connecté » vous garde connecté trente jours, y compris après le code par e-mail demandé aux administrateurs sur un nouvel appareil.",
+                "es": "Inicio de sesión: una casilla «Mantener la sesión iniciada» le mantiene conectado treinta días, incluso tras el código por correo pedido a los administradores en un dispositivo nuevo."
+            }
+        ]
+    },
+    {
+        "date": "2026-11-23",
+        "description": [
+            {
                 "en": "Making an agent token now asks for a sign-in with your password in the session, a remembered login is not enough. An agent sending too many requests in a minute is asked to wait.",
                 "fr": "Créer un jeton d'agent demande désormais une connexion avec votre mot de passe dans la session, une connexion mémorisée ne suffit plus. Un agent qui envoie trop de requêtes en une minute est invité à patienter.",
                 "es": "Crear un token de agente pide ahora iniciar sesión con su contraseña en la sesión, un inicio de sesión recordado ya no basta. Un agente que envía demasiadas solicitudes en un minuto debe esperar."

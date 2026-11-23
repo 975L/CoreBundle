@@ -2822,6 +2822,10 @@
                 <source>label.redirects</source>
                 <target>Redirects</target>
             </trans-unit>
+            <trans-unit id="VFWIDIH">
+                <source>label.remember_me</source>
+                <target>Keep me signed in</target>
+            </trans-unit>
             <trans-unit id="pvYiOoS">
                 <source>label.reset_password</source>
                 <target>Reset your password</target>

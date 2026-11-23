@@ -24,6 +24,10 @@
                 <label for="password" class="required">{{ 'label.password'|trans({}, 'config') }}</label>
                 <input type="password" name="_password" id="password" autocomplete="current-password" required>
             </div>
+            {# Read by the firewall's remember_me, which keeps the account signed in past the session; a login held for its emailed code gets it once the code is typed #}
+            <div>
+                <label for="remember_me"><input type="checkbox" name="_remember_me" id="remember_me"> {{ 'label.remember_me'|trans({}, 'config') }}</label>
+            </div>
             <input type="hidden" name="_csrf_token" data-controller="csrf-protection" value="{{ csrf_token('authenticate') }}">
 
             <button class="btn btn-large btn-primary" type="submit">

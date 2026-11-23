@@ -1,5 +1,12 @@
 # ChangeLog
 
+## v1.99.0
+
+Keep me signed in box on the login form
+
+- Scaffolded login form carries a "Keep me signed in" box (23/11/2026)
+- Login held for its email code sets the remember-me cookie asked once the code is typed (23/11/2026)
+
 ## v1.98.4
 
 Markdown lint allows only the elements the README uses

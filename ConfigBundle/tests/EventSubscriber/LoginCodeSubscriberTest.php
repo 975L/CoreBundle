@@ -57,6 +57,20 @@ class LoginCodeSubscriberTest extends TestCase
         $this->assertFalse($badge->isEnabled());
     }
 
+    // The wish to stay signed in is kept with the held login, for the code page to honour once the code is typed
+    public function testHandsTheRememberMeWishToTheHeldLogin(): void
+    {
+        $event = $this->loginEvent('app_login');
+        $event->getPassport()->addBadge(new RememberMeBadge()->enable());
+        $loginCode = $this->createMock(LoginCode::class);
+        $loginCode->method('isRequired')->willReturn(true);
+        $loginCode->expects($this->once())->method('start')->with($this->anything(), $this->anything(), '/management', true)->willReturn(true);
+        $urlGenerator = $this->createStub(UrlGeneratorInterface::class);
+        $urlGenerator->method('generate')->willReturn('/login/code');
+
+        new LoginCodeSubscriber($loginCode, new TrustedDevice('secret'), $urlGenerator)->onLoginSuccess($event);
+    }
+
     // A "_remember_me" posted by hand is enabled by the framework at -32, then disabled here before RememberMeListener sets the cookie at -64
     public function testAPostedRememberMeNeverOutlivesTheHeldLogin(): void
     {

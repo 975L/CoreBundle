@@ -676,7 +676,21 @@ The essential-actions checklist is the exception that is not gated but simply no
 
 Off by default, the `login-admin-code` setting (group *security*, editable by an admin, and flipped by a tile in the dashboard's toggles, `LoginCodeShortcutController`) asks any account holding `site-role-admin` for a 6-digit code emailed at login, when it logs in **with its password** from a browser it never confirmed a code on. `LoginCodeSubscriber` holds the login on `/login/code` (route `config_login_code`, `LoginCodeController`), every other page redirecting there until the code is typed; the logout stays open. The code lasts 10 minutes, a new one can be asked once a minute (`config_login_code_resend`), and 5 wrong ones log out. Failures are also counted per account by the `c975l_login_code` rate limiter (20 per 24 hours, prepended by the bundle): logging in again with the password does not start afresh, and once they are spent the next login is logged out at once, without any email. Once typed, `TrustedDevice` sets a cookie signed with `kernel.secret` over the account, its expiry and its password hash: the browser is recognized for 30 days, and a password change forgets every browser at once. No table, no dependency.
 
-Only the password form (`app_login`) is concerned: Google's login, remember-me and programmatic logins go straight in. A held login never sets the remember-me cookie, even with `_remember_me` posted: `LoginCodeSubscriber` listens at priority -48, after the framework enables the badge (-32) and before the cookie is written (-64). An email that cannot be sent (no template, mailer down) lets the login through with a warning in the log, so an outage never locks out the admin who would fix it. The email is the admin-editable `login_code` template, its `{{ code }}` placeholder resolved at send time.
+Only the password form (`app_login`) is concerned: Google's login, remember-me and programmatic logins go straight in. A held login never sets the remember-me cookie, even with `_remember_me` posted: `LoginCodeSubscriber` listens at priority -48, after the framework enables the badge (-32) and before the cookie is written (-64). The wish is kept with the held login instead (`LoginCode::isRemembered()`), and `LoginCodeController` sets the cookie once the code is right. An email that cannot be sent (no template, mailer down) lets the login through with a warning in the log, so an outage never locks out the admin who would fix it. The email is the admin-editable `login_code` template, its `{{ code }}` placeholder resolved at send time.
+
+### Staying signed in
+
+The scaffolded login form carries a **Keep me signed in** box (`_remember_me`, `label.remember_me`), read by Symfony's `remember_me` on the `main` firewall: the account stays signed in for thirty days past its session, the cookie signed over its password hash, so a password change or **Sign out my other devices** ends it. `c975l:site:create` declares it on a new site; on an existing one, add it yourself:
+
+```yaml
+# config/packages/security.yaml
+security:
+    firewalls:
+        main:
+            remember_me: { secret: '%kernel.secret%', lifetime: 2592000 }
+```
+
+A remembered login opens what asks for `IS_AUTHENTICATED_REMEMBERED` or a role; what asks for `IS_AUTHENTICATED_FULLY` (the password change, the agent tokens, the account export and deletion) still sends to the login form. A site whose `login.html.twig` is its own adds the box itself, `c975l:scaffold:diff --path=templates/security/login.html.twig` showing it.
 
 ### Account activation (`isEnabled`)
 

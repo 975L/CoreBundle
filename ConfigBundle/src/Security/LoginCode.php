@@ -64,9 +64,9 @@ class LoginCode
     }
 
     // Sends a code and parks the login until it is typed. False when nothing could be sent: the login then goes through, a mailer down never locking out the admin who would fix it. An account out of failures for the day is parked exhausted, without any email, a new login never resetting what the last ones spent
-    public function start(SessionInterface $session, UserInterface $user, string $target): bool
+    public function start(SessionInterface $session, UserInterface $user, string $target, bool $remember = false): bool
     {
-        $pending = ['attempts' => 0, 'target' => $target, 'user' => $user->getUserIdentifier()];
+        $pending = ['attempts' => 0, 'remember' => $remember, 'target' => $target, 'user' => $user->getUserIdentifier()];
         if ($this->isLocked($user->getUserIdentifier())) {
             $session->set(self::SESSION, [...$pending, 'attempts' => self::ATTEMPTS]);
 
@@ -118,6 +118,14 @@ class LoginCode
         $counted = $this->loginCodeLimiter->create((string) ($pending['user'] ?? ''))->consume()->isAccepted();
 
         return !$counted || $pending['attempts'] + 1 >= self::ATTEMPTS ? self::EXHAUSTED : self::INVALID;
+    }
+
+    // Whether the login waiting asked to stay signed in, its remember-me cookie then set once the code is typed
+    public function isRemembered(SessionInterface $session): bool
+    {
+        $pending = $session->get(self::SESSION);
+
+        return \is_array($pending) && true === ($pending['remember'] ?? false);
     }
 
     // Ends the wait, answering where the login was going

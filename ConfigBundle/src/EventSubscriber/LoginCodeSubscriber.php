@@ -52,8 +52,9 @@ class LoginCodeSubscriber
         }
 
         $target = $event->getResponse()?->headers->get('Location') ?? $request->getBasePath() . '/';
-        if ($this->loginCode->start($request->getSession(), $user, $target)) {
-            $event->getPassport()->getBadge(RememberMeBadge::class)?->disable();
+        $rememberMe = $event->getPassport()->getBadge(RememberMeBadge::class);
+        if ($this->loginCode->start($request->getSession(), $user, $target, $rememberMe?->isEnabled() ?? false)) {
+            $rememberMe?->disable();
             $event->setResponse(new RedirectResponse($this->urlGenerator->generate(LoginCodeController::ROUTE)));
         }
     }
