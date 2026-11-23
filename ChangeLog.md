@@ -1,5 +1,11 @@
 # ChangeLog
 
+## v1.98.4
+
+Markdown lint allows only the elements the README uses
+
+- `.markdownlint.json` no longer allows the `details` and `summary` elements (23/11/2026)
+
 ## v1.98.3
 
 README banner centred, showcase film shown
