@@ -1,5 +1,14 @@
 # ChangeLog
 
+## v1.98.3
+
+README banner centred, showcase film shown
+
+- The contents of the README shown as a plain list again under its reference (23/11/2026)
+- README banner centred, the showcase film's poster under the links, opening its YouTube video (23/11/2026)
+- README support tip under its "Why" section (23/11/2026)
+- `.markdownlint.json` allows the `p` and `img` elements the centred banner uses (23/11/2026)
+
 ## v1.98.2
 
 Markdown lint accepts the folded README reference

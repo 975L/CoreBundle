@@ -5,11 +5,15 @@
 [![PHP Version](https://img.shields.io/packagist/php-v/c975l/core-bundle)](https://packagist.org/packages/c975l/core-bundle)
 [![Codacy Grade](https://app.codacy.com/project/badge/Grade/2237035a504b4374a606d49bf6b02dcc)](https://app.codacy.com/gh/975L/CoreBundle/dashboard)
 
-![CoreBundle](.github/images/CoreBundle.svg)
+<p align="center"><img src=".github/images/CoreBundle.svg" alt="CoreBundle"></p>
 
 **Your site gets its settings, back-office dashboard, user accounts, page blocks, media library, forms and emails: the base every other c975L bundle builds on.**
 
 **[Bundle page](https://bundles.975l.com/en/pages/core-bundle) · [Tutorials](https://bundles.975l.com/en/tutoriels/core-bundle) · [Block kinds](https://bundles.975l.com/en/pages/blocks/Ui) · [Live demo](https://bundles.975l.com/demo/) · [Demo back-office](https://bundles.975l.com/demo/login)**
+
+[![Watch the CoreBundle film](.github/images/showcase.jpg)](https://youtu.be/uOLfj9ymNZo)
+
+▶ [Watch the film](https://youtu.be/uOLfj9ymNZo) · [CoreBundle's page](https://bundles.975l.com/en/pages/core-bundle)
 
 > **TL;DR** — CoreBundle is the base of the c975L ecosystem: settings kept in the database, the back-office dashboard, user accounts and health check on one side, page blocks, media, theme, forms and emails on the other. It ships these as two bundles, ConfigBundle and UiBundle, in a single package with one release. Require the package and register both bundles.
 
@@ -40,8 +44,7 @@ Then register both bundles as shown in the full [installation](#installation) se
 
 ## Reference
 
-<details>
-<summary>Contents</summary>
+### Contents
 
 - [One package, two bundles](#one-package-two-bundles)
 - [Why they ship together](#why-they-ship-together)
@@ -51,8 +54,6 @@ Then register both bundles as shown in the full [installation](#installation) se
 - [Quality checks](#quality-checks)
 - [Migrating from `c975l/config-bundle` / `c975l/ui-bundle`](#migrating-from-c975lconfig-bundle--c975lui-bundle)
 - [License](#license)
-
-</details>
 
 ## One package, two bundles
 
@@ -75,6 +76,14 @@ ConfigBundle and UiBundle referenced each other in their `composer.json`, in bot
 - **Config → Ui** comes from the dashboard itself (`FontRegistry`, `FormThemeRegistry`, `StylesheetManagementRegistry`, `ScriptAdminRegistry`, `WhatsNewRegistry`) and from user accounts (`Form`/`FormField` + `EmailService`).
 
 Two packages that require each other cannot be released independently, and neither can see the other's work-in-progress — only its last published version. They were never two layers; they were one layer billed as two. This package says so out loud.
+
+> [!TIP]
+> If this project **helps you save development time**:
+>
+> - [**star** it on GitHub](https://github.com/975L/CoreBundle) — helps others find it
+> - [**open an issue**](https://github.com/975L/CoreBundle/issues/new) to share how you use it — genuinely useful feedback
+>
+> And if you'd like to support the work directly, the **Sponsor** button at the top of the GitHub page is there for that.
 
 ## Installation
 
