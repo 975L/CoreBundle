@@ -10,15 +10,17 @@
 
 namespace c975L\ConfigBundle\Service;
 
-use c975L\ConfigBundle\Contract\InactivityAwareInterface;
 use c975L\ConfigBundle\Entity\AgentToken;
 use c975L\ConfigBundle\Repository\AgentTokenRepository;
+use c975L\ConfigBundle\Security\EnabledAccountTrait;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Clock\ClockInterface;
 
 // Issues the tokens an AI agent presents to the MCP endpoint and finds the one a request carries, an expired one opening nothing
 class AgentTokenManager
 {
+    use EnabledAccountTrait;
+
     // A token's last use is only rewritten once it is that old: one write a minute, not one per tool call
     private const string LAST_USE_PRECISION = '-1 minute';
 
@@ -72,7 +74,7 @@ class AgentTokenManager
     {
         $user = $agentToken->getUser();
 
-        return null !== $user && (!$user instanceof InactivityAwareInterface || $user->isEnabled()) && !$agentToken->isExpired($now);
+        return null !== $user && self::isEnabled($user) && !$agentToken->isExpired($now);
     }
 
     private static function hash(string $secret): string

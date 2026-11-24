@@ -16,6 +16,7 @@ use c975L\ConfigBundle\Entity\AppToken;
 use c975L\ConfigBundle\Repository\AppTokenRepository;
 use c975L\ConfigBundle\Service\AppTokenManager;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
+use c975L\ConfigBundle\Tests\Fixtures\UserStub;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
 
@@ -164,6 +165,20 @@ class AppTokenManagerTest extends TestCase
         $this->assertNull($manager->find($token));
 
         $enabled = true;
+        $this->assertNotNull($manager->find($token));
+    }
+
+    // A token of a disabled account opens nothing, even when its User does not implement InactivityAwareInterface
+    public function testATokenOfADisabledAccountWithoutInactivityFindsNothing(): void
+    {
+        $user = new UserStub();
+        $manager = $this->createManager();
+        $code = $manager->createCode($user, AppTokenManager::challengeOf(self::VERIFIER), 'Pixel');
+        $token = (string) $manager->exchange($code, self::VERIFIER);
+
+        $this->assertNull($manager->find($token));
+
+        $user->setIsEnabled(true);
         $this->assertNotNull($manager->find($token));
     }
 

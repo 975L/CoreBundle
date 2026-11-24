@@ -10,15 +10,17 @@
 
 namespace c975L\ConfigBundle\Service;
 
-use c975L\ConfigBundle\Contract\InactivityAwareInterface;
 use c975L\ConfigBundle\Contract\UserInterface;
 use c975L\ConfigBundle\Entity\AppToken;
 use c975L\ConfigBundle\Repository\AppTokenRepository;
+use c975L\ConfigBundle\Security\EnabledAccountTrait;
 use Doctrine\ORM\EntityManagerInterface;
 
 // Connects a mobile app to a member's account the way a native app should (RFC 8252): the member signs in on the site, in their browser, by whatever means the site offers; the app is then handed a one-time code through its own url scheme and trades it, with the secret only it holds (PKCE), for the token it will send from then on. The app never sees a password, and another app registering the same scheme gets a code it cannot trade
 class AppTokenManager
 {
+    use EnabledAccountTrait;
+
     // What a PKCE challenge looks like: the base64url of a sha256, unpadded
     public const string CHALLENGE_PATTERN = '/^[A-Za-z0-9_-]{43}$/';
 
@@ -133,7 +135,7 @@ class AppTokenManager
         $user = $appToken->getUser();
 
         return null !== $user
-            && (!$user instanceof InactivityAwareInterface || $user->isEnabled())
+            && self::isEnabled($user)
             && ($appToken->getLastUse() ?? $appToken->getCreation()) >= $now->modify(self::IDLE_LIFETIME);
     }
 

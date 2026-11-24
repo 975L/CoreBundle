@@ -1,5 +1,13 @@
 # ChangeLog
 
+## v1.99.1
+
+Agent and app tokens of a disabled account refused on every site
+
+- An agent token opens nothing for a disabled account whose User does not implement `InactivityAwareInterface` (24/11/2026)
+- An app token opens nothing for a disabled account whose User does not implement `InactivityAwareInterface` (24/11/2026)
+- Added `EnabledAccountTrait`, the enabled check both token managers share (24/11/2026)
+
 ## v1.99.0
 
 Keep me signed in box on the login form

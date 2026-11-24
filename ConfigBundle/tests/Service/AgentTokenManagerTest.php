@@ -15,6 +15,7 @@ use c975L\ConfigBundle\Contract\UserInterface;
 use c975L\ConfigBundle\Entity\AgentToken;
 use c975L\ConfigBundle\Repository\AgentTokenRepository;
 use c975L\ConfigBundle\Service\AgentTokenManager;
+use c975L\ConfigBundle\Tests\Fixtures\UserStub;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Clock\MockClock;
@@ -58,6 +59,20 @@ class AgentTokenManagerTest extends TestCase
         $this->assertNull(new AgentTokenManager($repository, $this->createStub(EntityManagerInterface::class), new MockClock())->find('secret-1'));
 
         $enabled = true;
+        $this->assertSame($agentToken, new AgentTokenManager($repository, $this->createStub(EntityManagerInterface::class), new MockClock())->find('secret-1'));
+    }
+
+    // A token of a disabled account opens nothing, even when its User does not implement InactivityAwareInterface
+    public function testADisabledAccountWithoutInactivityOpensNothing(): void
+    {
+        $user = new UserStub();
+        $agentToken = new AgentToken()->setUser($user)->setName('agent-1');
+        $repository = $this->createStub(AgentTokenRepository::class);
+        $repository->method('findOneByTokenHash')->willReturn($agentToken);
+
+        $this->assertNull(new AgentTokenManager($repository, $this->createStub(EntityManagerInterface::class), new MockClock())->find('secret-1'));
+
+        $user->setIsEnabled(true);
         $this->assertSame($agentToken, new AgentTokenManager($repository, $this->createStub(EntityManagerInterface::class), new MockClock())->find('secret-1'));
     }
 
