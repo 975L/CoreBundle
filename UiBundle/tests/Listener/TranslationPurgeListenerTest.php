@@ -12,6 +12,7 @@ namespace c975L\UiBundle\Tests\Listener;
 
 use c975L\UiBundle\Entity\Block;
 use c975L\UiBundle\Entity\Favorite;
+use c975L\UiBundle\Entity\Form;
 use c975L\UiBundle\Entity\FormField;
 use c975L\UiBundle\Entity\FormOutput;
 use c975L\UiBundle\Entity\Media;
@@ -95,6 +96,20 @@ class TranslationPurgeListenerTest extends TestCase
             ->with(Translation::OWNER_FORM_FIELD, 12);
 
         $this->remove($repository, $field);
+    }
+
+    // A form deleted takes its links' labels with it, its fields' going with their own rows
+    public function testAFormTakesItsLinkTranslationsWithIt(): void
+    {
+        $form = new Form();
+        new \ReflectionProperty(Form::class, 'id')->setValue($form, 5);
+
+        $repository = $this->createMock(TranslationRepository::class);
+        $repository->expects($this->once())
+            ->method('deleteByOwner')
+            ->with(Translation::OWNER_FORM, 5);
+
+        $this->remove($repository, $form);
     }
 
     // Named apart from the fields, so a result's own words are the ones taken away

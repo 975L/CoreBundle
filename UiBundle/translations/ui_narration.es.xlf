@@ -364,7 +364,7 @@
             </trans-unit>
             <trans-unit id="MHIvS60">
                 <source>narration.guided_step_ui_form_translate</source>
-                <target>En la parte superior del formulario, elija un idioma en las pestañas y escriba en él las etiquetas y los textos de ayuda. Los campos se componen una sola vez, en el idioma en que se escribió el formulario.</target>
+                <target>En la parte superior del formulario, elija un idioma en las pestañas y escriba en él las etiquetas, los textos de ayuda y los de los enlaces bajo el botón. Los campos se componen una sola vez, en el idioma en que se escribió el formulario.</target>
             </trans-unit>
             <trans-unit id="aPBTIn6">
                 <source>narration.guided_step_ui_legal_model_apply</source>

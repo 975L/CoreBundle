@@ -11,6 +11,7 @@
 namespace c975L\UiBundle\Service;
 
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
+use c975L\ConfigBundle\Service\ConfigTranslator;
 
 // The site's identity inside a legal model. The models read it through the legal_var() Twig function, which normally resolves it on the spot - so a model rendered any way at all, a block or a plain {% include %} in an app's own template, reads correctly with no post-processing.
 //
@@ -50,8 +51,13 @@ class LegalModelPlaceholders
     // Set only for the duration of one withMarkers() call, which never spans a request boundary
     private bool $markerMode = false;
 
+    // The language the document being rendered is written in, set only for the duration of one inLocale() call; null reads the visitor's
+    private ?string $locale = null;
+
+    // The translator is optional so a model renders the typed values where no language layer is wired, as in a unit test
     public function __construct(
         private readonly ConfigServiceInterface $configService,
+        private readonly ?ConfigTranslator $configTranslator = null,
     ) {
     }
 
@@ -64,7 +70,20 @@ class LegalModelPlaceholders
 
         return $this->markerMode
             ? '%' . $slug . '%'
-            : $this->format($this->configService->get($slug), self::VARS[$slug]);
+            : $this->format($this->read($slug, $this->locale), self::VARS[$slug]);
+    }
+
+    // Runs $render with the values read in the language of the document, which a PDF or an attachment does not share with the visitor
+    public function inLocale(string $locale, callable $render): string
+    {
+        $previous = $this->locale;
+        $this->locale = $locale;
+
+        try {
+            return $render();
+        } finally {
+            $this->locale = $previous;
+        }
     }
 
     // Runs $render with the models writing markers rather than values
@@ -86,14 +105,22 @@ class LegalModelPlaceholders
     }
 
     // Replaces every known marker by its current config value. Runs on the finished document, bundle text and client-authored overrides alike
-    public function substitute(string $html): string
+    public function substitute(string $html, ?string $locale = null): string
     {
         $map = [];
         foreach (self::VARS as $slug => $format) {
-            $map['%' . $slug . '%'] = $this->format($this->configService->get($slug), $format);
+            $map['%' . $slug . '%'] = $this->format($this->read($slug, $locale ?? $this->locale), $format);
         }
 
         return strtr($html, $map);
+    }
+
+    // A setting as that language says it, the typed value where it says nothing or where the setting holds no words (see ConfigTranslator::TRANSLATABLE)
+    private function read(string $slug, ?string $locale): mixed
+    {
+        $value = $this->configService->get($slug);
+
+        return null !== $this->configTranslator ? $this->configTranslator->value($slug, $value, $locale) : $value;
     }
 
     private function format(mixed $value, string $format): string

@@ -85,7 +85,7 @@ class LegalDocument
         $block = $this->block($model);
 
         if (null === $block) {
-            return $this->placeholders->substitute($this->renderer->render($model, null, [], $locale));
+            return $this->placeholders->substitute($this->renderer->render($model, null, [], $locale), $locale);
         }
 
         $data = $block->getData();

@@ -66,9 +66,11 @@ itself reads that list, which is what puts it outside this rule rather than besi
   table under the owner type `site_config` (`Service\ConfigTranslator`, ECOSYSTEM.md §26). The typed
   value never moves, playing the msgid the way `Page::$title` does, and a setting nobody translated
   keeps it. Which entries those are is listed one by one in `ConfigTranslator::TRANSLATABLE`
-  (`site-age-warning` today) and **not** deduced from the kind: a url, a postal address, a name or a
-  technical key holds words and is still said the same way in every language, and anything PHP reads
-  straight from `ConfigService::get()` never sees the layer. A `sensitive` entry is left out whatever
+  (`site-age-warning`, and the legal identity written in sentences: `site-owner`, `site-producer`,
+  `site-hosting-provider`, `site-consumer-mediator`) and **not** deduced from the kind: a url, a postal
+  address, a name or a technical key holds words and is still said the same way in every language, and
+  anything PHP reads straight from `ConfigService::get()` never sees the layer. The legal models read
+  theirs through UiBundle's `LegalModelPlaceholders`, in the language of the document drawn. A `sensitive` entry is left out whatever
   its slug — a secret holds no sentence, and the
   language screen leaves the stored value untouched, which there is its encrypted envelope. Nothing of
   this exists on a site declaring a single language. Do **not** store a second entry per language.

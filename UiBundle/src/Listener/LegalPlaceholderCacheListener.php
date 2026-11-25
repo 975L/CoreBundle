@@ -11,6 +11,8 @@
 namespace c975L\UiBundle\Listener;
 
 use c975L\ConfigBundle\Entity\Config;
+use c975L\ConfigBundle\Service\ConfigTranslator;
+use c975L\UiBundle\Entity\Translation;
 use c975L\UiBundle\Service\LegalModelCacheTagProvider;
 use c975L\UiBundle\Service\LegalModelPlaceholders;
 use Doctrine\Bundle\DoctrineBundle\Attribute\AsDoctrineListener;
@@ -84,6 +86,13 @@ class LegalPlaceholderCacheListener
     // Only the slugs the models are actually allowed to print, plus the ones they branch on, so renaming an unrelated config costs nothing
     private function markIfPlaceholderConfig(object $entity): void
     {
+        // A setting said in another language is baked into that language's render just as its typed value is (see ConfigTranslator)
+        if ($entity instanceof Translation && ConfigTranslator::OWNER === $entity->getOwnerType()) {
+            $this->stale = true;
+
+            return;
+        }
+
         if (!$entity instanceof Config) {
             return;
         }

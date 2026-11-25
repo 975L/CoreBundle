@@ -292,6 +292,52 @@ class ContentTranslator
         return trim((string) preg_replace('/\s+/', ' ', html_entity_decode(strip_tags($text), \ENT_QUOTES | \ENT_HTML5)));
     }
 
+    // The places a repeated text no longer says what it said, each with the place that said those words before - the same key of another entry - or null when none did: compared on the words alone, a raw !== reading an entry nobody touched as a rewritten one (see BlockType and FormTranslator::followMovedLinks())
+    /**
+     * @param array<string, string|null> $before "cards.0.title" => words, before the submission
+     * @param array<string, string|null> $after  the same, once it is mapped
+     *
+     * @return array<string, string|null> field => field its translations come from
+     */
+    public static function movedFields(array $before, array $after): array
+    {
+        $plain = static fn (?string $text): string => null === $text ? '' : self::plain($text);
+
+        $moves = [];
+        foreach (array_keys($before + $after) as $field) {
+            $text = $plain($after[$field] ?? null);
+            if ($text === $plain($before[$field] ?? null)) {
+                continue;
+            }
+
+            $from = '' === $text ? null : self::formerField((string) $field, $text, $before, $plain);
+
+            // A place only the new source has, with words no entry said before, has no translation to drop
+            if (null !== $from || array_key_exists($field, $before)) {
+                $moves[$field] = $from;
+            }
+        }
+
+        return $moves;
+    }
+
+    // The place that said these words before, in the same collection and under the same key: "cards.2.title" for what "cards.0.title" now says
+    /** @param array<string, string|null> $before */
+    private static function formerField(string $field, string $text, array $before, \Closure $plain): ?string
+    {
+        [$collection, , $key] = explode('.', $field, 3) + [null, null, null];
+
+        foreach ($before as $candidate => $words) {
+            [$candidateCollection, , $candidateKey] = explode('.', (string) $candidate, 3) + [null, null, null];
+
+            if ($candidateCollection === $collection && $candidateKey === $key && $plain($words) === $text) {
+                return (string) $candidate;
+            }
+        }
+
+        return null;
+    }
+
     // What a form has just been given, kept until the flush that saves its owner goes through: a POST_SUBMIT store() would persist a submission about to be refused, so TranslationWriteListener drains this on postFlush instead
     /** @param array<string, string|null> $values field => value */
     public function stage(string $ownerType, int $ownerId, string $locale, array $values): void

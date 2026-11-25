@@ -29,14 +29,14 @@ class LegalModelRenderer
     // Final HTML for a block: the model for this locale, the delta applied, the %config% markers resolved
     public function render(string $model, ?string $latestUpdate, array $customization, string $locale): string
     {
-        $html = $this->renderModel($model, $latestUpdate, $locale);
+        $html = $this->placeholders->inLocale($locale, fn (): string => $this->renderModel($model, $latestUpdate, $locale));
 
         $customization = $this->forLocale($customization, $locale);
         if ('' !== $html && $this->isCustomized($customization)) {
             $html = $this->customize($html, $customization);
         }
 
-        return $this->placeholders->substitute($html);
+        return $this->placeholders->substitute($html, $locale);
     }
 
     // The delta as one locale renders it. Hiding and reordering are about what the document holds, so they apply in every language; wording is per language, a clause rewritten or added in French having no business on the English page

@@ -452,7 +452,7 @@
             </trans-unit>
             <trans-unit id="tbWt3Ve">
                 <source>description.guided_step_config_settings_translate</source>
-                <target>Solo algunos ajustes se escriben en cada idioma, como el aviso de edad: su fila lleva el botón Traducir, que vuelve a abrir el ajuste en otro idioma.</target>
+                <target>Solo algunos ajustes se escriben en cada idioma, como el aviso de edad o la identidad legal: su fila lleva el botón Traducir, que vuelve a abrir el ajuste en otro idioma.</target>
             </trans-unit>
             <trans-unit id="qd4IzF2">
                 <source>description.guided_step_config_settings_value</source>

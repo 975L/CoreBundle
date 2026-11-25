@@ -364,7 +364,7 @@
             </trans-unit>
             <trans-unit id="MHIvS60">
                 <source>narration.guided_step_ui_form_translate</source>
-                <target>At the top of the form, pick a language in the tabs, then write the labels and the help texts in it. The fields themselves are composed once, in the language the form was written in.</target>
+                <target>At the top of the form, pick a language in the tabs, then write the labels, the help texts and those of the links under the button in it. The fields themselves are composed once, in the language the form was written in.</target>
             </trans-unit>
             <trans-unit id="aPBTIn6">
                 <source>narration.guided_step_ui_legal_model_apply</source>

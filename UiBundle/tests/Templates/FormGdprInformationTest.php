@@ -67,6 +67,8 @@ class FormGdprInformationTest extends TestCase
         $twig->addFunction(new TwigFunction('form_end', static fn (): string => '', ['is_safe' => ['html']]));
         $twig->addFunction(new TwigFunction('path', static fn (string $route, array $parameters = []): string => '/'));
         $twig->addFunction(new TwigFunction('ui_can_hold_flash', static fn (): bool => false));
+        // The links under the button, read as stored here: their translation is FormTranslator's
+        $twig->addFunction(new TwigFunction('ui_form_links', static fn (object | array $form): array => \is_array($form) ? $form['links'] ?? [] : $form->getLinks()));
         // ConfigBundle's own function, the one thing this test varies
         $twig->addFunction(new TwigFunction('config', static fn (string $slug): mixed => 'url-privacy-policy' === $slug ? $privacyUrl : null));
 

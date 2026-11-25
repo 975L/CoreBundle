@@ -17,6 +17,7 @@ use c975L\UiBundle\Entity\Form;
 use c975L\UiBundle\Entity\FormField;
 use c975L\UiBundle\Entity\FormOutput;
 use c975L\UiBundle\Form\FormFieldType;
+use c975L\UiBundle\Form\FormLinksTranslationType;
 use c975L\UiBundle\Form\FormLinkType;
 use c975L\UiBundle\Form\FormOutputType;
 use c975L\UiBundle\Form\Util\CollectionReconciler;
@@ -41,6 +42,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto;
 use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\CollectionField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\Field;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
@@ -137,6 +139,24 @@ class FormCrudController extends AbstractCrudController
         return $formBuilder;
     }
 
+    // The links' translations follow their words on the composing screen, read before the submission is mapped and carried once it is (see FormTranslator::followMovedLinks()); a language screen has no "links" to move
+    private function addLinkTranslationListener(FormBuilderInterface $formBuilder): void
+    {
+        $before = null;
+
+        $formBuilder->addEventListener(FormEvents::PRE_SUBMIT, static function (FormEvent $event) use (&$before): void {
+            $form = $event->getForm()->getData();
+            $before = $form instanceof Form && $event->getForm()->has('links') ? FormTranslator::linkLabels($form) : null;
+        });
+
+        $formBuilder->addEventListener(FormEvents::POST_SUBMIT, function (FormEvent $event) use (&$before): void {
+            $form = $event->getData();
+            if ($form instanceof Form && null !== $before) {
+                $this->formTranslator->followMovedLinks($form, $before);
+            }
+        });
+    }
+
     // Names every field and output while the submitted data is being bound, at a priority that runs before Symfony's own validation listener (POST_SUBMIT, priority 0). Doing it in persistEntity/updateEntity, as this screen used to, is too late for ValidExpressionsValidator: it would check the formulas against the names the rows carried BEFORE the save, and so miss exactly the rename that breaks them
     private function addNamingListener(FormBuilderInterface $formBuilder): void
     {
@@ -155,6 +175,7 @@ class FormCrudController extends AbstractCrudController
         $formBuilder = parent::createEditFormBuilder($entityDto, $formOptions, $context);
 
         $this->addNamingListener($formBuilder);
+        $this->addLinkTranslationListener($formBuilder);
 
         $formBuilder->addEventListener(FormEvents::PRE_SUBMIT, function (FormEvent $event): void {
             $data = $event->getData();
@@ -251,6 +272,15 @@ class FormCrudController extends AbstractCrudController
             ->allowDelete(false)
             ->setFormTypeOption('by_reference', false)
             ->setFormTypeOption('entry_options.translation_locale', $this->contentLocale());
+
+        // The links under the submit button, by their labels alone: a link is added or removed on the composing screen, for every language at once
+        $form = $this->adminContextProvider->getContext()?->getEntity()?->getInstance();
+        if ($form instanceof Form && [] !== $form->getLinks()) {
+            yield Field::new('linksTranslation')
+                ->setLabel(t('label.form_links', [], 'ui'))
+                ->setFormType(FormLinksTranslationType::class)
+                ->setFormTypeOptions(['ui_form' => $form, 'translation_locale' => (string) $this->contentLocale()]);
+        }
     }
 
     #[\Override]

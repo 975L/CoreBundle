@@ -420,7 +420,7 @@
             </trans-unit>
             <trans-unit id="9zih8su">
                 <source>description.guided_step_ui_form_translate</source>
-                <target>Choisissez une langue dans les onglets en haut du formulaire, et écrivez-y les libellés et les textes d'aide - les champs, eux, se composent une seule fois, dans la langue où le formulaire a été écrit.</target>
+                <target>Choisissez une langue dans les onglets en haut du formulaire, et écrivez-y les libellés, les textes d'aide et ceux des liens sous le bouton - les champs, eux, se composent une seule fois, dans la langue où le formulaire a été écrit.</target>
             </trans-unit>
             <trans-unit id="UUhHZlk">
                 <source>description.guided_step_ui_legal_model_apply</source>

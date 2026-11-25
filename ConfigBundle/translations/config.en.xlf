@@ -452,7 +452,7 @@
             </trans-unit>
             <trans-unit id="tbWt3Ve">
                 <source>description.guided_step_config_settings_translate</source>
-                <target>Only a few settings are written in each language, such as the age warning: their row carries the Translate button, which reopens the setting in another language.</target>
+                <target>Only a few settings are written in each language, such as the age warning or the legal identity: their row carries the Translate button, which reopens the setting in another language.</target>
             </trans-unit>
             <trans-unit id="qd4IzF2">
                 <source>description.guided_step_config_settings_value</source>

@@ -25,7 +25,8 @@ use c975L\UiBundle\Entity\Translation;
  * Only what a visitor reads is covered. A field's "name" is its programmatic key (the HTML input name, the key in the
  * notification email), an expression reads outputs by that same name, and both would break the day a language changed
  * one - so neither is translated. Choice options are left out for now, being pairs inside a JSON column rather than a
- * column of their own; so are the links under the submit button, which live in Form::$actionConfig.
+ * column of their own. The links under the submit button live in Form::$actionConfig: their labels are translated
+ * under the form itself, one "links.<index>.label" apiece, their urls being localised where they render.
  *
  * A site declaring a single language never reads any of this: ContentTranslator short-circuits on isActive().
  */
@@ -35,6 +36,8 @@ class FormTranslator
     public const string OWNER_FIELD = Translation::OWNER_FORM_FIELD;
 
     public const string OWNER_OUTPUT = Translation::OWNER_FORM_OUTPUT;
+
+    public const string OWNER_FORM = Translation::OWNER_FORM;
 
     // What a translation may cover of a field: what a visitor reads above the input, inside it, and what it starts on. Never "name", "type" or any bound, which are not words
     public const array FIELD_FIELDS = ['label', 'placeholder', 'defaultValue'];
@@ -73,6 +76,103 @@ class FormTranslator
     {
         $this->preloadFields($form->getFields(), $locale);
         $this->preloadOutputs($form->getOutputs(), $locale);
+
+        if ($this->isActive() && null !== $form->getId() && [] !== $form->getLinks()) {
+            $this->contentTranslator?->preload(self::OWNER_FORM, [$form->getId()], $locale);
+        }
+    }
+
+    // The links under the submit button, each label in the language being read, the one it was typed in where that language says nothing
+    /** @return list<array{label: string, url: string}> */
+    public function getLinks(Form $form, ?string $locale = null): array
+    {
+        $links = $form->getLinks();
+        $id = $form->getId();
+        if (null === $id || null === $this->contentTranslator || !$this->isActive() || [] === $links) {
+            return $links;
+        }
+
+        // Laid over the links as a block's collection entries are, "links.0.label" reaching into the first one
+        $translated = $this->contentTranslator->translate(self::OWNER_FORM, $id, ['links' => $links], array_keys(self::linkLabels($form)), $locale);
+
+        return array_values($translated['links']);
+    }
+
+    // What a language screen offers for each link label: what that language already says, or the label between brackets where it says nothing yet
+    /** @return array<int, string|null> index => value */
+    public function linkPromptValues(Form $form, string $locale): array
+    {
+        $id = $form->getId();
+        $written = null !== $id && null !== $this->contentTranslator ? $this->contentTranslator->values(self::OWNER_FORM, $id, $locale) : [];
+
+        $values = [];
+        foreach ($form->getLinks() as $index => $link) {
+            $translated = $written[self::linkField($index)] ?? null;
+            $values[$index] = null !== $translated && '' !== $translated ? $translated : ContentTranslator::prompt($link['label']);
+        }
+
+        return $values;
+    }
+
+    // Hands the link labels a language screen wrote over to be stored on the flush that saves the form, a label left holding the bracketed source counting as nothing written
+    /** @param array<int, string|null> $labels index => value */
+    public function stageLinks(Form $form, string $locale, array $labels): void
+    {
+        $id = $form->getId();
+        $values = $this->linkValues($form, $labels);
+        if (null !== $id && [] !== $values) {
+            $this->contentTranslator?->stage(self::OWNER_FORM, $id, $locale, $values);
+        }
+    }
+
+    // Writes link labels straight away rather than staging them - what a seeder does, having no form to wait for
+    /** @param array<int, string|null> $labels index => value */
+    public function storeLinks(Form $form, string $locale, array $labels): void
+    {
+        $id = $form->getId();
+        $values = $this->linkValues($form, $labels);
+        if (null !== $id && [] !== $values) {
+            $this->contentTranslator?->store(self::OWNER_FORM, $id, $locale, $values);
+        }
+    }
+
+    // A link's translations follow its words when the composing screen moves, rewrites or removes it, the label it was typed with being the msgid: Form::setLinks() renumbers what is left, and a translation pinned to its place would land on the next link
+    /** @param array<string, string> $before "links.<index>.label" => label, as linkLabels() read it before the submission */
+    public function followMovedLinks(Form $form, array $before): void
+    {
+        $id = $form->getId();
+        $moves = ContentTranslator::movedFields($before, self::linkLabels($form));
+        if (null === $id || null === $this->contentTranslator || [] === $moves) {
+            return;
+        }
+
+        // Read before anything is staged: two links swapping places each take what the other held
+        foreach ($this->contentTranslator->getTranslatableLocales() as $locale) {
+            $translations = $this->contentTranslator->values(self::OWNER_FORM, $id, $locale);
+
+            $this->contentTranslator->stage(self::OWNER_FORM, $id, $locale, array_map(
+                static fn (?string $from): ?string => null === $from ? null : ($translations[$from] ?? null),
+                $moves
+            ));
+        }
+    }
+
+    // The labels of a form's links as the translation table names them
+    /** @return array<string, string> "links.<index>.label" => label */
+    public static function linkLabels(Form $form): array
+    {
+        $labels = [];
+        foreach ($form->getLinks() as $index => $link) {
+            $labels[self::linkField($index)] = $link['label'];
+        }
+
+        return $labels;
+    }
+
+    // The translation field of one link's label, numbered like a block's collection entries ("items.0.title")
+    public static function linkField(int $index): string
+    {
+        return 'links.' . $index . '.label';
     }
 
     /**
@@ -199,6 +299,24 @@ class FormTranslator
         }
 
         return $this->contentTranslator->translate($this->owner($row), $row->getId(), $source, [$field], $locale)[$field] ?? null;
+    }
+
+    // The labels given for the links the form still has, the bracketed source counting as nothing written
+    /**
+     * @param array<int, string|null> $labels index => value
+     *
+     * @return array<string, string|null> field => value
+     */
+    private function linkValues(Form $form, array $labels): array
+    {
+        $values = [];
+        foreach ($form->getLinks() as $index => $link) {
+            if (array_key_exists($index, $labels)) {
+                $values[self::linkField($index)] = ContentTranslator::untouched($labels[$index], $link['label']) ? null : $labels[$index];
+            }
+        }
+
+        return $values;
     }
 
     /**

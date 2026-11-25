@@ -420,7 +420,7 @@
             </trans-unit>
             <trans-unit id="9zih8su">
                 <source>description.guided_step_ui_form_translate</source>
-                <target>Pick a language in the tabs at the top of the form, and write the labels and the help texts in it - the fields themselves are composed once, in the language the form was written in.</target>
+                <target>Pick a language in the tabs at the top of the form, and write the labels, the help texts and those of the links under the button in it - the fields themselves are composed once, in the language the form was written in.</target>
             </trans-unit>
             <trans-unit id="UUhHZlk">
                 <source>description.guided_step_ui_legal_model_apply</source>

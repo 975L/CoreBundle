@@ -18,12 +18,12 @@ class AsHealthCheckTest extends TestCase
     // The default is what makes the attribute optional: a provider only carries it to say it is not weekly
     public function testFrequencyDefaultsToWeekly(): void
     {
-        $this->assertSame(AsHealthCheck::FREQUENCY_WEEKLY, (new AsHealthCheck())->frequency);
+        $this->assertSame(AsHealthCheck::FREQUENCY_WEEKLY, new AsHealthCheck()->frequency);
     }
 
     public function testFrequencyIsTheDeclaredOne(): void
     {
-        $this->assertSame('monthly', (new AsHealthCheck(AsHealthCheck::FREQUENCY_MONTHLY))->frequency);
+        $this->assertSame('monthly', new AsHealthCheck(AsHealthCheck::FREQUENCY_MONTHLY)->frequency);
     }
 
     // A cadence no cron entry asks for would silently never run, which is the failure this whole mechanism replaces - so it is refused where it is written, not where it is read

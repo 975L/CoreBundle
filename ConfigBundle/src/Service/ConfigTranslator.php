@@ -29,9 +29,9 @@ class ConfigTranslator implements TranslatableTextProviderInterface
     public const array KINDS = [Config::TYPE_TEXT, Config::TYPE_TEXTAREA, Config::TYPE_HTML];
 
     // The settings a language may actually be written for, named one by one. Holding words is not enough: almost every text setting of a site is a url, a key, a postal address, a name or a technical directive, said the same way in every language
-    // A setting only belongs here when a template renders it through config(slug, locale), the one read that resolves the layer (see ConfigExtension::getConfig()): the legal identity, the SEO files and the confirmation e-mail all read ConfigService::get() straight and would never see the translation, so offering it there would store text nothing renders
-    // A bundle shipping a setting that is genuinely written in words names its slug here
-    public const array TRANSLATABLE = ['site-age-warning'];
+    // A setting only belongs here when what renders it resolves the layer: config(slug, locale) in a template (see ConfigExtension::getConfig()), or the legal models' placeholders (see UiBundle's LegalModelPlaceholders); the SEO files and the confirmation e-mail read ConfigService::get() straight and would never see the translation, so offering those would store text nothing renders
+    // The legal identity is named for its sentences ("a site published by", "Phone:"), its plain names and postal address being left the same everywhere; a bundle shipping a setting genuinely written in words names its slug here
+    public const array TRANSLATABLE = ['site-age-warning', 'site-owner', 'site-producer', 'site-hosting-provider', 'site-consumer-mediator'];
 
     // The slug => id map, read once for the request: the values are handed around by slug (see ConfigService), and the translation table names its owner by id
     private ?array $ids = null;

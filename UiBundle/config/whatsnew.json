@@ -1,5 +1,15 @@
 [
     {
+        "date": "2026-11-25",
+        "description": [
+            {
+                "en": "On a site read in several languages, the links under a form's button (\"I already have an account, sign in\", \"Back to sign in\") are now translated on the form's language screen, like its fields.",
+                "fr": "Sur un site lu en plusieurs langues, les liens sous le bouton d'un formulaire (« J'ai déjà un compte, me connecter », « Retour à la connexion ») se traduisent désormais sur l'écran de langue du formulaire, comme ses champs.",
+                "es": "En un sitio leído en varios idiomas, los enlaces bajo el botón de un formulario («Ya tengo una cuenta, iniciar sesión», «Volver al inicio de sesión») se traducen ahora en la pantalla de idioma del formulario, como sus campos."
+            }
+        ]
+    },
+    {
         "date": "2026-11-23",
         "description": [
             {

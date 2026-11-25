@@ -248,10 +248,13 @@ Set `restricted: true` on top of that for secrets shared across the whole instal
 A setting written in words carries a **Traduire** action on the index, which
 opens its very edit screen on another language: the value field alone, filled with what that language already says
 or with the typed text between brackets. Which settings those are is named one by one in `ConfigTranslator::TRANSLATABLE`
-(`site-age-warning` today), and not deduced from the `kind`: almost every text setting of a site is a url, a postal
-address, a name or a technical key, said the same way in every language — and the ones PHP reads straight from
-`ConfigService::get()` (the legal identity behind `legal_var()`, the SEO files, the confirmation e-mail's subject)
-never see the layer at all, so offering them would store text nothing renders. A bundle shipping a setting genuinely
+(`site-age-warning`, and the legal identity written in sentences: `site-owner`, `site-producer`,
+`site-hosting-provider`, `site-consumer-mediator`), and not deduced from the `kind`: almost every text setting of a
+site is a url, a postal address, a name or a technical key, said the same way in every language — and the ones PHP
+reads straight from `ConfigService::get()` (the SEO files, the confirmation e-mail's subject) never see the layer at
+all, so offering them would store text nothing renders. The legal models read theirs through UiBundle's
+`LegalModelPlaceholders`, in the language of the document being drawn — a page, its PDF or an e-mail attachment —
+and a translation written empties their cached renders as an edit of the value does. A bundle shipping a setting genuinely
 written in words names its slug there. The typed value never moves, playing the part of the msgid exactly as
 `Page::$title` does — what a language screen writes goes to UiBundle's `site_translation` table under the owner
 type `site_config` (see `ConfigTranslator`, and ECOSYSTEM.md §26 for the layer itself). A removed setting takes its

@@ -10,6 +10,7 @@
 
 namespace c975L\UiBundle\Tests\Twig;
 
+use c975L\UiBundle\Entity\Form;
 use c975L\UiBundle\Entity\FormField;
 use c975L\UiBundle\Entity\FormOutput;
 use c975L\UiBundle\Service\FormTranslator;
@@ -27,7 +28,7 @@ class FormTranslationExtensionTest extends TestCase
             $names[] = $function->getName();
         }
 
-        $this->assertSame(['ui_form_label'], $names);
+        $this->assertSame(['ui_form_label', 'ui_form_links'], $names);
     }
 
     // A calculator's results are printed by the template itself, where the fields go through FormSubmissionType - so the label has to be readable from Twig
@@ -43,6 +44,20 @@ class FormTranslationExtensionTest extends TestCase
             ->willReturn('Litres');
 
         $this->assertSame('Litres', new FormTranslationExtension($formTranslator)->getLabel($output));
+    }
+
+    // The links under the submit button are printed by the template too, their labels read in the visitor's language
+    public function testGetLinksReadsThemThroughTheTranslator(): void
+    {
+        $form = new Form()->setLinks([['label' => 'Se connecter', 'url' => '/login']]);
+
+        $formTranslator = $this->createMock(FormTranslator::class);
+        $formTranslator->expects($this->once())
+            ->method('getLinks')
+            ->with($form)
+            ->willReturn([['label' => 'Sign in', 'url' => '/login']]);
+
+        $this->assertSame([['label' => 'Sign in', 'url' => '/login']], new FormTranslationExtension($formTranslator)->getLinks($form));
     }
 
     public function testGetLabelReadsAFieldThroughTheTranslator(): void

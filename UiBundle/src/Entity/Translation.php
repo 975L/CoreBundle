@@ -31,6 +31,9 @@ class Translation implements \Stringable
 
     public const string OWNER_FORM_OUTPUT = 'ui_form_output';
 
+    // The form itself, for the words it keeps in its action config: the labels of the links under its submit button (see FormTranslator::getLinks())
+    public const string OWNER_FORM = 'ui_form';
+
     // A media carries prose of its own - the caption under a picture, the title and the text of a portfolio card, the alternative a screen reader announces - which the block it hangs from cannot translate for it: those live on the row, not in Block::$data (see MediaTranslator)
     public const string OWNER_MEDIA = 'ui_media';
 

@@ -33,6 +33,10 @@ class FormSeeder
     /** @var list<array{0: FormField, 1: string, 2: array<string, string|null>}> */
     private array $queuedTranslations = [];
 
+    // The link labels of the forms this run has just created, written after the same flush
+    /** @var list<array{0: Form, 1: string, 2: array<int, string>}> */
+    private array $queuedLinkTranslations = [];
+
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly FormRepository $formRepository,
@@ -78,6 +82,27 @@ class FormSeeder
 
         $this->entityManager->persist($this->queuedForms[$name] = $this->buildForm($name, $fields, $action, $actionConfig));
         $this->queueTranslations($this->queuedForms[$name], $coreFieldsByLocale);
+        $this->queueLinkTranslations($this->queuedForms[$name], $linksByLocale);
+    }
+
+    // Keeps the other languages' labels of a form's links just created, under the same rule as its fields' labels
+    /** @param array<string, list<array{label: string, url: string}>> $linksByLocale */
+    private function queueLinkTranslations(Form $form, array $linksByLocale): void
+    {
+        $links = $form->getLinks();
+
+        foreach ($this->formTranslator->getTranslatableLocales() as $locale) {
+            $labels = [];
+            foreach ($linksByLocale[$locale] ?? [] as $index => $link) {
+                if (isset($links[$index]) && $link['label'] !== $links[$index]['label']) {
+                    $labels[$index] = $link['label'];
+                }
+            }
+
+            if ([] !== $labels) {
+                $this->queuedLinkTranslations[] = [$form, $locale, $labels];
+            }
+        }
     }
 
     /**
@@ -118,6 +143,13 @@ class FormSeeder
 
         foreach ($queued as [$field, $locale, $values]) {
             $this->formTranslator->store($field, $locale, $values);
+        }
+
+        $queuedLinks = $this->queuedLinkTranslations;
+        $this->queuedLinkTranslations = [];
+
+        foreach ($queuedLinks as [$form, $locale, $labels]) {
+            $this->formTranslator->storeLinks($form, $locale, $labels);
         }
     }
 

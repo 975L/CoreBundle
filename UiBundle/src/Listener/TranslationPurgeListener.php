@@ -11,6 +11,7 @@
 namespace c975L\UiBundle\Listener;
 
 use c975L\UiBundle\Entity\Block;
+use c975L\UiBundle\Entity\Form;
 use c975L\UiBundle\Entity\FormField;
 use c975L\UiBundle\Entity\FormOutput;
 use c975L\UiBundle\Entity\Media;
@@ -44,6 +45,7 @@ class TranslationPurgeListener
 
         $ownerType = match (true) {
             $entity instanceof Block => Translation::OWNER_BLOCK,
+            $entity instanceof Form => Translation::OWNER_FORM,
             $entity instanceof FormField => Translation::OWNER_FORM_FIELD,
             $entity instanceof FormOutput => Translation::OWNER_FORM_OUTPUT,
             // A media taken out of its block's collection is orphan-removed the same way a form field is, and its caption has to go with it

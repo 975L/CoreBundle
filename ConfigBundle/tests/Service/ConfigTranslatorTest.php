@@ -110,7 +110,18 @@ class ConfigTranslatorTest extends TestCase
 
         $this->assertFalse($translator->translates($this->config(Config::TYPE_TEXT, slug: 'site-url')));
         $this->assertFalse($translator->translates($this->config(Config::TYPE_TEXTAREA, slug: 'site-address')));
-        $this->assertFalse($translator->translates($this->config(Config::TYPE_HTML, slug: 'site-hosting-provider')));
+        $this->assertFalse($translator->translates($this->config(Config::TYPE_TEXT, slug: 'site-director-location')));
+    }
+
+    // The legal identity printed by the legal models holds sentences ("a site published by", "Phone:") a language says its own way
+    public function testTheLegalIdentityIsTranslated(): void
+    {
+        $this->contentTranslator->method('isActive')->willReturn(true);
+        $translator = $this->translator();
+
+        $this->assertTrue($translator->translates($this->config(Config::TYPE_HTML, slug: 'site-owner')));
+        $this->assertTrue($translator->translates($this->config(Config::TYPE_TEXTAREA, slug: 'site-hosting-provider')));
+        $this->assertTrue($translator->translates($this->config(Config::TYPE_TEXTAREA, slug: 'site-consumer-mediator')));
     }
 
     // Every named slug must exist, or the button would be promised on a setting the back office never lists
@@ -203,7 +214,7 @@ class ConfigTranslatorTest extends TestCase
     public function testTheTranslateCommandGetsTheSettingsWrittenInWords(): void
     {
         $this->contentTranslator->method('isActive')->willReturn(true);
-        $this->configRepository->method('findOneBySlug')->willReturn($this->config(Config::TYPE_HTML, 'Réservé aux adultes'));
+        $this->configRepository->method('findOneBySlug')->willReturnCallback(fn (string $slug): ?Config => 'site-age-warning' === $slug ? $this->config(Config::TYPE_HTML, 'Réservé aux adultes') : null);
 
         $this->assertSame(
             [['owner' => ConfigTranslator::OWNER, 'ownerId' => 7, 'field' => ConfigTranslator::FIELD, 'source' => 'Réservé aux adultes', 'label' => 'Config site-age-warning']],

@@ -447,6 +447,8 @@ visitor: the legal notice lists the public legal pages only, whoever renders it 
 
 The terms of sales name the consumer mediator from `site-consumer-mediator` (ConfigBundle, `legal` group, read through `legal_var()` line by line), and point to the ministry's list of mediators while it is empty.
 
+On a site read in several languages, the legal identity written in sentences (`site-owner`, `site-producer`, `site-hosting-provider`, `site-consumer-mediator`) is read in the language of the document drawn (`LegalModelPlaceholders::inLocale()`, a PDF or an attachment not sharing the visitor's), and a translation written on one of them empties the cached renders as an edit of its value does.
+
 ## Visitor ratings
 
 Anything at all is rated by a visitor, blocks or not — the rated thing is **named**, never related:

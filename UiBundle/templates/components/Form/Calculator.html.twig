@@ -46,7 +46,7 @@
     {% elseif uiForm.links is not empty %}
         {# Admin-defined, stored on the Form itself — same links a submittable Form shows under its button #}
         <p class="mt-2">
-            {% for link in uiForm.links %}
+            {% for link in ui_form_links(uiForm) %}
                 <a href="{{ link.url }}">{{ link.label }}</a>{{ not loop.last ? ' · ' }}
             {% endfor %}
         </p>

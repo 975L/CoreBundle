@@ -82,6 +82,8 @@ class CalculatorOutputsFirstTest extends TestCase
         $twig->addFunction(new TwigFunction('form_end', static fn (): string => '</form>', ['is_safe' => ['html']]));
         $twig->addFunction(new TwigFunction('path', static fn (string $route, array $parameters = []): string => '/'));
         $twig->addFunction(new TwigFunction('ui_can_hold_flash', static fn (): bool => false));
+        // The links under the button, read as stored here: their translation is FormTranslator's
+        $twig->addFunction(new TwigFunction('ui_form_links', static fn (object | array $form): array => \is_array($form) ? $form['links'] ?? [] : $form->getLinks()));
         $twig->addFunction(new TwigFunction('config', static fn (string $slug): mixed => null));
         // The results' own words go through the translator, a site declaring a single language reading them as they were written
         $formTranslator = new FormTranslator();

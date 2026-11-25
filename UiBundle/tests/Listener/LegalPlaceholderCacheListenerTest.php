@@ -12,7 +12,9 @@ namespace c975L\UiBundle\Tests\Listener;
 
 use c975L\ConfigBundle\Entity\Config;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
+use c975L\ConfigBundle\Service\ConfigTranslator;
 use c975L\UiBundle\Entity\Block;
+use c975L\UiBundle\Entity\Translation;
 use c975L\UiBundle\Listener\LegalPlaceholderCacheListener;
 use c975L\UiBundle\Service\LegalModelCacheTagProvider;
 use c975L\UiBundle\Service\LegalModelPlaceholders;
@@ -55,6 +57,24 @@ class LegalPlaceholderCacheListenerTest extends TestCase
         $listener = $this->listener($cache);
         $listener->postUpdate(new PostUpdateEventArgs($this->config('site-contact-email'), $this->entityManager()));
         $listener->postFlush(new PostFlushEventArgs($this->entityManager()));
+    }
+
+    // A legal setting written in another language is baked into that language's render as much as its typed value is; a translation of anything else is not
+    public function testTranslatingASettingInvalidatesTheLegalTag(): void
+    {
+        $cache = $this->createMock(TagAwareCacheInterface::class);
+        $cache->expects($this->once())->method('invalidateTags')->with([LegalModelCacheTagProvider::CACHE_TAG]);
+
+        $listener = $this->listener($cache);
+        $listener->postPersist(new PostPersistEventArgs(new Translation(ConfigTranslator::OWNER, 4, 'value', 'en'), $this->entityManager()));
+        $listener->postFlush(new PostFlushEventArgs($this->entityManager()));
+
+        $untouched = $this->createMock(TagAwareCacheInterface::class);
+        $untouched->expects($this->never())->method('invalidateTags');
+
+        $other = $this->listener($untouched);
+        $other->postPersist(new PostPersistEventArgs(new Translation(Translation::OWNER_BLOCK, 4, 'title', 'en'), $this->entityManager()));
+        $other->postFlush(new PostFlushEventArgs($this->entityManager()));
     }
 
     public function testPersistedAndRemovedConfigsAlsoInvalidate(): void

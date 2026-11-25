@@ -11,6 +11,7 @@
 namespace c975L\UiBundle\Tests\Service;
 
 use c975L\ConfigBundle\Service\SiteLocales;
+use c975L\UiBundle\Entity\Form;
 use c975L\UiBundle\Entity\FormField;
 use c975L\UiBundle\Entity\FormOutput;
 use c975L\UiBundle\Entity\Translation;
@@ -28,6 +29,8 @@ class FormTranslatorTest extends TestCase
     private const int FIELD_ID = 7;
 
     private const int OUTPUT_ID = 9;
+
+    private const int FORM_ID = 3;
 
     // A form the site was written in French, read by an English visitor
     public function testAFieldReadsWhatItsLanguageSays(): void
@@ -112,6 +115,101 @@ class FormTranslatorTest extends TestCase
         $contentTranslator->expects($this->never())->method('stage');
 
         new FormTranslator($contentTranslator)->stage($field, 'en', ['label' => 'Name']);
+    }
+
+    // The links under the submit button read in the visitor's language, a link nobody translated keeping its own label and every url left as typed
+    public function testTheLinksUnderTheButtonReadWhatTheirLanguageSays(): void
+    {
+        $form = $this->createForm();
+        $translator = $this->createTranslator(['fr', 'en'], [
+            Translation::OWNER_FORM => [self::FORM_ID => ['links.0.label' => 'Sign in']],
+        ]);
+
+        $this->assertSame([
+            ['label' => 'Sign in', 'url' => '/login'],
+            ['label' => 'Mot de passe oublié ?', 'url' => '/pages/item-1'],
+        ], $translator->getLinks($form));
+    }
+
+    // One language, nothing read: the links come back as stored
+    public function testASiteDeclaringOneLanguageReadsTheLinksAsTyped(): void
+    {
+        $form = $this->createForm();
+        $translator = $this->createTranslator(['fr'], [
+            Translation::OWNER_FORM => [self::FORM_ID => ['links.0.label' => 'Sign in']],
+        ]);
+
+        $this->assertSame($form->getLinks(), $translator->getLinks($form));
+    }
+
+    // The language screen offers each link's label, what is written or the source between brackets, and stages only what was changed
+    public function testALanguageScreenOffersAndStagesTheLinkLabels(): void
+    {
+        $form = $this->createForm();
+        $this->assertSame(
+            [0 => 'Sign in', 1 => '[Mot de passe oublié ?]'],
+            $this->createTranslator(['fr', 'en'], [Translation::OWNER_FORM => [self::FORM_ID => ['links.0.label' => 'Sign in']]])->linkPromptValues($form, 'en')
+        );
+
+        $contentTranslator = $this->createMock(ContentTranslator::class);
+        $contentTranslator->expects($this->once())->method('stage')
+            ->with(Translation::OWNER_FORM, self::FORM_ID, 'en', ['links.0.label' => 'Sign in', 'links.1.label' => null]);
+
+        new FormTranslator($contentTranslator)->stageLinks($form, 'en', [0 => 'Sign in', 1 => '[Mot de passe oublié ?]', 5 => 'Gone']);
+    }
+
+    // Two links swapping places on the composing screen each take the translation the other held: a translation is of words, not of a place
+    public function testLinksSwappingPlacesTakeTheirTranslationsAlong(): void
+    {
+        $form = $this->createForm();
+        $before = FormTranslator::linkLabels($form);
+        $form->setLinks(array_reverse($form->getLinks()));
+
+        $contentTranslator = $this->createMock(ContentTranslator::class);
+        $contentTranslator->method('getTranslatableLocales')->willReturn(['en']);
+        $contentTranslator->method('values')->willReturn(['links.0.label' => 'Sign in', 'links.1.label' => 'Forgot your password?']);
+        $contentTranslator->expects($this->once())->method('stage')
+            ->with(Translation::OWNER_FORM, self::FORM_ID, 'en', ['links.0.label' => 'Forgot your password?', 'links.1.label' => 'Sign in']);
+
+        new FormTranslator($contentTranslator)->followMovedLinks($form, $before);
+    }
+
+    // A link taken out ahead of another: Form::setLinks() renumbers the one left, which keeps its own translation rather than the one removed
+    public function testARemovedLinkLeavesTheNextOneItsTranslation(): void
+    {
+        $form = $this->createForm();
+        $before = FormTranslator::linkLabels($form);
+        $form->setLinks([$form->getLinks()[1]]);
+
+        $contentTranslator = $this->createMock(ContentTranslator::class);
+        $contentTranslator->method('getTranslatableLocales')->willReturn(['en']);
+        $contentTranslator->method('values')->willReturn(['links.0.label' => 'Sign in', 'links.1.label' => 'Forgot your password?']);
+        $contentTranslator->expects($this->once())->method('stage')
+            ->with(Translation::OWNER_FORM, self::FORM_ID, 'en', ['links.0.label' => 'Forgot your password?', 'links.1.label' => null]);
+
+        new FormTranslator($contentTranslator)->followMovedLinks($form, $before);
+    }
+
+    // A save leaving every label as it was moves nothing
+    public function testLinksLeftAsTheyWereStageNothing(): void
+    {
+        $form = $this->createForm();
+
+        $contentTranslator = $this->createMock(ContentTranslator::class);
+        $contentTranslator->expects($this->never())->method('stage');
+
+        new FormTranslator($contentTranslator)->followMovedLinks($form, FormTranslator::linkLabels($form));
+    }
+
+    private function createForm(): Form
+    {
+        $form = new Form()->setLinks([
+            ['label' => 'J\'ai déjà un compte, me connecter', 'url' => '/login'],
+            ['label' => 'Mot de passe oublié ?', 'url' => '/pages/item-1'],
+        ]);
+        new \ReflectionProperty(Form::class, 'id')->setValue($form, self::FORM_ID);
+
+        return $form;
     }
 
     private function createField(string $label, ?string $placeholder = null, ?int $id = self::FIELD_ID): FormField

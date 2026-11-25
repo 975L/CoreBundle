@@ -11,6 +11,7 @@
 namespace c975L\UiBundle\Tests\Service;
 
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
+use c975L\ConfigBundle\Service\ConfigTranslator;
 use c975L\UiBundle\Service\AiSiteSearch;
 use c975L\UiBundle\Service\LegalModelPlaceholders;
 use PHPUnit\Framework\TestCase;
@@ -114,7 +115,21 @@ class LegalModelPlaceholdersTest extends TestCase
         $this->assertNotContains('site-secret', $this->placeholders()->slugs());
     }
 
-    private function placeholders(): LegalModelPlaceholders
+    // A setting said in another language is printed in the language of the document, the visitor's one outside inLocale(), the typed value where nothing translates it
+    public function testASettingIsReadInTheLanguageOfTheDocument(): void
+    {
+        $translator = $this->createStub(ConfigTranslator::class);
+        $translator->method('value')->willReturnCallback(static fn (string $slug, mixed $value, ?string $locale): mixed => 'site-owner' === $slug && 'en' === $locale ? '<strong>Owner</strong>, a site published by' : $value);
+        $placeholders = $this->placeholders($translator);
+
+        $this->assertSame('<strong>Owner</strong>', $placeholders->value('site-owner'));
+        $this->assertSame('<strong>Owner</strong>, a site published by', $placeholders->inLocale('en', static fn (): string => $placeholders->value('site-owner')));
+        $this->assertSame('<strong>Owner</strong>, a site published by', $placeholders->substitute('%site-owner%', 'en'));
+        $this->assertSame('Acme &amp; Co', $placeholders->inLocale('en', static fn (): string => $placeholders->value('site-name')));
+        $this->assertSame('<strong>Owner</strong>', $placeholders->value('site-owner'));
+    }
+
+    private function placeholders(?ConfigTranslator $translator = null): LegalModelPlaceholders
     {
         $config = $this->createStub(ConfigServiceInterface::class);
         $config->method('get')->willReturnCallback(static fn (string $slug): ?string => match ($slug) {
@@ -126,6 +141,6 @@ class LegalModelPlaceholdersTest extends TestCase
             default => null,
         });
 
-        return new LegalModelPlaceholders($config);
+        return new LegalModelPlaceholders($config, $translator);
     }
 }

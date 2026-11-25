@@ -364,7 +364,7 @@
             </trans-unit>
             <trans-unit id="MHIvS60">
                 <source>narration.guided_step_ui_form_translate</source>
-                <target>En haut du formulaire, choisissez une langue dans les onglets, puis écrivez-y les libellés et les textes d'aide. Les champs, eux, se composent une seule fois, dans la langue où le formulaire a été écrit.</target>
+                <target>En haut du formulaire, choisissez une langue dans les onglets, puis écrivez-y les libellés, les textes d'aide et ceux des liens sous le bouton. Les champs, eux, se composent une seule fois, dans la langue où le formulaire a été écrit.</target>
             </trans-unit>
             <trans-unit id="aPBTIn6">
                 <source>narration.guided_step_ui_legal_model_apply</source>

@@ -427,6 +427,23 @@ class FormSeederTest extends TestCase
         ], $translations);
     }
 
+    // The links under the button ship their other languages' labels too, written once the form has its id; a label the same in both languages is not a translation
+    public function testASeededFormCarriesItsLinksOtherLanguagesLabels(): void
+    {
+        $translations = [];
+        $seeder = $this->bilingualSeeder($translations);
+
+        $seeder->ensureForm('register', self::CONTACT_FIELDS, linksByLocale: [
+            'fr' => [['label' => 'Se connecter', 'url' => '/login'], ['label' => 'Contact', 'url' => '/pages/item-1']],
+            'en' => [['label' => 'Sign in', 'url' => '/login'], ['label' => 'Contact', 'url' => '/pages/item-2']],
+        ]);
+        new \ReflectionProperty(Form::class, 'id')->setValue($this->onlyPersisted(Form::class), 40);
+
+        $seeder->writeQueuedTranslations();
+
+        $this->assertContains([Translation::OWNER_FORM, 40, 'en', ['links.0.label' => 'Sign in']], $translations);
+    }
+
     // A form already in place has been through the back-office since, and what it says in each language is an admin's to write - the same rule every backfill above follows
     public function testAFormAlreadyInPlaceIsNeverRetranslated(): void
     {

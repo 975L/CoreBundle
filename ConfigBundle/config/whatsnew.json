@@ -1,5 +1,15 @@
 [
     {
+        "date": "2026-11-25",
+        "description": [
+            {
+                "en": "On a site read in several languages, the legal identity written in sentences (owner, producer, hosting provider, consumer mediator) now has a Translate action in the settings, and the legal notice, terms and policies read it in the visitor's language.",
+                "fr": "Sur un site lu en plusieurs langues, l'identité légale rédigée en phrases (propriétaire, réalisateur, hébergeur, médiateur de la consommation) a désormais une action Traduire dans les réglages, et les mentions légales, conditions et politiques la lisent dans la langue du visiteur.",
+                "es": "En un sitio leído en varios idiomas, la identidad legal redactada en frases (propietario, realizador, alojamiento, mediador de consumo) tiene ahora una acción Traducir en los ajustes, y el aviso legal, las condiciones y las políticas la leen en el idioma del visitante."
+            }
+        ]
+    },
+    {
         "date": "2026-11-23",
         "description": [
             {

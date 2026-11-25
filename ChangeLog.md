@@ -1,5 +1,19 @@
 # ChangeLog
 
+## v1.100.0
+
+Legal identity and form links translated on multilingual sites
+
+- `site-owner`, `site-producer`, `site-hosting-provider` and `site-consumer-mediator` added to `ConfigTranslator::TRANSLATABLE` (25/11/2026)
+- Legal models read those settings in the language of the document drawn, through `LegalModelPlaceholders::inLocale()` (25/11/2026)
+- A translated setting empties the cached legal renders (25/11/2026)
+- Labels of a form's links translated under the owner `ui_form`, read by `FormTranslator::getLinks()` and `ui_form_links()` (25/11/2026)
+- Added `FormLinksTranslationType`, the link labels on a form's language screen (25/11/2026)
+- `FormSeeder` writes the other languages' link labels of a form it creates (25/11/2026)
+- Link labels handed to `c975l:translate:content` and purged with their form (25/11/2026)
+- A link's translations follow it when it is moved, rewritten or removed on the composing screen (25/11/2026)
+- Added `ContentTranslator::movedFields()`, taken out of `BlockType` (25/11/2026)
+
 ## v1.99.1
 
 Agent and app tokens of a disabled account refused on every site

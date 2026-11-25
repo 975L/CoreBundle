@@ -329,7 +329,7 @@ class BlockType extends AbstractType
 
         unset($this->sourceBeforeSubmit[$id]);
 
-        $moves = $this->movedFields($before, $this->collectionTexts((string) $block->getKind(), $block->getData()));
+        $moves = ContentTranslator::movedFields($before, $this->collectionTexts((string) $block->getKind(), $block->getData()));
 
         // Read before anything is staged: two cards swapping places each take what the other held
         foreach ([] === $moves ? [] : $this->contentTranslator->getTranslatableLocales() as $locale) {
@@ -340,52 +340,6 @@ class BlockType extends AbstractType
                 $moves
             ));
         }
-    }
-
-    // The places the source no longer says what it said, each with the place that said those words before - the same key of another entry - or null when none did: compared on the words alone, as every other source/translation comparison here is, a raw !== reading a card nobody touched as a rewritten one
-    /**
-     * @param array<string, string|null> $before
-     * @param array<string, string|null> $after
-     *
-     * @return array<string, string|null> field => field its translations come from
-     */
-    private function movedFields(array $before, array $after): array
-    {
-        $plain = static fn (?string $text): string => null === $text ? '' : ContentTranslator::plain($text);
-
-        $moves = [];
-        foreach (array_keys($before + $after) as $field) {
-            $text = $plain($after[$field] ?? null);
-            if ($text === $plain($before[$field] ?? null)) {
-                continue;
-            }
-
-            $from = '' === $text ? null : $this->formerField((string) $field, $text, $before, $plain);
-
-            // A place only the new source has, with words no entry said before, has no translation to drop
-            if (null !== $from || array_key_exists($field, $before)) {
-                $moves[$field] = $from;
-            }
-        }
-
-        return $moves;
-    }
-
-    // The place that said these words before, in the same collection and under the same key: "cards.2.title" for what "cards.0.title" now says
-    /** @param array<string, string|null> $before */
-    private function formerField(string $field, string $text, array $before, \Closure $plain): ?string
-    {
-        [$collection, , $key] = explode('.', $field, 3) + [null, null, null];
-
-        foreach ($before as $candidate => $words) {
-            [$candidateCollection, , $candidateKey] = explode('.', (string) $candidate, 3) + [null, null, null];
-
-            if ($candidateCollection === $collection && $candidateKey === $key && $plain($words) === $text) {
-                return (string) $candidate;
-            }
-        }
-
-        return null;
     }
 
     // The repeated texts of a block's data, flat: "cards.0.title" => the words it holds

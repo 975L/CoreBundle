@@ -18,6 +18,7 @@ use c975L\UiBundle\Controller\Management\FormFieldTemplateCrudController;
 use c975L\UiBundle\Entity\Form;
 use c975L\UiBundle\Entity\FormField;
 use c975L\UiBundle\Entity\FormOutput;
+use c975L\UiBundle\Form\FormLinksTranslationType;
 use c975L\UiBundle\Form\FormLinkType;
 use c975L\UiBundle\Form\FormOutputType;
 use c975L\UiBundle\Management\FormExportProvider;
@@ -43,6 +44,10 @@ use EasyCorp\Bundle\EasyAdminBundle\Provider\AdminContextProvider;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\DependencyInjection\Container;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
+use Symfony\Component\Form\Extension\Core\Type\FormType;
+use Symfony\Component\Form\Extension\Validator\ValidatorExtension;
+use Symfony\Component\Form\Forms;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -405,6 +410,50 @@ class FormCrudControllerTest extends TestCase
         }
 
         $this->assertSame(['fields', 'outputs'], $properties);
+    }
+
+    // A form carrying links under its button offers their labels on its language screen too, unmapped so they never overwrite the links themselves
+    public function testTheLanguageScreenOffersTheLinkLabels(): void
+    {
+        $entity = new Form()->setLinks([['label' => 'Se connecter', 'url' => '/login']]);
+        $request = new Request([FormCrudController::CONTENT_LOCALE_PARAM => 'en']);
+        $request->attributes->set(EA::CONTEXT_REQUEST_ATTRIBUTE, AdminContext::forTesting(crudContext: CrudContext::forTesting(
+            entityDto: new EntityDto(Form::class, new ClassMetadata(Form::class), null, $entity)
+        )));
+        $requestStack = new RequestStack([$request]);
+
+        $formTranslator = $this->createStub(FormTranslator::class);
+        $formTranslator->method('getTranslatableLocales')->willReturn(['en']);
+        $controller = $this->createController(adminContextProvider: new AdminContextProvider($requestStack), formTranslator: $formTranslator, requestStack: $requestStack);
+
+        $fields = [];
+        foreach ($controller->configureFields(Crud::PAGE_EDIT) as $field) {
+            $fields[$field->getAsDto()->getProperty()] = $field->getAsDto();
+        }
+
+        $this->assertSame(['fields', 'outputs', 'linksTranslation'], array_keys($fields));
+        $this->assertSame(FormLinksTranslationType::class, $fields['linksTranslation']->getFormType());
+        $this->assertSame('en', $fields['linksTranslation']->getFormTypeOption('translation_locale'));
+    }
+
+    // The composing screen hands the labels the links held before the submission over, once the new ones are mapped, so their translations follow them
+    public function testTheComposingScreenCarriesTheLinkTranslationsAlong(): void
+    {
+        $entity = new Form()->setLinks([['label' => 'Se connecter', 'url' => '/login'], ['label' => 'Contact', 'url' => '/pages/item-1']]);
+
+        $formTranslator = $this->createMock(FormTranslator::class);
+        $formTranslator->expects($this->once())->method('followMovedLinks')
+            ->with($entity, ['links.0.label' => 'Se connecter', 'links.1.label' => 'Contact'])
+            ->willReturnCallback(function (Form $form): void {
+                $this->assertSame('Contact', $form->getLinks()[0]['label']);
+            });
+
+        $builder = Forms::createFormFactoryBuilder()->addExtension(new ValidatorExtension(Validation::createValidator()))->getFormFactory()->createBuilder(FormType::class, $entity, ['data_class' => Form::class])
+            ->add('links', CollectionType::class, ['entry_type' => FormLinkType::class, 'allow_delete' => true]);
+        new \ReflectionMethod(FormCrudController::class, 'addLinkTranslationListener')
+            ->invoke($this->createController(formTranslator: $formTranslator), $builder);
+
+        $builder->getForm()->submit(['links' => [['label' => 'Contact', 'url' => '/pages/item-1']]]);
     }
 
     // The screen is the edit one asked for in a declared language (see FormCrudController::CONTENT_LOCALE_PARAM), which is the only way configureFields() yields the translation fields

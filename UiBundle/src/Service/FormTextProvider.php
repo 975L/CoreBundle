@@ -11,11 +11,12 @@
 namespace c975L\UiBundle\Service;
 
 use c975L\UiBundle\Contract\TranslatableTextProviderInterface;
+use c975L\UiBundle\Entity\Form;
 use c975L\UiBundle\Entity\FormField;
 use c975L\UiBundle\Entity\FormOutput;
 use Doctrine\ORM\EntityManagerInterface;
 
-// The fields of the forms, which no page carries the text of: a "form" block holds the form, and the labels asking for a name and an email live on their own rows
+// The fields of the forms and the links under their buttons, which no page carries the text of: a "form" block holds the form, and the labels asking for a name and an email live on their own rows
 class FormTextProvider implements TranslatableTextProviderInterface
 {
     public function __construct(
@@ -33,6 +34,16 @@ class FormTextProvider implements TranslatableTextProviderInterface
 
         foreach ($this->manager->getRepository(FormOutput::class)->findAll() as $output) {
             $this->collect($output, FormTranslator::OWNER_OUTPUT, FormTranslator::OUTPUT_FIELDS, $rows);
+        }
+
+        // The labels of the links under each submit button, kept in the form's own action config
+        foreach ($this->manager->getRepository(Form::class)->findAll() as $form) {
+            $id = $form->getId();
+            foreach (null !== $id ? FormTranslator::linkLabels($form) : [] as $field => $source) {
+                if ('' !== trim($source)) {
+                    $rows[] = ['owner' => FormTranslator::OWNER_FORM, 'ownerId' => $id, 'field' => $field, 'source' => $source, 'label' => 'Form ' . $form->getName()];
+                }
+            }
         }
 
         return $rows;
