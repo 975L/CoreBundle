@@ -148,6 +148,10 @@ one of them.
 - **A confirmation is `<twig:c975LUi:Dialog:Dialog id="..." title="...">`**, a native `<dialog>` opened by
   `<button type="button" commandfor="<id>" command="show-modal">`: no script, the focus kept inside, Escape
   and the cross closing it.
+- **A card that turns over is `<twig:c975LUi:FlipCard:FlipCard>`**, even with faces of your own: its
+  `front` and `back` blocks replace a face's title and body (wrap them in `.flip-card-body`), `flip="true"`
+  declaring a back given as a block alone, so the fold, the toggle filling the face, `inert` and the focus
+  stay the component's rather than a copy of its markup.
 
 ## The token layers
 

@@ -1,4 +1,5 @@
-{# <twig:c975LUi:FlipCard:FlipCard [id=""] [title=""] [level="h2"] [content=""] [backTitle=""] [backContent=""] [media="{{ [frontMedia, backMedia] }}"] [ratio="free"] [class=""] /> #}
+{# <twig:c975LUi:FlipCard:FlipCard [id=""] [title=""] [level="h2"] [content=""] [backTitle=""] [backContent=""] [media="{{ [frontMedia, backMedia] }}"] [ratio="free"] [flip="false"] [class=""] /> #}
+{# Faces of your own: <twig:c975LUi:FlipCard:FlipCard title="Named for the toggle" flip="true"><twig:block name="front">markup</twig:block><twig:block name="back">markup</twig:block></twig:c975LUi:FlipCard:FlipCard>; a block replaces the face's title and body, so "title" and "backTitle" only name the toggles then, and "flip" says there is a back to turn to when none of the back props does #}
 {# "media" is an ordered collection/array holding at most two images: the first is the front face's, the second the back's #}
 {% set level = level|default('h2') %}
 {# Matched against the closed list, not interpolated: the value comes from stored block data and must not write any class name (same rule as the accent in blocks/FlipCard.html.twig). "free" declares none, and the card keeps the height of its tallest face. See FlipCardType::RATIO_CHOICES, whose values these are #}
@@ -7,7 +8,7 @@
 {% set frontMedia = mediaList[0]|default(null) %}
 {% set backMedia = mediaList[1]|default(null) %}
 {# Two faces are what makes this kind: with nothing at all on the back there is nothing to turn to, so it renders as the plain card it actually is rather than as a card with a control revealing an empty side #}
-{% set hasBack = backTitle|default('') or backContent|default('') or backMedia %}
+{% set hasBack = flip|default(false)|to_bool or backTitle|default('') or backContent|default('') or backMedia %}
 {# The turn is a decoration the eye follows, so it is announced by the accessible name of the control that did it, not by an aria-state on a container: "Voir le verso" and "Voir le recto" say which side is up between them, and focus follows the face that just came up (see flip-card.js) #}
 {% set showBack = 'label.flip_card_show_back'|trans({}, 'ui') %}
 {% set showFront = 'label.flip_card_show_front'|trans({}, 'ui') %}
@@ -15,6 +16,7 @@
 <div class="flip-card {{ ratioClass }} {{ class|default('') }}"{% if id|default('') %} id="{{ id }}"{% endif %}{% if hasBack %} data-controller="flipCard"{% endif %}>
     <div class="flip-card-inner">
         <div class="flip-card-face flip-card-front" data-flipCard-target="face">
+            {% block front %}
             {% if title|default('') %}<{{ level }} class="flip-card-title">{{ title }}</{{ level }}>{% endif %}
             <div class="flip-card-body">
                 {% if frontMedia %}
@@ -23,6 +25,7 @@
                 {# A <div>, not a <p>: raw Trix HTML is already block-level and a <p> would be split #}
                 {% if content|default('') %}<div class="flip-card-text">{{ content|sanitize_html('c975l.rich')|nl2br }}</div>{% endif %}
             </div>
+            {% endblock %}
             {% if hasBack %}
                 {# The whole face is the control: this fills it, under the content, which is pointer-transparent so a click anywhere lands here - see sass/_flip-card.scss. Hidden until flip-card.js takes over: without it the two faces stay in normal flow, one under the other, and a control turning nothing would be a dead one #}
                 <button type="button" class="flip-card-toggle" data-action="flipCard#toggle" aria-label="{{ showBack }}{% if title|default('') %} : {{ title }}{% endif %}" hidden></button>
@@ -30,6 +33,7 @@
         </div>
         {% if hasBack %}
             <div class="flip-card-face flip-card-back" data-flipCard-target="face">
+                {% block back %}
                 {% if backTitle|default('') %}<{{ level }} class="flip-card-title">{{ backTitle }}</{{ level }}>{% endif %}
                 <div class="flip-card-body">
                     {% if backMedia %}
@@ -37,6 +41,7 @@
                     {% endif %}
                     {% if backContent|default('') %}<div class="flip-card-text">{{ backContent|sanitize_html('c975l.rich')|nl2br }}</div>{% endif %}
                 </div>
+                {% endblock %}
                 <button type="button" class="flip-card-toggle" data-action="flipCard#toggle" aria-label="{{ showFront }}{% if backTitle|default('') %} : {{ backTitle }}{% endif %}" hidden></button>
             </div>
         {% endif %}

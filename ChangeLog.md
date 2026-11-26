@@ -1,5 +1,12 @@
 # ChangeLog
 
+## v1.102.0
+
+Flip card faces of one's own through front and back blocks
+
+- `FlipCard` component takes `front` and `back` blocks replacing a face's title and body, the default faces unchanged (26/11/2026)
+- `FlipCard` component `flip` prop declaring a back given as a block alone (26/11/2026)
+
 ## v1.101.0
 
 Excerpt reply reader shared, band button optional, videos framed
