@@ -1,5 +1,11 @@
 # ChangeLog
 
+## v1.103.0
+
+Release day of a catalog product
+
+- `CatalogProduct::$availableAt`: the day a catalog's product comes out, handed to the shop (26/11/2026)
+
 ## v1.102.0
 
 Flip card faces of one's own through front and back blocks

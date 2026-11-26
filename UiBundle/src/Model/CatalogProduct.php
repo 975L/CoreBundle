@@ -23,6 +23,8 @@ final class CatalogProduct
         public readonly ?string $coverPath = null,
         // The language the product is written in (an ISO 639-1 code), null leaving the shop's own as it is
         public readonly ?string $language = null,
+        // The day it comes out, the shop showing only that day before it and selling nothing, null leaving the shop's own date as it is
+        public readonly ?\DateTimeImmutable $availableAt = null,
     ) {
     }
 }
