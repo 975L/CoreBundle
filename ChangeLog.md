@@ -1,5 +1,17 @@
 # ChangeLog
 
+## v1.101.0
+
+Excerpt reply reader shared, band button optional, videos framed
+
+- Added `AiExcerptReply`, reading a model's answer to numbered excerpts, its links taken from them alone, shared by the site search and other bundles (26/11/2026)
+- `cta_band` button optional, rendered only with both a label and a target (26/11/2026)
+- `AiExcerptReply::parse()` reads a plain reply's `[n]` marks and closing sources line as the excerpts it names, taking them off the answer (26/11/2026)
+- Back-office Donovan button shows a robot (26/11/2026)
+- Video players framed by `--video-border` and capped at `--video-max-width`, centred, the consent placeholder alike, a width typed in the back office kept (26/11/2026)
+- `ai-assistant.js` shows its waiting and error lines through `hidden` rather than Bootstrap's `d-none`, and opens its sources in the tab `data-ai-assistant-link-target-value` names, `_blank` by default (26/11/2026)
+- `@c975l/ui-bundle/ai-assistant.js` declared in the admin importmap, for another bundle's shell to draw Donovan's panel with it (26/11/2026)
+
 ## v1.100.0
 
 Legal identity and form links translated on multilingual sites

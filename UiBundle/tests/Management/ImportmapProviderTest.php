@@ -27,6 +27,9 @@ class ImportmapProviderTest extends TestCase
             '@c975l/ui-bundle/pointer-sort.js' => [
                 'path' => 'assets/js/pointer-sort.js',
             ],
+            '@c975l/ui-bundle/ai-assistant.js' => [
+                'path' => 'assets/js/ai-assistant.js',
+            ],
         ], $entries);
     }
 
@@ -38,6 +41,16 @@ class ImportmapProviderTest extends TestCase
         $this->assertNotNull($entry, 'The drag gesture module is no longer importable from outside UiBundle.');
         $this->assertArrayNotHasKey('entrypoint', $entry, 'The drag gesture module is declared as an entrypoint, which would have the dashboard load it as a script of its own.');
         $this->assertFileExists(dirname(__DIR__, 2) . '/' . $entry['path'], 'The declared path points at no file, so the entry resolves to nothing in the browser.');
+    }
+
+    // Donovan's panel is imported by name from PilotBundle's shell, an entry of its own without being an entrypoint
+    public function testAiAssistantIsDeclaredWithoutBeingAnEntrypoint(): void
+    {
+        $entry = new ImportmapProvider()->getAdminImportmapEntries()['@c975l/ui-bundle/ai-assistant.js'] ?? null;
+
+        $this->assertNotNull($entry);
+        $this->assertArrayNotHasKey('entrypoint', $entry);
+        $this->assertFileExists(dirname(__DIR__, 2) . '/' . $entry['path']);
     }
 
     public function testGetImportmapEntriesReturnsControllersEntrypoint(): void

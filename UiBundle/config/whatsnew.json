@@ -1,5 +1,25 @@
 [
     {
+        "date": "2026-11-26",
+        "description": [
+            {
+                "en": "A call-to-action band no longer needs a button: leave its label or its link empty and it shows its title and text alone.",
+                "fr": "Un bandeau d'appel à l'action n'a plus besoin de bouton : laissez son libellé ou son lien vide et il n'affiche que son titre et son texte.",
+                "es": "Una banda de llamada a la acción ya no necesita botón: deje vacía su etiqueta o su enlace y solo mostrará su título y su texto."
+            },
+            {
+                "en": "Donovan's button at the top of the back office now shows a robot, as on the piloting pages.",
+                "fr": "Le bouton de Donovan en haut du back-office affiche désormais un robot, comme sur les pages du pilotage.",
+                "es": "El botón de Donovan arriba del back-office muestra ahora un robot, como en las páginas del pilotaje."
+            },
+            {
+                "en": "A video now has a thin frame around it, so you can see where it ends even when its picture has the colour of the page, and it no longer grows wider than a comfortable size on a large screen.",
+                "fr": "Une vidéo a désormais un fin cadre autour d'elle, pour voir où elle s'arrête même quand son image a la couleur de la page, et elle ne s'élargit plus au-delà d'une taille confortable sur grand écran.",
+                "es": "Un vídeo tiene ahora un marco fino a su alrededor, para ver dónde termina aunque su imagen tenga el color de la página, y ya no se ensancha más allá de un tamaño cómodo en pantalla grande."
+            }
+        ]
+    },
+    {
         "date": "2026-11-25",
         "description": [
             {

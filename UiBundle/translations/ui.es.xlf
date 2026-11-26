@@ -1420,7 +1420,7 @@
             </trans-unit>
             <trans-unit id="Cxlk5Fm">
                 <source>label.block_cta_band_description</source>
-                <target>Panel centrado con título, texto y botón</target>
+                <target>Panel centrado con título, texto y botón opcional</target>
             </trans-unit>
             <trans-unit id="TB1..KE">
                 <source>label.block_document_download</source>

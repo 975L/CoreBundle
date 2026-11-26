@@ -1,7 +1,7 @@
 {# Donovan over every admin page (see DonovanWidgetProvider), already gated there; ai-assistant.js reopens it with its conversation after each page load. A drawer rather than the site's modal (see components/AiSearch/Dialog.html.twig): the admin keeps working beside the answer #}
 <div class="ai-assistant-panel" data-ai-assistant-panel>
     {# Moved by ai-assistant.js into EasyAdmin's top bar, beside the user menu, which no bundle template reaches without overriding the whole layout #}
-    <twig:ea:Button type="button" size="sm" icon="fas fa-comments" class="ai-assistant-trigger" data-ai-assistant-panel-open aria-expanded="false" aria-controls="ai-assistant-panel-body">
+    <twig:ea:Button type="button" size="sm" icon="fas fa-robot" class="ai-assistant-trigger" data-ai-assistant-panel-open aria-expanded="false" aria-controls="ai-assistant-panel-body">
         {{ ai_assistant_name() }}
         <kbd class="ai-assistant-trigger__shortcut" aria-hidden="true">Ctrl K</kbd>
     </twig:ea:Button>

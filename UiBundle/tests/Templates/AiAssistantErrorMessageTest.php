@@ -26,7 +26,8 @@ class AiAssistantErrorMessageTest extends TestCase
         $html = $this->render();
 
         $this->assertStringContainsString('data-ai-assistant-target="error"', $html);
-        $this->assertStringContainsString('d-none', $html);
+        $this->assertStringContainsString('data-ai-assistant-target="error" hidden', $html);
+        $this->assertStringContainsString('data-ai-assistant-target="pending" hidden', $html);
         $this->assertStringContainsString('label.ai_assistant_error', $html);
     }
 

@@ -102,6 +102,23 @@ class MediaFigureMeasureTest extends TestCase
         }
     }
 
+    // A player framed and capped, never wider than its cell, a width typed in the back office kept under that ceiling
+    #[\PHPUnit\Framework\Attributes\DataProvider('stylesheetProvider')]
+    public function testThePlayerIsFramedAndKeepsItsTypedWidth(string $file): void
+    {
+        $css = $this->normalize($file);
+        $declarations = $this->declarationsOf($css, ':is(.video-figure,.video-iframe-figure):is(video,iframe,.video-iframe-placeholder)', $file);
+
+        foreach (['max-width:min(100%,var(--video-max-width))', 'border:var(--video-border)'] as $needle) {
+            $this->assertStringContainsString($needle, $declarations, sprintf('The framed player no longer reads "%s" in "%s".', $needle, $file));
+        }
+
+        // The typed width attribute is never overridden: "width: auto" would size the player by its poster, then by the video's own size once played
+        $this->assertStringNotContainsString('width:100%', $declarations);
+        $this->assertStringContainsString('width:100%', $this->declarationsOf($css, ':is(.video-figure,.video-iframe-figure):is(video:not([width]),iframe,.video-iframe-placeholder)', $file));
+        $this->assertStringNotContainsString('video[width]', $css);
+    }
+
     // Strips comments and collapses whitespace, commas included, so the same assertions hold on the minified sheet
     private function normalize(string $file): string
     {

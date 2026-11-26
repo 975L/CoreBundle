@@ -26,6 +26,10 @@ class ImportmapProvider implements ImportmapProviderInterface
             '@c975l/ui-bundle/pointer-sort.js' => [
                 'path' => 'assets/js/pointer-sort.js',
             ],
+            // No entrypoint, same as pointer-sort.js: Donovan's panel imported by name from PilotBundle's own shell, its script written once
+            '@c975l/ui-bundle/ai-assistant.js' => [
+                'path' => 'assets/js/ai-assistant.js',
+            ],
         ];
     }
 

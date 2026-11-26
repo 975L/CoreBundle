@@ -74,7 +74,7 @@ class AiSiteSearch
                 return null;
             }
 
-            [$answer, $sources] = $this->parse($reply, $excerpts);
+            [$answer, $sources] = AiExcerptReply::parse($reply, $excerpts);
         }
 
         // Read again: a spend recorded concurrently may have reset the manager during the provider call, detaching the row read above
@@ -106,42 +106,6 @@ class AiSiteSearch
         $days = is_numeric($configured) ? (int) $configured : 0;
 
         return $days > 0 ? $days : self::DEFAULT_RETENTION_DAYS;
-    }
-
-    // The answer and the passages it names, mapped back to the index: a number that names no passage is dropped, so no url the model wrote ever reaches the page. A reply that isn't the JSON asked for is kept as the answer, with the pages of the passages as its sources
-    /**
-     * @param list<array{url: string, title: string, content: string}> $excerpts
-     *
-     * @return array{0: string, 1: list<array{url: string, title: string}>}
-     */
-    private function parse(string $reply, array $excerpts): array
-    {
-        $data = preg_match('/\{.*\}/s', $reply, $matches) ? json_decode($matches[0], true) : null;
-        if (!\is_array($data) || !\is_string($data['answer'] ?? null)) {
-            return [trim(strip_tags($reply)), $this->sources($excerpts)];
-        }
-
-        $used = [];
-        foreach ((array) ($data['sources'] ?? []) as $number) {
-            if (is_numeric($number) && isset($excerpts[(int) $number - 1])) {
-                $used[] = $excerpts[(int) $number - 1];
-            }
-        }
-
-        return [trim(strip_tags($data['answer'])), $this->sources($used)];
-    }
-
-    // One link per page, in the order the passages came
-    // @param list<array{url: string, title: string, content: string}> $excerpts
-    // @return list<array{url: string, title: string}>
-    private function sources(array $excerpts): array
-    {
-        $sources = [];
-        foreach ($excerpts as $excerpt) {
-            $sources[$excerpt['url']] ??= ['url' => $excerpt['url'], 'title' => $excerpt['title']];
-        }
-
-        return array_values($sources);
     }
 
     // @return array{answer: string, sources: list<array{url: string, title: string}>, found: bool}

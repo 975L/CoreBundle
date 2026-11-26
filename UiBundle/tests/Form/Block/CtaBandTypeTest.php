@@ -43,6 +43,15 @@ class CtaBandTypeTest extends TestCase
         }
     }
 
+    // A band may only state something: its button fields are optional
+    public function testTheButtonIsOptional(): void
+    {
+        $added = $this->buildAddedFields();
+
+        $this->assertFalse($added['ctaLabel']['required']);
+        $this->assertFalse($added['ctaUrl']['required']);
+    }
+
     // A band sending the visitor to the other side of a site reads better in that side's own colors than in the ones around it - a scope class the site declares, which no list in the bundle could hold
     public function testItCarriesTheFreeSiteClasses(): void
     {

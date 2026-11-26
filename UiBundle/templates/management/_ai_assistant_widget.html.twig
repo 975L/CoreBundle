@@ -1,23 +1,24 @@
 {# The question/answer box; the caller owns the isEnabled()/ROLE_SUPER_ADMIN gating #}
 {# "help_url"/"help_label" are optional and belong to the caller: where a reader goes from here differs on the panel and on the assistant's own page #}
 {# "persist" is the per-account key the conversation is kept under across page loads, for the panel drawn on every admin page (see _donovan_panel.html.twig) #}
-{# Plain data-* attributes, not Stimulus targets/values: ai-assistant.js reads them via querySelector #}
+{# Plain data-* attributes, not Stimulus targets/values: ai-assistant.js reads them via querySelector; PilotBundle draws the same attributes on its own markup, its sources opened in the same tab #}
 <div class="ai-assistant"
      data-controller="aiAssistant"
      data-ai-assistant-ask-url-value="{{ path('management_ui_ai_assistant_ask') }}"
      data-ai-assistant-csrf-token-value="{{ csrf_token('management_ui_ai_assistant_ask') }}"
      data-ai-assistant-film-label-value="{{ 'label.ai_assistant_film'|trans({}, 'ui') }}"
+     data-ai-assistant-link-target-value="_blank"
      {% if persist|default('') %}data-ai-assistant-persist-value="{{ persist }}"{% endif %}
 >
     <div class="ai-assistant__log" data-ai-assistant-target="log"></div>
 
     {# The wait is measured in seconds on a question the backend has never seen, so it is shown rather than left to a disabled field to suggest #}
-    <p class="text-muted small d-none" data-ai-assistant-target="pending">
+    <p class="text-muted small" data-ai-assistant-target="pending" hidden>
         {{ 'label.ai_assistant_pending'|trans({'%name%': ai_assistant_name()}, 'ui') }}
     </p>
 
     {# Everything the backend can answer but an answer - unreachable, unconfigured on its side, expired token - reads as one thing here: it did not answer. The reason is its operator's to read, not this reader's, and the raw error key was what used to be shown in its place #}
-    <p class="text-danger small d-none" data-ai-assistant-target="error">
+    <p class="text-danger small" data-ai-assistant-target="error" hidden>
         {{ 'label.ai_assistant_error'|trans({'%name%': ai_assistant_name()}, 'ui') }}
         {% if help_url|default('') and help_label|default('') %}
             <a href="{{ help_url }}">{{ help_label }}</a>

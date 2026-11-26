@@ -148,6 +148,21 @@ img.white {
     margin: 0;
 }
 
+// A video's own frame, centred and capped: a picture of the page's colour otherwise melts into it, and a player spanning a wide section grows past what is comfortable to watch
+:is(.video-figure, .video-iframe-figure) :is(video, iframe, .video-iframe-placeholder) {
+    display: block;
+    box-sizing: border-box;
+    max-width: min(100%, var(--video-max-width));
+    margin-inline: auto;
+    border: var(--video-border);
+    border-radius: var(--radius-card);
+}
+
+// The figure filled, unless a width was typed in the back office: its attribute then sizes the player under the same ceiling from the poster on, where "width: auto" grew it to the video's own size on the first click
+:is(.video-figure, .video-iframe-figure) :is(video:not([width]), iframe, .video-iframe-placeholder) {
+    width: 100%;
+}
+
 // One look for every block title (see sass/_page-sections.scss): stated rather than left to the theme's own h1-h6 rule, which centers them and paints them --primary where every other title in this bundle reads --text
 .video-title,
 .video-iframe-title,

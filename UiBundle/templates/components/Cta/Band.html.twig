@@ -1,4 +1,4 @@
-{# Static usage: <twig:c975LUi:Cta:Band title="..." ctaLabel="..." ctaUrl="..." [text=""] [background=""] [id=""]/> #}
+{# Static usage: <twig:c975LUi:Cta:Band title="..." [ctaLabel="..." ctaUrl="..."] [text=""] [background=""] [id=""]/> #}
 {# Dynamic usage (Block system): see templates/blocks/CtaBand.html.twig #}
 {# Matched, not interpolated: the value comes from stored block data and must not write any class name #}
 {% set background = background|default('') in ['muted', 'primary', 'dark'] ? ' section--bg-' ~ background : '' %}
@@ -7,7 +7,8 @@
         <div class="cta-band__inner">
             <h2 class="cta-band__title">{{ title }}</h2>
             {% if text %}<div class="cta-band__text">{{ text|sanitize_html('c975l.rich') }}</div>{% endif %}
-            <a class="section-btn" href="{{ ctaUrl }}">{{ ctaLabel }}</a>
+            {# A band with no label or no target is a statement, with no button pointing nowhere #}
+            {% if ctaLabel|default('') and ctaUrl|default('') %}<a class="section-btn" href="{{ ctaUrl }}">{{ ctaLabel }}</a>{% endif %}
         </div>
     </div>
 </section>

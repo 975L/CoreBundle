@@ -24,6 +24,8 @@
     --alert-warning-label: #7a4f0f;
     --audio-sticky-background: var(--background);
     --media-title-size: calc(1.3rem * var(--font-size-title-scale, 1));
+    --video-border: 2px solid color-mix(in srgb, var(--text) 30%, var(--background));
+    --video-max-width: 960px;
     --back-pull-background-color: #bababa;
     --back-pull-background-color-hover: #9c9fa3;
     --back-pull-color: #333;

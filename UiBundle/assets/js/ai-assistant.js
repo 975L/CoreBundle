@@ -59,6 +59,11 @@ export default class extends Controller {
         return this.element.dataset.aiAssistantCsrfTokenValue || '';
     }
 
+    // Where a source opens: a new tab by default, beside the back office; the same one where the page itself opens what it links to (PilotBundle's cards, in their space)
+    get linkTarget() {
+        return this.element.dataset.aiAssistantLinkTargetValue || '_blank';
+    }
+
     get filmLabel() {
         return this.element.dataset.aiAssistantFilmLabelValue || '';
     }
@@ -240,13 +245,13 @@ export default class extends Controller {
     // "Clear" waits too: the answer still on its way would otherwise land in the conversation just emptied
     showPending() {
         const pending = this.pendingEl;
-        if (pending) pending.classList.remove('d-none');
+        if (pending) pending.hidden = false;
         this.setClearDisabled(true);
     }
 
     hidePending() {
         const pending = this.pendingEl;
-        if (pending) pending.classList.add('d-none');
+        if (pending) pending.hidden = true;
         this.setClearDisabled(false);
     }
 
@@ -258,19 +263,21 @@ export default class extends Controller {
     // Server-rendered, message and link included: nothing here comes from the response
     showError() {
         const error = this.errorEl;
-        if (error) error.classList.remove('d-none');
+        if (error) error.hidden = false;
     }
 
     hideError() {
         const error = this.errorEl;
-        if (error) error.classList.add('d-none');
+        if (error) error.hidden = true;
     }
 
     buildLink(source) {
         const link = document.createElement('a');
         link.href = source.url;
-        link.target = '_blank';
-        link.rel = 'noopener';
+        if ('_self' !== this.linkTarget) {
+            link.target = this.linkTarget;
+            link.rel = 'noopener';
+        }
         link.textContent = source.label;
 
         return link;

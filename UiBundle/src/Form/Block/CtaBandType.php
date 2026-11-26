@@ -42,11 +42,14 @@ class CtaBandType extends AbstractType
                 'label' => 'label.text',
                 'required' => false,
             ])
+            // The button is optional: a band may only state something, rendered without a button when either field is left empty
             ->add('ctaLabel', TextType::class, [
                 'label' => 'label.cta_label',
+                'required' => false,
             ])
             ->add('ctaUrl', LinkTargetType::class, [
                 'label' => 'label.url',
+                'required' => false,
             ]);
 
         // A band is a full-width section like any other, and the one most often meant to stand out from the page around it - the flat is what states that, where the class below states a scope the bundle cannot name

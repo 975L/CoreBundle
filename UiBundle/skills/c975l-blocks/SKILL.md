@@ -234,6 +234,8 @@ so a single-language site holds not one row here.
   page gaining a language changes the links pointing at it with no entry to invalidate. Implement it
   in the bundle owning the urls; a site with none registered leaves every link exactly as it was
   stored. A link a template *generates* is ConfigBundle's `localized_path()`, see `c975l-config`.
+- **A `cta_band`'s button is optional**: left without a label or a target, the band renders its title
+  and text alone, a statement with no button pointing nowhere.
 - **A block's link fields are `Form\LinkTargetType`** (`button`, `card`, `collection`, `cta_band`,
   `hero`, `portfolio_grid`, `slide`, `video_grid`): a searchable list of pages and sections plus any
   address typed by hand. The list comes from `Contract\LinkTargetProviderInterface::linkTargets()`
