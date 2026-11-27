@@ -10,10 +10,13 @@
 
 namespace c975L\ConfigBundle\Controller;
 
+use c975L\ConfigBundle\Model\OAuthIdentity;
 use c975L\ConfigBundle\Model\OAuthResolution;
+use c975L\ConfigBundle\Security\OAuthLoginProviderInterface;
 use c975L\ConfigBundle\Security\OAuthLoginProviderRegistry;
 use c975L\ConfigBundle\Service\OAuthLoginClient;
 use c975L\ConfigBundle\Service\OAuthUserResolver;
+use c975L\UiBundle\Form\FormSubmissionType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Request;
@@ -29,6 +32,11 @@ class OAuthLoginController extends AbstractController
     private const string SESSION_STATE_PREFIX = 'config_oauth_state_';
 
     private const string SESSION_REDIRECT = 'config_oauth_redirect';
+
+    // The address a provider vouched for, waiting for the fields of the sign-up (see signUp()), and how long it waits
+    private const string SESSION_SIGN_UP_PREFIX = 'config_oauth_sign_up_';
+
+    private const int SIGN_UP_TTL = 900;
 
     // The name of the provider that opened the session ("Google"): its account may hold a password nobody knows, so AccountController offers no password change for it, and says how the member signed in
     public const string SESSION_OAUTH_LOGIN = 'config_oauth_login';
@@ -108,6 +116,63 @@ class OAuthLoginController extends AbstractController
         }
 
         $resolution = $this->oauthUserResolver->resolve($identity);
+
+        // The account is to be created once the application's own questions are answered, the vouched address kept in the session for that page alone
+        if (OAuthResolution::REASON_SIGN_UP_PENDING === $resolution->reason) {
+            $session->set(self::SESSION_SIGN_UP_PREFIX . $oauthProvider->getKey(), ['email' => $identity->email, 'at' => time()]);
+
+            return $this->redirectToRoute('config_oauth_sign_up', ['provider' => $oauthProvider->getKey()]);
+        }
+
+        return $this->logIn($request, $resolution, $oauthProvider, $security);
+    }
+
+    // What the "register" Form asks a first sign-in before its account exists (a date of birth...), the address being the one the provider just vouched for
+    #[Route('/connect/{provider}/sign-up', name: 'config_oauth_sign_up', methods: ['GET', 'POST'])]
+    public function signUp(Request $request, string $provider, Security $security): Response
+    {
+        $oauthProvider = $this->providerRegistry->get($provider);
+        if (null === $oauthProvider) {
+            throw $this->createNotFoundException();
+        }
+
+        $email = $this->pendingEmail($request, $oauthProvider->getKey());
+        $fields = $this->oauthUserResolver->signUpFields();
+        if (null === $email || [] === $fields) {
+            return $this->refuse('flash.oauth_login_failed');
+        }
+
+        $form = $this->createForm(FormSubmissionType::class, null, ['fields' => $fields, 'protections' => false]);
+        $form->handleRequest($request);
+        if (!$form->isSubmitted() || !$form->isValid()) {
+            return $this->render('@c975LConfig/security/oauth_sign_up.html.twig', [
+                'form' => $form->createView(),
+                'provider' => $oauthProvider->getName(),
+                'email' => $email,
+            ], new Response(status: $form->isSubmitted() ? Response::HTTP_UNPROCESSABLE_ENTITY : Response::HTTP_OK));
+        }
+
+        $request->getSession()->remove(self::SESSION_SIGN_UP_PREFIX . $oauthProvider->getKey());
+        $resolution = $this->oauthUserResolver->signUp(new OAuthIdentity($email, true), (array) $form->getData());
+
+        return null === $resolution->redirect ? $this->logIn($request, $resolution, $oauthProvider, $security) : $this->redirect($resolution->redirect);
+    }
+
+    // The address waiting for its sign-up, null when none or when it waited too long
+    private function pendingEmail(Request $request, string $provider): ?string
+    {
+        $pending = $request->getSession()->get(self::SESSION_SIGN_UP_PREFIX . $provider);
+        if (!\is_array($pending) || !\is_string($pending['email'] ?? null) || time() - (int) ($pending['at'] ?? 0) > self::SIGN_UP_TTL) {
+            return null;
+        }
+
+        return $pending['email'];
+    }
+
+    // Signs the account of a resolution in, or says why there is none
+    private function logIn(Request $request, OAuthResolution $resolution, OAuthLoginProviderInterface $oauthProvider, Security $security): Response
+    {
+        $session = $request->getSession();
 
         // Nothing went wrong technically in any of these, so each is said plainly: an address the provider wouldn't vouch for, a site that isn't taking new accounts, or an account this site has disabled
         if (null === $resolution->user) {

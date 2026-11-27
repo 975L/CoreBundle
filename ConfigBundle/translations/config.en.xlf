@@ -2750,6 +2750,14 @@
                 <source>label.not_founds</source>
                 <target>Broken links</target>
             </trans-unit>
+            <trans-unit id="YIrQ1Wr">
+                <source>label.oauth_sign_up_button</source>
+                <target>Create my account</target>
+            </trans-unit>
+            <trans-unit id="TonRnxO">
+                <source>label.oauth_sign_up_heading</source>
+                <target>One more step</target>
+            </trans-unit>
             <trans-unit id="qm9C7WD">
                 <source>label.onboarding_close</source>
                 <target>Close</target>
@@ -3157,6 +3165,10 @@
             <trans-unit id="NgwGFZ7">
                 <source>text.login_code_invalid</source>
                 <target>This code is not the right one.</target>
+            </trans-unit>
+            <trans-unit id="y08Z1DS">
+                <source>text.oauth_sign_up_intro</source>
+                <target>%provider% confirmed your address %email%. Answer these questions to create your account.</target>
             </trans-unit>
             <trans-unit id="hAwsDaz">
                 <source>text.password_oauth</source>

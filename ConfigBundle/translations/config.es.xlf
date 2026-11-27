@@ -2750,6 +2750,14 @@
                 <source>label.not_founds</source>
                 <target>Enlaces rotos</target>
             </trans-unit>
+            <trans-unit id="YIrQ1Wr">
+                <source>label.oauth_sign_up_button</source>
+                <target>Crear mi cuenta</target>
+            </trans-unit>
+            <trans-unit id="TonRnxO">
+                <source>label.oauth_sign_up_heading</source>
+                <target>Un paso más</target>
+            </trans-unit>
             <trans-unit id="qm9C7WD">
                 <source>label.onboarding_close</source>
                 <target>Cerrar</target>
@@ -3157,6 +3165,10 @@
             <trans-unit id="NgwGFZ7">
                 <source>text.login_code_invalid</source>
                 <target>Este código no es el correcto.</target>
+            </trans-unit>
+            <trans-unit id="y08Z1DS">
+                <source>text.oauth_sign_up_intro</source>
+                <target>%provider% ha confirmado tu dirección %email%. Responde a estas preguntas para crear tu cuenta.</target>
             </trans-unit>
             <trans-unit id="hAwsDaz">
                 <source>text.password_oauth</source>

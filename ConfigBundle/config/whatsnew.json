@@ -1,5 +1,15 @@
 [
     {
+        "date": "2026-11-27",
+        "description": [
+            {
+                "en": "Signing up with Google or Apple: on a site whose sign-up asks more (a date of birth, the terms of use), a first sign-in now answers those questions before the account is created.",
+                "fr": "Inscription avec Google ou Apple : sur un site dont l'inscription demande davantage (une date de naissance, les conditions d'utilisation), une première connexion répond désormais à ces questions avant que le compte soit créé.",
+                "es": "Registro con Google o Apple: en un sitio cuyo registro pide más (una fecha de nacimiento, las condiciones de uso), un primer inicio de sesión responde ahora a esas preguntas antes de que se cree la cuenta."
+            }
+        ]
+    },
+    {
         "date": "2026-11-25",
         "description": [
             {

@@ -11,18 +11,23 @@
 namespace c975L\ConfigBundle\Tests\Service;
 
 use App\Entity\User;
+use c975L\ConfigBundle\Contract\OAuthSignUpInterface;
 use c975L\ConfigBundle\Event\UserCreatedEvent;
 use c975L\ConfigBundle\Model\OAuthIdentity;
 use c975L\ConfigBundle\Model\OAuthResolution;
 use c975L\ConfigBundle\Service\OAuthUserResolver;
 use c975L\ConfigBundle\Service\UserCreationNotifier;
+use c975L\UiBundle\Contract\FormActionInterface;
 use c975L\UiBundle\Entity\Form;
+use c975L\UiBundle\Entity\FormField;
+use c975L\UiBundle\Registry\FormActionRegistry;
 use c975L\UiBundle\Repository\FormRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use PHPUnit\Framework\TestCase;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 // The ways an OAuth identity can end: created, accepted, taken over, refused
 class OAuthUserResolverTest extends TestCase
@@ -93,7 +98,7 @@ class OAuthUserResolverTest extends TestCase
     {
         $persisted = [];
         $flushes = 0;
-        $resolver = new OAuthUserResolver($this->createEntityManager(null, $persisted, $flushes), $this->createPasswordHasher(), $this->createNotifier(), $this->createFormRepository(), $this->createEventDispatcher());
+        $resolver = new OAuthUserResolver($this->createEntityManager(null, $persisted, $flushes), $this->createPasswordHasher(), $this->createNotifier(), $this->createFormRepository(), $this->createEventDispatcher(), new FormActionRegistry());
 
         $resolution = $resolver->resolve(new OAuthIdentity('visitor@example.test', true));
 
@@ -112,7 +117,7 @@ class OAuthUserResolverTest extends TestCase
     public function testACreatedAccountCarriesARandomPassword(): void
     {
         $hashed = [];
-        $resolver = new OAuthUserResolver($this->createEntityManager(null), $this->createPasswordHasher($hashed), $this->createNotifier(), $this->createFormRepository(), $this->createEventDispatcher());
+        $resolver = new OAuthUserResolver($this->createEntityManager(null), $this->createPasswordHasher($hashed), $this->createNotifier(), $this->createFormRepository(), $this->createEventDispatcher(), new FormActionRegistry());
 
         $first = $resolver->resolve(new OAuthIdentity('visitor@example.test', true));
         $second = $resolver->resolve(new OAuthIdentity('other@example.test', true));
@@ -127,7 +132,7 @@ class OAuthUserResolverTest extends TestCase
     public function testACreatedAccountIsAnnouncedToTheSiteOwner(): void
     {
         $notified = [];
-        $resolver = new OAuthUserResolver($this->createEntityManager(null), $this->createPasswordHasher(), $this->createNotifier($notified), $this->createFormRepository(), $this->createEventDispatcher());
+        $resolver = new OAuthUserResolver($this->createEntityManager(null), $this->createPasswordHasher(), $this->createNotifier($notified), $this->createFormRepository(), $this->createEventDispatcher(), new FormActionRegistry());
 
         $resolution = $resolver->resolve(new OAuthIdentity('visitor@example.test', true));
 
@@ -138,7 +143,7 @@ class OAuthUserResolverTest extends TestCase
     public function testACreatedAccountDispatchesUserCreatedEvent(): void
     {
         $dispatched = [];
-        $resolver = new OAuthUserResolver($this->createEntityManager(null), $this->createPasswordHasher(), $this->createNotifier(), $this->createFormRepository(), $this->createEventDispatcher($dispatched));
+        $resolver = new OAuthUserResolver($this->createEntityManager(null), $this->createPasswordHasher(), $this->createNotifier(), $this->createFormRepository(), $this->createEventDispatcher($dispatched), new FormActionRegistry());
 
         $resolution = $resolver->resolve(new OAuthIdentity('visitor@example.test', true));
 
@@ -151,7 +156,7 @@ class OAuthUserResolverTest extends TestCase
     public function testACreatedAccountIsAnnouncedBeforeBeingWelcomed(): void
     {
         $log = [];
-        $resolver = new OAuthUserResolver($this->createEntityManager(null), $this->createPasswordHasher(), $this->createNotifier($log), $this->createFormRepository(), $this->createEventDispatcher($log));
+        $resolver = new OAuthUserResolver($this->createEntityManager(null), $this->createPasswordHasher(), $this->createNotifier($log), $this->createFormRepository(), $this->createEventDispatcher($log), new FormActionRegistry());
 
         $resolution = $resolver->resolve(new OAuthIdentity('visitor@example.test', true));
 
@@ -166,7 +171,7 @@ class OAuthUserResolverTest extends TestCase
         $squatted = new User()->setEmail('visitor@example.test')->setPassword('chosen-by-whoever-registered-it')->setIsVerified(false)->setIsEnabled(false);
 
         $dispatched = [];
-        $resolver = new OAuthUserResolver($this->createEntityManager($squatted), $this->createPasswordHasher(), $this->createNotifier(), $this->createFormRepository(), $this->createEventDispatcher($dispatched));
+        $resolver = new OAuthUserResolver($this->createEntityManager($squatted), $this->createPasswordHasher(), $this->createNotifier(), $this->createFormRepository(), $this->createEventDispatcher($dispatched), new FormActionRegistry());
 
         $resolver->resolve(new OAuthIdentity('visitor@example.test', true));
 
@@ -182,7 +187,7 @@ class OAuthUserResolverTest extends TestCase
 
         $notified = [];
         $dispatched = [];
-        $resolver = new OAuthUserResolver($this->createEntityManager($existing), $this->createPasswordHasher(), $this->createNotifier($notified), $this->createFormRepository(), $this->createEventDispatcher($dispatched));
+        $resolver = new OAuthUserResolver($this->createEntityManager($existing), $this->createPasswordHasher(), $this->createNotifier($notified), $this->createFormRepository(), $this->createEventDispatcher($dispatched), new FormActionRegistry());
 
         $resolver->resolve(new OAuthIdentity('visitor@example.test', true));
 
@@ -201,7 +206,7 @@ class OAuthUserResolverTest extends TestCase
             ->setIsEnabled(true);
 
         $flushes = 0;
-        $resolver = new OAuthUserResolver($this->createEntityManager($existing, flushes: $flushes), $this->createPasswordHasher(), $this->createNotifier(), $this->createFormRepository(), $this->createEventDispatcher());
+        $resolver = new OAuthUserResolver($this->createEntityManager($existing, flushes: $flushes), $this->createPasswordHasher(), $this->createNotifier(), $this->createFormRepository(), $this->createEventDispatcher(), new FormActionRegistry());
 
         $resolution = $resolver->resolve(new OAuthIdentity('visitor@example.test', true));
 
@@ -222,7 +227,7 @@ class OAuthUserResolverTest extends TestCase
             ->setIsEnabled(false);
 
         $flushes = 0;
-        $resolver = new OAuthUserResolver($this->createEntityManager($squatted, flushes: $flushes), $this->createPasswordHasher(), $this->createNotifier(), $this->createFormRepository(), $this->createEventDispatcher());
+        $resolver = new OAuthUserResolver($this->createEntityManager($squatted, flushes: $flushes), $this->createPasswordHasher(), $this->createNotifier(), $this->createFormRepository(), $this->createEventDispatcher(), new FormActionRegistry());
 
         $resolution = $resolver->resolve(new OAuthIdentity('visitor@example.test', true));
 
@@ -246,7 +251,7 @@ class OAuthUserResolverTest extends TestCase
 
         $persisted = [];
         $flushes = 0;
-        $resolver = new OAuthUserResolver($this->createEntityManager($banned, $persisted, $flushes), $this->createPasswordHasher(), $this->createNotifier(), $this->createFormRepository(), $this->createEventDispatcher());
+        $resolver = new OAuthUserResolver($this->createEntityManager($banned, $persisted, $flushes), $this->createPasswordHasher(), $this->createNotifier(), $this->createFormRepository(), $this->createEventDispatcher(), new FormActionRegistry());
 
         $resolution = $resolver->resolve(new OAuthIdentity('visitor@example.test', true));
 
@@ -262,7 +267,7 @@ class OAuthUserResolverTest extends TestCase
     public function testAClosedRegistrationRefusesToCreateAnAccount(): void
     {
         $persisted = [];
-        $resolver = new OAuthUserResolver($this->createEntityManager(null, $persisted), $this->createPasswordHasher(), $this->createNotifier(), $this->createFormRepository(registrationOpen: false), $this->createEventDispatcher());
+        $resolver = new OAuthUserResolver($this->createEntityManager(null, $persisted), $this->createPasswordHasher(), $this->createNotifier(), $this->createFormRepository(registrationOpen: false), $this->createEventDispatcher(), new FormActionRegistry());
 
         $resolution = $resolver->resolve(new OAuthIdentity('visitor@example.test', true));
 
@@ -275,7 +280,7 @@ class OAuthUserResolverTest extends TestCase
     public function testAClosedRegistrationStillLogsAnExistingAccountIn(): void
     {
         $existing = new User()->setEmail('visitor@example.test')->setPassword('chosen-by-its-owner')->setIsEnabled(true);
-        $resolver = new OAuthUserResolver($this->createEntityManager($existing), $this->createPasswordHasher(), $this->createNotifier(), $this->createFormRepository(registrationOpen: false), $this->createEventDispatcher());
+        $resolver = new OAuthUserResolver($this->createEntityManager($existing), $this->createPasswordHasher(), $this->createNotifier(), $this->createFormRepository(registrationOpen: false), $this->createEventDispatcher(), new FormActionRegistry());
 
         $this->assertSame($existing, $resolver->resolve(new OAuthIdentity('visitor@example.test', true))->user);
     }
@@ -287,7 +292,7 @@ class OAuthUserResolverTest extends TestCase
 
         $persisted = [];
         $flushes = 0;
-        $resolver = new OAuthUserResolver($this->createEntityManager($existing, $persisted, $flushes), $this->createPasswordHasher(), $this->createNotifier(), $this->createFormRepository(), $this->createEventDispatcher());
+        $resolver = new OAuthUserResolver($this->createEntityManager($existing, $persisted, $flushes), $this->createPasswordHasher(), $this->createNotifier(), $this->createFormRepository(), $this->createEventDispatcher(), new FormActionRegistry());
 
         $resolution = $resolver->resolve(new OAuthIdentity('visitor@example.test', false));
 
@@ -296,5 +301,104 @@ class OAuthUserResolverTest extends TestCase
         $this->assertSame([], $persisted);
         $this->assertSame(0, $flushes);
         $this->assertSame('untouched', $existing->getPassword());
+    }
+
+    // A "register" Form of an email, a password and a date of birth, whose action asks the date of a sign-up through a provider and turns down whoever answers $refusedDate
+    private function createSignUpResolver(?string $refusedDate = null, ?array &$persisted = null, ?User $existing = null): OAuthUserResolver
+    {
+        $form = new Form()->setEnabled(true);
+        foreach (['email' => FormField::TYPE_EMAIL, 'plainPassword' => FormField::TYPE_PASSWORD_REPEATED, 'birthDate' => FormField::TYPE_DATE] as $name => $type) {
+            $form->addField(new FormField()->setName($name)->setType($type));
+        }
+        $formRepository = $this->createStub(FormRepository::class);
+        $formRepository->method('findOneBy')->willReturn($form);
+
+        $action = new readonly class ($refusedDate) implements FormActionInterface, OAuthSignUpInterface {
+            public function __construct(private ?string $refusedDate)
+            {
+            }
+
+            public function getKey(): string
+            {
+                return 'register';
+            }
+
+            public function handle(Form $form, array $submittedData): bool
+            {
+                return true;
+            }
+
+            public function getOAuthFieldNames(): array
+            {
+                return ['birthDate', 'unknown'];
+            }
+
+            public function prepareOAuthUser(UserInterface $user, array $submittedData): ?string
+            {
+                // The address is already on the account it fills
+                return $this->refusedDate === $submittedData['birthDate'] || 'visitor@example.test' !== $user->getUserIdentifier() ? '/item-1' : null;
+            }
+        };
+        $registry = new FormActionRegistry();
+        $registry->addProvider($action);
+
+        return new OAuthUserResolver($this->createEntityManager($existing, $persisted), $this->createPasswordHasher(), $this->createNotifier(), $formRepository, $this->createEventDispatcher(), $registry);
+    }
+
+    // An application asking something of a sign-up holds the account back until it is answered, and offers only the fields of its Form it named
+    public function testASignUpAskingFieldsCreatesNothingBeforeTheyAreAnswered(): void
+    {
+        $persisted = [];
+        $resolver = $this->createSignUpResolver(null, $persisted);
+
+        $resolution = $resolver->resolve(new OAuthIdentity('visitor@example.test', true));
+
+        $this->assertNull($resolution->user);
+        $this->assertSame(OAuthResolution::REASON_SIGN_UP_PENDING, $resolution->reason);
+        $this->assertSame([], $persisted);
+        $this->assertSame(['birthDate'], array_map(static fn (FormField $field): ?string => $field->getName(), $resolver->signUpFields()));
+    }
+
+    // Answered, the account is created as any first sign-in
+    public function testAnAnsweredSignUpCreatesTheAccount(): void
+    {
+        $persisted = [];
+
+        $resolution = $this->createSignUpResolver('2020-01-01', $persisted)->signUp(new OAuthIdentity('visitor@example.test', true), ['birthDate' => '1980-01-01']);
+
+        $this->assertInstanceOf(User::class, $resolution->user);
+        $this->assertSame([$resolution->user], $persisted);
+        $this->assertTrue($resolution->user->isEnabled());
+    }
+
+    // Turned down by the application, nothing is created and the visitor goes where it says
+    public function testATurnedDownSignUpCreatesNothing(): void
+    {
+        $persisted = [];
+
+        $resolution = $this->createSignUpResolver('2020-01-01', $persisted)->signUp(new OAuthIdentity('visitor@example.test', true), ['birthDate' => '2020-01-01']);
+
+        $this->assertNull($resolution->user);
+        $this->assertSame('/item-1', $resolution->redirect);
+        $this->assertSame([], $persisted);
+    }
+
+    // An account that exists asks nothing: it signs in as it stands, also when it appeared while the questions were on screen
+    public function testAnExistingAccountSignsInWithoutTheQuestions(): void
+    {
+        $existing = new User()->setEmail('visitor@example.test')->setIsVerified(true)->setIsEnabled(true);
+        $resolver = $this->createSignUpResolver('2020-01-01', existing: $existing);
+
+        $this->assertSame($existing, $resolver->resolve(new OAuthIdentity('visitor@example.test', true))->user);
+        $this->assertSame($existing, $resolver->signUp(new OAuthIdentity('visitor@example.test', true), ['birthDate' => '2020-01-01'])->user);
+    }
+
+    // A "register" action asking nothing, as the scaffold's, keeps the first sign-in creating its account at once
+    public function testAnActionAskingNothingOffersNoField(): void
+    {
+        $resolver = new OAuthUserResolver($this->createEntityManager(null), $this->createPasswordHasher(), $this->createNotifier(), $this->createFormRepository(), $this->createEventDispatcher(), new FormActionRegistry());
+
+        $this->assertSame([], $resolver->signUpFields());
+        $this->assertInstanceOf(User::class, $resolver->resolve(new OAuthIdentity('visitor@example.test', true))->user);
     }
 }

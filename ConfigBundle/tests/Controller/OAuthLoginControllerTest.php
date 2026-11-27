@@ -11,14 +11,19 @@
 namespace c975L\ConfigBundle\Tests\Controller;
 
 use c975L\ConfigBundle\Controller\OAuthLoginController;
+use c975L\ConfigBundle\Model\OAuthIdentity;
+use c975L\ConfigBundle\Model\OAuthResolution;
 use c975L\ConfigBundle\Security\OAuthLoginProviderInterface;
 use c975L\ConfigBundle\Security\OAuthLoginProviderRegistry;
 use c975L\ConfigBundle\Service\OAuthLoginClient;
 use c975L\ConfigBundle\Service\OAuthUserResolver;
+use c975L\UiBundle\Entity\FormField;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\DependencyInjection\Container;
+use Symfony\Component\Form\FormFactoryInterface;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
@@ -123,5 +128,102 @@ class OAuthLoginControllerTest extends TestCase
         yield 'another state' => ['state-2'];
         yield 'a prefix of it' => ['state-'];
         yield 'none' => [null];
+    }
+
+    // A controller over a provider vouching for visitor@example.test, a router naming each route by its name, and the resolver given
+    private function createController(Request $request, OAuthUserResolver $resolver): OAuthLoginController
+    {
+        $provider = $this->createStub(OAuthLoginProviderInterface::class);
+        $provider->method('getKey')->willReturn('google');
+        $provider->method('fetchIdentity')->willReturn(new OAuthIdentity('visitor@example.test', true));
+        $registry = $this->createStub(OAuthLoginProviderRegistry::class);
+        $registry->method('get')->willReturn($provider);
+        $client = $this->createStub(OAuthLoginClient::class);
+        $client->method('exchangeCodeForToken')->willReturn(['id_token' => 'a-token']);
+
+        $router = $this->createStub(UrlGeneratorInterface::class);
+        $router->method('generate')->willReturnCallback(static fn (string $name): string => '/' . $name);
+        $container = new Container();
+        $container->set('router', $router);
+        $container->set('request_stack', new RequestStack([$request]));
+
+        $controller = new OAuthLoginController($registry, $client, $resolver, $this->createStub(TranslatorInterface::class));
+        $controller->setContainer($container);
+
+        return $controller;
+    }
+
+    // An account held back for the application's questions is created nowhere yet: the vouched address waits in the session and the visitor is sent to the questions
+    public function testAPendingSignUpSendsToTheQuestions(): void
+    {
+        $session = new Session(new MockArraySessionStorage());
+        $session->set('config_oauth_state_google', 'state-1');
+        $request = Request::create('/connect/google/check', 'GET', ['code' => 'a-code', 'state' => 'state-1']);
+        $request->setSession($session);
+        $resolver = $this->createStub(OAuthUserResolver::class);
+        $resolver->method('resolve')->willReturn(OAuthResolution::refused(OAuthResolution::REASON_SIGN_UP_PENDING));
+
+        $response = $this->createController($request, $resolver)->check($request, 'google', $this->createStub(Security::class));
+
+        $this->assertSame('/config_oauth_sign_up', $response->headers->get('Location'));
+        $this->assertSame('visitor@example.test', $session->get('config_oauth_sign_up_google')['email'] ?? null);
+    }
+
+    // The questions answer no one who did not come from the provider, nor someone who waited too long
+    #[DataProvider('missingSignUps')]
+    public function testTheQuestionsNeedAnAddressJustVouchedFor(?array $pending): void
+    {
+        $session = new Session(new MockArraySessionStorage());
+        if (null !== $pending) {
+            $session->set('config_oauth_sign_up_google', $pending);
+        }
+        $request = Request::create('/connect/google/sign-up');
+        $request->setSession($session);
+        $resolver = $this->createMock(OAuthUserResolver::class);
+        $resolver->method('signUpFields')->willReturn([new FormField()->setName('birthDate')]);
+        $resolver->expects($this->never())->method('signUp');
+
+        $response = $this->createController($request, $resolver)->signUp($request, 'google', $this->createStub(Security::class));
+
+        $this->assertSame('/app_login', $response->headers->get('Location'));
+    }
+
+    /** @return iterable<string, array{?array<string, mixed>}> */
+    public static function missingSignUps(): iterable
+    {
+        yield 'none' => [null];
+        yield 'waited too long' => [['email' => 'visitor@example.test', 'at' => time() - 3600]];
+    }
+
+    // Answered and turned down by the application, the visitor goes where it says, the address no longer waiting
+    public function testATurnedDownSignUpSendsWhereTheApplicationSays(): void
+    {
+        $session = new Session(new MockArraySessionStorage());
+        $session->set('config_oauth_sign_up_google', ['email' => 'visitor@example.test', 'at' => time()]);
+        $request = Request::create('/connect/google/sign-up', 'POST');
+        $request->setSession($session);
+        $resolver = $this->createMock(OAuthUserResolver::class);
+        $resolver->method('signUpFields')->willReturn([new FormField()->setName('birthDate')]);
+        $resolver->expects($this->once())->method('signUp')
+            ->with(new OAuthIdentity('visitor@example.test', true), ['birthDate' => '2020-01-01'])
+            ->willReturn(OAuthResolution::redirected('/item-1'));
+
+        $form = $this->createStub(FormInterface::class);
+        $form->method('isSubmitted')->willReturn(true);
+        $form->method('isValid')->willReturn(true);
+        $form->method('getData')->willReturn(['birthDate' => '2020-01-01']);
+        $formFactory = $this->createStub(FormFactoryInterface::class);
+        $formFactory->method('create')->willReturn($form);
+
+        $controller = $this->createController($request, $resolver);
+        $container = new Container();
+        $container->set('form.factory', $formFactory);
+        $container->set('request_stack', new RequestStack([$request]));
+        $controller->setContainer($container);
+
+        $response = $controller->signUp($request, 'google', $this->createStub(Security::class));
+
+        $this->assertSame('/item-1', $response->headers->get('Location'));
+        $this->assertFalse($session->has('config_oauth_sign_up_google'));
     }
 }

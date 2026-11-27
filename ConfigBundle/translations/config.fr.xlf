@@ -2750,6 +2750,14 @@
                 <source>label.not_founds</source>
                 <target>Liens cassés</target>
             </trans-unit>
+            <trans-unit id="YIrQ1Wr">
+                <source>label.oauth_sign_up_button</source>
+                <target>Créer mon compte</target>
+            </trans-unit>
+            <trans-unit id="TonRnxO">
+                <source>label.oauth_sign_up_heading</source>
+                <target>Encore une étape</target>
+            </trans-unit>
             <trans-unit id="qm9C7WD">
                 <source>label.onboarding_close</source>
                 <target>Fermer</target>
@@ -3157,6 +3165,10 @@
             <trans-unit id="NgwGFZ7">
                 <source>text.login_code_invalid</source>
                 <target>Ce code n'est pas le bon.</target>
+            </trans-unit>
+            <trans-unit id="y08Z1DS">
+                <source>text.oauth_sign_up_intro</source>
+                <target>%provider% a confirmé votre adresse %email%. Répondez à ces questions pour créer votre compte.</target>
             </trans-unit>
             <trans-unit id="hAwsDaz">
                 <source>text.password_oauth</source>

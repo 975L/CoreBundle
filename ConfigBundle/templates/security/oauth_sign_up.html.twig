@@ -1,0 +1,19 @@
+{# Rendered by OAuthLoginController::signUp() - what the "register" Form still asks a first sign-in through a provider, before its account is created #}
+{% extends ['layout.html.twig', '@c975LSite/layout.html.twig', '@c975LUi/layout.html.twig'] %}
+{% trans_default_domain 'config' %}
+
+{% set title = 'label.oauth_sign_up_heading'|trans %}
+
+{# A step of one sign-up alone: nothing to offer a search result #}
+{% set robots = 'noindex, follow' %}
+
+{% block content %}
+    <p class="text">{{ 'text.oauth_sign_up_intro'|trans({'%provider%': provider, '%email%': email}) }}</p>
+
+    {{ form_start(form) }}
+        {{ form_widget(form) }}
+        <button class="btn btn-large btn-primary" type="submit">
+            {{ 'label.oauth_sign_up_button'|trans }}
+        </button>
+    {{ form_end(form) }}
+{% endblock %}

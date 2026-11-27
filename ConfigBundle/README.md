@@ -744,6 +744,28 @@ rather than corrected - so a visitor comes back where they clicked rather than o
 order pages use it, see its "Inviting a guest buyer to open an account"). Left out, the buttons take the `_target_path`
 the login url carries, the one a form login follows too.
 
+#### Asking a first sign-in what the provider can't answer
+
+A provider vouches for an address and nothing else, so a first sign-in skips the "register" Form: a date of birth, the terms of use box. An application that needs them implements `c975L\ConfigBundle\Contract\OAuthSignUpInterface` on its own "register" action. `getOAuthFieldNames()` names the Form's fields to ask. Before any account exists, `/connect/{provider}/sign-up` asks them, the vouched address waiting fifteen minutes in the session. `prepareOAuthUser()` then fills the account about to be created, or returns a url to send the visitor to, nothing being created:
+
+```php
+class RegisterFormAction implements FormActionInterface, OAuthSignUpInterface
+{
+    public function getOAuthFieldNames(): array
+    {
+        return ['birthDate', 'cgu'];
+    }
+
+    public function prepareOAuthUser(UserInterface $user, array $submittedData): ?string
+    {
+        // A url turns the sign-up down, null creates the account
+        return $this->isOldEnough($submittedData['birthDate']) ? null : $this->urlGenerator->generate('app_login');
+    }
+}
+```
+
+A site whose action doesn't implement it, as the scaffold's, or names no field, creates the account at once, as before. An account that already exists is never asked anything.
+
 #### Adding another provider
 
 Implement `c975L\ConfigBundle\Security\OAuthLoginProviderInterface` anywhere — this bundle, another c975L bundle, an application. It is collected on its own (`TaggedInterfacePass`), so there is no list to edit and `/connect/{provider}` routes it by `getKey()` the day it appears:
@@ -761,7 +783,7 @@ class FacebookOAuthLoginProvider implements OAuthLoginProviderInterface
 
     // The one place providers genuinely diverge: Facebook wants its fields listed,
     // Apple says it in the id_token instead of answering a userinfo endpoint
-    public function fetchIdentity(string $accessToken): ?OAuthIdentity
+    public function fetchIdentity(array $token): ?OAuthIdentity
     {
         // ...
         return new OAuthIdentity($email, $emailVerified);

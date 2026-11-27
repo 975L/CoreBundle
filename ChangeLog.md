@@ -1,5 +1,14 @@
 # ChangeLog
 
+## v1.104.0
+
+Ask a first Google or Apple sign-in the fields of the sign-up
+
+- Added `OAuthSignUpInterface`, a "register" action naming the fields a first sign-in through a provider answers before its account is created (27/11/2026)
+- Added `config_oauth_sign_up`, the page asking them, the vouched address kept in the session for fifteen minutes (27/11/2026)
+- `OAuthUserResolver::signUp()` and `signUpFields()`, an application turning the sign-up down by a url, nothing created (27/11/2026)
+- Readme example of `fetchIdentity()` taking the token endpoint's answer (27/11/2026)
+
 ## v1.103.0
 
 Release day of a catalog product
