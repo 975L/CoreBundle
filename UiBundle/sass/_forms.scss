@@ -118,6 +118,12 @@ input[type="submit"] {
     border: none;
 }
 
+// A field's help under it, drawn closer to its field than to the next one's label, which it otherwise touched
+.help-text {
+    margin-block: -0.5em 1em;
+    font-size: 0.85rem;
+}
+
 // A form standing inside a page section rather than being the page: flush with the section's edge like the content around it, and its button sized to its label
 .form--section {
     margin-inline: 0;

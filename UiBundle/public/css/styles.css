@@ -2057,6 +2057,11 @@ input[type=submit] {
   border: none;
 }
 
+.help-text {
+  margin-block: -0.5em 1em;
+  font-size: 0.85rem;
+}
+
 .form--section {
   margin-inline: 0;
 }

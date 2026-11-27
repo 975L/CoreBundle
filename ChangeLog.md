@@ -1,5 +1,11 @@
 # ChangeLog
 
+## v1.104.1
+
+Space under a form field's help
+
+- A field's help text kept off the next field's label (27/11/2026)
+
 ## v1.104.0
 
 Ask a first Google or Apple sign-in the fields of the sign-up
